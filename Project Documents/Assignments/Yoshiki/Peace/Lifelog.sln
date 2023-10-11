@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.DataAccess", "Peace.DataAccess\Peace.DataAccess.csproj", "{EE8C3469-E199-4D23-997C-B4CD05D7DA11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Logging.DataAccess", "Peace.DataAccess\Peace.Logging.DataAccess.csproj", "{EE8C3469-E199-4D23-997C-B4CD05D7DA11}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.ConsoleApp", "Peace.ConsoleApp\Peace.ConsoleApp.csproj", "{761C872E-0607-4A64-BAC6-53C7F208F905}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Logging.ConsoleApp", "Peace.ConsoleApp\Peace.Logging.ConsoleApp.csproj", "{761C872E-0607-4A64-BAC6-53C7F208F905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Logging", "Peace.Logging\Peace.Logging.csproj", "{2CC2D89A-690F-43BA-82DD-655F875C1424}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Logging", "Peace.Logging\Peace.Logging.csproj", "{2CC2D89A-690F-43BA-82DD-655F875C1424}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

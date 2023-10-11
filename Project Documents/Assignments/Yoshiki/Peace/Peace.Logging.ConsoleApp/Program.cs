@@ -1,6 +1,4 @@
-﻿using Peace.Logging;
-
-namespace Peace.ConsoleApp
+﻿namespace Peace.Logging.ConsoleApp
 {
     class Program
     {

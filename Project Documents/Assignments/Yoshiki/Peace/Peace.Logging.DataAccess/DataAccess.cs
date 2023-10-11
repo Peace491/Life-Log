@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
 
-namespace Peace.DataAccess
+namespace Peace.Logging.DataAccess
 {
     public class DataAccess
     {
