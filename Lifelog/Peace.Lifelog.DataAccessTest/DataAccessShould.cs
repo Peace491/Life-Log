@@ -21,12 +21,12 @@ public class DataAccessShould
 
         // Act
         timer.Start();
-        var createResponse = createOnlyDAO.createData(insertSql);
+        var createResponse = createOnlyDAO.CreateData(insertSql);
         timer.Stop();
 
-        var recordId = createResponse.Response.Output.Id;
+        var recordId = createResponse.Output.Id;
         var readSql = $"SELECT data FROM mockData WHERE Id = {recordId}";
-        var readResponse = readOnlyDAO.readData(readSql);
+        var readResponse = readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(createResponse.HasError == false);
@@ -51,7 +51,7 @@ public class DataAccessShould
 
         // Act
         timer.Start();
-        var readResponse = readOnlyDAO.readData(readSingleSql);
+        var readResponse = readOnlyDAO.ReadData(readSingleSql);
         timer.Stop();
         
         // Assert
@@ -77,7 +77,7 @@ public class DataAccessShould
 
         // Act
         timer.Start();
-        var readResponse = readOnlyDAO.readData(readMultipleSql, count, page);
+        var readResponse = readOnlyDAO.ReadData(readMultipleSql, count, page);
         timer.Stop();
         
         // Assert
@@ -103,19 +103,19 @@ public class DataAccessShould
         var updateRecordNewMockData = "Update New Mock Data";
 
         var createSql = $"INSERT INTO mockData (Category, MockData) VALUES {(updateRecordCategory, updateRecordOriginalMockData)}";
-        var createResponse = createOnlyDAO.createData(createSql);
-        var recordId = createResponse.Response.Output.Id;
+        var createResponse = createOnlyDAO.CreateData(createSql);
+        var recordId = createResponse.Output.Id;
 
         var readSql = $"SELECT FROM mockData WHERE Id={recordId}";
         var updateSql = $"UPDATE mockData SET mockData = {updateRecordNewMockData}";
         
         
         // Act
-        var originalReadResponse = readOnlyDAO.readData(readSql);
+        var originalReadResponse = readOnlyDAO.ReadData(readSql);
         timer.Start();
-        var updateResponse = updateOnlyDAO.updateData(updateSql);
+        var updateResponse = updateOnlyDAO.UpdateData(updateSql);
         timer.Stop();
-        var newReadResponse = readOnlyDAO.readData(readSql);
+        var newReadResponse = readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(updateResponse.HasError == false);
@@ -137,7 +137,7 @@ public class DataAccessShould
         var deleteMockData = "Delete Mock Data";
     
         var createSql = $"INSERT INTO mockData (Category, MockData) VALUES {(deleteCategory, deleteMockData)}";
-        var createResponse = createOnlyDAO.createData(createSql);
+        var createResponse = createOnlyDAO.CreateData(createSql);
         var recordId = createResponse.Response.Output.Id;
 
         var readSql = $"SELECT FROM mockData WHERE Id={recordId}";
@@ -145,9 +145,9 @@ public class DataAccessShould
 
         // Act
         timer.Start();
-        var deleteResponse = deleteOnlyDAO.deleteData(deleteSql);
+        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
         timer.Stop();
-        var readResponse = readOnlyDAO.readData(readSql);
+        var readResponse = readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(deleteResponse.HasError == false);
