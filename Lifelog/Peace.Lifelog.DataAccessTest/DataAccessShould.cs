@@ -39,9 +39,6 @@ public class DataAccessShould
     [Fact]
     public void DataAccessShould_ReadSingleRecordInDataStore()
     {
-        // Triple A
-        // RGR - Red Green Refactor
-
         // Arrange: Set up before test execute
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateOnlyDAO();
@@ -95,9 +92,6 @@ public class DataAccessShould
     [Fact]
     public void DataAccessShould_UpdateARecordInDataStore()
     {
-        // Triple A
-        // RGR - Red Green Refactor
-
         // Arrange: Set up before test execute
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateOnlyDAO();
