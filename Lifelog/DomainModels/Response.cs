@@ -6,7 +6,7 @@ public class Response
 
     public string? ErrorMessage { get; set; }= null;
 
-    public ICollection<object>? Output { get; set; } = null;
+    public ICollection<Object>? Output { get; set; } = null;
 
     public int RetryAttempts { get; set; } = 0;
 
