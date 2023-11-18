@@ -1,6 +1,5 @@
 namespace Peace.Lifelog.DataAccess;
 
-using System.Drawing.Printing;
 using DomainModels;
 
 using MySql.Data.MySqlClient;
@@ -11,6 +10,28 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
     public Response ReadData(string sql, int count = 10, int currentPage = 0) 
     {
         var response = new Response();
+
+        if (sql == "")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Empty Input";
+            return response;
+        }
+
+        if (count < 0)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Invalid Count";
+            return response;
+        }
+
+        if (currentPage < 0)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Invalid Page";
+            return response;
+        }
+
         
         try 
         {
