@@ -19,27 +19,26 @@ public class ReadDataOnlyDAOShould
         var readCategory = "Read";
         var readMockData = "Mock Data";
 
-        var insertSql =  $"INSERT INTO {table} VALUES ('{readCategory}', '{readMockData}')";
+        var createSql =  $"INSERT INTO {table} VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
 
         // Act
-        var createResponse = createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
+        var createResponse = createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
 
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
         
         // Assert
         Assert.True(readResponse.HasError == false);
-        
+        Assert.True(readResponse.Output.Count == 1);
         foreach (List<Object> readResponseData in readResponse.Output)
         {
             // Use the MySqlDataReader
             Assert.True(readResponseData[0].ToString() == readMockData);
 
         }
-
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
@@ -60,14 +59,14 @@ public class ReadDataOnlyDAOShould
         var readMockData = "Mock Data";
         var numberOfRecords = 20;
 
-        var insertSql =  $"INSERT INTO {table} VALUES ('{readCategory}', '{readMockData}')";
+        var createSql =  $"INSERT INTO {table} VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
 
         // Act
         for (int i = 0; i < numberOfRecords; i++)
         {
-            createOnlyDAO.CreateData(insertSql); 
+            createOnlyDAO.CreateData(createSql); 
         }
 
         timer.Start();
@@ -76,20 +75,131 @@ public class ReadDataOnlyDAOShould
         
         // Assert
         Assert.True(readResponse.HasError == false);
-
         Assert.True(readResponse.Output.Count == numberOfRecords);
-        
         foreach (List<Object> readResponseData in readResponse.Output)
         {
             // Use the MySqlDataReader
             Assert.True(readResponseData[0].ToString() == readMockData);
-
         }
-
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
         deleteOnlyDAO.DeleteData(deleteSql);
     }
     
+    [Fact]
+    public void ReadDataOnlyDAOShould_ReturnNullIfNoRecordIsFoundInDataStore()
+    {
+        // Arrange: Set up before test execute
+        var timer = new Stopwatch();
+        var readOnlyDAO = new ReadDataOnlyDAO();
+
+        var table = "mockData";
+        var readCategory = "Read";
+
+        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
+
+        // Act
+        timer.Start();
+        var readResponse = readOnlyDAO.ReadData(readSql);
+        timer.Stop();
+        
+        // Assert
+        Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output == null);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
+    public void ReadDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
+    {
+        // Arrange: Set up before test execute
+        var timer = new Stopwatch();
+        var readOnlyDAO = new ReadDataOnlyDAO();
+
+        var table = "mockData";
+        var readCategory = "Read";
+
+        var readSql = $"SLECT MockData FROM {table} WHERE Category = '{readCategory}'";
+
+        // Act
+        timer.Start();
+        var readResponse = readOnlyDAO.ReadData(readSql);
+        timer.Stop();
+        
+        // Assert
+        Assert.True(readResponse.HasError == true);
+        Assert.Contains("You have an error in your SQL syntax", readResponse.ErrorMessage);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
+    public void ReadDataOnlyDAOShould_ThrowErrorOnEmptyInput()
+    {
+        // Arrange: Set up before test execute
+        var timer = new Stopwatch();
+        var readOnlyDAO = new ReadDataOnlyDAO();
+
+        var readSql = $"";
+
+        // Act
+        timer.Start();
+        var readResponse = readOnlyDAO.ReadData(readSql);
+        timer.Stop();
+        
+        // Assert
+        Assert.True(readResponse.HasError == true);
+        Assert.True(readResponse.ErrorMessage == "Empty Input");
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
+    public void ReadDataOnlyDAOShould_ThrowErrorOnInvalidCountInput()
+    {
+        // Arrange: Set up before test execute
+        var timer = new Stopwatch();
+        var readOnlyDAO = new ReadDataOnlyDAO();
+
+        var table = "mockData";
+        var readCategory = "Read";
+
+        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
+
+        var invalidCount = -1;
+
+        // Act
+        timer.Start();
+        var readResponse = readOnlyDAO.ReadData(readSql, invalidCount);
+        timer.Stop();
+        
+        // Assert
+        Assert.True(readResponse.HasError == true);
+        Assert.True(readResponse.ErrorMessage == "Invalid Count");
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
+    public void ReadDataOnlyDAOShould_ThrowErrorOnInvalidPageInput()
+    {
+        // Arrange: Set up before test execute
+        var timer = new Stopwatch();
+        var readOnlyDAO = new ReadDataOnlyDAO();
+
+        var table = "mockData";
+        var readCategory = "Read";
+
+        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
+
+        var invalidPage = -1;
+
+        // Act
+        timer.Start();
+        var readResponse = readOnlyDAO.ReadData(readSql, 0, invalidPage);
+        timer.Stop();
+        
+        // Assert
+        Assert.True(readResponse.HasError == true);
+        Assert.True(readResponse.ErrorMessage == "Invalid Page");
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
 }
