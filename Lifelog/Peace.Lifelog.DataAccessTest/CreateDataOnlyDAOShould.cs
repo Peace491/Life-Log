@@ -18,7 +18,6 @@ public class CreateDataOnlyDAOShould
         var table = "mockData";
         var createCategory = "Create";
         var createMockData = "Mock Data";
-        // Need to create table
 
         var insertSql =  $"INSERT INTO {table} VALUES ('{createCategory}', '{createMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{createCategory}'";
@@ -38,5 +37,49 @@ public class CreateDataOnlyDAOShould
 
         // Cleanup
         deleteOnlyDAO.DeleteData(deleteSql);
+    }
+
+    [Fact]
+    public void CreateDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
+    {
+        // Arrange
+        var timer = new Stopwatch();
+        var createOnlyDAO = new CreateDataOnlyDAO();
+
+        var table = "mockData";
+        var createCategory = "Create";
+        var createMockData = "Mock Data";
+
+        var incorrectInsertSql =  $"INSRT INTO {table} VALUES ('{createCategory}', '{createMockData}')";
+
+        // Act
+        timer.Start();
+        var createResponse = createOnlyDAO.CreateData(incorrectInsertSql);
+        timer.Stop();
+
+        // Assert
+        Assert.True(createResponse.HasError == true);
+        Assert.Contains("You have an error in your SQL syntax", createResponse.ErrorMessage);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
+    public void CreateDataOnlyDAOShould_ThrowErrorOnEmptyInput()
+    {
+        // Arrange
+        var timer = new Stopwatch();
+        var createOnlyDAO = new CreateDataOnlyDAO();
+
+        var insertSql =  "";
+
+        // Act
+        timer.Start();
+        var createResponse = createOnlyDAO.CreateData(insertSql);
+        timer.Stop();
+
+        // Assert
+        Assert.True(createResponse.HasError == true);
+        Assert.True(createResponse.ErrorMessage == "Empty Input");
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
     }
 }

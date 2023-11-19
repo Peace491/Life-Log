@@ -10,6 +10,13 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
     public Response DeleteData(string sql)
     {
         var response = new Response();
+
+        if (sql == "")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Empty Input";
+            return response;
+        }
         
         try 
         {
