@@ -9,13 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.DataAccessTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainModels", "DomainModels\DomainModels.csproj", "{07867BDD-77D1-4DEE-AB8F-7210C27FA36E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LogService", "Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj", "{A5126F41-E294-4E09-8F50-E1DD3EAEF698}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LogServiceTest", "Peace.Lifelog.LogServiceTest\Peace.Lifelog.LogServiceTest.csproj", "{FEE51A60-E2FB-45F8-9DEE-3989121A8706}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{833058D5-4BE0-4ED3-8B41-8A698D0A8A29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +31,16 @@ Global
 		{07867BDD-77D1-4DEE-AB8F-7210C27FA36E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07867BDD-77D1-4DEE-AB8F-7210C27FA36E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07867BDD-77D1-4DEE-AB8F-7210C27FA36E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5126F41-E294-4E09-8F50-E1DD3EAEF698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5126F41-E294-4E09-8F50-E1DD3EAEF698}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5126F41-E294-4E09-8F50-E1DD3EAEF698}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5126F41-E294-4E09-8F50-E1DD3EAEF698}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
