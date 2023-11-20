@@ -19,7 +19,7 @@ public class ReadDataOnlyDAOShould
         var readCategory = "Read";
         var readMockData = "Mock Data";
 
-        var createSql =  $"INSERT INTO {table} VALUES ('{readCategory}', '{readMockData}')";
+        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
 
@@ -59,7 +59,7 @@ public class ReadDataOnlyDAOShould
         var readMockData = "Mock Data";
         var numberOfRecords = 20;
 
-        var createSql =  $"INSERT INTO {table} VALUES ('{readCategory}', '{readMockData}')";
+        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
 

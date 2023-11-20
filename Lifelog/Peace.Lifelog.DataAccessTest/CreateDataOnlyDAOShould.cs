@@ -19,7 +19,7 @@ public class CreateDataOnlyDAOShould
         var createCategory = "Create";
         var createMockData = "Mock Data";
 
-        var insertSql =  $"INSERT INTO {table} VALUES ('{createCategory}', '{createMockData}')";
+        var insertSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{createCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{createCategory}'";
 
@@ -50,7 +50,7 @@ public class CreateDataOnlyDAOShould
         var createCategory = "Create";
         var createMockData = "Mock Data";
 
-        var incorrectInsertSql =  $"INSRT INTO {table} VALUES ('{createCategory}', '{createMockData}')";
+        var incorrectInsertSql =  $"INSRT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
 
         // Act
         timer.Start();

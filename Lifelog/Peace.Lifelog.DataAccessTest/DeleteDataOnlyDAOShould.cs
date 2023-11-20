@@ -19,7 +19,7 @@ public class DeleteDataOnlyDAOShould
         var deleteCategory = "Delete";
         var deleteMockData = "Mock Data";
     
-        var createSql =  $"INSERT INTO {table} VALUES ('{deleteCategory}', '{deleteMockData}')";
+        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
 
@@ -52,7 +52,7 @@ public class DeleteDataOnlyDAOShould
         var deleteMockData = "Mock Data";
         var numberOfRecords = 20;
     
-        var createSql =  $"INSERT INTO {table} VALUES ('{deleteCategory}', '{deleteMockData}')";
+        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
 

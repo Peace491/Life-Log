@@ -21,7 +21,7 @@ public class UpdateDataOnlyDAOShould
         var oldMockData = "Old Mock Data";
         var newMockData = "New Mock Data";
     
-        var createSql =  $"INSERT INTO {table} VALUES ('{updateCategory}', '{oldMockData}')";
+        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
         var readSql = $"SELECT {table} FROM {table} WHERE Category = '{updateCategory}'";
         var updateSql = $"UPDATE {table} SET MockData = '{newMockData}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
@@ -69,7 +69,7 @@ public class UpdateDataOnlyDAOShould
         var newMockData = "New Mock Data";
         var numberOfRecords = 20;
     
-        var createSql =  $"INSERT INTO {table} VALUES ('{updateCategory}', '{oldMockData}')";
+        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
         var readSql = $"SELECT {table} FROM {table} WHERE Category = '{updateCategory}'";
         var updateSql = $"UPDATE {table} SET MockData = '{newMockData}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
