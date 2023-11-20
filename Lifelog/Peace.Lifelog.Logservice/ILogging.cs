@@ -1,6 +1,10 @@
 namespace Peace.Lifelog.Logging;
 
+using DomainModels;
+
 public interface ILogging
 {
-    bool Log(string level, string category, string? message);
+    Response CreateLog(string level, string category, string? message);
+
+    Response ReadLog(string level, string category, string? message); // Consider changing name to ReadLogs
 }

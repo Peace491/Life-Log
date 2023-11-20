@@ -1,5 +1,7 @@
 namespace Peace.Lifelog.Logging;
 
+using DomainModels;
+
 public class Logging : ILogging
 {
     private readonly ILogRepo _logRepo;
@@ -7,9 +9,21 @@ public class Logging : ILogging
 
     // Not the best approach
     // Error
-    public bool Log(string level, string category, string? message)
+    public Response CreateLog(string level, string category, string? message)
     {
-        _logRepo.CreateLog(level, category, message);
-        return true;
+        // TODO: Business Logic Here
+
+        var logResponse = _logRepo.CreateLog(level, category, message);
+
+        return logResponse;
+    }
+
+    public Response ReadLog(string level, string category, string? message)
+    {
+        // TODO: Business Login Here
+
+        var readResponse = _logRepo.ReadLog(level, category, message);
+
+        return readResponse;
     }
 }
