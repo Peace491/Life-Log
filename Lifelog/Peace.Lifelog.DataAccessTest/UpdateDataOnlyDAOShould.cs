@@ -7,9 +7,30 @@ using System.Diagnostics;
 public class UpdateDataOnlyDAOShould
 {
     [Fact]
+    public void UpdateDataOnlyDAOShould_ConnectToTheDataStore()
+    {
+        // Arrange
+        var timer = new Stopwatch();
+        var updateOnlyDAO = new UpdateDataOnlyDAO();
+
+        // Act
+        timer.Start();
+        var dbConnection = updateOnlyDAO.ConnectToDb(); // Need to test for all behavior of string
+        dbConnection.Open();
+        timer.Stop();
+
+        var connectionState = dbConnection.State;
+        dbConnection.Close();
+
+        // Assert
+        Assert.True(connectionState == System.Data.ConnectionState.Open);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
     public void UpdateDataOnlyDAOShould_UpdateARecordInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
@@ -43,7 +64,6 @@ public class UpdateDataOnlyDAOShould
         Assert.True(originalReadResponse.Output != newReadResponse.Output);
         foreach (List<Object> newReadResponseData in newReadResponse.Output)
         {
-            // Use the MySqlDataReader
             Assert.True(newReadResponseData[0].ToString() == newMockData);
 
         }
@@ -56,7 +76,7 @@ public class UpdateDataOnlyDAOShould
     [Fact]
     public void UpdateDataOnlyDAOShould_UpdateMultipleRecordsInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
@@ -94,7 +114,6 @@ public class UpdateDataOnlyDAOShould
         Assert.True(originalReadResponse.Output != newReadResponse.Output);
         foreach (List<Object> newReadResponseData in newReadResponse.Output)
         {
-            // Use the MySqlDataReader
             Assert.True(newReadResponseData[0].ToString() == newMockData);
 
         }
@@ -107,7 +126,7 @@ public class UpdateDataOnlyDAOShould
     [Fact]
     public void UpdateDataOnlyDAOShould_ReturnNullIfNoRecordIsFoundInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         
@@ -115,7 +134,6 @@ public class UpdateDataOnlyDAOShould
         var updateMockData = "Mock Data";
     
         var updateSql = $"UPDATE {table} SET MockData = '{updateMockData}'";
-        
         
         // Act
         timer.Start();
@@ -130,7 +148,7 @@ public class UpdateDataOnlyDAOShould
     [Fact]
     public void UpdateDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         
@@ -138,7 +156,6 @@ public class UpdateDataOnlyDAOShould
         var updateMockData = "Mock Data";
     
         var incorrectUpdateSql = $"UDATE {table} SET MockData = '{updateMockData}'";
-        
         
         // Act
         timer.Start();
@@ -154,12 +171,11 @@ public class UpdateDataOnlyDAOShould
     [Fact]
     public void UpdateDataOnlyDAOShould_ThrowErrorOnEmptyInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var updateOnlyDAO = new UpdateDataOnlyDAO();
     
         var incorrectUpdateSql = $"";
-        
         
         // Act
         timer.Start();

@@ -7,6 +7,27 @@ using System.Diagnostics;
 public class CreateDataOnlyDAOShould
 {
     [Fact]
+    public void CreateDataOnlyDAOShould_ConnectToTheDataStore()
+    {
+        // Arrange
+        var timer = new Stopwatch();
+        var createOnlyDAO = new CreateDataOnlyDAO();
+
+        // Act
+        timer.Start();
+        var dbConnection = createOnlyDAO.ConnectToDb(); // Need to test for all behavior of string
+        dbConnection.Open();
+        timer.Stop();
+
+        var connectionState = dbConnection.State;
+        dbConnection.Close();
+
+        // Assert
+        Assert.True(connectionState == System.Data.ConnectionState.Open);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
     public void CreateDataOnlyDAOShould_CreateANewRecordInDataStore()
     {
         // Arrange

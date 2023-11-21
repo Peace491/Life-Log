@@ -7,9 +7,30 @@ using System.Diagnostics;
 public class DeleteDataOnlyDAOShould
 {
     [Fact]
+    public void DeleteDataOnlyDAOShould_ConnectToTheDataStore()
+    {
+        // Arrange
+        var timer = new Stopwatch();
+        var deleteOnlyDAO = new DeleteDataOnlyDAO();
+
+        // Act
+        timer.Start();
+        var dbConnection = deleteOnlyDAO.ConnectToDb(); // Need to test for all behavior of string
+        dbConnection.Open();
+        timer.Stop();
+
+        var connectionState = dbConnection.State;
+        dbConnection.Close();
+
+        // Assert
+        Assert.True(connectionState == System.Data.ConnectionState.Open);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
     public void DeleteDataOnlyDAOShould_DeleteARecordInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
@@ -41,7 +62,7 @@ public class DeleteDataOnlyDAOShould
     [Fact]
     public void DeleteDataOnlyDAOShould_DeleteMultipleRecordsInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
@@ -77,7 +98,7 @@ public class DeleteDataOnlyDAOShould
     [Fact]
     public void DeleteDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
         
@@ -101,7 +122,7 @@ public class DeleteDataOnlyDAOShould
     [Fact]
     public void DeleteDataOnlyDAOShould_ThrowErrorOnEmptyInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();        
     

@@ -7,9 +7,30 @@ using System.Diagnostics;
 public class ReadDataOnlyDAOShould
 {
     [Fact]
+    public void ReadDataOnlyDAOShould_ConnectToTheDataStore()
+    {
+        // Arrange
+        var timer = new Stopwatch();
+        var readOnlyDAO = new ReadDataOnlyDAO();
+
+        // Act
+        timer.Start();
+        var dbConnection = readOnlyDAO.ConnectToDb(); // Need to test for all behavior of string
+        dbConnection.Open();
+        timer.Stop();
+
+        var connectionState = dbConnection.State;
+        dbConnection.Close();
+
+        // Assert
+        Assert.True(connectionState == System.Data.ConnectionState.Open);
+        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    }
+
+    [Fact]
     public void ReadDataOnlyDAOShould_ReadSingleRecordInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
@@ -35,7 +56,6 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.Output.Count == 1);
         foreach (List<Object> readResponseData in readResponse.Output)
         {
-            // Use the MySqlDataReader
             Assert.True(readResponseData[0].ToString() == readMockData);
 
         }
@@ -48,7 +68,7 @@ public class ReadDataOnlyDAOShould
     [Fact]
     public void ReadDataOnlyDAOShould_ReadMultipleRecordsInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
@@ -78,7 +98,6 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.Output.Count == numberOfRecords);
         foreach (List<Object> readResponseData in readResponse.Output)
         {
-            // Use the MySqlDataReader
             Assert.True(readResponseData[0].ToString() == readMockData);
         }
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
@@ -90,7 +109,7 @@ public class ReadDataOnlyDAOShould
     [Fact]
     public void ReadDataOnlyDAOShould_ReturnNullIfNoRecordIsFoundInDataStore()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
@@ -136,7 +155,7 @@ public class ReadDataOnlyDAOShould
     [Fact]
     public void ReadDataOnlyDAOShould_ThrowErrorOnEmptyInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
@@ -156,7 +175,7 @@ public class ReadDataOnlyDAOShould
     [Fact]
     public void ReadDataOnlyDAOShould_ThrowErrorOnInvalidCountInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
@@ -181,7 +200,7 @@ public class ReadDataOnlyDAOShould
     [Fact]
     public void ReadDataOnlyDAOShould_ThrowErrorOnInvalidPageInput()
     {
-        // Arrange: Set up before test execute
+        // Arrange
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
