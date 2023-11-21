@@ -9,7 +9,6 @@ public class LogRepo : ILogRepo
     {
         //var createDataOnlyDAO = new CreateDataOnlyDAO();
 
-        DateTime timestamp = DateTime.UtcNow;
 
         string createLogSql = $"INSERT INTO Logs (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{level}', '{category}', '{message}')"; // Need to change date format
 

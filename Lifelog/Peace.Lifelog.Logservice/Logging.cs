@@ -13,6 +13,8 @@ public class Logging : ILogging
     public Response CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
     {
         // TODO: Business Logic Here
+        // level is debug, succes, erorr etc
+        //message is str
 
         var logResponse = _logRepo.CreateLog(createOnlyDAO, level, category, message);
 
