@@ -7,6 +7,11 @@ using MySql.Data.MySqlClient;
 public class ReadDataOnlyDAO : IReadDataOnlyDAO {
     private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = ReadUser; Password = password;";
 
+    public MySqlConnection ConnectToDb()
+    {
+        return new MySqlConnection(connectionString);
+    }
+
     public Response ReadData(string sql, int count = 10, int currentPage = 0) 
     {
         var response = new Response();
@@ -35,42 +40,43 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
         
         try 
         {
-            using(var connection = new MySqlConnection(connectionString))
+            var connection = ConnectToDb();
+            
+            connection.Open();
+            
+            using (var command = new MySqlCommand())
             {
-                connection.Open();
-                
-                using (var command = new MySqlCommand())
+                // Set the connection for the command
+                command.Connection = connection;
+
+                // Define the SQL command
+                command.CommandText = sql + $" LIMIT {count} OFFSET {count * currentPage}";
+
+                // Execute the SQL command
+                var dbResponse = command.ExecuteReader();
+
+
+                while (dbResponse.Read())
                 {
-                    // Set the connection for the command
-                    command.Connection = connection;
-
-                    // Define the SQL command
-                    command.CommandText = sql + $" LIMIT {count} OFFSET {count * currentPage}";
-
-                    // Execute the SQL command
-                    var dbResponse = command.ExecuteReader();
-
-
-                    while (dbResponse.Read())
+                    if (response.Output == null)
                     {
-                        if (response.Output == null)
-                        {
-                            response.Output = new List<Object>();
-                        }
-                        
-                        List<object> row = new List<object>();
-
-                        for (int i = 0; i < dbResponse.FieldCount; i++)
-                        {
-                            row.Add(dbResponse[i]);
-                        }
-
-                        response.Output.Add(row);
-                        
+                        response.Output = new List<Object>();
                     }
+                    
+                    List<object> row = new List<object>();
+
+                    for (int i = 0; i < dbResponse.FieldCount; i++)
+                    {
+                        row.Add(dbResponse[i]);
+                    }
+
+                    response.Output.Add(row);
+                    
                 }
             }
 
+            connection.Close();
+            
             response.HasError = false;
 
         } 

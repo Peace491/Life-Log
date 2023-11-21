@@ -7,6 +7,11 @@ using MySql.Data.MySqlClient;
 public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
     private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = CreateUser; Password = password;";
 
+    public MySqlConnection ConnectToDb()
+    {
+        return new MySqlConnection(connectionString);
+    }
+
     public Response CreateData(string sql) 
     {
         var response = new Response();
@@ -20,24 +25,26 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
         
         try 
         {
-            using(var connection = new MySqlConnection(connectionString))
+            var connection = ConnectToDb();
+
+            connection.Open();
+            
+            using (var command = new MySqlCommand())
             {
-                connection.Open();
-                
-                using (var command = new MySqlCommand())
-                {
-                    // Set the connection for the command
-                    command.Connection = connection;
+                // Set the connection for the command
+                command.Connection = connection;
 
-                    // Define the SQL command
-                    command.CommandText = sql;
+                // Define the SQL command
+                command.CommandText = sql;
 
-                    // Execute the SQL command
-                    var dbResponse = command.ExecuteNonQuery();
+                // Execute the SQL command
+                var dbResponse = command.ExecuteNonQuery();
 
-                    response.Output = [dbResponse];
-                }
+                response.Output = [dbResponse];
             }
+
+            connection.Close();
+
 
             response.HasError = false;
 
