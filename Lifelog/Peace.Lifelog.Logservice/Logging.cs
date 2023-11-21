@@ -1,6 +1,7 @@
 namespace Peace.Lifelog.Logging;
 
 using DomainModels;
+using Peace.Lifelog.DataAccess;
 
 public class Logging : ILogging
 {
@@ -9,20 +10,20 @@ public class Logging : ILogging
 
     // Not the best approach
     // Error
-    public Response CreateLog(string level, string category, string? message)
+    public Response CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
     {
         // TODO: Business Logic Here
 
-        var logResponse = _logRepo.CreateLog(level, category, message);
+        var logResponse = _logRepo.CreateLog(createOnlyDAO, level, category, message);
 
         return logResponse;
     }
 
-    public Response ReadLog(string level, string category, string? message)
+    public Response ReadLog(ReadDataOnlyDAO readOnlyDAO, string level, string category, string? message)
     {
         // TODO: Business Login Here
 
-        var readResponse = _logRepo.ReadLog(level, category, message);
+        var readResponse = _logRepo.ReadLog(readOnlyDAO, level, category, message);
 
         return readResponse;
     }

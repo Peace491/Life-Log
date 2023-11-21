@@ -5,23 +5,23 @@ using DomainModels;
 
 public class LogRepo : ILogRepo
 {
-    public Response CreateLog(string level, string category, string? message)
+    public Response CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
     {
+        //var createDataOnlyDAO = new CreateDataOnlyDAO();
 
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        DateTime timestamp = DateTime.UtcNow;
 
-        string createLogSql = $"INSERT INTO Logs VALUES (NOW(), '{level}', '{category}', '{message}')"; // Need to change date format
+        string createLogSql = $"INSERT INTO Logs (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{level}', '{category}', '{message}')"; // Need to change date format
 
-        var createLogResponse = createDataOnlyDAO.CreateData(createLogSql); // insert sql statement to insert into log table.
-         // above statement is taking the passed info + timestamp 
+        var createLogResponse = createOnlyDAO.CreateData(createLogSql); // insert sql statement to insert into log table.
 
         return createLogResponse;
     }
 
     // Might wanna write seperate ReadLog functions based on your search criteria
-    public Response ReadLog(string level = "", string category = "", string? message = "")
+    // Agreed, separating could be addressed once its a more significant concern (while doing usage dashboard.)
+    public Response ReadLog(ReadDataOnlyDAO readOnlyDAO, string level = "", string category = "", string? message = "")
     {
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
 
         // If an input is left blank, disregard it in the WHERE Clause of the sql statement by setting it to != ''
         string levelInput = level == "" ? "LogLevel != ''" : $"LogLevel = '{level}'";
@@ -30,14 +30,14 @@ public class LogRepo : ILogRepo
 
         string readLogSql = $"SELECT * FROM Logs WHERE {levelInput} AND {categoryInput} AND {messageInput}";
 
-        var readLogResponse = readDataOnlyDAO.ReadData(readLogSql);
+        var readLogResponse = readOnlyDAO.ReadData(readLogSql);
 
         return readLogResponse;
     }
 
-     public Response DeleteLog(string level = "", string category = "", string? message = "")
+     public Response DeleteLog(DeleteDataOnlyDAO deleteOnlyDAO, string level = "", string category = "", string? message = "")
     {
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        // var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         // If an input is left blank, disregard it in the WHERE Clause of the sql statement by setting it to != ''
         string levelInput = level == "" ? "LogLevel != ''" : $"LogLevel = '{level}'";
@@ -46,7 +46,7 @@ public class LogRepo : ILogRepo
 
         string deleteLogSql = $"DELETE FROM Logs WHERE {levelInput} AND {categoryInput} AND {messageInput}";
 
-        var deleteLogResponse = deleteDataOnlyDAO.DeleteData(deleteLogSql);
+        var deleteLogResponse = deleteOnlyDAO.DeleteData(deleteLogSql);
 
         return deleteLogResponse;
     }
