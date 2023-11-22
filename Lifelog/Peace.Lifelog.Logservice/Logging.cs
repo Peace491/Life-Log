@@ -30,19 +30,29 @@ public class Logging : ILogging
             "Data",
             "Persistent Data Store"
         };
+        var response = new Response();
 
         if (!validLogLevels.Contains(level))
         {
+            response.HasError = true;
+            response.ErrorMessage = $"'{level} is an invalid Log Level";
+            return response;
             // TODO invalid level response object return ehre
         }
         if (!validLogCategories.Contains(category))
         {
+            response.HasError = true;
+            response.ErrorMessage = $"'{category}' is an invalid Log Category";
+            return response;
             // TODO invalid category response object return here
         }
-        if (message != null) // Nested if is ugly
+        if (message != null) 
         {
             if (message.Length > MAXIMUMMESSAGELENGTH) 
             {
+                response.HasError = true;
+                response.ErrorMessage = $"'{message.Length}' is too long for a Log Message";
+                return response;
                 // TODO invalid message response object return here
             }
         }  

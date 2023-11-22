@@ -13,7 +13,11 @@ public class LoggingShould
     [Fact]
     public void LoggingShould_CreateAnInfoLog()
     {
-        // TODO implement
+        // Arrange
+
+        // Act
+
+        // Assert
     }
     [Fact]
     public void LoggingShould_CreateADebugLog()
