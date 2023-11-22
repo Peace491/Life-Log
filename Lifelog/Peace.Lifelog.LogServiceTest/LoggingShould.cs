@@ -395,10 +395,10 @@ public class LoggingShould
         // Act
         timer.Start();
         var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, persistentDataStoreLogCategory, testLogMessage);
-        var readSql = $"SELECT * from Logs WHERE LogId='{createLogResponse.LogId}'";
+        var readSql = $"SELECT * from Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.LogId}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < 3001);

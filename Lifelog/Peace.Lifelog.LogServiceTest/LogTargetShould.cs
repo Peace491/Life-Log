@@ -6,7 +6,7 @@ using Peace.Lifelog.Logging;
 
 using System.Diagnostics;
 
-public class LogRepoShould
+public class LogTargetShould
 {
     [Fact]
     public async void LogTargetShould_CreateALogInDataStore()
@@ -32,8 +32,8 @@ public class LogRepoShould
         var createSecondLogResponse = await logTarget.WriteLog(createOnlyDAO, testLogLevel, testLogCategory, testLogMessage);
         var finalReadResponse = await readOnlyDAO.ReadData(logCountSql);
 
-        var deleteFirstSql = $"DELETE FROM Logs Where '{createFirstLogResponse.LogId}";
-        var deleteSecondSql = $"DELETE FROM Logs Where '{createSecondLogResponse.LogId}";
+        var deleteFirstSql = $"DELETE FROM Logs Where LogId={createFirstLogResponse.Output.ElementAt(0)}";
+        var deleteSecondSql = $"DELETE FROM Logs Where LogId={createSecondLogResponse.Output.ElementAt(0)}";
 
         // Assert
         Assert.True(initialReadResponse.HasError == false);
