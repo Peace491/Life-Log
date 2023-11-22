@@ -1,13 +1,14 @@
 namespace Peace.Lifelog.DataAccessTest;
 
 using Peace.Lifelog.DataAccess;
-
 using DomainModels;
-
 using System.Diagnostics;
 
 public class DeleteDataOnlyDAOShould
 {
+    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
+    private const int DEFAULT_NUMBER_OF_RECORDS = 20;
+
     [Fact]
     public async void DeleteDataOnlyDAOShould_ConnectToTheDataStore()
     {
@@ -26,7 +27,7 @@ public class DeleteDataOnlyDAOShould
 
         // Assert
         Assert.True(connectionState == System.Data.ConnectionState.Open);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
     }
 
     [Fact]
@@ -37,12 +38,12 @@ public class DeleteDataOnlyDAOShould
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
-        
+
         var table = "mockData";
         var deleteCategory = "Delete";
         var deleteMockData = "Mock Data";
-    
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
+
+        var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
 
@@ -56,7 +57,7 @@ public class DeleteDataOnlyDAOShould
 
         // Assert
         Assert.True(deleteResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(readResponse.HasError == false);
         Assert.True(readResponse.Output == null);
 
@@ -75,21 +76,20 @@ public class DeleteDataOnlyDAOShould
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
-        
+
         var table = "mockData";
         var deleteCategory = "Delete";
         var deleteMockData = "Mock Data";
-        var numberOfRecords = 20;
-    
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
+
+        var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
 
         // Act
         List<Response> createResponses = new List<Response>();
-        for (int i = 0; i < numberOfRecords; i++)
+        for (int i = 0; i < DEFAULT_NUMBER_OF_RECORDS; i++)
         {
-            var createResponse = await createOnlyDAO.CreateData(createSql); 
+            var createResponse = await createOnlyDAO.CreateData(createSql);
             createResponses.Add(createResponse);
         }
 
@@ -100,7 +100,7 @@ public class DeleteDataOnlyDAOShould
 
         // Assert
         Assert.True(deleteResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(readResponse.HasError == false);
         Assert.True(readResponse.Output == null);
 
@@ -120,11 +120,10 @@ public class DeleteDataOnlyDAOShould
         // Arrange
         var timer = new Stopwatch();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
-        
+
         var table = "mockData";
         var deleteCategory = "Delete";
-        
-    
+
         var deleteSql = $"DLETE FROM {table} WHERE Category = '{deleteCategory}'";
 
         // Act
@@ -135,7 +134,7 @@ public class DeleteDataOnlyDAOShould
         // Assert
         Assert.True(deleteResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", deleteResponse.ErrorMessage);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -147,8 +146,8 @@ public class DeleteDataOnlyDAOShould
     {
         // Arrange
         var timer = new Stopwatch();
-        var deleteOnlyDAO = new DeleteDataOnlyDAO();        
-    
+        var deleteOnlyDAO = new DeleteDataOnlyDAO();
+
         var deleteSql = $"";
 
         // Act
@@ -159,7 +158,7 @@ public class DeleteDataOnlyDAOShould
         // Assert
         Assert.True(deleteResponse.HasError == true);
         Assert.True(deleteResponse.ErrorMessage == "Empty Input");
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();

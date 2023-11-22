@@ -7,6 +7,11 @@ using System.Diagnostics;
 
 public class ReadDataOnlyDAOShould
 {
+    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
+    private const int DEFAULT_RECORD_COUNT = 1;
+    private const int DEFAULT_PAGE_NUMBER = 0;
+    private const int DEFAULT_NUMBER_OF_RECORDS = 20;
+
     [Fact]
     public async void ReadDataOnlyDAOShould_ConnectToTheDataStore()
     {
@@ -25,7 +30,7 @@ public class ReadDataOnlyDAOShould
 
         // Assert
         Assert.True(connectionState == System.Data.ConnectionState.Open);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
     }
 
     [Fact]
@@ -49,17 +54,17 @@ public class ReadDataOnlyDAOShould
         var createResponse = await createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
 
         timer.Start();
-        var readResponse = await readOnlyDAO.ReadData(readSql, 1); // Issue might be because create Response is not finished
+        var readResponse = await readOnlyDAO.ReadData(readSql, DEFAULT_RECORD_COUNT); // Issue might be because create Response is not finished
         timer.Stop();
         
         // Assert
         Assert.True(readResponse.HasError == false);
-        Assert.True(readResponse.Output.Count == 1);
+        Assert.True(readResponse.Output.Count == DEFAULT_RECORD_COUNT);
         foreach (List<Object> readResponseData in readResponse.Output)
         {
             Assert.True(readResponseData[0].ToString() == readMockData);
         }
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
@@ -82,7 +87,6 @@ public class ReadDataOnlyDAOShould
         var table = "mockData";
         var readCategory = "Read Multiple";
         var readMockData = "Mock Data";
-        var numberOfRecords = 20;
 
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
@@ -91,24 +95,24 @@ public class ReadDataOnlyDAOShould
         List<Response> createResponses = new List<Response>();
 
         // Act
-        for (int i = 0; i < numberOfRecords; i++)
+        for (int i = 0; i < DEFAULT_NUMBER_OF_RECORDS; i++)
         {
             var createResponse = await createOnlyDAO.CreateData(createSql); 
             createResponses.Add(createResponse);
         }
 
         timer.Start();
-        var readResponse = await readOnlyDAO.ReadData(readSql, numberOfRecords, 0);
+        var readResponse = await readOnlyDAO.ReadData(readSql, DEFAULT_NUMBER_OF_RECORDS, DEFAULT_PAGE_NUMBER);
         timer.Stop();
         
         // Assert
         Assert.True(readResponse.HasError == false);
-        Assert.True(readResponse.Output.Count == numberOfRecords);
+        Assert.True(readResponse.Output.Count == DEFAULT_NUMBER_OF_RECORDS);
         foreach (List<Object> readResponseData in readResponse.Output)
         {
             Assert.True(readResponseData[0].ToString() == readMockData);
         }
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
@@ -125,6 +129,8 @@ public class ReadDataOnlyDAOShould
         await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
     
+        // ... (previous methods)
+
     [Fact]
     public async void ReadDataOnlyDAOShould_ReturnNullIfNoRecordIsFoundInDataStore()
     {
@@ -145,7 +151,7 @@ public class ReadDataOnlyDAOShould
         // Assert
         Assert.True(readResponse.HasError == false);
         Assert.True(readResponse.Output == null);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -172,7 +178,7 @@ public class ReadDataOnlyDAOShould
         // Assert
         Assert.True(readResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", readResponse.ErrorMessage);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -196,7 +202,7 @@ public class ReadDataOnlyDAOShould
         // Assert
         Assert.True(readResponse.HasError == true);
         Assert.True(readResponse.ErrorMessage == "Empty Input");
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -225,7 +231,7 @@ public class ReadDataOnlyDAOShould
         // Assert
         Assert.True(readResponse.HasError == true);
         Assert.True(readResponse.ErrorMessage == "Invalid Count");
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -248,16 +254,17 @@ public class ReadDataOnlyDAOShould
 
         // Act
         timer.Start(); 
-        var readResponse = await readOnlyDAO.ReadData(readSql, 1, invalidPage);
+        var readResponse = await readOnlyDAO.ReadData(readSql, DEFAULT_RECORD_COUNT, invalidPage);
         timer.Stop();
         
         // Assert
         Assert.True(readResponse.HasError == true);
         Assert.True(readResponse.ErrorMessage == "Invalid Page");
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
         await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
+
 }

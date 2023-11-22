@@ -6,6 +6,8 @@ using System.Diagnostics;
 
 public class CreateDataOnlyDAOShould
 {
+    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
+
     [Fact]
     public async void CreateDataOnlyDAOShould_ConnectToTheDataStore()
     {
@@ -24,7 +26,7 @@ public class CreateDataOnlyDAOShould
 
         // Assert
         Assert.True(connectionState == System.Data.ConnectionState.Open);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
     }
 
     [Fact]
@@ -53,7 +55,7 @@ public class CreateDataOnlyDAOShould
 
         // Assert
         Assert.True(createResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(readResponse.HasError == false);
 
         // Cleanup
@@ -86,12 +88,11 @@ public class CreateDataOnlyDAOShould
         // Assert
         Assert.True(createResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", createResponse.ErrorMessage);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
         await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
-    
     }
 
     [Fact]
@@ -111,8 +112,9 @@ public class CreateDataOnlyDAOShould
         // Assert
         Assert.True(createResponse.HasError == true);
         Assert.True(createResponse.ErrorMessage == "Empty Input");
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
+        // Cleanup
         var logTransaction = new LogTransaction();
         await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
     }

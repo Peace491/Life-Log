@@ -1,13 +1,14 @@
 namespace Peace.Lifelog.DataAccessTest;
 
 using Peace.Lifelog.DataAccess;
-
 using DomainModels;
-
 using System.Diagnostics;
 
 public class UpdateDataOnlyDAOShould
 {
+    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
+    private const int DEFAULT_NUMBER_OF_RECORDS = 20;
+    
     [Fact]
     public async void UpdateDataOnlyDAOShould_ConnectToTheDataStore()
     {
@@ -26,7 +27,7 @@ public class UpdateDataOnlyDAOShould
 
         // Assert
         Assert.True(connectionState == System.Data.ConnectionState.Open);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
     }
 
     [Fact]
@@ -49,7 +50,6 @@ public class UpdateDataOnlyDAOShould
         var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
         
-        
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);
 
@@ -67,9 +67,8 @@ public class UpdateDataOnlyDAOShould
         foreach (List<Object> newReadResponseData in newReadResponse.Output)
         {
             Assert.True(newReadResponseData[0].ToString() == newMockData);
-
         }
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
@@ -96,7 +95,6 @@ public class UpdateDataOnlyDAOShould
         var updateCategory = "Update";
         var oldMockData = "Old Mock Data";
         var newMockData = "New Mock Data";
-        var numberOfRecords = 20;
     
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
         var readSql = $"SELECT {table} FROM {table} WHERE Category = '{updateCategory}'";
@@ -105,7 +103,7 @@ public class UpdateDataOnlyDAOShould
         
         // Act
         List<Response> createResponses = new List<Response>();
-        for (int i = 0; i < numberOfRecords; i++)
+        for (int i = 0; i < DEFAULT_NUMBER_OF_RECORDS; i++)
         {
             var createResponse = await createOnlyDAO.CreateData(createSql); 
             createResponses.Add(createResponse);
@@ -125,9 +123,8 @@ public class UpdateDataOnlyDAOShould
         foreach (List<Object> newReadResponseData in newReadResponse.Output)
         {
             Assert.True(newReadResponseData[0].ToString() == newMockData);
-
         }
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
@@ -162,7 +159,7 @@ public class UpdateDataOnlyDAOShould
 
         // Assert
         Assert.True(updateResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -189,7 +186,7 @@ public class UpdateDataOnlyDAOShould
         // Assert
         Assert.True(updateResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", updateResponse.ErrorMessage);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
@@ -213,11 +210,10 @@ public class UpdateDataOnlyDAOShould
         // Assert
         Assert.True(updateResponse.HasError == true);
         Assert.True(updateResponse.ErrorMessage == "Empty Input");
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
         var logTransaction = new LogTransaction();
         await logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
     }
-
 }
