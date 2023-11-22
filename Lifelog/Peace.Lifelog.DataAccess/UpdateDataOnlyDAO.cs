@@ -12,7 +12,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
         return new MySqlConnection(connectionString);
     }
 
-    public Response UpdateData(string sql) 
+    public async Task<Response> UpdateData(string sql) 
     {
         var response = new Response();
 
@@ -25,7 +25,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data input is empty");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             return response;
         }
@@ -36,7 +36,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
             
             connection.Open();
             
-            using (var command = new MySqlCommand())
+            await using (var command = new MySqlCommand())
             {
                 // Set the connection for the command
                 command.Connection = connection;
@@ -56,7 +56,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)
@@ -66,7 +66,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data is unsuccessful");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
         }
 
         return response;

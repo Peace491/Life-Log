@@ -6,7 +6,7 @@ using MySql.Data.MySqlClient;
 
 public class LogTransaction : ILogTransaction
 {
-    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = LogTransactionUser; Password = password;";
+    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = LogTransUser; Password = password;";
 
     public MySqlConnection ConnectToDb()
     {
@@ -37,7 +37,7 @@ public class LogTransaction : ILogTransaction
 
                 response.Output = [dbResponse];
 
-                response.logId = command.LastInsertedId;
+                response.LogId = command.LastInsertedId;
             }
 
             connection.Close();
@@ -78,7 +78,7 @@ public class LogTransaction : ILogTransaction
 
                 response.Output = [dbResponse];
 
-                response.logId = command.LastInsertedId;
+                response.LogId = command.LastInsertedId;
             }
 
             connection.Close();

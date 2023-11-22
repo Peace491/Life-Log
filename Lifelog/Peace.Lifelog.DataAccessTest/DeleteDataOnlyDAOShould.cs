@@ -9,7 +9,7 @@ using System.Diagnostics;
 public class DeleteDataOnlyDAOShould
 {
     [Fact]
-    public void DeleteDataOnlyDAOShould_ConnectToTheDataStore()
+    public async void DeleteDataOnlyDAOShould_ConnectToTheDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -30,7 +30,7 @@ public class DeleteDataOnlyDAOShould
     }
 
     [Fact]
-    public void DeleteDataOnlyDAOShould_DeleteARecordInDataStore()
+    public async void DeleteDataOnlyDAOShould_DeleteARecordInDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -47,12 +47,12 @@ public class DeleteDataOnlyDAOShould
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
 
         // Act
-        var createResponse = createOnlyDAO.CreateData(createSql);
+        var createResponse = await createOnlyDAO.CreateData(createSql);
 
         timer.Start();
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
         timer.Stop();
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = await readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(deleteResponse.HasError == false);
@@ -62,13 +62,13 @@ public class DeleteDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
-    public void DeleteDataOnlyDAOShould_DeleteMultipleRecordsInDataStore()
+    public async void DeleteDataOnlyDAOShould_DeleteMultipleRecordsInDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -89,14 +89,14 @@ public class DeleteDataOnlyDAOShould
         List<Response> createResponses = new List<Response>();
         for (int i = 0; i < numberOfRecords; i++)
         {
-            var createResponse = createOnlyDAO.CreateData(createSql); 
-            createResponses.Append(createResponse);
+            var createResponse = await createOnlyDAO.CreateData(createSql); 
+            createResponses.Add(createResponse);
         }
 
         timer.Start();
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
         timer.Stop();
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = await readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(deleteResponse.HasError == false);
@@ -108,14 +108,14 @@ public class DeleteDataOnlyDAOShould
         var logTransaction = new LogTransaction();
         foreach (Response createResponse in createResponses)
         {
-            logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+            logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
         }
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
-    public void DeleteDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
+    public async void DeleteDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -129,7 +129,7 @@ public class DeleteDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
         timer.Stop();
 
         // Assert
@@ -139,11 +139,11 @@ public class DeleteDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
-    public void DeleteDataOnlyDAOShould_ThrowErrorOnEmptyInput()
+    public async void DeleteDataOnlyDAOShould_ThrowErrorOnEmptyInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -153,7 +153,7 @@ public class DeleteDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
         timer.Stop();
 
         // Assert
@@ -163,6 +163,6 @@ public class DeleteDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 }

@@ -12,7 +12,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
         return new MySqlConnection(connectionString);
     }
 
-    public Response ReadData(string sql, int count = 10, int currentPage = 0) 
+    public async Task<Response> ReadData(string sql, int count = 10, int currentPage = 0) 
     {
         var response = new Response();
 
@@ -25,7 +25,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data input is empty");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             return response;
         }
@@ -37,7 +37,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data count input is invalid");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             return response;
         }
@@ -49,7 +49,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data currentPage input is invalid");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             return response;
         }
@@ -61,7 +61,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
             
             connection.Open();
             
-            using (var command = new MySqlCommand())
+            await using (var command = new MySqlCommand())
             {
                 // Set the connection for the command
                 command.Connection = connection;
@@ -97,7 +97,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Read Data is successful");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)
@@ -107,7 +107,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data is unsuccessful");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
         }
 
         return response;

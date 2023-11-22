@@ -6,5 +6,5 @@ using MySql.Data.MySqlClient;
 
 public interface IDeleteDataOnlyDAO {
     MySqlConnection ConnectToDb();
-    Response DeleteData(string sql);
+    Task<Response> DeleteData(string sql);
 }

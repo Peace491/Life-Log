@@ -12,7 +12,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
         return new MySqlConnection(connectionString);
     }
 
-    public Response CreateData(string sql) 
+    public async Task<Response> CreateData(string sql) 
     {
         var response = new Response();
 
@@ -25,7 +25,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Create Data input is empty");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             return response;
         }
@@ -36,7 +36,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
 
             connection.Open();
             
-            using (var command = new MySqlCommand())
+            await using (var command = new MySqlCommand())
             {
                 // Set the connection for the command
                 command.Connection = connection;
@@ -54,7 +54,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Data Create is successful");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             response.HasError = false;
 
@@ -66,7 +66,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Data Create failed");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
         }
 
         return response;

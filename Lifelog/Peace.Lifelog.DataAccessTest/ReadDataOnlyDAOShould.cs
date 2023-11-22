@@ -8,7 +8,7 @@ using System.Diagnostics;
 public class ReadDataOnlyDAOShould
 {
     [Fact]
-    public void ReadDataOnlyDAOShould_ConnectToTheDataStore()
+    public async void ReadDataOnlyDAOShould_ConnectToTheDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -29,7 +29,7 @@ public class ReadDataOnlyDAOShould
     }
 
     [Fact]
-    public void ReadDataOnlyDAOShould_ReadSingleRecordInDataStore()
+    public async void ReadDataOnlyDAOShould_ReadSingleRecordInDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -38,7 +38,7 @@ public class ReadDataOnlyDAOShould
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
         var table = "mockData";
-        var readCategory = "Read";
+        var readCategory = "Read Single";
         var readMockData = "Mock Data";
 
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
@@ -46,10 +46,10 @@ public class ReadDataOnlyDAOShould
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
 
         // Act
-        var createResponse = createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
+        var createResponse = await createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
 
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql, 1);
+        var readResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
         
         // Assert
@@ -63,16 +63,16 @@ public class ReadDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
 
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
-    public void ReadDataOnlyDAOShould_ReadMultipleRecordsInDataStore()
+    public async void ReadDataOnlyDAOShould_ReadMultipleRecordsInDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -81,7 +81,7 @@ public class ReadDataOnlyDAOShould
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
         var table = "mockData";
-        var readCategory = "Read";
+        var readCategory = "Read Multiple";
         var readMockData = "Mock Data";
         var numberOfRecords = 20;
 
@@ -94,12 +94,12 @@ public class ReadDataOnlyDAOShould
         // Act
         for (int i = 0; i < numberOfRecords; i++)
         {
-            var createResponse = createOnlyDAO.CreateData(createSql); 
-            createResponses.Append(createResponse);
+            var createResponse = await createOnlyDAO.CreateData(createSql); 
+            createResponses.Add(createResponse);
         }
 
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql, numberOfRecords, 0);
+        var readResponse = await readOnlyDAO.ReadData(readSql, numberOfRecords, 0);
         timer.Stop();
         
         // Assert
@@ -112,35 +112,35 @@ public class ReadDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
 
         var logTransaction = new LogTransaction();
 
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
 
         foreach (Response createResponse in createResponses)
         {
-            logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+            logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
         }
 
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
     
     [Fact]
-    public void ReadDataOnlyDAOShould_ReturnNullIfNoRecordIsFoundInDataStore()
+    public async void ReadDataOnlyDAOShould_ReturnNullIfNoRecordIsFoundInDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
         var table = "mockData";
-        var readCategory = "Read";
+        var readCategory = "Read Null";
 
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
 
         // Act
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = await readOnlyDAO.ReadData(readSql);
         timer.Stop();
         
         // Assert
@@ -150,11 +150,11 @@ public class ReadDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
-    public void ReadDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
+    public async void ReadDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
     {
         // Arrange: Set up before test execute
         var timer = new Stopwatch();
@@ -167,7 +167,7 @@ public class ReadDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = await readOnlyDAO.ReadData(readSql);
         timer.Stop();
         
         // Assert
@@ -177,11 +177,11 @@ public class ReadDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
-    public void ReadDataOnlyDAOShould_ThrowErrorOnEmptyInput()
+    public async void ReadDataOnlyDAOShould_ThrowErrorOnEmptyInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -191,7 +191,7 @@ public class ReadDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = await readOnlyDAO.ReadData(readSql);
         timer.Stop();
         
         // Assert
@@ -201,11 +201,11 @@ public class ReadDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
-    public void ReadDataOnlyDAOShould_ThrowErrorOnInvalidCountInput()
+    public async void ReadDataOnlyDAOShould_ThrowErrorOnInvalidCountInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -220,7 +220,7 @@ public class ReadDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql, invalidCount);
+        var readResponse = await readOnlyDAO.ReadData(readSql, invalidCount);
         timer.Stop();
         
         // Assert
@@ -230,11 +230,11 @@ public class ReadDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
-    public void ReadDataOnlyDAOShould_ThrowErrorOnInvalidPageInput()
+    public async void ReadDataOnlyDAOShould_ThrowErrorOnInvalidPageInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -248,8 +248,8 @@ public class ReadDataOnlyDAOShould
         var invalidPage = -1;
 
         // Act
-        timer.Start();
-        var readResponse = readOnlyDAO.ReadData(readSql, 0, invalidPage);
+        timer.Start(); 
+        var readResponse = await readOnlyDAO.ReadData(readSql, 1, invalidPage);
         timer.Stop();
         
         // Assert
@@ -259,6 +259,6 @@ public class ReadDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 }

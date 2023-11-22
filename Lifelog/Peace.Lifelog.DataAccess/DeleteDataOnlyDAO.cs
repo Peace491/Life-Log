@@ -12,7 +12,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
         return new MySqlConnection(connectionString);
     }
 
-    public Response DeleteData(string sql)
+    public async Task<Response> DeleteData(string sql)
     {
         var response = new Response();
 
@@ -25,7 +25,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Delete Data count input is empty");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
             return response;
         }
@@ -56,7 +56,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Successful");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)
@@ -66,7 +66,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
 
             var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Failed");
 
-            response.logId = logTransactionResponse.logId;
+            response.LogId = logTransactionResponse.LogId;
         }
 
         return response;

@@ -6,5 +6,5 @@ using MySql.Data.MySqlClient;
 
 public interface IUpdateDataOnlyDAO {
     MySqlConnection ConnectToDb();
-    Response UpdateData(string sql);
+    Task<Response> UpdateData(string sql);
 }

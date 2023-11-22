@@ -7,7 +7,7 @@ using System.Diagnostics;
 public class CreateDataOnlyDAOShould
 {
     [Fact]
-    public void CreateDataOnlyDAOShould_ConnectToTheDataStore()
+    public async void CreateDataOnlyDAOShould_ConnectToTheDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -28,7 +28,7 @@ public class CreateDataOnlyDAOShould
     }
 
     [Fact]
-    public void CreateDataOnlyDAOShould_CreateANewRecordInDataStore()
+    public async void CreateDataOnlyDAOShould_CreateANewRecordInDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -46,10 +46,10 @@ public class CreateDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var createResponse = createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
+        var createResponse = await createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
         timer.Stop();
 
-        var readResponse = readOnlyDAO.ReadData(readDataSql);
+        var readResponse = await readOnlyDAO.ReadData(readDataSql);
 
         // Assert
         Assert.True(createResponse.HasError == false);
@@ -57,16 +57,16 @@ public class CreateDataOnlyDAOShould
         Assert.True(readResponse.HasError == false);
 
         // Cleanup
-        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
 
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
-    public void CreateDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
+    public async void CreateDataOnlyDAOShould_ThrowErrorOnIncorrectSQLInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -80,7 +80,7 @@ public class CreateDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var createResponse = createOnlyDAO.CreateData(incorrectInsertSql);
+        var createResponse = await createOnlyDAO.CreateData(incorrectInsertSql);
         timer.Stop();
 
         // Assert
@@ -90,12 +90,12 @@ public class CreateDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
     
     }
 
     [Fact]
-    public void CreateDataOnlyDAOShould_ThrowErrorOnEmptyInput()
+    public async void CreateDataOnlyDAOShould_ThrowErrorOnEmptyInput()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -105,7 +105,7 @@ public class CreateDataOnlyDAOShould
 
         // Act
         timer.Start();
-        var createResponse = createOnlyDAO.CreateData(insertSql);
+        var createResponse = await createOnlyDAO.CreateData(insertSql);
         timer.Stop();
 
         // Assert
@@ -114,6 +114,6 @@ public class CreateDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
     }
 }
