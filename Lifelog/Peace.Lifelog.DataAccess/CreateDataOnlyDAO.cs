@@ -47,7 +47,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
                 // Execute the SQL command
                 var dbResponse = command.ExecuteNonQuery();
 
-                response.Output = [dbResponse];
+                response.Output = [command.LastInsertedId, dbResponse];
             }
 
             connection.Close();
