@@ -11,4 +11,6 @@ public class Response
     public int RetryAttempts { get; set; } = 0;
 
     public bool isSafeToRetry { get; set; } = false;
+
+    public long logId { get; set; } = 0;
 }
