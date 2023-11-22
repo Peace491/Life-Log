@@ -14,7 +14,14 @@ public class Logging : ILogging
     {
         // TODO: Business Logic Here
         // level is debug, succes, erorr etc
-        //message is str
+        //message is string
+        var validLevels = ["Info", "Debug", "Warning", "ERROR"]
+
+        // for each valid log leve, check that the inputed level is one of the valid ones.
+        // repeat this for category, and message.
+        // message has the character limit of mysql text, of 65,535. message is nullable
+
+        if(level != )
 
         var logResponse = _logRepo.CreateLog(createOnlyDAO, level, category, message);
 
