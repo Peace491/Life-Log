@@ -49,7 +49,7 @@ public class ReadDataOnlyDAOShould
         var createResponse = await createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
 
         timer.Start();
-        var readResponse = await readOnlyDAO.ReadData(readSql, 1);
+        var readResponse = await readOnlyDAO.ReadData(readSql, 1); // Issue might be because create Response is not finished
         timer.Stop();
         
         // Assert
@@ -58,7 +58,6 @@ public class ReadDataOnlyDAOShould
         foreach (List<Object> readResponseData in readResponse.Output)
         {
             Assert.True(readResponseData[0].ToString() == readMockData);
-
         }
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
