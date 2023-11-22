@@ -41,7 +41,7 @@ public class CreateDataOnlyDAOShould
         var createMockData = "Mock Data";
 
         var insertSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{createCategory}'";
+        var readDataSql = $"SELECT MockData FROM {table} WHERE Category = '{createCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{createCategory}'";
 
         // Act
@@ -49,7 +49,7 @@ public class CreateDataOnlyDAOShould
         var createResponse = createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
         timer.Stop();
 
-        var readResponse = readOnlyDAO.ReadData(readSql);
+        var readResponse = readOnlyDAO.ReadData(readDataSql);
 
         // Assert
         Assert.True(createResponse.HasError == false);
@@ -57,7 +57,12 @@ public class CreateDataOnlyDAOShould
         Assert.True(readResponse.HasError == false);
 
         // Cleanup
-        deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
     }
 
     [Fact]
@@ -82,6 +87,11 @@ public class CreateDataOnlyDAOShould
         Assert.True(createResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", createResponse.ErrorMessage);
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+    
     }
 
     [Fact]
@@ -102,5 +112,8 @@ public class CreateDataOnlyDAOShould
         Assert.True(createResponse.HasError == true);
         Assert.True(createResponse.ErrorMessage == "Empty Input");
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
     }
 }

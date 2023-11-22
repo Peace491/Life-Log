@@ -2,6 +2,8 @@ namespace Peace.Lifelog.DataAccessTest;
 
 using Peace.Lifelog.DataAccess;
 
+using DomainModels;
+
 using System.Diagnostics;
 
 public class UpdateDataOnlyDAOShould
@@ -49,7 +51,7 @@ public class UpdateDataOnlyDAOShould
         
         
         // Act
-        createOnlyDAO.CreateData(createSql);
+        var createResponse = createOnlyDAO.CreateData(createSql);
 
         var originalReadResponse = readOnlyDAO.ReadData(readSql);
 
@@ -70,7 +72,14 @@ public class UpdateDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
-        deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(updateResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(originalReadResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(newReadResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
     }
 
     [Fact]
@@ -94,11 +103,12 @@ public class UpdateDataOnlyDAOShould
         var updateSql = $"UPDATE {table} SET MockData = '{newMockData}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
         
-        
         // Act
+        List<Response> createResponses = new List<Response>();
         for (int i = 0; i < numberOfRecords; i++)
         {
-            createOnlyDAO.CreateData(createSql); 
+            var createResponse = createOnlyDAO.CreateData(createSql); 
+            createResponses.Append(createResponse);
         }
 
         var originalReadResponse = readOnlyDAO.ReadData(readSql);
@@ -120,7 +130,17 @@ public class UpdateDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
-        deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+
+        var logTransaction = new LogTransaction();
+        foreach (Response createResponse in createResponses)
+        {
+            logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        }
+        logTransaction.DeleteDataAccessTransactionLog(updateResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(originalReadResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(newReadResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
     }
 
     [Fact]
@@ -143,6 +163,10 @@ public class UpdateDataOnlyDAOShould
         // Assert
         Assert.True(updateResponse.HasError == false);
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(updateResponse.logId);
     }
 
     [Fact]
@@ -166,6 +190,10 @@ public class UpdateDataOnlyDAOShould
         Assert.True(updateResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", updateResponse.ErrorMessage);
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(updateResponse.logId);
     }
 
     [Fact]
@@ -186,6 +214,10 @@ public class UpdateDataOnlyDAOShould
         Assert.True(updateResponse.HasError == true);
         Assert.True(updateResponse.ErrorMessage == "Empty Input");
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(updateResponse.logId);
     }
 
 }

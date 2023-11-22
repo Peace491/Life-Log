@@ -1,5 +1,6 @@
 namespace Peace.Lifelog.DataAccessTest;
 
+using DomainModels;
 using Peace.Lifelog.DataAccess;
 
 using System.Diagnostics;
@@ -62,7 +63,12 @@ public class ReadDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
-        deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
     }
 
     [Fact]
@@ -83,10 +89,13 @@ public class ReadDataOnlyDAOShould
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
         var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
 
+        List<Response> createResponses = new List<Response>();
+
         // Act
         for (int i = 0; i < numberOfRecords; i++)
         {
-            createOnlyDAO.CreateData(createSql); 
+            var createResponse = createOnlyDAO.CreateData(createSql); 
+            createResponses.Append(createResponse);
         }
 
         timer.Start();
@@ -103,7 +112,18 @@ public class ReadDataOnlyDAOShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
 
         // Cleanup
-        deleteOnlyDAO.DeleteData(deleteSql);
+        var deleteResponse = deleteOnlyDAO.DeleteData(deleteSql);
+
+        var logTransaction = new LogTransaction();
+
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
+
+        foreach (Response createResponse in createResponses)
+        {
+            logTransaction.DeleteDataAccessTransactionLog(createResponse.logId);
+        }
+
+        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.logId);
     }
     
     [Fact]
@@ -127,6 +147,10 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.HasError == false);
         Assert.True(readResponse.Output == null);
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
     }
 
     [Fact]
@@ -150,6 +174,10 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.HasError == true);
         Assert.Contains("You have an error in your SQL syntax", readResponse.ErrorMessage);
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
     }
 
     [Fact]
@@ -170,6 +198,10 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.HasError == true);
         Assert.True(readResponse.ErrorMessage == "Empty Input");
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
     }
 
     [Fact]
@@ -195,6 +227,10 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.HasError == true);
         Assert.True(readResponse.ErrorMessage == "Invalid Count");
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
     }
 
     [Fact]
@@ -220,5 +256,9 @@ public class ReadDataOnlyDAOShould
         Assert.True(readResponse.HasError == true);
         Assert.True(readResponse.ErrorMessage == "Invalid Page");
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
+
+        // Cleanup
+        var logTransaction = new LogTransaction();
+        logTransaction.DeleteDataAccessTransactionLog(readResponse.logId);
     }
 }
