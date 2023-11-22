@@ -23,7 +23,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
             response.HasError = true;
             response.ErrorMessage = "Empty Input";
 
-            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Delete Data count input is empty");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("ERROR", "Delete Data count input is empty");
 
             response.LogId = logTransactionResponse.LogId;
 
@@ -54,7 +54,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
             
             response.HasError = false;
 
-            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Successful");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Successful");
 
             response.LogId = logTransactionResponse.LogId;
 
@@ -64,7 +64,7 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
             response.HasError = true;
             response.ErrorMessage = error.Message;
 
-            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Failed");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Failed");
 
             response.LogId = logTransactionResponse.LogId;
         }

@@ -8,7 +8,7 @@ public interface ILogTransaction
 {
     MySqlConnection ConnectToDb();
 
-    Response CreateDataAccessTransactionLog(string level, string message);
+    Task<Response> CreateDataAccessTransactionLog(string level, string message);
 
-    Response DeleteDataAccessTransactionLog(long logId);    
+    Task<Response> DeleteDataAccessTransactionLog(long logId);    
 }

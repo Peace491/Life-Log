@@ -23,7 +23,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
             response.HasError = true;
             response.ErrorMessage = "Empty Input";
 
-            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data input is empty");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data input is empty");
 
             response.LogId = logTransactionResponse.LogId;
 
@@ -54,7 +54,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
             
             response.HasError = false;
 
-            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
 
             response.LogId = logTransactionResponse.LogId;
 
@@ -64,7 +64,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
             response.HasError = true;
             response.ErrorMessage = error.Message;
 
-            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data is unsuccessful");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data is unsuccessful");
 
             response.LogId = logTransactionResponse.LogId;
         }

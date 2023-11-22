@@ -13,7 +13,7 @@ public class LogTransaction : ILogTransaction
         return new MySqlConnection(connectionString);
     }
 
-    public Response CreateDataAccessTransactionLog(string level, string message)
+    public async Task<Response> CreateDataAccessTransactionLog(string level, string message)
     {
         var response = new Response();
 
@@ -23,7 +23,7 @@ public class LogTransaction : ILogTransaction
 
             connection.Open();
             
-            using (var command = new MySqlCommand())
+            await using (var command = new MySqlCommand())
             {
                 // Set the connection for the command
                 command.Connection = connection;
@@ -54,7 +54,7 @@ public class LogTransaction : ILogTransaction
         return response;
     }
 
-    public Response DeleteDataAccessTransactionLog(long logId)
+    public async Task<Response> DeleteDataAccessTransactionLog(long logId)
     {
         var response = new Response();
 
@@ -64,7 +64,7 @@ public class LogTransaction : ILogTransaction
 
             connection.Open();
             
-            using (var command = new MySqlCommand())
+            await using (var command = new MySqlCommand())
             {
                 // Set the connection for the command
                 command.Connection = connection;

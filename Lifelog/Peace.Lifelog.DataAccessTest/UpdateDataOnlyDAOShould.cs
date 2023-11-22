@@ -75,11 +75,11 @@ public class UpdateDataOnlyDAOShould
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
 
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(originalReadResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(newReadResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(originalReadResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(newReadResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
@@ -135,12 +135,12 @@ public class UpdateDataOnlyDAOShould
         var logTransaction = new LogTransaction();
         foreach (Response createResponse in createResponses)
         {
-            logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+            await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
         }
-        logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(originalReadResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(newReadResponse.LogId);
-        logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(originalReadResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(newReadResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class UpdateDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class UpdateDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class UpdateDataOnlyDAOShould
 
         // Cleanup
         var logTransaction = new LogTransaction();
-        logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(updateResponse.LogId);
     }
 
 }
