@@ -11,7 +11,7 @@ public class Logging : ILogging
 
     public async Task<Response> CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
     {
-        int MAXIMUM_MESSAGE_LENGTH = 65535;
+        int MAXIMUM_MESSAGE_LENGTH = 2000;
         HashSet<string> validLogLevels = new HashSet<string>
         {
             "Info", 

@@ -50,7 +50,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
     [Fact]
     public async void LoggingShould_CreateADebugLog()
@@ -91,7 +96,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
 
     [Fact]
@@ -133,7 +143,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
 
     [Fact]
@@ -176,7 +191,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
     [Fact]
     public async Task LoggingShouldNot_CreateALogWithInvalidLevel()
@@ -245,7 +265,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
     [Fact]
     public async void LoggingShould_CreateABuisnessLog()
@@ -286,7 +311,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
 
     [Fact]
@@ -328,7 +358,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
 
     }
     [Fact]
@@ -370,7 +405,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
     [Fact]
     public async void LoggingShould_CreateAPersistentDataStoreLog()
@@ -409,7 +449,12 @@ public class LoggingShould
         }
         
         // Cleanup
-        await deleteDataDAO.DeleteData(cleanupSql);
+        var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
+
+        var logTransaction = new LogTransaction();
+        await logTransaction.DeleteDataAccessTransactionLog(createLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(readLogResponse.LogId);
+        await logTransaction.DeleteDataAccessTransactionLog(deleteLogResponse.LogId);
     }
     [Fact]
     public async void LoggingShouldNot_CreateALogWithInvalidCategory()
