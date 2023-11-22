@@ -1,15 +1,15 @@
 ﻿namespace Peace.Lifelog.LogServiceTest;
 
 using System.Threading.Tasks;
-using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
 using System.Diagnostics;
 public class LoggingShould
 {
+    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;
 
-    // Level Testing
+    private const int LOG_ID_INDEX = 0;
 
     [Fact]
     public async void LoggingShould_CreateAnInfoLog()
@@ -35,13 +35,13 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, infoLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -81,13 +81,13 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, debugLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -128,13 +128,13 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, warningLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -176,13 +176,13 @@ public class LoggingShould
         
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -218,7 +218,7 @@ public class LoggingShould
         timer.Stop();
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(invalidLevelResponse.HasError == true);
     }
 
@@ -249,14 +249,14 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, viewLogCategory, testLogMessage);
         timer.Stop();
 
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -296,13 +296,13 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, businessLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -343,13 +343,13 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, serverLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -390,13 +390,13 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, dataLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(0)}"; 
+        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
@@ -435,13 +435,13 @@ public class LoggingShould
         // Act
         timer.Start();
         var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, persistentDataStoreLogCategory, testLogMessage);
-        var readSql = $"SELECT * from Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var readSql = $"SELECT * from Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(createLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
@@ -476,7 +476,7 @@ public class LoggingShould
         timer.Stop();
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(invalidResponse.HasError == true);
     }
 
@@ -529,7 +529,7 @@ public class LoggingShould
         timer.Stop();
 
         // Assert
-        Assert.True(timer.ElapsedMilliseconds < 3001);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(invalidMessageResponse.HasError == true);
     }
 }

@@ -8,12 +8,14 @@ using System.Diagnostics;
 
 public class LogTargetShould
 {
+    private const int LOG_ID_INDEX = 0;
+
     [Fact]
     public async void LogTargetShould_CreateALogInDataStore()
     {
         // Arrange
         var logTarget = new LogTarget();
-        int FIRSTLISTITEM = 0; 
+        int FIRSTLISTITEM = LOG_ID_INDEX; 
 
         // DAO needed for test
         var createOnlyDAO = new CreateDataOnlyDAO();
@@ -32,8 +34,8 @@ public class LogTargetShould
         var createSecondLogResponse = await logTarget.WriteLog(createOnlyDAO, testLogLevel, testLogCategory, testLogMessage);
         var finalReadResponse = await readOnlyDAO.ReadData(logCountSql);
 
-        var deleteFirstSql = $"DELETE FROM Logs Where LogId={createFirstLogResponse.Output.ElementAt(0)}";
-        var deleteSecondSql = $"DELETE FROM Logs Where LogId={createSecondLogResponse.Output.ElementAt(0)}";
+        var deleteFirstSql = $"DELETE FROM Logs Where LogId={createFirstLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
+        var deleteSecondSql = $"DELETE FROM Logs Where LogId={createSecondLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
 
         // Assert
         Assert.True(initialReadResponse.HasError == false);
@@ -81,7 +83,7 @@ public class LogTargetShould
         // Act
         timer.Start();
         var createLogResponse = await logTarget.WriteLog(createOnlyDAO, testLogLevel, testLogCategory, testLogMessage);
-        string updateAttemptSql = $"UPDATE Logs SET LogMessage = 'barn burner' WHERE LogId={createLogResponse.Output.ElementAt(0)}";
+        string updateAttemptSql = $"UPDATE Logs SET LogMessage = 'barn burner' WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
         var updateLogResponse = await updateOnlyDao.UpdateData(updateAttemptSql);
         timer.Stop();
 
@@ -91,7 +93,7 @@ public class LogTargetShould
         Assert.True(timer.Elapsed.TotalSeconds <= 3); 
         
         // Cleanup
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(0)}'";
+        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var deleteLogResponse = await deleteDataDAO.DeleteData(cleanupSql);
 
         var logTransaction = new LogTransaction();
