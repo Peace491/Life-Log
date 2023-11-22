@@ -55,7 +55,6 @@ public class LogRepoShould
     {
         // Arrange
         var timer = new Stopwatch();
-
         var logRepo = new LogRepo();
 
         // Need to initlaize all types of DAO for checking and cleanup.

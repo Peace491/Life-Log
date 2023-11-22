@@ -13,27 +13,43 @@ public class Logging : ILogging
     public Response CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
     {
         // TODO: Business Logic Here
-        // level is debug, succes, erorr etc
-        //message is string
-        var validLevels = ["Info", "Debug", "Warning", "ERROR"]
+        int MAXIMUMMESSAGELENGTH = 65535;
+        HashSet<string> validLogLevels = new HashSet<string>
+        {
+            "Info", 
+            "Debug", 
+            "Warning", 
+            "ERROR"
+        };
 
-        // for each valid log leve, check that the inputed level is one of the valid ones.
-        // repeat this for category, and message.
-        // message has the character limit of mysql text, of 65,535. message is nullable
+        HashSet<string> validLogCategories = new HashSet<string>
+        {
+            "View", 
+            "Business", 
+            "Server", 
+            "Data",
+            "Persistent Data Store"
+        };
 
-        if(level != )
+        if (!validLogLevels.Contains(level))
+        {
+            // TODO invalid level response object return ehre
+        }
+        if (!validLogCategories.Contains(category))
+        {
+            // TODO invalid category response object return here
+        }
+        if (message != null) // Nested if is ugly
+        {
+            if (message.Length > MAXIMUMMESSAGELENGTH) 
+            {
+                // TODO invalid message response object return here
+            }
+        }  
 
         var logResponse = _logRepo.CreateLog(createOnlyDAO, level, category, message);
 
         return logResponse;
     }
 
-    public Response ReadLog(ReadDataOnlyDAO readOnlyDAO, string level, string category, string? message)
-    {
-        // TODO: Business Login Here
-
-        var readResponse = _logRepo.ReadLog(readOnlyDAO, level, category, message);
-
-        return readResponse;
-    }
 }
