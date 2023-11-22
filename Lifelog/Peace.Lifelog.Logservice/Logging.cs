@@ -1,19 +1,17 @@
 namespace Peace.Lifelog.Logging;
 
+using System.Threading.Tasks;
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 
 public class Logging : ILogging
 {
-    private readonly ILogRepo _logRepo;
-    public Logging(ILogRepo logRepo) => _logRepo = logRepo; // Composition Root -> Entry Point
+    private readonly ILogTarget _logTarget;
+    public Logging(ILogTarget logTarget) => _logTarget = logTarget; // Composition Root -> Entry Point
 
-    // Not the best approach
-    // Error
-    public Response CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
+    public async Task<Response> CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
     {
-        // TODO: Business Logic Here
-        int MAXIMUMMESSAGELENGTH = 65535;
+        int MAXIMUM_MESSAGE_LENGTH = 65535;
         HashSet<string> validLogLevels = new HashSet<string>
         {
             "Info", 
@@ -21,7 +19,6 @@ public class Logging : ILogging
             "Warning", 
             "ERROR"
         };
-
         HashSet<string> validLogCategories = new HashSet<string>
         {
             "View", 
@@ -37,29 +34,23 @@ public class Logging : ILogging
             response.HasError = true;
             response.ErrorMessage = $"'{level} is an invalid Log Level";
             return response;
-            // TODO invalid level response object return ehre
         }
         if (!validLogCategories.Contains(category))
         {
             response.HasError = true;
             response.ErrorMessage = $"'{category}' is an invalid Log Category";
             return response;
-            // TODO invalid category response object return here
         }
-        if (message != null) 
+        if (message != null && message.Length > MAXIMUM_MESSAGE_LENGTH) 
         {
-            if (message.Length > MAXIMUMMESSAGELENGTH) 
-            {
-                response.HasError = true;
-                response.ErrorMessage = $"'{message.Length}' is too long for a Log Message";
-                return response;
-                // TODO invalid message response object return here
-            }
+            response.HasError = true;
+            response.ErrorMessage = $"'{message.Length}' is too long for a Log Message";
+            return response;
         }  
 
-        var logResponse = _logRepo.CreateLog(createOnlyDAO, level, category, message);
+        response = await _logTarget.WriteLog(createOnlyDAO, level, category, message);
 
-        return logResponse;
+        return response;
     }
 
 }
