@@ -16,10 +16,17 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
     {
         var response = new Response();
 
+        var logTransaction = new LogTransaction();
+
         if (sql == "")
         {
             response.HasError = true;
             response.ErrorMessage = "Empty Input";
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data input is empty");
+
+            response.logId = logTransactionResponse.logId;
+
             return response;
         }
 
@@ -27,6 +34,11 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
         {
             response.HasError = true;
             response.ErrorMessage = "Invalid Count";
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data count input is invalid");
+
+            response.logId = logTransactionResponse.logId;
+
             return response;
         }
 
@@ -34,6 +46,11 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
         {
             response.HasError = true;
             response.ErrorMessage = "Invalid Page";
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data currentPage input is invalid");
+
+            response.logId = logTransactionResponse.logId;
+
             return response;
         }
 
@@ -54,7 +71,6 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
 
                 // Execute the SQL command
                 var dbResponse = command.ExecuteReader();
-
 
                 while (dbResponse.Read())
                 {
@@ -79,11 +95,19 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO {
             
             response.HasError = false;
 
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Read Data is successful");
+
+            response.logId = logTransactionResponse.logId;
+
         } 
         catch (Exception error)
         {
             response.HasError = true;
             response.ErrorMessage = error.Message;
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Read Data is unsuccessful");
+
+            response.logId = logTransactionResponse.logId;
         }
 
         return response;

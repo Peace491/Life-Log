@@ -16,10 +16,17 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
     {
         var response = new Response();
 
+        var logTransaction = new LogTransaction();
+
         if (sql == "")
         {
             response.HasError = true;
             response.ErrorMessage = "Empty Input";
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Create Data input is empty");
+
+            response.logId = logTransactionResponse.logId;
+
             return response;
         }
         
@@ -45,6 +52,9 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
 
             connection.Close();
 
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Data Create is successful");
+
+            response.logId = logTransactionResponse.logId;
 
             response.HasError = false;
 
@@ -53,6 +63,10 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
         {
             response.HasError = true;
             response.ErrorMessage = error.Message;
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Data Create failed");
+
+            response.logId = logTransactionResponse.logId;
         }
 
         return response;

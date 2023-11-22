@@ -16,10 +16,17 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
     {
         var response = new Response();
 
+        var logTransaction = new LogTransaction();
+
         if (sql == "")
         {
             response.HasError = true;
             response.ErrorMessage = "Empty Input";
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Delete Data count input is empty");
+
+            response.logId = logTransactionResponse.logId;
+
             return response;
         }
         
@@ -47,11 +54,19 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
             
             response.HasError = false;
 
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Successful");
+
+            response.logId = logTransactionResponse.logId;
+
         } 
         catch (Exception error)
         {
             response.HasError = true;
             response.ErrorMessage = error.Message;
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Data Delete Failed");
+
+            response.logId = logTransactionResponse.logId;
         }
 
         return response;

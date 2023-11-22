@@ -16,10 +16,17 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
     {
         var response = new Response();
 
+        var logTransaction = new LogTransaction();
+
         if (sql == "")
         {
             response.HasError = true;
             response.ErrorMessage = "Empty Input";
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data input is empty");
+
+            response.logId = logTransactionResponse.logId;
+
             return response;
         }
         
@@ -47,11 +54,19 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO {
             
             response.HasError = false;
 
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
+
+            response.logId = logTransactionResponse.logId;
+
         } 
         catch (Exception error)
         {
             response.HasError = true;
             response.ErrorMessage = error.Message;
+
+            var logTransactionResponse = logTransaction.CreateDataAccessTransactionLog("ERROR", "Update Data is unsuccessful");
+
+            response.logId = logTransactionResponse.logId;
         }
 
         return response;
