@@ -46,9 +46,9 @@ public class UpdateDataOnlyDAOShould
         var newMockData = "New Mock Data";
     
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
-        var readSql = $"SELECT {table} FROM {table} WHERE Category = '{updateCategory}'";
-        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
+        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{updateCategory}'";
+        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}' AND Id <> 0";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}' AND Id <> 0";
         
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);
@@ -97,9 +97,9 @@ public class UpdateDataOnlyDAOShould
         var newMockData = "New Mock Data";
     
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
-        var readSql = $"SELECT {table} FROM {table} WHERE Category = '{updateCategory}'";
-        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
+        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{updateCategory}'";
+        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}' AND Id <> 0";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}' AND Id <> 0";
         
         // Act
         List<Response> createResponses = new List<Response>();
@@ -176,7 +176,7 @@ public class UpdateDataOnlyDAOShould
         var table = "mockData";
         var updateMockData = "Mock Data";
     
-        var incorrectUpdateSql = $"UDATE {table} SET MockData = '{updateMockData}'";
+        var incorrectUpdateSql = $"UDATE {table} SET MockData = '{updateMockData}' AND Id <> 0";
         
         // Act
         timer.Start();

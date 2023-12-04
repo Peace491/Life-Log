@@ -44,7 +44,7 @@ public class CreateDataOnlyDAOShould
 
         var insertSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
         var readDataSql = $"SELECT MockData FROM {table} WHERE Category = '{createCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{createCategory}'";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{createCategory}' AND Id <> 0";
 
         // Act
         timer.Start();

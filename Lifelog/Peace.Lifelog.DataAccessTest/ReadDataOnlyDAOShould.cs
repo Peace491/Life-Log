@@ -48,7 +48,7 @@ public class ReadDataOnlyDAOShould
 
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}' AND Id <> 0";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
@@ -90,7 +90,7 @@ public class ReadDataOnlyDAOShould
 
         var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}' AND Id <> 0";
 
         List<Response> createResponses = new List<Response>();
 

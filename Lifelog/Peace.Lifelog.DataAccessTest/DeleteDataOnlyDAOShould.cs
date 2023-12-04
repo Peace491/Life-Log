@@ -44,8 +44,8 @@ public class DeleteDataOnlyDAOShould
         var deleteMockData = "Mock Data";
 
         var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
+        var readSql = $"SELECT * FROM {table} WHERE Category = '{deleteCategory}'";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}' AND Id <> 0";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);
@@ -83,7 +83,7 @@ public class DeleteDataOnlyDAOShould
 
         var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
         var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
+        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}' AND Id <> 0";
 
         // Act
         List<Response> createResponses = new List<Response>();
