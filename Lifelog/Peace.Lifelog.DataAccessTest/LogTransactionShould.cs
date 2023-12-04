@@ -4,9 +4,36 @@ using Peace.Lifelog.DataAccess;
 
 using System.Diagnostics;
 
-public class LogTransactionShould
+public class LogTransactionShould : IDisposable
 {
     private const int DEFAULT_RECORD_COUNT = 1;
+
+    private const string TABLE = "logTransactionMockData";
+
+    // Setup for all test
+    public LogTransactionShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "Id INT AUTO_INCREMENT,"
+            + "Category VARCHAR(255),"
+            + "MockData TEXT,"
+            + "PRIMARY KEY (Id, Category)"
+        + ");";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+    }
+
+    // Cleanup for all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
 
     [Fact]
     public async void LogTransactionShould_LogCreateTransactionInDataStore()
@@ -17,12 +44,11 @@ public class LogTransactionShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var createCategory = "Create";
         var createMockData = "Mock Data";
 
-        var insertSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{createCategory}'";
+        var insertSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{createCategory}'";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
@@ -55,13 +81,12 @@ public class LogTransactionShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read Single";
         var readMockData = "Mock Data";
 
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
-        var readDataSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}'";
+        var createSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
+        var readDataSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{readCategory}'";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
@@ -95,15 +120,14 @@ public class LogTransactionShould
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
         
-        var table = "mockData";
         var updateCategory = "Update";
         var oldMockData = "Old Mock Data";
         var newMockData = "New Mock Data";
     
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
+        var createSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
         
-        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}'";
+        var updateSql = $"UPDATE {TABLE} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{updateCategory}'";
         
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);
@@ -137,13 +161,12 @@ public class LogTransactionShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var deleteCategory = "Delete";
         var deleteMockData = "Mock Data";
 
-        var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
+        var createSql = $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
         
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{deleteCategory}'";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);

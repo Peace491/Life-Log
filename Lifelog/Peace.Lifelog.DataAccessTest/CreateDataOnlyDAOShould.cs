@@ -4,9 +4,36 @@ using Peace.Lifelog.DataAccess;
 
 using System.Diagnostics;
 
-public class CreateDataOnlyDAOShould
+public class CreateDataOnlyDAOShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
+
+    private const string TABLE = "createMockData";
+
+    // Setup for all test
+    public CreateDataOnlyDAOShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "Id INT AUTO_INCREMENT,"
+            + "Category VARCHAR(255),"
+            + "MockData TEXT,"
+            + "PRIMARY KEY (Id, Category)"
+        + ");";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+    }
+
+    // Cleanup for all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
 
     [Fact]
     public async void CreateDataOnlyDAOShould_ConnectToTheDataStore()
@@ -38,13 +65,12 @@ public class CreateDataOnlyDAOShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var createCategory = "Create";
         var createMockData = "Mock Data";
 
-        var insertSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
-        var readDataSql = $"SELECT MockData FROM {table} WHERE Category = '{createCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{createCategory}' AND Id <> 0";
+        var insertSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
+        var readDataSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{createCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{createCategory}' AND Id <> 0";
 
         // Act
         timer.Start();
@@ -74,11 +100,10 @@ public class CreateDataOnlyDAOShould
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
 
-        var table = "mockData";
         var createCategory = "Create";
         var createMockData = "Mock Data";
 
-        var incorrectInsertSql =  $"INSRT INTO {table} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
+        var incorrectInsertSql =  $"INSRT INTO {TABLE} (Category, MockData) VALUES ('{createCategory}', '{createMockData}')";
 
         // Act
         timer.Start();

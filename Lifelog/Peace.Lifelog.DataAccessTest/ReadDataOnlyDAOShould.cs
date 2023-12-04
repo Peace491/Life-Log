@@ -5,12 +5,39 @@ using Peace.Lifelog.DataAccess;
 
 using System.Diagnostics;
 
-public class ReadDataOnlyDAOShould
+public class ReadDataOnlyDAOShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
     private const int DEFAULT_RECORD_COUNT = 1;
     private const int DEFAULT_PAGE_NUMBER = 0;
     private const int DEFAULT_NUMBER_OF_RECORDS = 20;
+
+    private const string TABLE = "readMockData";
+
+    // Setup for all test
+    public ReadDataOnlyDAOShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "Id INT AUTO_INCREMENT,"
+            + "Category VARCHAR(255),"
+            + "MockData TEXT,"
+            + "PRIMARY KEY (Id, Category)"
+        + ");";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+    }
+
+    // Cleanup after all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
 
     [Fact]
     public async void ReadDataOnlyDAOShould_ConnectToTheDataStore()
@@ -42,13 +69,12 @@ public class ReadDataOnlyDAOShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read Single";
         var readMockData = "Mock Data";
 
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}' AND Id <> 0";
+        var createSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{readCategory}' AND Id <> 0";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql); // Need to test for all behavior of string
@@ -84,13 +110,12 @@ public class ReadDataOnlyDAOShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read Multiple";
         var readMockData = "Mock Data";
 
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{readCategory}' AND Id <> 0";
+        var createSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{readCategory}', '{readMockData}')";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{readCategory}' AND Id <> 0";
 
         List<Response> createResponses = new List<Response>();
 
@@ -138,10 +163,9 @@ public class ReadDataOnlyDAOShould
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read Null";
 
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
 
         // Act
         timer.Start();
@@ -165,10 +189,9 @@ public class ReadDataOnlyDAOShould
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read";
 
-        var readSql = $"SLECT MockData FROM {table} WHERE Category = '{readCategory}'";
+        var readSql = $"SLECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
 
         // Act
         timer.Start();
@@ -216,10 +239,9 @@ public class ReadDataOnlyDAOShould
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read";
 
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
 
         var invalidCount = -1;
 
@@ -245,10 +267,9 @@ public class ReadDataOnlyDAOShould
         var timer = new Stopwatch();
         var readOnlyDAO = new ReadDataOnlyDAO();
 
-        var table = "mockData";
         var readCategory = "Read";
 
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{readCategory}'";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{readCategory}'";
 
         var invalidPage = -1;
 

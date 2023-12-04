@@ -4,10 +4,37 @@ using Peace.Lifelog.DataAccess;
 using DomainModels;
 using System.Diagnostics;
 
-public class UpdateDataOnlyDAOShould
+public class UpdateDataOnlyDAOShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
     private const int DEFAULT_NUMBER_OF_RECORDS = 20;
+
+    private const string TABLE = "updateMockData";
+
+    // Setup for all test
+    public UpdateDataOnlyDAOShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "Id INT AUTO_INCREMENT,"
+            + "Category VARCHAR(255),"
+            + "MockData TEXT,"
+            + "PRIMARY KEY (Id, Category)"
+        + ");";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+    }
+
+    // Cleanup for all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
     
     [Fact]
     public async void UpdateDataOnlyDAOShould_ConnectToTheDataStore()
@@ -40,15 +67,14 @@ public class UpdateDataOnlyDAOShould
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
         
-        var table = "mockData";
         var updateCategory = "Update";
         var oldMockData = "Old Mock Data";
         var newMockData = "New Mock Data";
     
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{updateCategory}'";
-        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}' AND Id <> 0";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}' AND Id <> 0";
+        var createSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{updateCategory}'";
+        var updateSql = $"UPDATE {TABLE} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}' AND Id <> 0";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{updateCategory}' AND Id <> 0";
         
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);
@@ -91,15 +117,14 @@ public class UpdateDataOnlyDAOShould
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
         
-        var table = "mockData";
         var updateCategory = "Update";
         var oldMockData = "Old Mock Data";
         var newMockData = "New Mock Data";
     
-        var createSql =  $"INSERT INTO {table} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{updateCategory}'";
-        var updateSql = $"UPDATE {table} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}' AND Id <> 0";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{updateCategory}' AND Id <> 0";
+        var createSql =  $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{updateCategory}', '{oldMockData}')";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{updateCategory}'";
+        var updateSql = $"UPDATE {TABLE} SET MockData = '{newMockData}' WHERE Category = '{updateCategory}' AND Id <> 0";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{updateCategory}' AND Id <> 0";
         
         // Act
         List<Response> createResponses = new List<Response>();
@@ -147,10 +172,9 @@ public class UpdateDataOnlyDAOShould
         var timer = new Stopwatch();
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         
-        var table = "mockData";
         var updateMockData = "Mock Data";
     
-        var updateSql = $"UPDATE {table} SET MockData = '{updateMockData}'";
+        var updateSql = $"UPDATE {TABLE} SET MockData = '{updateMockData}'";
         
         // Act
         timer.Start();
@@ -173,10 +197,9 @@ public class UpdateDataOnlyDAOShould
         var timer = new Stopwatch();
         var updateOnlyDAO = new UpdateDataOnlyDAO();
         
-        var table = "mockData";
         var updateMockData = "Mock Data";
     
-        var incorrectUpdateSql = $"UDATE {table} SET MockData = '{updateMockData}' AND Id <> 0";
+        var incorrectUpdateSql = $"UDATE {TABLE} SET MockData = '{updateMockData}' AND Id <> 0";
         
         // Act
         timer.Start();

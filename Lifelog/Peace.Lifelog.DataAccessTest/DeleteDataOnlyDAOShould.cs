@@ -4,10 +4,37 @@ using Peace.Lifelog.DataAccess;
 using DomainModels;
 using System.Diagnostics;
 
-public class DeleteDataOnlyDAOShould
+public class DeleteDataOnlyDAOShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
     private const int DEFAULT_NUMBER_OF_RECORDS = 20;
+
+    private const string TABLE = "deleteMockData";
+
+    // Setup for all test
+    public DeleteDataOnlyDAOShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "Id INT AUTO_INCREMENT,"
+            + "Category VARCHAR(255),"
+            + "MockData TEXT,"
+            + "PRIMARY KEY (Id, Category)"
+        + ");";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+    }
+
+    // Cleanup for all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
 
     [Fact]
     public async void DeleteDataOnlyDAOShould_ConnectToTheDataStore()
@@ -39,13 +66,12 @@ public class DeleteDataOnlyDAOShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var deleteCategory = "Delete";
         var deleteMockData = "Mock Data";
 
-        var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
-        var readSql = $"SELECT * FROM {table} WHERE Category = '{deleteCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}' AND Id <> 0";
+        var createSql = $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
+        var readSql = $"SELECT * FROM {TABLE} WHERE Category = '{deleteCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{deleteCategory}' AND Id <> 0";
 
         // Act
         var createResponse = await createOnlyDAO.CreateData(createSql);
@@ -77,13 +103,12 @@ public class DeleteDataOnlyDAOShould
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var deleteCategory = "Delete";
         var deleteMockData = "Mock Data";
 
-        var createSql = $"INSERT INTO {table} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
-        var readSql = $"SELECT MockData FROM {table} WHERE Category = '{deleteCategory}'";
-        var deleteSql = $"DELETE FROM {table} WHERE Category = '{deleteCategory}' AND Id <> 0";
+        var createSql = $"INSERT INTO {TABLE} (Category, MockData) VALUES ('{deleteCategory}', '{deleteMockData}')";
+        var readSql = $"SELECT MockData FROM {TABLE} WHERE Category = '{deleteCategory}'";
+        var deleteSql = $"DELETE FROM {TABLE} WHERE Category = '{deleteCategory}' AND Id <> 0";
 
         // Act
         List<Response> createResponses = new List<Response>();
@@ -121,10 +146,9 @@ public class DeleteDataOnlyDAOShould
         var timer = new Stopwatch();
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 
-        var table = "mockData";
         var deleteCategory = "Delete";
 
-        var deleteSql = $"DLETE FROM {table} WHERE Category = '{deleteCategory}'";
+        var deleteSql = $"DLETE FROM {TABLE} WHERE Category = '{deleteCategory}'";
 
         // Act
         timer.Start();
