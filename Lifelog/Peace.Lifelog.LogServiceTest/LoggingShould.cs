@@ -32,7 +32,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, infoLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(infoLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -78,7 +78,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, debugLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(debugLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -125,7 +125,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, warningLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(warningLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -172,7 +172,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, errorLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(errorLogLevel, testLogCategory, testLogMessage);
         
         timer.Stop();
         
@@ -215,7 +215,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var invalidLevelResponse = await logger.CreateLog(createOnlyDAO, invalidLogLevel, testLogCategory, testLogMessage);
+        var invalidLevelResponse = await logger.CreateLog(invalidLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
         // Assert
@@ -247,7 +247,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, viewLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(testLogLevel, viewLogCategory, testLogMessage);
         timer.Stop();
 
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -294,7 +294,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, businessLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(testLogLevel, businessLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -341,7 +341,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, serverLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(testLogLevel, serverLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -388,7 +388,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, dataLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(testLogLevel, dataLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -435,7 +435,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, persistentDataStoreLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(testLogLevel, persistentDataStoreLogCategory, testLogMessage);
         var readSql = $"SELECT * from Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
@@ -473,7 +473,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var invalidResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, invalidLogCategory, testLogMessage);
+        var invalidResponse = await logger.CreateLog(testLogLevel, invalidLogCategory, testLogMessage);
         timer.Stop();
 
         // Assert
@@ -484,9 +484,27 @@ public class LoggingShould
     // Message Testing
 
     [Fact]
-    public void LoggingShould_CreateALogWithAValidMessage()
+    public async void LoggingShould_CreateALogWithAValidMessage()
     {
-        // TODO implement
+        // Arrange
+        string testLogLevel = "Info";
+        string testLogCategory = "View";
+        string validLogMessage = "Hello, this message is a valid log message!";
+
+        var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
+
+        Stopwatch timer = new Stopwatch();
+
+        // Act
+        timer.Start();
+        var invalidMessageResponse = await logger.CreateLog(testLogLevel, testLogCategory, validLogMessage);
+        timer.Stop();
+
+        // Assert
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(invalidMessageResponse.HasError == false);
     }
 
     [Fact]
@@ -526,7 +544,7 @@ public class LoggingShould
 
         // Act
         timer.Start();
-        var invalidMessageResponse = await logger.CreateLog(createOnlyDAO, testLogLevel, testLogCategory, invalidLogMessage);
+        var invalidMessageResponse = await logger.CreateLog(testLogLevel, testLogCategory, invalidLogMessage);
         timer.Stop();
 
         // Assert

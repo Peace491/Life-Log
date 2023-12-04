@@ -9,7 +9,7 @@ public class Logging : ILogging
     private readonly ILogTarget _logTarget;
     public Logging(ILogTarget logTarget) => _logTarget = logTarget; // Composition Root -> Entry Point
 
-    public async Task<Response> CreateLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
+    public async Task<Response> CreateLog(string level, string category, string? message)
     {
         int MAXIMUM_MESSAGE_LENGTH = 2000;
         HashSet<string> validLogLevels = new HashSet<string>
