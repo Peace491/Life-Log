@@ -4,7 +4,8 @@ using DomainModels;
 
 using MySql.Data.MySqlClient;
 
-public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO {
+public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO 
+{
     private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = DeleteUser; Password = password;";
 
     public MySqlConnection ConnectToDb()

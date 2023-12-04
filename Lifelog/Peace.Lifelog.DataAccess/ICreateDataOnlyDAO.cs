@@ -2,10 +2,8 @@ namespace Peace.Lifelog.DataAccess;
 
 using DomainModels;
 
-using MySql.Data.MySqlClient;
-
-public interface ICreateDataOnlyDAO {
-    MySqlConnection ConnectToDb();
+public interface ICreateDataOnlyDAO : ISqlDAO
+{
 
     Task<Response> CreateData(string sql);
 }

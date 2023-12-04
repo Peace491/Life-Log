@@ -2,9 +2,7 @@ namespace Peace.Lifelog.DataAccess;
 
 using DomainModels;
 
-using MySql.Data.MySqlClient;
-
-public interface IDeleteDataOnlyDAO {
-    MySqlConnection ConnectToDb();
+public interface IDeleteDataOnlyDAO : ISqlDAO
+{
     Task<Response> DeleteData(string sql);
 }

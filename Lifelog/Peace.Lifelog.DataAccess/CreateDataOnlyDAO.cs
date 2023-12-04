@@ -4,10 +4,11 @@ using DomainModels;
 
 using MySql.Data.MySqlClient;
 
-public class CreateDataOnlyDAO : ICreateDataOnlyDAO {
+public class CreateDataOnlyDAO : ICreateDataOnlyDAO
+{
     private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = CreateUser; Password = password;";
 
-    public MySqlConnection ConnectToDb()
+    public  MySqlConnection ConnectToDb()
     {
         return new MySqlConnection(connectionString);
     }

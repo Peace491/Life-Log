@@ -2,9 +2,7 @@ namespace Peace.Lifelog.DataAccess;
 
 using DomainModels;
 
-using MySql.Data.MySqlClient;
-
-public interface IUpdateDataOnlyDAO {
-    MySqlConnection ConnectToDb();
+public interface IUpdateDataOnlyDAO : ISqlDAO
+{
     Task<Response> UpdateData(string sql);
 }

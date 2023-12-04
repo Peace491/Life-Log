@@ -4,7 +4,8 @@ using DomainModels;
 
 using MySql.Data.MySqlClient;
 
-public class ReadDataOnlyDAO : IReadDataOnlyDAO {
+public class ReadDataOnlyDAO : IReadDataOnlyDAO 
+{
     private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = ReadUser; Password = password;";
 
     public MySqlConnection ConnectToDb()
