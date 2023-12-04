@@ -24,9 +24,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -70,9 +70,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -117,9 +117,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -164,9 +164,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -206,9 +206,10 @@ public class LoggingShould
         string testLogCategory = "View";
         string? testLogMessage = null;
 
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
+
 
         Stopwatch timer = new Stopwatch();
 
@@ -238,9 +239,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -285,9 +286,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -332,9 +333,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -379,9 +380,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -426,9 +427,9 @@ public class LoggingShould
         Stopwatch timer = new Stopwatch();
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
 
@@ -462,11 +463,11 @@ public class LoggingShould
         // Arrange
         string testLogLevel = "Info";
         string invalidLogCategory = "Carrot";
-        string? testLogMessage = null; // TODO represent invalid message
-
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
+        string? testLogMessage = null; 
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
+
 
         Stopwatch timer = new Stopwatch();
 
@@ -517,9 +518,9 @@ public class LoggingShould
         "I think that My string is still slightly too short, so I am again adding another line to ensure I am over the limit." +
         "This is quite funny to me, adding more characters. The line above only brought us to 1976 characters. This one will do it.";
 
-        var logTarget = new LogTarget();
-        var logger = new Logging(logTarget);
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
+        var logger = new Logging(logTarget);
 
         Stopwatch timer = new Stopwatch();
 

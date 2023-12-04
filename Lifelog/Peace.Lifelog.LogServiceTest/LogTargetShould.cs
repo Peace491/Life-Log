@@ -14,11 +14,12 @@ public class LogTargetShould
     public async void LogTargetShould_CreateALogInDataStore()
     {
         // Arrange
-        var logTarget = new LogTarget();
+        var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO);
         int FIRSTLISTITEM = LOG_ID_INDEX; 
 
         // DAO needed for test
-        var createOnlyDAO = new CreateDataOnlyDAO();
+        
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO();
 
@@ -29,9 +30,9 @@ public class LogTargetShould
         var logCountSql = $"SELECT COUNT(*) FROM Logs";
 
         // Act
-        var createFirstLogResponse = await logTarget.WriteLog(createOnlyDAO, testLogLevel, testLogCategory, testLogMessage);
+        var createFirstLogResponse = await logTarget.WriteLog(testLogLevel, testLogCategory, testLogMessage);
         var initialReadResponse = await readOnlyDAO.ReadData(logCountSql);
-        var createSecondLogResponse = await logTarget.WriteLog(createOnlyDAO, testLogLevel, testLogCategory, testLogMessage);
+        var createSecondLogResponse = await logTarget.WriteLog(testLogLevel, testLogCategory, testLogMessage);
         var finalReadResponse = await readOnlyDAO.ReadData(logCountSql);
 
         var deleteFirstSql = $"DELETE FROM Logs Where LogId={createFirstLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
@@ -68,11 +69,12 @@ public class LogTargetShould
     [Fact]
     public async void LogTargetShould_BeImmutable()
     {
-       var logTarget = new LogTarget(); 
-       Stopwatch timer = new Stopwatch();
-
-
         var createOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO); 
+        Stopwatch timer = new Stopwatch();
+
+
+        
         var updateOnlyDao = new UpdateDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO();
 
@@ -82,7 +84,7 @@ public class LogTargetShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logTarget.WriteLog(createOnlyDAO, testLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logTarget.WriteLog(testLogLevel, testLogCategory, testLogMessage);
         string updateAttemptSql = $"UPDATE Logs SET LogMessage = 'barn burner' WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
         var updateLogResponse = await updateOnlyDao.UpdateData(updateAttemptSql);
         timer.Stop();

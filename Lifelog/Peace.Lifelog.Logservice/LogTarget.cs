@@ -5,7 +5,13 @@ using DomainModels;
 
 public class LogTarget : ILogTarget
 {
-    public async Task<Response> WriteLog(CreateDataOnlyDAO createOnlyDAO, string level, string category, string? message)
+    private readonly ICreateDataOnlyDAO createOnlyDAO;
+
+    public LogTarget(ICreateDataOnlyDAO createOnlyDAO)
+    {
+        this.createOnlyDAO = createOnlyDAO;
+    }
+    public async Task<Response> WriteLog(string level, string category, string? message)
     {
         string createLogSql = $"INSERT INTO Logs (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{level}', '{category}', '{message}')"; // Need to change date format
 
