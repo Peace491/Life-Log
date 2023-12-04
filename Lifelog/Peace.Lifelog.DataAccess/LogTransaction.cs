@@ -17,11 +17,15 @@ public class LogTransaction : ILogTransaction
     {
         var response = new Response();
 
+        MySqlTransaction? transaction = null;
+
         try 
         {
             var connection = ConnectToDb();
 
             connection.Open();
+
+            transaction = connection.BeginTransaction();
             
             await using (var command = new MySqlCommand())
             {
@@ -32,6 +36,9 @@ public class LogTransaction : ILogTransaction
                 string sql = $"INSERT INTO Logs (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{level}', 'Persistent Data Store', '{message}')";
                 command.CommandText = sql;
 
+                // Define the transaction
+                command.Transaction = transaction;
+
                 // Execute the SQL command
                 var dbResponse = command.ExecuteNonQuery();
 
@@ -40,6 +47,8 @@ public class LogTransaction : ILogTransaction
                 response.LogId = command.LastInsertedId;
             }
 
+            transaction.Commit();
+
             connection.Close();
 
             response.HasError = false;
@@ -47,6 +56,11 @@ public class LogTransaction : ILogTransaction
         } 
         catch (Exception error)
         {
+            if (transaction != null) 
+            {
+                transaction.Rollback();
+            }
+
             response.HasError = true;
             response.ErrorMessage = error.Message;
         }
@@ -58,11 +72,15 @@ public class LogTransaction : ILogTransaction
     {
         var response = new Response();
 
+        MySqlTransaction? transaction = null;
+
         try 
         {
             var connection = ConnectToDb();
 
             connection.Open();
+
+            transaction = connection.BeginTransaction();
             
             await using (var command = new MySqlCommand())
             {
@@ -73,6 +91,9 @@ public class LogTransaction : ILogTransaction
                 string sql = $"DELETE FROM Logs WHERE LogID = {logId}";
                 command.CommandText = sql;
 
+                // Define the transaction
+                command.Transaction = transaction;
+
                 // Execute the SQL command
                 var dbResponse = command.ExecuteNonQuery();
 
@@ -81,6 +102,8 @@ public class LogTransaction : ILogTransaction
                 response.LogId = command.LastInsertedId;
             }
 
+            transaction.Commit();
+
             connection.Close();
 
             response.HasError = false;
@@ -88,6 +111,11 @@ public class LogTransaction : ILogTransaction
         } 
         catch (Exception error)
         {
+            if (transaction != null) 
+            {
+                transaction.Rollback();
+            }
+            
             response.HasError = true;
             response.ErrorMessage = error.Message;
         }

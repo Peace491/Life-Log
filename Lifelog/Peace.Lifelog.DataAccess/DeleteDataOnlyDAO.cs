@@ -30,12 +30,16 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO
 
             return response;
         }
+
+        MySqlTransaction? transaction = null;
         
         try 
         {
             var connection = ConnectToDb();
             
             connection.Open();
+
+            transaction = connection.BeginTransaction();
             
             using (var command = new MySqlCommand())
             {
@@ -45,11 +49,16 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO
                 // Define the SQL command
                 command.CommandText = sql;
 
+                // Define the transaction
+                command.Transaction = transaction;
+
                 // Execute the SQL command
                 var dbResponse = command.ExecuteNonQuery();
 
                 response.Output = [dbResponse];
             }
+
+            transaction.Commit();
 
             connection.Close();
             
@@ -62,6 +71,11 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO
         } 
         catch (Exception error)
         {
+            if (transaction != null) 
+            {
+                transaction.Rollback();
+            }
+            
             response.HasError = true;
             response.ErrorMessage = error.Message;
 

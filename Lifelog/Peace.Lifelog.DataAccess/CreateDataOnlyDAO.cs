@@ -30,12 +30,16 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
 
             return response;
         }
+
+        MySqlTransaction? transaction = null;
         
         try 
         {
             var connection = ConnectToDb();
 
             connection.Open();
+
+            transaction = connection.BeginTransaction();
             
             await using (var command = new MySqlCommand())
             {
@@ -45,11 +49,16 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
                 // Define the SQL command
                 command.CommandText = sql;
 
+                // Define the transaction
+                command.Transaction = transaction;
+
                 // Execute the SQL command
                 var dbResponse = command.ExecuteNonQuery();
 
                 response.Output = [command.LastInsertedId, dbResponse];
             }
+
+            transaction.Commit();
 
             connection.Close();
 
@@ -62,6 +71,11 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
         } 
         catch (Exception error)
         {
+            if (transaction != null) 
+            {
+                transaction.Rollback();
+            }
+            
             response.HasError = true;
             response.ErrorMessage = error.Message;
 
