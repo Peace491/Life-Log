@@ -8,8 +8,47 @@ using System.Diagnostics;
 public class LoggingShould
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;
-
     private const int LOG_ID_INDEX = 0;
+    private const string TABLE = "MockLogs";
+
+    // Setup for all test
+    public LoggingShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
+            + "LogTimestamp TIMESTAMP,"
+            + "LogLevel VARCHAR(255),"
+            + "LogCategory VARCHAR(255),"
+            + "LogMessage TEXT"
+        + ");";
+
+        var createImmutableTriggerSql = "DELIMITER //"
+            + "CREATE TRIGGER prevent_log_updates_trigger"
+            + $"BEFORE UPDATE ON {TABLE}"
+            + "FOR EACH ROW"
+            + "BEGIN"
+            +  "    SIGNAL SQLSTATE '45000'"
+            +  $"    SET MESSAGE_TEXT = 'Updates to the {TABLE} table are not allowed.'"
+            + ";"
+            + "END;"
+            + "//"
+            + "DELIMITER ;";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        DDLTransactionDAO.ExecuteDDLCommand(createImmutableTriggerSql);
+    }
+
+    // Cleanup for all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
 
     [Fact]
     public async void LoggingShould_CreateAnInfoLog()
@@ -35,10 +74,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(infoLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -81,10 +120,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(debugLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -128,10 +167,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(warningLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -176,10 +215,10 @@ public class LoggingShould
         
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -250,10 +289,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(testLogLevel, viewLogCategory, testLogMessage);
         timer.Stop();
 
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         
 
         // Assert
@@ -297,10 +336,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(testLogLevel, businessLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -344,10 +383,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(testLogLevel, serverLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -391,10 +430,10 @@ public class LoggingShould
         var createLogResponse = await logger.CreateLog(testLogLevel, dataLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM Logs WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -421,7 +460,7 @@ public class LoggingShould
         string persistentDataStoreLogCategory = "Persistent Data Store";
         string? testLogMessage = null;
 
-        var infoLogSql = $"SELECT * FROM Logs ORDER BY LogTimestamp DESC"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} ORDER BY LogTimestamp DESC"; 
         // TODO fix with updated response object
 
         Stopwatch timer = new Stopwatch();
@@ -436,10 +475,10 @@ public class LoggingShould
         // Act
         timer.Start();
         var createLogResponse = await logger.CreateLog(testLogLevel, persistentDataStoreLogCategory, testLogMessage);
-        var readSql = $"SELECT * from Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var readSql = $"SELECT * from {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
-        var cleanupSql = $"DELETE FROM Logs WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
