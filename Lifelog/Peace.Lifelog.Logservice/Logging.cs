@@ -48,7 +48,7 @@ public class Logging : ILogging
             return response;
         }  
 
-        response = await _logTarget.WriteLog(level, category, message);
+        response = await _logTarget.WriteLog(table, level, category, message);
 
         return response;
     }
