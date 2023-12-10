@@ -188,7 +188,7 @@ public class AppAuthServiceShould : IDisposable
 
         //Act
 
-        var response = appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
 
         // Assert
         Assert.Null(response);
@@ -226,7 +226,7 @@ public class AppAuthServiceShould : IDisposable
 
         //Act
 
-        var response = appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
 
         // Assert
         Assert.Null(response);
