@@ -1,13 +1,15 @@
-﻿namespace Peace.Lifelog.Security
+﻿namespace Peace.Lifelog.Security;
+
+public class AppAuthService
 {
-    public class AppAuthService
+    AppPrincipal AuthenticateUser(AuthenticationRequest authRequest)
     {
-        AppPrincipal AuthenticateUser(AuthenticationRequest authRequest)
-        {
-            throw new NotImplementedException();
-
-        }
-
+        throw new NotImplementedException();
 
     }
+
+
+
+
 }
+

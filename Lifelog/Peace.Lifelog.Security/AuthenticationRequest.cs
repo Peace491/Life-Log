@@ -1,10 +1,10 @@
-﻿namespace Peace.Lifelog.Security
+﻿namespace Peace.Lifelog.Security;
+
+public class AuthenticationRequest
 {
-    public class AuthenticationRequest
-    {
-        public string UserId { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
 
-        public string Proof { get; set; } = string.Empty;
+    public string Proof { get; set; } = string.Empty;
 
-    }
 }
+
