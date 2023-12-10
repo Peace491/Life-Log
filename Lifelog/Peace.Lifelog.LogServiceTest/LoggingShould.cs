@@ -5,7 +5,7 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
 using System.Diagnostics;
-public class LoggingShould
+public class LoggingShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;
     private const int LOG_ID_INDEX = 0;
