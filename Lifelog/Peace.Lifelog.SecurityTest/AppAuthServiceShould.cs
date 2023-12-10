@@ -3,10 +3,14 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using System.Diagnostics;
 
-public class AppAuthServiceShould
+public class AppAuthServiceShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
     private const string TABLE = "app_auth_service_test";
+    private const string USER_ID_COLUMN_NAME = "user_id";
+    private const string PROOF_COLUMN_NAME = "proof";
+    private const string CLAIM_COLUMN_NAME = "claim";
+
 
 
 
@@ -15,14 +19,14 @@ public class AppAuthServiceShould
     {
         var DDLTransactionDAO = new DDLTransactionDAO();
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-        + "(user_id serial  NOT NULL," +
-        "proof text  NOT NULL," +
-        "claim text  NOT NULL," +
-        "CONSTRAINT app_auth_service_test_pk " +
-        "PRIMARY KEY (user_id)" +
+        + $"{USER_ID_COLUMN_NAME} serial  NOT NULL," +
+        $"{PROOF_COLUMN_NAME} text NOT NULL," +
+        $"{CLAIM_COLUMN_NAME} text NOT NULL," +
+        $"PRIMARY KEY ({USER_ID_COLUMN_NAME})" +
         ");";
 
         DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        
     }
 
     // Cleanup for all tests
@@ -32,7 +36,7 @@ public class AppAuthServiceShould
 
         var deleteMockTableSql = $"DROP TABLE {TABLE}";
 
-        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+        var test = await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
     }
 
     // Authentication Tests
@@ -52,9 +56,6 @@ public class AppAuthServiceShould
         var mockUserId = "1";
         var mockProof = "Proof";
         var mockClaim = "Claim";
-        var mockClaimDict = new Dictionary<string, string>() {
-            {"claim", mockClaim}
-        };
 
         var insertSql = $"INSERT INTO {TABLE} (user_id, proof, claim) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
         await createDataOnlyDAO.CreateData(insertSql);
@@ -67,11 +68,11 @@ public class AppAuthServiceShould
 
         //Act
         timer.Start();
-        var response = appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
         timer.Stop();
 
         //Assert
-        Assert.True(response.Claims == mockClaimDict);
+        Assert.True(response.Claims[CLAIM_COLUMN_NAME] == mockClaim);
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
     }
@@ -105,7 +106,7 @@ public class AppAuthServiceShould
         //Act
         try
         {
-            var response = appAuthService.AuthenticateUser(authRequest); // Need to test for all behavior of string
+            var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
         }
         catch (ArgumentNullException)
         {
@@ -146,7 +147,7 @@ public class AppAuthServiceShould
         //Act
         try
         {
-            var response = appAuthService.AuthenticateUser(authRequest); // Need to test for all behavior of string
+            var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
         }
         catch (ArgumentNullException)
         {
