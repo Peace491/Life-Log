@@ -2,5 +2,10 @@
 
 public interface IAuthenticator
 {
-    AppPrincipal AuthenticateUser(AuthenticationRequest authRequest);
+    Task<AppPrincipal>? AuthenticateUser(
+        AuthenticationRequest authRequest, 
+        string table, 
+        string userIdColumnName, 
+        string proofColumnName, 
+        string claimColumnName);
 }
