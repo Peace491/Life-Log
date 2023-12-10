@@ -1,8 +1,8 @@
 ﻿namespace Peace.Lifelog.Security;
 
-public class AppAuthService
+public class AppAuthService : IAuthenticator, IAuthorizor
 {
-    AppPrincipal AuthenticateUser(AuthenticationRequest authRequest)
+    public AppPrincipal AuthenticateUser(AuthenticationRequest authRequest)
     {
         throw new NotImplementedException();
 
