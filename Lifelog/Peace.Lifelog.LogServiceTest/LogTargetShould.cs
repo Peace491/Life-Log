@@ -9,6 +9,7 @@ using System.Diagnostics;
 public class LogTargetShould
 {
     private const int LOG_ID_INDEX = 0;
+    private const string TABLE = "MockLogs";
 
     [Fact]
     public async void LogTargetShould_CreateALogInDataStore()
@@ -30,9 +31,9 @@ public class LogTargetShould
         var logCountSql = $"SELECT COUNT(*) FROM Logs";
 
         // Act
-        var createFirstLogResponse = await logTarget.WriteLog(testLogLevel, testLogCategory, testLogMessage);
+        var createFirstLogResponse = await logTarget.WriteLog(TABLE, testLogLevel, testLogCategory, testLogMessage);
         var initialReadResponse = await readOnlyDAO.ReadData(logCountSql);
-        var createSecondLogResponse = await logTarget.WriteLog(testLogLevel, testLogCategory, testLogMessage);
+        var createSecondLogResponse = await logTarget.WriteLog(TABLE, testLogLevel, testLogCategory, testLogMessage);
         var finalReadResponse = await readOnlyDAO.ReadData(logCountSql);
 
         var deleteFirstSql = $"DELETE FROM Logs Where LogId={createFirstLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
@@ -84,7 +85,7 @@ public class LogTargetShould
 
         // Act
         timer.Start();
-        var createLogResponse = await logTarget.WriteLog(testLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logTarget.WriteLog(TABLE, testLogLevel, testLogCategory, testLogMessage);
         string updateAttemptSql = $"UPDATE Logs SET LogMessage = 'barn burner' WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
         var updateLogResponse = await updateOnlyDao.UpdateData(updateAttemptSql);
         timer.Stop();

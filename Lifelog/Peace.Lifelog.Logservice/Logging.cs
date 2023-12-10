@@ -47,7 +47,7 @@ public class Logging : ILogging
             response.ErrorMessage = $"'{message.Length}' is too long for a Log Message";
             return response;
         }  
-
+        string table = "MockLogs";
         response = await _logTarget.WriteLog(table, level, category, message);
 
         return response;
