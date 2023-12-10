@@ -20,12 +20,12 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
         if (string.IsNullOrWhiteSpace(authRequest.UserId))
         {
-            throw new ArgumentException($"{nameof(authRequest.UserId)} must be valid");
+            throw new ArgumentNullException($"{nameof(authRequest.UserId)} must be valid");
         }
         
         if (string.IsNullOrWhiteSpace(authRequest.Proof))
         {
-            throw new ArgumentException($"{nameof(authRequest.Proof)} must be valid");
+            throw new ArgumentNullException($"{nameof(authRequest.Proof)} must be valid");
         }
 
         #endregion
