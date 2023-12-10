@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LogService", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LogServiceTest", "Peace.Lifelog.LogServiceTest\Peace.Lifelog.LogServiceTest.csproj", "{FEE51A60-E2FB-45F8-9DEE-3989121A8706}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Security", "Peace.Lifelog.Security\Peace.Lifelog.Security.csproj", "{711B928A-858A-4F8D-BBA3-02CE01524AB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.SecurityTest", "Peace.Lifelog.SecurityTest\Peace.Lifelog.SecurityTest.csproj", "{F658E46D-8630-468A-BE16-E75EE7207449}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEE51A60-E2FB-45F8-9DEE-3989121A8706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{711B928A-858A-4F8D-BBA3-02CE01524AB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{711B928A-858A-4F8D-BBA3-02CE01524AB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{711B928A-858A-4F8D-BBA3-02CE01524AB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{711B928A-858A-4F8D-BBA3-02CE01524AB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F658E46D-8630-468A-BE16-E75EE7207449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F658E46D-8630-468A-BE16-E75EE7207449}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F658E46D-8630-468A-BE16-E75EE7207449}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F658E46D-8630-468A-BE16-E75EE7207449}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
