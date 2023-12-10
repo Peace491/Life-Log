@@ -76,6 +76,7 @@ public class AppAuthServiceShould
 
     }
 
+    [Fact]
     public async void AppAuthServiceShould_ReturnThrowArgumentNullException_IfUserIdIsNull()
     {
         //Arrange
@@ -117,6 +118,7 @@ public class AppAuthServiceShould
 
     }
 
+    [Fact]
     public async void AppAuthServiceShould_ReturnThrowArgumentNullException_IfProofIsNull()
     {
         //Arrange
@@ -155,6 +157,78 @@ public class AppAuthServiceShould
 
         // Assert
         Assert.True(nullExceptionIsReturn);
+
+    }
+
+    [Fact]
+    public async void AppAuthServiceShould_ReturnNull_IfUserIdIsNotFound()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appAuthService = new AppAuthService();
+
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "4"; // this user id does not exist
+        var mockProof = "Proof";
+        var mockClaim = "Claim";
+        var mockClaimDict = new Dictionary<string, string>() {
+            {"claim", mockClaim}
+        };
+
+        var authRequest = new AuthenticationRequest();
+
+        authRequest.UserId = mockUserId;
+        authRequest.Proof = mockProof;
+
+
+        //Act
+
+        var response = appAuthService.AuthenticateUser(authRequest);
+
+        // Assert
+        Assert.Null(response);
+
+    }
+
+    [Fact]
+    public async void AppAuthServiceShould_ReturnNull_IfUserIdProofCombinationIsInvalid()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appAuthService = new AppAuthService();
+
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "2"; // this user id does not exist
+        var mockProof = "Proof";
+        var mockWrongProof = "Wrong Proof";
+        var mockClaim = "Claim";
+        var mockClaimDict = new Dictionary<string, string>() {
+            {"claim", mockClaim}
+        };
+
+        var insertSql = $"INSERT INTO {TABLE} (user_id, proof, claim) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
+        await createDataOnlyDAO.CreateData(insertSql);
+
+        var authRequest = new AuthenticationRequest();
+
+        authRequest.UserId = mockUserId;
+        authRequest.Proof = mockWrongProof;
+
+
+        //Act
+
+        var response = appAuthService.AuthenticateUser(authRequest);
+
+        // Assert
+        Assert.Null(response);
 
     }
 
