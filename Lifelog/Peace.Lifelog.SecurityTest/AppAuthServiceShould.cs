@@ -64,10 +64,15 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockProof;
-        authRequest.TableName = TABLE;
-        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
-        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
+
+        var authSQLDetails = new AuthenticationSQLDetails();
+
+        authSQLDetails.TableName = TABLE;
+        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
+        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
+
+        authRequest.AuthSQLDetails = authSQLDetails;
 
         //Act
         timer.Start();
@@ -105,7 +110,6 @@ public class AppAuthServiceShould : IDisposable
         authRequest.Proof = mockProof;
 
         var nullExceptionIsReturn = false;
-
 
         //Act
         try
@@ -155,7 +159,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfSQLDetailIsNull()
+    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfSQLDetailsIsNull()
     {
         //Arrange
         var appAuthService = new AppAuthService();
@@ -206,10 +210,15 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockProof;
-        authRequest.TableName = TABLE;
-        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
-        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
+        
+        var authSQLDetails = new AuthenticationSQLDetails();
+
+        authSQLDetails.TableName = TABLE;
+        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
+        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
+
+        authRequest.AuthSQLDetails = authSQLDetails;
 
 
         //Act
@@ -248,10 +257,15 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockWrongProof;
-        authRequest.TableName = TABLE;
-        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
-        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
+       
+        var authSQLDetails = new AuthenticationSQLDetails();
+
+        authSQLDetails.TableName = TABLE;
+        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
+        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
+
+        authRequest.AuthSQLDetails = authSQLDetails;
 
 
         //Act
@@ -286,10 +300,15 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockProof;
-        authRequest.TableName = mockWrongTableName;
-        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
-        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
+        
+        var authSQLDetails = new AuthenticationSQLDetails();
+
+        authSQLDetails.TableName = mockWrongTableName;
+        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
+        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
+
+        authRequest.AuthSQLDetails = authSQLDetails;
 
 
         //Act

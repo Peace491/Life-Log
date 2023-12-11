@@ -23,11 +23,9 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             throw new ArgumentNullException($"{nameof(authRequest.Proof)} must not be null");
         }
 
-        if (string.IsNullOrEmpty(authRequest.UserIdColumnName) 
-        || string.IsNullOrEmpty(authRequest.ProofColumnName)
-        || string.IsNullOrEmpty(authRequest.ClaimColumnName))
+        if (authRequest.AuthSQLDetails is null)
         {
-            throw new ArgumentNullException($"SQL Details must not be null");
+            throw new ArgumentNullException(nameof(authRequest.AuthSQLDetails));
         }
 
         #endregion
@@ -39,7 +37,11 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             // Step 1: Validate auth request (Go to database to see if it match up)
             var readDataOnlyDAO = new ReadDataOnlyDAO();
 
-            var getClaimsSql = $"SELECT {authRequest.ClaimColumnName} FROM {authRequest.TableName} WHERE {authRequest.UserIdColumnName} = {authRequest.UserId} AND {authRequest.ProofColumnName} = {authRequest.Proof}";
+            var getClaimsSql = 
+            $"SELECT {authRequest.AuthSQLDetails.ClaimColumnName} "
+            + $"FROM {authRequest.AuthSQLDetails.TableName} "
+            + $"WHERE {authRequest.AuthSQLDetails.UserIdColumnName} = {authRequest.UserId} "
+            +   $"AND {authRequest.AuthSQLDetails.ProofColumnName} = {authRequest.Proof}";
 
             var readResponse = await readDataOnlyDAO.ReadData(getClaimsSql);
 
@@ -48,7 +50,7 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
             foreach (List<Object> readResponseData in readResponse.Output)
             {
-                claims.Add(authRequest.ClaimColumnName, readResponseData[0].ToString());
+                claims.Add(authRequest.AuthSQLDetails.ClaimColumnName, readResponseData[0].ToString());
             }
 
             appPrincipal = new AppPrincipal()
