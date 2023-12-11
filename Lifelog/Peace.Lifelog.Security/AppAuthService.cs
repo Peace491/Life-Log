@@ -77,10 +77,10 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         var logging = new Logging(logTarget);
 
         if (hasError) {
-            logging.CreateLog("ERROR", "Persistent Data Store", errorMessage);
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
         }
         
         return appPrincipal;
