@@ -4,12 +4,7 @@ using Peace.Lifelog.DataAccess;
 
 public class AppAuthService : IAuthenticator, IAuthorizor
 {
-    public async Task<AppPrincipal>? AuthenticateUser(
-        AuthenticationRequest authRequest, 
-        string table, 
-        string userIdColumnName, 
-        string proofColumnName, 
-        string claimColumnName)
+    public async Task<AppPrincipal>? AuthenticateUser(AuthenticationRequest authRequest)
     {
         // Early exit
         #region  Validate arguments (value of parameter)
@@ -37,7 +32,7 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             // Step 1: Validate auth request (Go to database to see if it match up)
             var readDataOnlyDAO = new ReadDataOnlyDAO();
 
-            var getClaimsSql = $"SELECT {claimColumnName} FROM {table} WHERE {userIdColumnName} = {authRequest.UserId} AND {proofColumnName} = {authRequest.Proof}";
+            var getClaimsSql = $"SELECT {authRequest.ClaimColumnName} FROM {authRequest.TableName} WHERE {authRequest.UserIdColumnName} = {authRequest.UserId} AND {authRequest.ProofColumnName} = {authRequest.Proof}";
 
             var readResponse = await readDataOnlyDAO.ReadData(getClaimsSql);
 
@@ -46,7 +41,7 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
             foreach (List<Object> readResponseData in readResponse.Output)
             {
-                claims.Add(claimColumnName, readResponseData[0].ToString());
+                claims.Add(authRequest.ClaimColumnName, readResponseData[0].ToString());
             }
 
             appPrincipal = new AppPrincipal()
@@ -54,6 +49,8 @@ public class AppAuthService : IAuthenticator, IAuthorizor
                 UserId = authRequest.UserId,
                 Claims = claims
             };
+
+            // Logging
         } 
         catch (Exception ex)
         {

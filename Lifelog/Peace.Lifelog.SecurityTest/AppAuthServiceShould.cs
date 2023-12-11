@@ -64,11 +64,14 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockProof;
-
+        authRequest.TableName = TABLE;
+        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
+        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
 
         //Act
         timer.Start();
-        var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
+        var response = await appAuthService.AuthenticateUser(authRequest);
         timer.Stop();
 
         //Assert
@@ -107,7 +110,7 @@ public class AppAuthServiceShould : IDisposable
         //Act
         try
         {
-            var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
+            var response = await appAuthService.AuthenticateUser(authRequest);
         }
         catch (ArgumentNullException)
         {
@@ -149,7 +152,7 @@ public class AppAuthServiceShould : IDisposable
         //Act
         try
         {
-            var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
+            var response = await appAuthService.AuthenticateUser(authRequest);
         }
         catch (ArgumentNullException)
         {
@@ -184,11 +187,15 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockProof;
+        authRequest.TableName = TABLE;
+        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
+        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
 
 
         //Act
 
-        var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
+        var response = await appAuthService.AuthenticateUser(authRequest);
 
         // Assert
         Assert.Null(response);
@@ -222,11 +229,14 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockWrongProof;
+        authRequest.TableName = TABLE;
+        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
+        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
 
 
         //Act
-
-        var response = await appAuthService.AuthenticateUser(authRequest, TABLE, USER_ID_COLUMN_NAME, PROOF_COLUMN_NAME, CLAIM_COLUMN_NAME);
+        var response = await appAuthService.AuthenticateUser(authRequest);
 
         // Assert
         Assert.Null(response);
