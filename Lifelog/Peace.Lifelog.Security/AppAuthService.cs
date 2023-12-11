@@ -15,12 +15,19 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
         if (string.IsNullOrWhiteSpace(authRequest.UserId))
         {
-            throw new ArgumentNullException($"{nameof(authRequest.UserId)} must be valid");
+            throw new ArgumentNullException($"{nameof(authRequest.UserId)} must not be null");
         }
         
         if (string.IsNullOrWhiteSpace(authRequest.Proof))
         {
-            throw new ArgumentNullException($"{nameof(authRequest.Proof)} must be valid");
+            throw new ArgumentNullException($"{nameof(authRequest.Proof)} must not be null");
+        }
+
+        if (string.IsNullOrEmpty(authRequest.UserIdColumnName) 
+        || string.IsNullOrEmpty(authRequest.ProofColumnName)
+        || string.IsNullOrEmpty(authRequest.ClaimColumnName))
+        {
+            throw new ArgumentNullException($"SQL Details must not be null");
         }
 
         #endregion

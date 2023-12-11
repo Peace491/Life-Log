@@ -126,20 +126,10 @@ public class AppAuthServiceShould : IDisposable
     public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfProofIsNull()
     {
         //Arrange
-        var timer = new Stopwatch();
-
         var appAuthService = new AppAuthService();
-
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
 
         var mockUserId = "1";
         // var mockProof = ""; is Null 
-        var mockClaim = "Claim";
-        var mockClaimDict = new Dictionary<string, string>() {
-            {"claim", mockClaim}
-        };
 
         var authRequest = new AuthenticationRequest();
 
@@ -165,11 +155,40 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
+    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfSQLDetailIsNull()
+    {
+        //Arrange
+        var appAuthService = new AppAuthService();
+
+        var mockUserId = "1";
+        var mockProof = "Proof";
+
+        var authRequest = new AuthenticationRequest();
+
+        authRequest.UserId = mockUserId;
+        authRequest.Proof = mockProof;
+
+        var nullExceptionIsReturn = false;
+
+        //Act
+        try
+        {
+            var response = await appAuthService.AuthenticateUser(authRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            nullExceptionIsReturn = true;
+        }
+
+        // Assert
+        Assert.True(nullExceptionIsReturn);
+
+    }
+
+    [Fact]
     public async void AppAuthServiceAuthNShould_ReturnNull_IfUserIdIsNotFound()
     {
         //Arrange
-        var timer = new Stopwatch();
-
         var appAuthService = new AppAuthService();
 
         var createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -230,6 +249,44 @@ public class AppAuthServiceShould : IDisposable
         authRequest.UserId = mockUserId;
         authRequest.Proof = mockWrongProof;
         authRequest.TableName = TABLE;
+        authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
+        authRequest.ProofColumnName = PROOF_COLUMN_NAME;
+        authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
+
+
+        //Act
+        var response = await appAuthService.AuthenticateUser(authRequest);
+
+        // Assert
+        Assert.Null(response);
+
+    }
+
+    [Fact]
+    public async void AppAuthServiceAuthNShould_ReturnNull_IfSQLDetailsResultInInvalidSQL()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appAuthService = new AppAuthService();
+
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "2"; // this user id does not exist
+        var mockProof = "Proof";
+        var mockClaim = "Claim";
+        var mockWrongTableName = "Wrong Table";
+
+        var insertSql = $"INSERT INTO {TABLE} (user_id, proof, claim) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
+        await createDataOnlyDAO.CreateData(insertSql);
+
+        var authRequest = new AuthenticationRequest();
+
+        authRequest.UserId = mockUserId;
+        authRequest.Proof = mockProof;
+        authRequest.TableName = mockWrongTableName;
         authRequest.UserIdColumnName = USER_ID_COLUMN_NAME;
         authRequest.ProofColumnName = PROOF_COLUMN_NAME;
         authRequest.ClaimColumnName = CLAIM_COLUMN_NAME;
