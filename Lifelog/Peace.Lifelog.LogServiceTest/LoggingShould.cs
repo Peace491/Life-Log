@@ -71,7 +71,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(infoLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, infoLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -117,7 +117,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(debugLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, debugLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -164,7 +164,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(warningLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, warningLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -211,7 +211,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(errorLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, errorLogLevel, testLogCategory, testLogMessage);
         
         timer.Stop();
         
@@ -254,7 +254,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidLevelResponse = await logger.CreateLog(invalidLogLevel, testLogCategory, testLogMessage);
+        var invalidLevelResponse = await logger.CreateLog(TABLE, invalidLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
         // Assert
@@ -286,7 +286,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(testLogLevel, viewLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, viewLogCategory, testLogMessage);
         timer.Stop();
 
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -333,7 +333,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(testLogLevel, businessLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, businessLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -380,7 +380,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(testLogLevel, serverLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, serverLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -427,7 +427,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(testLogLevel, dataLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, dataLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -474,7 +474,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(testLogLevel, persistentDataStoreLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, persistentDataStoreLogCategory, testLogMessage);
         var readSql = $"SELECT * from {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
@@ -512,7 +512,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidResponse = await logger.CreateLog(testLogLevel, invalidLogCategory, testLogMessage);
+        var invalidResponse = await logger.CreateLog(TABLE, testLogLevel, invalidLogCategory, testLogMessage);
         timer.Stop();
 
         // Assert
@@ -538,7 +538,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidMessageResponse = await logger.CreateLog(testLogLevel, testLogCategory, validLogMessage);
+        var invalidMessageResponse = await logger.CreateLog(TABLE, testLogLevel, testLogCategory, validLogMessage);
         timer.Stop();
 
         // Assert
@@ -583,7 +583,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidMessageResponse = await logger.CreateLog(testLogLevel, testLogCategory, invalidLogMessage);
+        var invalidMessageResponse = await logger.CreateLog(TABLE, testLogLevel, testLogCategory, invalidLogMessage);
         timer.Stop();
 
         // Assert

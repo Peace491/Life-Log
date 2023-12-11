@@ -5,5 +5,5 @@ using Peace.Lifelog.DataAccess;
 
 public interface ILogging
 {
-    Task<Response> CreateLog(string level, string category, string? message);
+    Task<Response> CreateLog(string table, string level, string category, string? message);
 }

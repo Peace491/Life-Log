@@ -2,6 +2,7 @@ namespace Peace.Lifelog.Logging;
 
 using System.Threading.Tasks;
 using DomainModels;
+using MySqlX.XDevAPI.Relational;
 using Peace.Lifelog.DataAccess;
 
 public class Logging : ILogging
@@ -9,7 +10,7 @@ public class Logging : ILogging
     private readonly ILogTarget _logTarget;
     public Logging(ILogTarget logTarget) => _logTarget = logTarget; // Composition Root -> Entry Point
 
-    public async Task<Response> CreateLog(string level, string category, string? message)
+    public async Task<Response> CreateLog(string table, string level, string category, string? message)
     {
         int MAXIMUM_MESSAGE_LENGTH = 2000;
         HashSet<string> validLogLevels = new HashSet<string>
@@ -47,7 +48,7 @@ public class Logging : ILogging
             response.ErrorMessage = $"'{message.Length}' is too long for a Log Message";
             return response;
         }  
-        string table = "MockLogs";
+
         response = await _logTarget.WriteLog(table, level, category, message);
 
         return response;
