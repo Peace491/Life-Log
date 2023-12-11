@@ -1,6 +1,7 @@
 ﻿namespace Peace.Lifelog.Security;
 
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Logging;
 
 public class AppAuthService : IAuthenticator, IAuthorizor
 {
@@ -31,6 +32,9 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         #endregion
 
         AppPrincipal? appPrincipal = null;
+
+        bool hasError = false;
+        string? errorMessage = null;
 
         try // Library should protect against failure 
         {
@@ -63,11 +67,22 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         } 
         catch (Exception ex)
         {
-            var errorMessage = ex.GetBaseException().Message; // First error that trigger
+            hasError = true;
+            errorMessage = ex.GetBaseException().Message; // First error that trigger
             // logging errorMessage // Async
         }
 
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging(logTarget);
 
+        if (hasError) {
+            logging.CreateLog("ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
+        }
+        
         return appPrincipal;
 
     }
