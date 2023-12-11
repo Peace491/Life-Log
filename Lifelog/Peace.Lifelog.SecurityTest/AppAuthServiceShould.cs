@@ -42,7 +42,7 @@ public class AppAuthServiceShould : IDisposable
     // Authentication Tests
     [Fact]
 
-    public async void AppAuthServiceShould_ReturnPrincipal_ForTheUser()
+    public async void AppAuthServiceAuthNShould_ReturnPrincipal_ForTheUser()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -81,7 +81,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnThrowArgumentNullException_IfUserIdIsNull()
+    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfUserIdIsNull()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -123,7 +123,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnThrowArgumentNullException_IfProofIsNull()
+    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfProofIsNull()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -165,7 +165,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnNull_IfUserIdIsNotFound()
+    public async void AppAuthServiceAuthNShould_ReturnNull_IfUserIdIsNotFound()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -203,7 +203,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnNull_IfUserIdProofCombinationIsInvalid()
+    public async void AppAuthServiceAuthNShould_ReturnNull_IfUserIdProofCombinationIsInvalid()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -245,7 +245,7 @@ public class AppAuthServiceShould : IDisposable
 
     // Authorization Tests
     [Fact]
-    public async void AppAuthServiceShould_ReturnTrue_IfUserIsAuthorize()
+    public async void AppAuthServiceAuthZShould_ReturnTrue_IfUserIsAuthorize()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -275,7 +275,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnThrowArgumentNullException_IfCurrentPrincpalIsNull()
+    public async void AppAuthServiceAuthZShould_ReturnThrowArgumentNullException_IfCurrentPrincpalIsNull()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -306,7 +306,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnThrowArgumentNullException_IfRequiredClaimsIsNull()
+    public async void AppAuthServiceAuthZShould_ReturnThrowArgumentNullException_IfRequiredClaimsIsNull()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -338,7 +338,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceShould_ReturnFalse_IfUserIsNotAuthorize()
+    public async void AppAuthServiceAuthZShould_ReturnFalse_IfUserIsNotAuthorize()
     {
         // Arrange
         var timer = new Stopwatch();
