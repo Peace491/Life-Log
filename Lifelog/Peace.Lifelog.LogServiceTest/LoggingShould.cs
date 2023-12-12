@@ -5,6 +5,8 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
 using System.Diagnostics;
+using MySqlX.XDevAPI.Relational;
+
 public class LoggingShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;

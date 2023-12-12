@@ -9,7 +9,6 @@ public class Logging : ILogging
 {
     private readonly ILogTarget _logTarget;
     public Logging(ILogTarget logTarget) => _logTarget = logTarget; // Composition Root -> Entry Point
-
     public async Task<Response> CreateLog(string table, string level, string category, string? message)
     {
         int MAXIMUM_MESSAGE_LENGTH = 2000;
