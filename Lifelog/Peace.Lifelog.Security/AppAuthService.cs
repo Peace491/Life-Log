@@ -62,14 +62,11 @@ public class AppAuthService : IAuthenticator, IAuthorizor
                 UserId = authRequest.UserId,
                 Claims = claims
             };
-
-            // Logging
         } 
         catch (Exception ex)
         {
             hasError = true;
             errorMessage = ex.GetBaseException().Message; // First error that trigger
-            // logging errorMessage // Async
         }
 
         var createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -102,15 +99,30 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             throw new ArgumentNullException(nameof(requiredClaims));
         }
 
+        var isAuthorize = true;
+
         foreach (var claim in requiredClaims)
         {
             if (!currentPrincipal.Claims.Contains(claim)) 
             {
-                return false;
+                isAuthorize = false;
             }
         }
 
-        return true;
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging(logTarget);
+
+        if (isAuthorize)
+        {
+            logging.CreateLog("Logs", "Info", "Business", $"{currentPrincipal.UserId} successfully authorized");
+        }
+        else 
+        {
+            logging.CreateLog("Logs", "ERROR", "Business", $"{currentPrincipal.UserId} failed to authorized");
+        }
+
+        return isAuthorize;
         
     }
 
