@@ -11,13 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainModels", "DomainModel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{B3C2E93A-8F9D-4D1B-9C89-2097727BFF91}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Security", "Peace.Lifelog.Security\Peace.Lifelog.Security.csproj", "{D91A5BA5-3C76-436A-B43D-8239086F3701}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{20392AC1-7197-411B-9B36-3F7E8F7E0B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -36,5 +35,12 @@ Global
 		{B3C2E93A-8F9D-4D1B-9C89-2097727BFF91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3C2E93A-8F9D-4D1B-9C89-2097727BFF91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3C2E93A-8F9D-4D1B-9C89-2097727BFF91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D91A5BA5-3C76-436A-B43D-8239086F3701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D91A5BA5-3C76-436A-B43D-8239086F3701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D91A5BA5-3C76-436A-B43D-8239086F3701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D91A5BA5-3C76-436A-B43D-8239086F3701}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
