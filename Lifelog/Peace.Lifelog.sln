@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Security", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.SecurityTest", "Peace.Lifelog.SecurityTest\Peace.Lifelog.SecurityTest.csproj", "{22803D1E-58E8-448E-874E-5000097F47C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagement", "Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj", "{E991225D-1E40-4D92-9F08-CEB424EC7B66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagementTest", "Peace.Lifelog.UserManagementTest\Peace.Lifelog.UserManagementTest.csproj", "{C02E0BFB-01AF-4852-926C-06B4694586FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{22803D1E-58E8-448E-874E-5000097F47C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22803D1E-58E8-448E-874E-5000097F47C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22803D1E-58E8-448E-874E-5000097F47C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E991225D-1E40-4D92-9F08-CEB424EC7B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E991225D-1E40-4D92-9F08-CEB424EC7B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E991225D-1E40-4D92-9F08-CEB424EC7B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E991225D-1E40-4D92-9F08-CEB424EC7B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C02E0BFB-01AF-4852-926C-06B4694586FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C02E0BFB-01AF-4852-926C-06B4694586FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C02E0BFB-01AF-4852-926C-06B4694586FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C02E0BFB-01AF-4852-926C-06B4694586FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
