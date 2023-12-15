@@ -8,9 +8,9 @@ public class AppUserManagementServiceShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
     private const string TABLE = "TestAccount";
-    private const string MFA_ID_COLUMN_NAME = "MfaId";
-    private const string USER_ID_COLUMN_NAME = "UserId";
-    private const string PASSWORD_COLUMN_NAME = "Password";
+    private const string MFA_ID_TYPE = "Phone";
+    private const string USER_ID_TYPE = "Email";
+    private const string PASSWORD_TYPE = "OTP";
 
     // Setup for all test
     public AppUserManagementServiceShould()
@@ -18,10 +18,10 @@ public class AppUserManagementServiceShould : IDisposable
 
         var DDLTransactionDAO = new DDLTransactionDAO();
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-        + $"{USER_ID_COLUMN_NAME} varchar(32) NOT NULL," +
-        $"{MFA_ID_COLUMN_NAME} varchar(32) NOT NULL," +
-        $"{PASSWORD_COLUMN_NAME} varchar(32) NOT NULL," +
-        $"PRIMARY KEY ({USER_ID_COLUMN_NAME})" +
+        + $"{USER_ID_TYPE} varchar(32) NOT NULL," +
+        $"{MFA_ID_TYPE} varchar(9) NOT NULL," +
+        $"{PASSWORD_TYPE} varchar(32) NOT NULL," +
+        $"PRIMARY KEY ({USER_ID_TYPE})" +
         ");";
 
         DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
@@ -55,11 +55,11 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccount = new TestAccount();
 
-        testAccount.UserId = mockUserId;
-        testAccount.MfaId = mockMfaId;
-        testAccount.Password = mockPassword;
+        testAccount.UserId = (USER_ID_TYPE, mockUserId);
+        testAccount.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccount.Password = (PASSWORD_TYPE, mockPassword);
 
-        var readAccountSql = $"SELECT * FROM {TABLE} WHERE {USER_ID_COLUMN_NAME} = {mockUserId}";
+        var readAccountSql = $"SELECT * FROM {TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
 
         // Act
         timer.Start();
@@ -87,9 +87,9 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccount = new TestAccount();
 
-        testAccount.UserId = null;
-        testAccount.MfaId = mockMfaId;
-        testAccount.Password = mockPassword;
+        testAccount.UserId = (USER_ID_TYPE, string.Empty);
+        testAccount.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccount.Password = (PASSWORD_TYPE, mockPassword);
 
         var errorIsThrown = false;
 
@@ -118,9 +118,9 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccount = new TestAccount();
 
-        testAccount.UserId = mockUserId;
-        testAccount.MfaId = null;
-        testAccount.Password = null;
+        testAccount.UserId = (USER_ID_TYPE, mockUserId);
+        testAccount.MfaId = (MFA_ID_TYPE, string.Empty);
+        testAccount.Password = (PASSWORD_TYPE, string.Empty);
 
         var errorIsThrown = false;
 
@@ -152,15 +152,14 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccount = new TestAccount();
 
-        testAccount.UserId = mockUserId;
-        testAccount.MfaId = mockMfaId;
-        testAccount.Password = mockPassword;
+        testAccount.UserId = (USER_ID_TYPE, mockUserId);
+        testAccount.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccount.Password = (PASSWORD_TYPE, mockPassword);
 
         await appUserManagementService.CreateAccount(testAccount);
 
         // Act
         var createAccountResponse = await appUserManagementService.CreateAccount(testAccount);
-
 
         // Assert
         Assert.True(createAccountResponse.HasError == true);

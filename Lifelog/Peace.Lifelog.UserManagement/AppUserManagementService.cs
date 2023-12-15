@@ -5,14 +5,36 @@ namespace Peace.Lifelog.UserManagement;
 
 public class AppUserManagementService : ICreateAccount
 {
-    public async Task<Response> CreateAccount(UserAccount userAccount)
+    public async Task<Response> CreateAccount(BaseUserAccount userAccount)
     {
         #region Input Validation
+        if (String.IsNullOrEmpty(userAccount.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
         var properties = userAccount.GetType().GetProperties();
         foreach (var property in properties)
         {
-            var value = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null);
-            if (value is null) throw new ArgumentNullException(nameof(userAccount.UserId)); 
+            if (property.Name == "ModelName") {continue; }
+            var tupleString = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null).ToString();
+            
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+            
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
+
+            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value)) 
+            { 
+                throw new ArgumentNullException();
+            }
         }
 
         #endregion
@@ -20,18 +42,31 @@ public class AppUserManagementService : ICreateAccount
         var response = new Response();
 
         // Creating sql statement
-        string sql = $"INSERT INTO {userAccount.GetType().Name} ";
+        string sql = $"INSERT INTO {userAccount.ModelName} ";
 
         string parameters = "(";
         string values = "(";
 
         foreach (var property in properties)
         {
-            var parameter = property.Name;
-            var value = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null);
+            if (property.Name == "ModelName") {continue; }
+
+            var tupleString = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null).ToString();
+            
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+            
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
 
             parameters += $"{parameter}" + ",";
-            values += $"{value}" + ",";
+            values += $"\"{value}\"" + ",";
         }
 
         parameters = parameters.Remove(parameters.Length - 1);

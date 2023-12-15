@@ -4,6 +4,6 @@ using DomainModels;
 
 public interface ICreateAccount
 {
-    public Task<Response> CreateAccount(UserAccount userAccount);
+    public Task<Response> CreateAccount(BaseUserAccount userAccount);
 
 }
