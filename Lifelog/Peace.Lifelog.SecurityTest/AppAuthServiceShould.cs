@@ -6,10 +6,10 @@ using System.Diagnostics;
 public class AppAuthServiceShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
-    private const string TABLE = "app_auth_service_test";
-    private const string USER_ID_COLUMN_NAME = "user_id";
-    private const string PROOF_COLUMN_NAME = "proof";
-    private const string CLAIM_COLUMN_NAME = "claim";
+    private const string TABLE = "TestAppAuthService";
+    private const string USER_ID_TYPE = "UserId";
+    private const string PROOF_TYPE = "Password";
+    private const string CLAIM_TYPE = "UserRole";
 
 
 
@@ -19,10 +19,10 @@ public class AppAuthServiceShould : IDisposable
     {
         var DDLTransactionDAO = new DDLTransactionDAO();
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-        + $"{USER_ID_COLUMN_NAME} serial  NOT NULL," +
-        $"{PROOF_COLUMN_NAME} text NOT NULL," +
-        $"{CLAIM_COLUMN_NAME} text NOT NULL," +
-        $"PRIMARY KEY ({USER_ID_COLUMN_NAME})" +
+        + $"{USER_ID_TYPE} serial  NOT NULL," +
+        $"{PROOF_TYPE} text NOT NULL," +
+        $"{CLAIM_TYPE} text NOT NULL," +
+        $"PRIMARY KEY ({USER_ID_TYPE})" +
         ");";
 
         DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
@@ -57,22 +57,14 @@ public class AppAuthServiceShould : IDisposable
         var mockProof = "Proof";
         var mockClaim = "Claim";
 
-        var insertSql = $"INSERT INTO {TABLE} (user_id, proof, claim) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
+        var insertSql = $"INSERT INTO {TABLE} ({USER_ID_TYPE}, {PROOF_TYPE}, {CLAIM_TYPE}) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
         await createDataOnlyDAO.CreateData(insertSql);
 
-        var authRequest = new AuthenticationRequest();
+        var authRequest = new TestAuthenticationRequest();
 
-        authRequest.UserId = mockUserId;
-        authRequest.Proof = mockProof;
-
-        var authSQLDetails = new AuthenticationSQLDetails();
-
-        authSQLDetails.TableName = TABLE;
-        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
-        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
-
-        authRequest.AuthSQLDetails = authSQLDetails;
+        authRequest.UserId = (USER_ID_TYPE, mockUserId);
+        authRequest.Proof = (PROOF_TYPE ,mockProof);
+        authRequest.Claims = (CLAIM_TYPE, mockClaim);
 
         //Act
         timer.Start();
@@ -80,7 +72,7 @@ public class AppAuthServiceShould : IDisposable
         timer.Stop();
 
         //Assert
-        Assert.True(response.Claims[CLAIM_COLUMN_NAME] == mockClaim);
+        Assert.True(response.Claims[CLAIM_TYPE] == mockClaim);
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
     }
@@ -93,21 +85,15 @@ public class AppAuthServiceShould : IDisposable
 
         var appAuthService = new AppAuthService();
 
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
         // mockUserId is null
         var mockProof = "Proof";
         var mockClaim = "Claim";
-        var mockClaimDict = new Dictionary<string, string>() {
-            {"claim", mockClaim}
-        };
 
-        var authRequest = new AuthenticationRequest();
+        var authRequest = new TestAuthenticationRequest();
 
-        authRequest.UserId = null;
-        authRequest.Proof = mockProof;
+        authRequest.UserId = (USER_ID_TYPE, "");
+        authRequest.Proof = (PROOF_TYPE ,mockProof);
+        authRequest.Claims = (CLAIM_TYPE, mockClaim);
 
         var nullExceptionIsReturn = false;
 
@@ -133,15 +119,15 @@ public class AppAuthServiceShould : IDisposable
         var appAuthService = new AppAuthService();
 
         var mockUserId = "1";
-        // var mockProof = ""; is Null 
+        var mockClaim = "Claim";
 
-        var authRequest = new AuthenticationRequest();
+        var authRequest = new TestAuthenticationRequest();
 
-        authRequest.UserId = mockUserId;
-        authRequest.Proof = null;
+        authRequest.UserId = (USER_ID_TYPE, mockUserId);
+        authRequest.Proof = (PROOF_TYPE ,"");
+        authRequest.Claims = (CLAIM_TYPE, mockClaim);
 
         var nullExceptionIsReturn = false;
-
 
         //Act
         try
@@ -167,10 +153,11 @@ public class AppAuthServiceShould : IDisposable
         var mockUserId = "1";
         var mockProof = "Proof";
 
-        var authRequest = new AuthenticationRequest();
+        var authRequest = new TestAuthenticationRequest();
 
-        authRequest.UserId = mockUserId;
-        authRequest.Proof = mockProof;
+        authRequest.UserId = (USER_ID_TYPE, mockUserId);
+        authRequest.Proof = (PROOF_TYPE ,mockProof);
+        authRequest.Claims = (CLAIM_TYPE, "");
 
         var nullExceptionIsReturn = false;
 
@@ -202,24 +189,12 @@ public class AppAuthServiceShould : IDisposable
         var mockUserId = "4"; // this user id does not exist
         var mockProof = "Proof";
         var mockClaim = "Claim";
-        var mockClaimDict = new Dictionary<string, string>() {
-            {"claim", mockClaim}
-        };
 
-        var authRequest = new AuthenticationRequest();
+        var authRequest = new TestAuthenticationRequest();
 
-        authRequest.UserId = mockUserId;
-        authRequest.Proof = mockProof;
-        
-        var authSQLDetails = new AuthenticationSQLDetails();
-
-        authSQLDetails.TableName = TABLE;
-        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
-        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
-
-        authRequest.AuthSQLDetails = authSQLDetails;
-
+        authRequest.UserId = (USER_ID_TYPE, mockUserId);
+        authRequest.Proof = (PROOF_TYPE ,mockProof);
+        authRequest.Claims = (CLAIM_TYPE, mockClaim);
 
         //Act
 
@@ -250,66 +225,14 @@ public class AppAuthServiceShould : IDisposable
             {"claim", mockClaim}
         };
 
-        var insertSql = $"INSERT INTO {TABLE} (user_id, proof, claim) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
+        var insertSql = $"INSERT INTO {TABLE} ({USER_ID_TYPE}, {PROOF_TYPE}, {CLAIM_TYPE}) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
         await createDataOnlyDAO.CreateData(insertSql);
 
-        var authRequest = new AuthenticationRequest();
+        var authRequest = new TestAuthenticationRequest();
 
-        authRequest.UserId = mockUserId;
-        authRequest.Proof = mockWrongProof;
-       
-        var authSQLDetails = new AuthenticationSQLDetails();
-
-        authSQLDetails.TableName = TABLE;
-        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
-        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
-
-        authRequest.AuthSQLDetails = authSQLDetails;
-
-
-        //Act
-        var response = await appAuthService.AuthenticateUser(authRequest);
-
-        // Assert
-        Assert.Null(response);
-
-    }
-
-    [Fact]
-    public async void AppAuthServiceAuthNShould_ReturnNull_IfSQLDetailsResultInInvalidSQL()
-    {
-        //Arrange
-        var timer = new Stopwatch();
-
-        var appAuthService = new AppAuthService();
-
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-        var mockUserId = "2"; // this user id does not exist
-        var mockProof = "Proof";
-        var mockClaim = "Claim";
-        var mockWrongTableName = "Wrong Table";
-
-        var insertSql = $"INSERT INTO {TABLE} (user_id, proof, claim) VALUES ('{mockUserId}', '{mockProof}', '{mockClaim}')";
-        await createDataOnlyDAO.CreateData(insertSql);
-
-        var authRequest = new AuthenticationRequest();
-
-        authRequest.UserId = mockUserId;
-        authRequest.Proof = mockProof;
-        
-        var authSQLDetails = new AuthenticationSQLDetails();
-
-        authSQLDetails.TableName = mockWrongTableName;
-        authSQLDetails.UserIdColumnName = USER_ID_COLUMN_NAME;
-        authSQLDetails.ProofColumnName = PROOF_COLUMN_NAME;
-        authSQLDetails.ClaimColumnName = CLAIM_COLUMN_NAME;
-
-        authRequest.AuthSQLDetails = authSQLDetails;
-
+        authRequest.UserId = (USER_ID_TYPE, mockUserId);
+        authRequest.Proof = (PROOF_TYPE ,mockWrongProof);
+        authRequest.Claims = (CLAIM_TYPE, mockClaim);
 
         //Act
         var response = await appAuthService.AuthenticateUser(authRequest);

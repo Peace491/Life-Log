@@ -5,7 +5,7 @@ using Peace.Lifelog.Logging;
 
 public class AppAuthService : IAuthenticator, IAuthorizor
 {
-    public async Task<AppPrincipal>? AuthenticateUser(AuthenticationRequest authRequest)
+    public async Task<AppPrincipal>? AuthenticateUser(BaseAuthenticationRequest authRequest)
     {
         // Early exit
         #region  Validate arguments (value of parameter)
@@ -14,19 +14,19 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             throw new ArgumentNullException(nameof(authRequest));
         }
 
-        if (string.IsNullOrWhiteSpace(authRequest.UserId))
+        if (String.IsNullOrEmpty(authRequest.UserId.Type) || String.IsNullOrEmpty(authRequest.UserId.Value))
         {
             throw new ArgumentNullException($"{nameof(authRequest.UserId)} must not be null");
         }
         
-        if (string.IsNullOrWhiteSpace(authRequest.Proof))
+        if (String.IsNullOrEmpty(authRequest.Proof.Type) || String.IsNullOrEmpty(authRequest.Proof.Value))
         {
             throw new ArgumentNullException($"{nameof(authRequest.Proof)} must not be null");
         }
 
-        if (authRequest.AuthSQLDetails is null)
+        if (String.IsNullOrEmpty(authRequest.Claims.Type) || String.IsNullOrEmpty(authRequest.Claims.Value))
         {
-            throw new ArgumentNullException(nameof(authRequest.AuthSQLDetails));
+            throw new ArgumentNullException($"{nameof(authRequest.Claims)} must not be null");
         }
 
         #endregion
@@ -42,10 +42,10 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             var readDataOnlyDAO = new ReadDataOnlyDAO();
 
             var getClaimsSql = 
-            $"SELECT {authRequest.AuthSQLDetails.ClaimColumnName} "
-            + $"FROM {authRequest.AuthSQLDetails.TableName} "
-            + $"WHERE {authRequest.AuthSQLDetails.UserIdColumnName} = {authRequest.UserId} "
-            +   $"AND {authRequest.AuthSQLDetails.ProofColumnName} = {authRequest.Proof}";
+            $"SELECT {authRequest.Claims.Type} "
+            + $"FROM {authRequest.ModelName} "
+            + $"WHERE {authRequest.UserId.Type} = \"{authRequest.UserId.Value}\""
+            +   $"AND {authRequest.Proof.Type} = \"{authRequest.Proof.Value}\"";
 
             var readResponse = await readDataOnlyDAO.ReadData(getClaimsSql);
 
@@ -54,12 +54,12 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
             foreach (List<Object> readResponseData in readResponse.Output)
             {
-                claims.Add(authRequest.AuthSQLDetails.ClaimColumnName, readResponseData[0].ToString());
+                claims.Add(authRequest.Claims.Type, readResponseData[0].ToString());
             }
 
             appPrincipal = new AppPrincipal()
             {
-                UserId = authRequest.UserId,
+                UserId = authRequest.UserId.Value,
                 Claims = claims
             };
         } 

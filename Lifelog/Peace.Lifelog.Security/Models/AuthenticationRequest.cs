@@ -1,9 +1,10 @@
 ﻿namespace Peace.Lifelog.Security;
 
-public class AuthenticationRequest
+public abstract class BaseAuthenticationRequest
 {
-    public string UserId { get; set; } = string.Empty;
-    public string Proof { get; set; } = string.Empty;
-    public AuthenticationSQLDetails AuthSQLDetails { get; set; }
+    public abstract string ModelName { get; }
+    public (string Type, string Value) UserId { get; set; } = ("", "");
+    public (string Type, string Value) Proof { get; set; } = ("", "");
+    public (string Type, string Value) Claims { get; set; } = ("", "");
 }
 
