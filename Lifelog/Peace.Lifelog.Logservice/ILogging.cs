@@ -1,7 +1,6 @@
 namespace Peace.Lifelog.Logging;
 
 using DomainModels;
-using Peace.Lifelog.DataAccess;
 
 public interface ILogging
 {
