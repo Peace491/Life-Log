@@ -11,8 +11,10 @@ public class AppUserManagementServiceShould : IDisposable
     private const string PROFILE_TABLE = "TestProfile";
 
     // Account Field
-    private const string MFA_ID_TYPE = "Phone";
     private const string USER_ID_TYPE = "Email";
+    private const string MFA_ID_TYPE = "Phone";
+    private const string USER_HASH_TYPE = "UserHash";
+    private const string CREATION_DATE_TYPE = "CreationDate";
     private const string PASSWORD_TYPE = "OTP";
     private const string STATUS_TYPE = "Status";
 
@@ -29,6 +31,8 @@ public class AppUserManagementServiceShould : IDisposable
         var createMockAccountTableSql = $"CREATE TABLE {ACCOUNT_TABLE} ("
         + $"{USER_ID_TYPE} varchar(32) NOT NULL," +
         $"{MFA_ID_TYPE} varchar(9) NOT NULL," +
+        $"{USER_HASH_TYPE} varchar(32) NOT NULL," +
+        $"{CREATION_DATE_TYPE} date NOT NULL," +
         $"{PASSWORD_TYPE} varchar(32) NOT NULL," +
         $"{STATUS_TYPE} varchar(10) NOT NULL," +
         $"PRIMARY KEY ({USER_ID_TYPE})" +
@@ -51,10 +55,11 @@ public class AppUserManagementServiceShould : IDisposable
     {
         var DDLTransactionDAO = new DDLTransactionDAO();
 
-        var deleteMockTableSql = $"DROP TABLE {ACCOUNT_TABLE}";
+        var deleteMockAccountTableSql = $"DROP TABLE {ACCOUNT_TABLE}";
+        var deleteMockProfileTableSql = $"DROP TABLE {PROFILE_TABLE}";
 
-        var test = await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
-
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockAccountTableSql);
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockProfileTableSql);
     }
 
     [Fact]
@@ -70,11 +75,14 @@ public class AppUserManagementServiceShould : IDisposable
         var mockUserId = "1";
         var mockMfaId = "2";
         var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
 
         var testAccountRequest = new TestAccountRequest();
 
         testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
         testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (CREATION_DATE_TYPE ,DateTime.Now.ToString("yyyy-MM-dd"));
         testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
 
         var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
@@ -106,8 +114,6 @@ public class AppUserManagementServiceShould : IDisposable
         var testAccountRequest = new TestAccountRequest();
 
         testAccountRequest.UserId = (USER_ID_TYPE, string.Empty);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
 
         var errorIsThrown = false;
 
@@ -137,8 +143,6 @@ public class AppUserManagementServiceShould : IDisposable
         var testAccountRequest = new TestAccountRequest();
 
         testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, string.Empty);
-        testAccountRequest.Password = (PASSWORD_TYPE, string.Empty);
 
         var errorIsThrown = false;
 
@@ -167,11 +171,14 @@ public class AppUserManagementServiceShould : IDisposable
         var mockUserId = "1";
         var mockMfaId = "2";
         var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
 
         var testAccountRequest = new TestAccountRequest();
 
         testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
         testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (CREATION_DATE_TYPE ,DateTime.Now.ToString("yyyy-MM-dd"));
         testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
 
         await appUserManagementService.CreateAccount(testAccountRequest);
@@ -191,15 +198,17 @@ public class AppUserManagementServiceShould : IDisposable
 
         var appUserManagementService = new AppUserManagementService();
 
-        
-        var mockUserId = "MfaAccount";
-        var mockMfaId = "2";
+        var mockUserId = "2";
+        var mockMfaId = "3";
         var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
 
         var createAccountRequest = new TestAccountRequest();
 
         createAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
         createAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        createAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        createAccountRequest.CreationDate = (CREATION_DATE_TYPE ,DateTime.Now.ToString("yyyy-MM-dd"));
         createAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
 
         var createAccountResponse = await appUserManagementService.CreateAccount(createAccountRequest);     
@@ -237,17 +246,20 @@ public class AppUserManagementServiceShould : IDisposable
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
         
-        var mockUserId = "StatusAccount";
-        var mockMfaId = "2";
+        var mockUserId = "2";
+        var mockMfaId = "3";
         var mockPassword = "password";
-        var disableStatus = "Disabled";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
+        var disabledStatus = "Disabled";
 
         var createAccountRequest = new TestAccountRequest();
 
         createAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
         createAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        createAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        createAccountRequest.CreationDate = (CREATION_DATE_TYPE ,DateTime.Now.ToString("yyyy-MM-dd"));
         createAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
-        createAccountRequest.AccountStatus = (STATUS_TYPE, disableStatus);
+        createAccountRequest.AccountStatus = (STATUS_TYPE, disabledStatus);
 
         var createAccountResponse = await appUserManagementService.CreateAccount(createAccountRequest);     
 
@@ -289,20 +301,26 @@ public class AppUserManagementServiceShould : IDisposable
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
-        var mockUserId = "1";
-        var mockMfaId = "2";
+        var mockUserId = "2";
+        var mockMfaId = "3";
         var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
 
         var testAccountRequest = new TestAccountRequest();
 
         testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
         testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (CREATION_DATE_TYPE ,DateTime.Now.ToString("yyyy-MM-dd"));
         testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
 
-        var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
+        var createAccountResponse = await appUserManagementService.CreateAccount(testAccountRequest);  
 
         // Create test account
         await appUserManagementService.CreateAccount(testAccountRequest);
+
+
+        var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
 
         // Act
         timer.Start();
