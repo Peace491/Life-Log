@@ -3,7 +3,7 @@ using Peace.Lifelog.DataAccess;
 
 namespace Peace.Lifelog.UserManagement;
 
-public class AppUserManagementService : ICreateAccount, IRecoverAccount, IDeleteAccount
+public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModifyProfile, IDeleteAccount
 {
     public async Task<Response> CreateAccount(IUserAccountRequest userAccountRequest)
     {
@@ -175,5 +175,68 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IDelete
         response = await deleteOnlyDAO.DeleteData(sql);
 
         return response;
+    }
+
+    public async Task<Response> ModifyProfile(IUserProfileRequest userProfileRequest)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userProfileRequest.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userProfileRequest.UserId.Type) || String.IsNullOrEmpty(userProfileRequest.UserId.Value))
+        {
+            throw new ArgumentNullException();
+        }
+        #endregion
+
+        var response = new Response();
+
+        // Creating sql statement
+        string sql = $"UPDATE {userProfileRequest.ModelName} SET ";
+
+        string parameters = "";
+
+        var properties = userProfileRequest.GetType().GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.Name == "ModelName" || property.Name == "UserId") { continue; }
+
+            var tupleString = userProfileRequest.GetType().GetProperty(property.Name).GetValue(userProfileRequest, null).ToString();
+
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
+
+            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+            {
+                // This property is not being modified
+                continue;
+            }
+
+            parameters += $"{parameter} = \"{value}\"" + ",";
+        }
+
+        parameters = parameters.Remove(parameters.Length - 1); // Remove extra comma at the end
+
+        sql += parameters
+            + $" WHERE {userProfileRequest.UserId.Type} = \"{userProfileRequest.UserId.Value}\"" +  ";";
+
+        // Create user account in DB
+        var updateDataOnlyDAO = new UpdateDataOnlyDAO();
+
+        response = await updateDataOnlyDAO.UpdateData(sql);
+
+        return response;
+        
     }
 }
