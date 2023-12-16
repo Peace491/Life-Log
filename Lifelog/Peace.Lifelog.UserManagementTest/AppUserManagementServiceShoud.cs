@@ -200,7 +200,7 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(deleteAccountResponse.HasError == false);
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
-        Assert.True(readResponse.Output.Count == 0);
+        Assert.True(readResponse.Output is null);
 
     }
 
