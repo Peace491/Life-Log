@@ -45,9 +45,15 @@ public class AppUserManagementServiceShould : IDisposable
         $"CONSTRAINT LifelogProfile_pk PRIMARY KEY ({USER_ID_TYPE})" +
         ");";
 
+        var foreignKeyConstraint = $"ALTER TABLE {PROFILE_TABLE} ADD CONSTRAINT Table_4_LifelogAccount "
+        + $"FOREIGN KEY Table_4_LifelogAccount ({USER_ID_TYPE}) " +
+        $"REFERENCES {ACCOUNT_TABLE} ({USER_ID_TYPE}) " +
+        "ON DELETE CASCADE " +
+        "ON UPDATE CASCADE;";
+
         DDLTransactionDAO.ExecuteDDLCommand(createMockAccountTableSql);
         DDLTransactionDAO.ExecuteDDLCommand(createMockProfileTable);
-
+        DDLTransactionDAO.ExecuteDDLCommand(foreignKeyConstraint);
     }
 
     // Cleanup for all tests
@@ -58,8 +64,9 @@ public class AppUserManagementServiceShould : IDisposable
         var deleteMockAccountTableSql = $"DROP TABLE {ACCOUNT_TABLE}";
         var deleteMockProfileTableSql = $"DROP TABLE {PROFILE_TABLE}";
 
-        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockAccountTableSql);
         await DDLTransactionDAO.ExecuteDDLCommand(deleteMockProfileTableSql);
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockAccountTableSql);
+        
     }
 
     [Fact]
@@ -292,6 +299,71 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
+    public async void AppUserManagementServiceModifyProfileShould_ModifyTheProfileInTheDatabase()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appUserManagementService = new AppUserManagementService();
+
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+
+        // Creating User Account
+        var mockUserId = "1";
+        var mockMfaId = "3";
+        var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
+
+        var testAccountRequest = new TestAccountRequest();
+
+        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (CREATION_DATE_TYPE ,DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+
+        await appUserManagementService.CreateAccount(testAccountRequest);  
+
+        // Creating User Profile based off User Account
+        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
+        var oldZipCode = "12345-6789";
+        var newZipCode = "54321-9876";
+
+        var createProfileSql = $"INSERT INTO {PROFILE_TABLE} ({USER_ID_TYPE}, {DOB_TYPE}, {ZIP_CODE_TYPE}) "
+                                + $"VALUES (\"{mockUserId}\", \"{mockDob}\", \"{oldZipCode}\")";
+
+        var readProfileSql = $"SELECT {ZIP_CODE_TYPE} FROM {PROFILE_TABLE} WHERE {USER_ID_TYPE} = \"{mockUserId}\"";
+
+        await createDataOnlyDAO.CreateData(createProfileSql);
+
+        var testProfileRequest = new TestProfileRequest();
+
+        testProfileRequest.UserId = (USER_ID_TYPE, mockUserId);
+        testProfileRequest.ZipCode = (ZIP_CODE_TYPE, newZipCode);
+
+        
+        // Act
+        timer.Start();
+        var modifyProfileResponse = await appUserManagementService.ModifyProfile(testProfileRequest);
+        timer.Stop();
+
+        var readResponse = await readDataOnlyDAO.ReadData(readProfileSql);
+
+
+        // Assert
+        Assert.True(modifyProfileResponse.HasError == false);
+        foreach (List<Object> responseData in readResponse.Output)
+        {
+            Assert.True(responseData[0].ToString() == newZipCode);
+        }
+
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+
+    }
+
+    [Fact]
     public async void AppUserManagementServiceDeleteAccountShould_DeleteAnAccountInTheDatabase()
     {
         //Arrange
@@ -365,54 +437,6 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(errorIsThrown);
-    }
-
-    [Fact]
-    public async void AppUserManagementServiceModifyProfileShould_ModifyTheProfileInTheDatabase()
-    {
-        //Arrange
-        var timer = new Stopwatch();
-
-        var appUserManagementService = new AppUserManagementService();
-
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-        var mockUserId = "1";
-        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var oldZipCode = "12345-6789";
-        var newZipCode = "54321-9876";
-
-        var createProfileSql = $"INSERT INTO {PROFILE_TABLE} ({USER_ID_TYPE}, {DOB_TYPE}, {ZIP_CODE_TYPE}) "
-                                + $"VALUES (\"{mockUserId}\", \"{mockDob}\", \"{oldZipCode}\")";
-
-        var readProfileSql = $"SELECT {ZIP_CODE_TYPE} FROM {PROFILE_TABLE} WHERE {USER_ID_TYPE} = \"{mockUserId}\"";
-
-        var createResponse = await createDataOnlyDAO.CreateData(createProfileSql);
-
-        var testProfileRequest = new TestProfileRequest();
-
-        testProfileRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testProfileRequest.ZipCode = (ZIP_CODE_TYPE, newZipCode);
-
-        
-        // Act
-        timer.Start();
-        var modifyProfileResponse = await appUserManagementService.ModifyProfile(testProfileRequest);
-        timer.Stop();
-
-        var readResponse = await readDataOnlyDAO.ReadData(readProfileSql);
-
-
-        // Assert
-        Assert.True(modifyProfileResponse.HasError == false);
-        foreach (List<Object> responseData in readResponse.Output)
-        {
-            Assert.True(responseData[0].ToString() == newZipCode);
-        }
-
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
-
     }
 
 }
