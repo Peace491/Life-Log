@@ -7,8 +7,7 @@ namespace Peace.Lifelog.Security;
 
 public class HashService : IHasher
 {
-    // Task<Response>
-    public string Hasher(string plaintext)
+    public Response Hasher(string plaintext)
     {
         var response = new Response();
         try
@@ -23,12 +22,14 @@ public class HashService : IHasher
             // hash operation will be async, could have high cost on system resources.
             // -> after reserach, it cant be async?????
             // return response;
-            return hash;
+            response.Output = [hash];
+            return response;
         }
-        catch
+        catch (ArgumentNullException)
         {
-            string hash = String.Empty;
-            return hash;
+            response.HasError = true;
+            response.ErrorMessage = "Password is null";
+            return response;
         }
     }
 
