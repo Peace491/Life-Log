@@ -3,7 +3,7 @@ using Peace.Lifelog.DataAccess;
 
 namespace Peace.Lifelog.UserManagement;
 
-public class AppUserManagementService : ICreateAccount
+public class AppUserManagementService : ICreateAccount, IDeleteAccount
 {
     public async Task<Response> CreateAccount(BaseUserAccount userAccount)
     {
@@ -16,9 +16,9 @@ public class AppUserManagementService : ICreateAccount
         var properties = userAccount.GetType().GetProperties();
         foreach (var property in properties)
         {
-            if (property.Name == "ModelName") {continue; }
+            if (property.Name == "ModelName") { continue; }
             var tupleString = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null).ToString();
-            
+
             // Remove parentheses and split by comma
             var tupleValues = tupleString.Trim('(', ')').Split(',');
 
@@ -27,12 +27,12 @@ public class AppUserManagementService : ICreateAccount
             {
                 tupleValues[i] = tupleValues[i].Trim();
             }
-            
+
             var parameter = tupleValues[0];
             var value = tupleValues[1];
 
-            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value)) 
-            { 
+            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+            {
                 throw new ArgumentNullException();
             }
         }
@@ -49,10 +49,10 @@ public class AppUserManagementService : ICreateAccount
 
         foreach (var property in properties)
         {
-            if (property.Name == "ModelName") {continue; }
+            if (property.Name == "ModelName") { continue; }
 
             var tupleString = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null).ToString();
-            
+
             // Remove parentheses and split by comma
             var tupleValues = tupleString.Trim('(', ')').Split(',');
 
@@ -61,7 +61,7 @@ public class AppUserManagementService : ICreateAccount
             {
                 tupleValues[i] = tupleValues[i].Trim();
             }
-            
+
             var parameter = tupleValues[0];
             var value = tupleValues[1];
 
@@ -84,5 +84,33 @@ public class AppUserManagementService : ICreateAccount
 
         return response;
 
+    }
+
+    public async Task<Response> DeleteAccount(BaseUserAccount userAccount)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userAccount.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userAccount.UserId.Type) || String.IsNullOrEmpty(userAccount.UserId.Value))
+        {
+            throw new ArgumentNullException();
+        }
+        #endregion
+
+        // Create Response
+        var response = new Response();
+
+        // Sql string
+        var sql = $"DELETE FROM {userAccount.ModelName} WHERE {userAccount.UserId.Type}=\"{userAccount.UserId.Value}\"";
+
+        var deleteOnlyDAO = new DeleteDataOnlyDAO();
+
+        // Get Response
+        response = await deleteOnlyDAO.DeleteData(sql);
+
+        return response;
     }
 }
