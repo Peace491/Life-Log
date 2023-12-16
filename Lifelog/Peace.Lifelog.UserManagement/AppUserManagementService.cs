@@ -3,21 +3,21 @@ using Peace.Lifelog.DataAccess;
 
 namespace Peace.Lifelog.UserManagement;
 
-public class AppUserManagementService : ICreateAccount, IDeleteAccount
+public class AppUserManagementService : ICreateAccount, IRecoverAccount, IDeleteAccount
 {
-    public async Task<Response> CreateAccount(BaseUserAccount userAccount)
+    public async Task<Response> CreateAccount(IUserAccountRequest userAccountRequest)
     {
         #region Input Validation
-        if (String.IsNullOrEmpty(userAccount.ModelName))
+        if (String.IsNullOrEmpty(userAccountRequest.ModelName))
         {
             throw new ArgumentNullException();
         }
 
-        var properties = userAccount.GetType().GetProperties();
+        var properties = userAccountRequest.GetType().GetProperties();
         foreach (var property in properties)
         {
             if (property.Name == "ModelName") { continue; }
-            var tupleString = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null).ToString();
+            var tupleString = userAccountRequest.GetType().GetProperty(property.Name).GetValue(userAccountRequest, null).ToString();
 
             // Remove parentheses and split by comma
             var tupleValues = tupleString.Trim('(', ')').Split(',');
@@ -42,7 +42,7 @@ public class AppUserManagementService : ICreateAccount, IDeleteAccount
         var response = new Response();
 
         // Creating sql statement
-        string sql = $"INSERT INTO {userAccount.ModelName} ";
+        string sql = $"INSERT INTO {userAccountRequest.ModelName} ";
 
         string parameters = "(";
         string values = "(";
@@ -51,7 +51,7 @@ public class AppUserManagementService : ICreateAccount, IDeleteAccount
         {
             if (property.Name == "ModelName") { continue; }
 
-            var tupleString = userAccount.GetType().GetProperty(property.Name).GetValue(userAccount, null).ToString();
+            var tupleString = userAccountRequest.GetType().GetProperty(property.Name).GetValue(userAccountRequest, null).ToString();
 
             // Remove parentheses and split by comma
             var tupleValues = tupleString.Trim('(', ')').Split(',');
@@ -86,15 +86,78 @@ public class AppUserManagementService : ICreateAccount, IDeleteAccount
 
     }
 
-    public async Task<Response> DeleteAccount(BaseUserAccount userAccount)
+    public async Task<Response> RecoverMfaAccount(IMultifactorAccountRequest userAccountRequest)
     {
         #region Input Validation
-        if (String.IsNullOrEmpty(userAccount.ModelName))
+        if (String.IsNullOrEmpty(userAccountRequest.ModelName))
         {
             throw new ArgumentNullException();
         }
 
-        if (String.IsNullOrEmpty(userAccount.UserId.Type) || String.IsNullOrEmpty(userAccount.UserId.Value))
+        if (String.IsNullOrEmpty(userAccountRequest.UserId.Type))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userAccountRequest.MfaId.Type) || String.IsNullOrEmpty(userAccountRequest.MfaId.Value))
+        {
+            throw new ArgumentNullException();
+        }
+        #endregion
+
+        var response = new Response();
+
+        string sql = $"SELECT {userAccountRequest.UserId.Type} FROM {userAccountRequest.ModelName} "
+                    + $"WHERE {userAccountRequest.MfaId.Type} = \"{userAccountRequest.MfaId.Value}\"";
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        response  = await readDataOnlyDAO.ReadData(sql);
+
+        return response;
+    }
+
+    public async Task<Response> RecoverStatusAccount(IStatusAccountRequest userAccountRequest)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userAccountRequest.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userAccountRequest.UserId.Type) || String.IsNullOrEmpty(userAccountRequest.UserId.Value))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userAccountRequest.AccountStatus.Type) || String.IsNullOrEmpty(userAccountRequest.AccountStatus.Value))
+        {
+            throw new ArgumentNullException();
+        }
+        #endregion
+
+        var response = new Response();
+
+        string sql = $"UPDATE {userAccountRequest.ModelName} " 
+                    + $"SET {userAccountRequest.AccountStatus.Type} = \"{userAccountRequest.AccountStatus.Value}\" "
+                    + $"WHERE {userAccountRequest.UserId.Type} = \"{userAccountRequest.UserId.Value}\"";
+
+        var updateDataOnlyDAO = new UpdateDataOnlyDAO();
+
+        response  = await updateDataOnlyDAO.UpdateData(sql);
+
+        return response;
+    }
+
+    public async Task<Response> DeleteAccount(IUserAccountRequest userAccountRequest)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userAccountRequest.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userAccountRequest.UserId.Type) || String.IsNullOrEmpty(userAccountRequest.UserId.Value))
         {
             throw new ArgumentNullException();
         }
@@ -104,7 +167,7 @@ public class AppUserManagementService : ICreateAccount, IDeleteAccount
         var response = new Response();
 
         // Sql string
-        var sql = $"DELETE FROM {userAccount.ModelName} WHERE {userAccount.UserId.Type}=\"{userAccount.UserId.Value}\"";
+        var sql = $"DELETE FROM {userAccountRequest.ModelName} WHERE {userAccountRequest.UserId.Type}=\"{userAccountRequest.UserId.Value}\"";
 
         var deleteOnlyDAO = new DeleteDataOnlyDAO();
 

@@ -4,6 +4,6 @@ using DomainModels;
 
 public interface IDeleteAccount
 {
-    public Task<Response> DeleteAccount(BaseUserAccount userAccount);
+    public Task<Response> DeleteAccount(IUserAccountRequest userAccountRequest);
 
 }
