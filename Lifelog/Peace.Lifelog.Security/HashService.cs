@@ -1,6 +1,7 @@
 ﻿using DomainModels;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Security.Policy;
 
 namespace Peace.Lifelog.Security;
 
@@ -14,23 +15,20 @@ public class HashService : IHasher
         {
             byte[] salt = new byte[0];
             // TODO
-            ICollection<object> hashCollection = new ICollection<string>();
-
-            hashCollection.Add(Convert.ToBase64String(KeyDerivation.Pbkdf2(plaintext,
+            string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(plaintext,
                                                                         salt: salt,
                                                                         prf: KeyDerivationPrf.HMACSHA256,
                                                                         iterationCount: 100000,
-                                                                        numBytesRequested: 256 / 8)));
-            response.Output = hashCollection;
+                                                                        numBytesRequested: 256 / 8));
             // hash operation will be async, could have high cost on system resources.
             // -> after reserach, it cant be async?????
             // return response;
-            return response;
+            return hash;
         }
         catch
         {
-            response.HasError = true;
-            return response;
+            string hash = String.Empty;
+            return hash;
         }
     }
 
