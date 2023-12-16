@@ -1,44 +1,57 @@
 ﻿namespace Peace.Lifelog.SecurityTest;
+
+using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using System.Diagnostics;
+using System.Security.Policy;
 
 public class HashServiceShould
 {
 
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;
+    private const string HASH_NULL_PASSWORD_MESSAGE = "Password is null";
+    
     [Fact]
     public void HasherShould_ReproduceOutputsWithSameInput()
     {
-        // Hash function should produce the same result on the same inputs
         // Arrange
-        string hasherInput = "jackpickleissoCOOL707";
-
+        HashService hashService = new HashService();
         Stopwatch timer = new Stopwatch();
+
+        string hasherInput = "jackpickleissoCOOL707";
+        string expectedHash = "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=";
+
         // Act
         timer.Start();
-        //var hashOne = HashService.Hasher(hasherInput);
+        var hashResponse = hashService.Hasher(hasherInput);
         timer.Stop();
-        //var hashTwo = HashService.Hasher(hasherInput);
 
         // Assert
-        // will need to change if we are using different method sig for hasher (ideally a response object?)
-        //Assert.True(hashOne == hashTwo);
+        Assert.False(hashResponse.HasError);
+        foreach (String hashOutput in hashResponse.Output)
+        {
+            Assert.True(hashOutput == expectedHash);
+        }
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
     }
     [Fact]
     public void HasherShouldNot_HashANullString()
     {
         // Arrange
-        string hasherInput = null;
-        var errorhash = "1234";
+        HashService hashService = new HashService();
+        Stopwatch timer = new Stopwatch();
 
-        // Act/Assert
-        // This just highlights to me that we should be using a response object here
-        //Assert.Fail(HashService.Hasher(hasherInput));
+        string hasherInput = null;
+
+        // Act
+        timer.Start();
+        var hashResponse = hashService.Hasher(hasherInput);
+        timer.Stop();
 
         // Assert
-
+        Assert.True(hashResponse.HasError);
+        Assert.True(hashResponse.ErrorMessage == HASH_NULL_PASSWORD_MESSAGE);
 
     }
 }

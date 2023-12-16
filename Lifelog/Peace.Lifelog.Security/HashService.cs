@@ -22,6 +22,7 @@ public class HashService : IHasher
             // hash operation will be async, could have high cost on system resources.
             // -> after reserach, it cant be async?????
             // return response;
+            response.HasError = false;
             response.Output = [hash];
             return response;
         }
