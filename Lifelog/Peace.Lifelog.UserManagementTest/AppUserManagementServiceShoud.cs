@@ -40,7 +40,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceShould_CreateAnAccountInTheDatabase()
+    public async void AppUserManagementServiceCreateAccountShould_CreateAnAccountInTheDatabase()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -77,7 +77,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceShould_ThrowArgumentNullErrorIfUserIdIsNull()
+    public async void AppUserManagementServiceCreateAccountShould_ThrowArgumentNullErrorIfUserIdIsNull()
     {
         //Arrange
         var appUserManagementService = new AppUserManagementService();
@@ -109,7 +109,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceShould_ThrowArgumentNullErrorIfAccountDetailsIsNull()
+    public async void AppUserManagementServiceCreateAccountShould_ThrowArgumentNullErrorIfAccountDetailsIsNull()
     {
         //Arrange
         var appUserManagementService = new AppUserManagementService();
@@ -140,7 +140,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceShould_ReturnAnErrorResponseIfTheAccountAlreadyExist()
+    public async void AppUserManagementServiceCreateAccountShould_ReturnAnErrorResponseIfTheAccountAlreadyExist()
     {
         //Arrange
         var appUserManagementService = new AppUserManagementService();
