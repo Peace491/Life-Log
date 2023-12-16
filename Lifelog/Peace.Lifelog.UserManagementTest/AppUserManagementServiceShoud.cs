@@ -25,7 +25,7 @@ public class AppUserManagementServiceShould : IDisposable
         ");";
 
         DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
-        
+
     }
 
     // Cleanup for all tests
@@ -163,6 +163,78 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(createAccountResponse.HasError == true);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceShould_DeleteAnAccountInTheDatabase()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appUserManagementService = new AppUserManagementService();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "1";
+        var mockMfaId = "2";
+        var mockPassword = "password";
+
+        var testAccount = new TestAccount();
+
+        testAccount.UserId = (USER_ID_TYPE, mockUserId);
+        testAccount.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccount.Password = (PASSWORD_TYPE, mockPassword);
+
+        var readAccountSql = $"SELECT * FROM {TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
+
+        // Create test account
+        await appUserManagementService.CreateAccount(testAccount);
+
+        // Act
+        timer.Start();
+        var deleteAccountResponse = await appUserManagementService.DeleteAccount(testAccount);
+        timer.Stop();
+
+        var readResponse = await readDataOnlyDAO.ReadData(readAccountSql);
+
+        // Assert
+        Assert.True(deleteAccountResponse.HasError == false);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(readResponse.Output.Count == 0);
+
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceDeleteAccountShould_ThrowArgumentNullErrorIfUserIdIsNull()
+    {
+        //Arrange
+        var appUserManagementService = new AppUserManagementService();
+
+        var mockMfaId = "2";
+        var mockPassword = "password";
+
+        var testAccount = new TestAccount();
+
+        testAccount.UserId = (USER_ID_TYPE, string.Empty);
+        testAccount.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccount.Password = (PASSWORD_TYPE, mockPassword);
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var createAccountResponse = await appUserManagementService.DeleteAccount(testAccount);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+
+        // Assert
+        Assert.True(errorIsThrown);
+
     }
 
 }
