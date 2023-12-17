@@ -222,7 +222,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         var recoverAccountRequest = new TestAccountRequest();
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, "");
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
         recoverAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
 
         // Act

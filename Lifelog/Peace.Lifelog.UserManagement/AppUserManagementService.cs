@@ -1,5 +1,6 @@
 ﻿using DomainModels;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Logging;
 
 namespace Peace.Lifelog.UserManagement;
 
@@ -82,6 +83,18 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         // Populate Response
         response = createResponse;
 
+        // Log Account Creation
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
+        }
+
         return response;
 
     }
@@ -113,6 +126,19 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
         response  = await readDataOnlyDAO.ReadData(sql);
+
+        // Log Account Mfa Recover
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
+        }
 
         return response;
     }
@@ -146,6 +172,19 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         response  = await updateDataOnlyDAO.UpdateData(sql);
 
+        // Log Account Status Recovery
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
+        }
+
         return response;
     }
 
@@ -173,6 +212,21 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         // Get Response
         response = await deleteOnlyDAO.DeleteData(sql);
+
+        // Log Account Creation
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
+        }
+
+        return response;
 
         return response;
     }
@@ -235,6 +289,19 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var updateDataOnlyDAO = new UpdateDataOnlyDAO();
 
         response = await updateDataOnlyDAO.UpdateData(sql);
+
+        // Log Account Creation
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
+        }
 
         return response;
         
