@@ -299,6 +299,163 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
+    public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnArgumentNullExceptionWithNullUserId()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = null;
+        var enableStatus = "Enabled";
+
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var recoverProfileResponse = await appUserManagementService.RecoverStatusAccount(recoverAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnArgumentNullExceptionWithNullAccountStatus()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = "phongNeedsBetterVariableNames";
+        string enableStatus = null;
+
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+
+        var errorIsThrown = false;
+        
+        // Act
+        try
+        {
+            var recoverProfileResponse = await appUserManagementService.RecoverStatusAccount(recoverAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnArgumentNullExceptionWithNullUserId()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = null;
+        var enableStatus = "Enabled";
+
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var recoverProfileResponse = await appUserManagementService.RecoverMfaAccount(recoverAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnArgumentNullExceptionWithNullAccountStatus()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = "phongNeedsBetterVariableNames";
+        string enableStatus = null;
+
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+
+        var errorIsThrown = false;
+        
+        // Act
+        try
+        {
+            var recoverProfileResponse = await appUserManagementService.RecoverMfaAccount(recoverAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+    }
+    [Fact]
+    public async void AppUserManagementServiceRecoverMfaAccountShouldNot_RecoverAnAccountThatDoesNotExist()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = "jackDoesNotExist";
+        string mockMfaId = "multiFactorIsForTheBrids";
+        var enableStatus = "Enabled";
+
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+
+        // Act
+        var recoverProfileResponse = await appUserManagementService.RecoverMfaAccount(recoverAccountRequest);
+        
+        // Assert
+        Assert.True(recoverProfileResponse.HasError);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceRecoverStatusAccountShouldNot_RecoverAnAccountThatDoesNotExist()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = "jackDoesNotExist";
+        var enableStatus = "Enabled";
+
+        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+
+        // Act
+        var recoverProfileResponse = await appUserManagementService.RecoverStatusAccount(recoverAccountRequest);
+        
+        // Assert
+        Assert.True(recoverProfileResponse.HasError);
+    }
+
+    [Fact]
     public async void AppUserManagementServiceModifyProfileShould_ModifyTheProfileInTheDatabase()
     {
         //Arrange
