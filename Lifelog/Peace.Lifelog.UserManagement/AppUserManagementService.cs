@@ -127,7 +127,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         response  = await readDataOnlyDAO.ReadData(sql);
 
-        // Log Account Mfa Recover
+        if (response.Output is null) 
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Account does not exist";
+        }
+
+        // Log Account recovery
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
@@ -172,7 +178,16 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         response  = await updateDataOnlyDAO.UpdateData(sql);
 
-        // Log Account Status Recovery
+        foreach (int rowsAffected in response.Output)
+        {
+            if (rowsAffected == 0)
+            {
+                response.HasError = true;
+                response.ErrorMessage = "Account does not exist";
+            }
+        }
+
+        // Log Account recovery
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
@@ -213,7 +228,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         // Get Response
         response = await deleteOnlyDAO.DeleteData(sql);
 
-        // Log Account Creation
+        if (response.Output is null) 
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Account does not exist";
+        }
+
+        // Log Account deletion
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
@@ -225,8 +246,6 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         else {
             logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
         }
-
-        return response;
 
         return response;
     }
@@ -290,7 +309,16 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         response = await updateDataOnlyDAO.UpdateData(sql);
 
-        // Log Account Creation
+        foreach (int rowsAffected in response.Output)
+        {
+            if (rowsAffected == 0)
+            {
+                response.HasError = true;
+                response.ErrorMessage = "Account does not exist";
+            }
+        }
+
+        // Log Profile modification
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
