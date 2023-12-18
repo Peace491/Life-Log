@@ -1,4 +1,5 @@
-﻿using DomainModels;
+﻿using System.Runtime.Serialization;
+using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
@@ -267,12 +268,15 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         response = await updateDataOnlyDAO.UpdateData(sql);
 
-        foreach (int rowsAffected in response.Output)
+        if (response.HasError == false) // Checking if there is any rows affected
         {
-            if (rowsAffected == 0)
+            foreach (int rowsAffected in response.Output)
             {
-                response.HasError = true;
-                response.ErrorMessage = "Account does not exist";
+                if (rowsAffected == 0)
+                {
+                    response.HasError = true;
+                    response.ErrorMessage = "Account does not exist";
+                }
             }
         }
 
@@ -318,10 +322,16 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         // Get Response
         response = await deleteOnlyDAO.DeleteData(sql);
 
-        if (response.Output is null) 
+        if (response.HasError == false) // Checking if there is any rows affected
         {
-            response.HasError = true;
-            response.ErrorMessage = "Account does not exist";
+            foreach (int rowsAffected in response.Output)
+            {
+                if (rowsAffected == 0)
+                {
+                    response.HasError = true;
+                    response.ErrorMessage = "Account does not exist";
+                }
+            }
         }
 
         // Log Account deletion

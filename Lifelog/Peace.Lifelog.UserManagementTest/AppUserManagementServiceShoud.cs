@@ -180,6 +180,35 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(createAccountResponse.HasError == true);
     }
+
+    [Fact]
+    public async void AppUserManagementServiceCreateAccountShould_ReturnAnErrorResponseIfTheRequestResultInInvalidSQL()
+    {
+        //Arrange
+        var appUserManagementService = new AppUserManagementService();
+
+        var wrongUserIdType = "Phone";
+        var mockUserId = "1";
+        var mockMfaId = "2";
+        var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
+
+        var testAccountRequest = new TestAccountRequest();
+
+        testAccountRequest.UserId = (wrongUserIdType, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
+
+        await appUserManagementService.CreateAccount(testAccountRequest);
+
+        // Act
+        var createAccountResponse = await appUserManagementService.CreateAccount(testAccountRequest);
+
+        // Assert
+        Assert.True(createAccountResponse.HasError == true);
+    }
     #endregion
 
     #region Recover Account Tests
@@ -401,7 +430,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceRecoverMfaAccountShouldNot_RecoverAnAccountThatDoesNotExist()
+    public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnAnErrorResponseIfAccountDoesNotExist()
     {
         // Arrange
         var appUserManagementService = new AppUserManagementService();
@@ -423,7 +452,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
     
     [Fact]
-    public async void AppUserManagementServiceRecoverStatusAccountShouldNot_RecoverAnAccountThatDoesNotExist()
+    public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnAnErrorResponseIfAccountDoesNotExist()
     {
         // Arrange
         var appUserManagementService = new AppUserManagementService();
@@ -437,6 +466,50 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Act
         var recoverProfileResponse = await appUserManagementService.RecoverStatusAccount(recoverAccountRequest);
+
+        // Assert
+        Assert.True(recoverProfileResponse.HasError);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnAnErrorResponseIfRequestResultInIncorrectSQL()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = "jackDoesNotExist";
+        var enableStatus = "Enabled";
+        var wrongUserIdType = "Phone";
+
+        recoverAccountRequest.UserId = (wrongUserIdType, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
+
+        // Act
+        var recoverProfileResponse = await appUserManagementService.RecoverStatusAccount(recoverAccountRequest);
+
+        // Assert
+        Assert.True(recoverProfileResponse.HasError);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnAnErrorResponseIfRequestResultInIncorrectSQL()
+    {
+        // Arrange
+        var appUserManagementService = new AppUserManagementService();
+        var recoverAccountRequest = new TestAccountRequest();
+
+        string mockUserId = "jackDoesNotExist";
+        string mockMfaId = "multiFactorIsForTheBrids";
+        var enableStatus = "Enabled";
+        var wrongUserIdType = "Phone";
+
+        recoverAccountRequest.UserId = (wrongUserIdType, mockUserId);
+        recoverAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
+
+        // Act
+        var recoverProfileResponse = await appUserManagementService.RecoverMfaAccount(recoverAccountRequest);
 
         // Assert
         Assert.True(recoverProfileResponse.HasError);
@@ -581,50 +654,48 @@ public class AppUserManagementServiceShould : IDisposable
 
         var appUserManagementService = new AppUserManagementService();
 
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-
-        // Creating User Account
         var mockUserId = "7";
-        var mockMfaId = "3";
-        var mockPassword = "password";
-        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
-
-        var testAccountRequest = new TestAccountRequest();
-
-        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
-
-        await appUserManagementService.CreateAccount(testAccountRequest);
-
-        // Creating User Profile based off User Account
-        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var oldZipCode = "12345-6789";
         var newZipCode = "54321-9876";
-
-        var readProfileSql = $"SELECT {TestVariables.ZIP_CODE_TYPE} FROM {TestVariables.PROFILE_TABLE} WHERE {TestVariables.USER_ID_TYPE} = \"{mockUserId}\"";
 
         var testProfileRequest = new TestProfileRequest();
 
         testProfileRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
         testProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, newZipCode);
 
+        // Act
+        timer.Start();
+        var modifyProfileResponse = await appUserManagementService.ModifyProfile(testProfileRequest);
+        timer.Stop();
+
+        // Assert
+        Assert.True(modifyProfileResponse.HasError == true);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceModifyProfileShould_ReturnAnErrorResponseIfRequestResultInInvalidSQL()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appUserManagementService = new AppUserManagementService();
+
+        var mockUserId = "7";
+        var newZipCode = "54321-9876";
+        var wrongUserIdType = "Phone";
+
+        var testProfileRequest = new TestProfileRequest();
+
+        testProfileRequest.UserId = (wrongUserIdType, mockUserId);
+        testProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, newZipCode);
 
         // Act
         timer.Start();
         var modifyProfileResponse = await appUserManagementService.ModifyProfile(testProfileRequest);
         timer.Stop();
 
-        var readResponse = await readDataOnlyDAO.ReadData(readProfileSql);
-
-
         // Assert
         Assert.True(modifyProfileResponse.HasError == true);
-
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
     }
     #endregion
@@ -705,6 +776,57 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(errorIsThrown);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceDeleteAccountShould_ReturnAnErrorResponseIfAccountDoesntExist()
+    {
+        //Arrange
+        var appUserManagementService = new AppUserManagementService();
+
+        var mockUserId = "accountDoesntExist";
+        var mockMfaId = "2";
+        var mockPassword = "password";
+
+        var testAccountRequest = new TestAccountRequest();
+
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
+
+        // Act
+        var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+        
+        
+
+        // Assert
+        Assert.True(createAccountResponse.HasError == true);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceDeleteAccountShould_ReturnAnErrorResponseIfRequestResultInInvalidSQL()
+    {
+        //Arrange
+        var appUserManagementService = new AppUserManagementService();
+
+        var mockUserId = "mockUserId";
+        var mockMfaId = "2";
+        var mockPassword = "password";
+        var wrongUserIdType = "Phone";
+
+        var testAccountRequest = new TestAccountRequest();
+
+        testAccountRequest.UserId = (wrongUserIdType, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
+
+        // Act
+        var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+        
+        
+
+        // Assert
+        Assert.True(createAccountResponse.HasError == true);
     }
     #endregion
 }
