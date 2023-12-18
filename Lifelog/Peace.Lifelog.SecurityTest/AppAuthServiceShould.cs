@@ -137,7 +137,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfSQLDetailsIsNull()
+    public async void AppAuthServiceAuthNShould_ReturnThrowArgumentNullException_IfClaimIsNull()
     {
         //Arrange
         var appAuthService = new AppAuthService();
@@ -224,6 +224,35 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
         authRequest.Proof = (TestVariables.PROOF_TYPE ,mockWrongProof);
+        authRequest.Claims = (TestVariables.CLAIM_TYPE, mockClaim);
+
+        //Act
+        var response = await appAuthService.AuthenticateUser(authRequest);
+
+        // Assert
+        Assert.Null(response);
+
+    }
+
+    [Fact]
+    public async void AppAuthServiceAuthNShould_ReturnNull_IfRequestResultInInvalidSQL()
+    {
+        //Arrange
+        var appAuthService = new AppAuthService();
+
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "4"; // this user id does not exist
+        var mockProof = "Proof";
+        var mockClaim = "Claim";
+        var wrongUserIdType = "Phone";
+
+        var authRequest = new TestAuthenticationRequest();
+
+        authRequest.UserId = (wrongUserIdType, mockUserId);
+        authRequest.Proof = (TestVariables.PROOF_TYPE ,mockProof);
         authRequest.Claims = (TestVariables.CLAIM_TYPE, mockClaim);
 
         //Act
