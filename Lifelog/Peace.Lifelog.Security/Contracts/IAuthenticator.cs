@@ -2,5 +2,5 @@
 
 public interface IAuthenticator
 {
-    Task<AppPrincipal>? AuthenticateUser(BaseAuthenticationRequest authRequest);
+    Task<AppPrincipal>? AuthenticateUser(IAuthenticationRequest authRequest);
 }
