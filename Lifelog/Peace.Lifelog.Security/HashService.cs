@@ -5,17 +5,22 @@ using System.Security.Policy;
 
 namespace Peace.Lifelog.Security;
 
+/// <summary>
+/// HashService, containing methods relating to hashing, namely "Hasher"
+/// </summary>
 public class HashService : IHasher
 {
     /// <summary>
-    /// Hash plaintext
+    /// Takes in plaintext and returns hash of the plaintext. 
+    /// If salt or pepper is involved in the hashing of the input, concatenate it onto the input before passing it to Hasher.
+    /// Catches null input as ArgumentNullException
     /// </summary>
     /// <param name="plaintext"></param>
     /// <returns></returns>
     public Response Hasher(string plaintext)
     {
         var response = new Response();
-        try
+        try // Protect vs failure
         {
             // salt protocol will be to concat the salt onto the input string.
             // ^ hasher will not know abt protocols of fields being hashed this way.
