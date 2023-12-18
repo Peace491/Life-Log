@@ -17,16 +17,14 @@ public class HashService : IHasher
         var response = new Response();
         try
         {
+            // salt protocol will be to concat the salt onto the input string.
+            // ^ hasher will not know abt protocols of fields being hashed this way.
             byte[] salt = new byte[0];
-            // TODO
             string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(plaintext,
                                                                         salt: salt,
                                                                         prf: KeyDerivationPrf.HMACSHA256,
                                                                         iterationCount: 100000,
                                                                         numBytesRequested: 256 / 8));
-            // hash operation will be async, could have high cost on system resources.
-            // -> after reserach, it cant be async?????
-            // return response;
             response.HasError = false;
             response.Output = [hash];
             return response;
