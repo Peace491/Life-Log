@@ -7,6 +7,12 @@ namespace Peace.Lifelog.UserManagement;
 
 public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModifyProfile, IDeleteAccount
 {
+    /// <summary>
+    /// Create an Account in specified database model
+    /// </summary>
+    /// <param name="userAccountRequest"></param>
+    /// <returns cref="Response"></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<Response> CreateAccount(IUserAccountRequest userAccountRequest)
     {
         #region Input Validation
@@ -100,6 +106,12 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
     }
 
+    /// <summary>
+    /// Recovery an Account that use the MFA model
+    /// </summary>
+    /// <param name="userAccountRequest"></param>
+    /// <returns cref="Response"></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<Response> RecoverMfaAccount(IMultifactorAccountRequest userAccountRequest)
     {
         #region Input Validation
@@ -150,6 +162,12 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         return response;
     }
 
+    /// <summary>
+    /// Recover an Account that uses the status model
+    /// </summary>
+    /// <param name="userAccountRequest"></param>
+    /// <returns cref="Response"></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<Response> RecoverStatusAccount(IStatusAccountRequest userAccountRequest)
     {
         #region Input Validation
@@ -204,6 +222,12 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         return response;
     }
 
+    /// <summary>
+    /// Modify a Profile in specified database model
+    /// </summary>
+    /// <param name="userAccountRequest"></param>
+    /// <returns cref="Response"></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<Response> ModifyProfile(IUserProfileRequest userProfileRequest)
     {
         #region Input Validation
@@ -297,6 +321,12 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         
     }
 
+    /// <summary>
+    /// Delete an Account in specified database model
+    /// </summary>
+    /// <param name="userAccountRequest"></param>
+    /// <returns cref="Response"></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<Response> DeleteAccount(IUserAccountRequest userAccountRequest)
     {
         #region Input Validation

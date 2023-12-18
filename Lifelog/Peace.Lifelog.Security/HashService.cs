@@ -7,6 +7,11 @@ namespace Peace.Lifelog.Security;
 
 public class HashService : IHasher
 {
+    /// <summary>
+    /// Hash plaintext
+    /// </summary>
+    /// <param name="plaintext"></param>
+    /// <returns></returns>
     public Response Hasher(string plaintext)
     {
         var response = new Response();
