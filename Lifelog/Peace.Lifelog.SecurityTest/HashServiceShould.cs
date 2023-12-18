@@ -39,14 +39,11 @@ public class HashServiceShould
     {
         // Arrange
         HashService hashService = new HashService();
-        Stopwatch timer = new Stopwatch();
 
         string hasherInput = null;
 
         // Act
-        timer.Start();
         var hashResponse = hashService.Hasher(hasherInput);
-        timer.Stop();
 
         // Assert
         Assert.True(hashResponse.HasError);
