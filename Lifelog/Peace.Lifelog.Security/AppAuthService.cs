@@ -3,8 +3,19 @@
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
+/// <summary>
+/// AppAuthService contains methods for authentication and authorization of users
+/// </summary>
 public class AppAuthService : IAuthenticator, IAuthorizor
 {
+    /// <summary>
+    /// Attempts to authenticate a user into a generic system utilizing a relational SQL database
+    /// Upon Successful authenticaiton, returns claims
+    /// Method is logged
+    /// </summary>
+    /// <param name="authRequest"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<AppPrincipal>? AuthenticateUser(IAuthenticationRequest authRequest)
     {
         // Early exit
@@ -84,6 +95,14 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
     }
 
+    /// <summary>
+    /// Checks a user's claims agains the required claims to access something in an application, to determine if a user is authorized for that action.
+    /// Method is logged
+    /// </summary>
+    /// <param name="currentPrincipal"></param>
+    /// <param name="requiredClaims"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public bool IsAuthorize(AppPrincipal currentPrincipal, 
                             IDictionary<string, string> requiredClaims) 
     {

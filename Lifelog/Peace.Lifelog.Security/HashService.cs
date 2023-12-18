@@ -20,7 +20,7 @@ public class HashService : IHasher
     public Response Hasher(string plaintext)
     {
         var response = new Response();
-        try
+        try // Protect vs failure
         {
             // salt protocol will be to concat the salt onto the input string.
             // ^ hasher will not know abt protocols of fields being hashed this way.
