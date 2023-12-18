@@ -5,7 +5,7 @@ using Peace.Lifelog.Logging;
 
 public class AppAuthService : IAuthenticator, IAuthorizor
 {
-    public async Task<AppPrincipal>? AuthenticateUser(BaseAuthenticationRequest authRequest)
+    public async Task<AppPrincipal>? AuthenticateUser(IAuthenticationRequest authRequest)
     {
         // Early exit
         #region  Validate arguments (value of parameter)

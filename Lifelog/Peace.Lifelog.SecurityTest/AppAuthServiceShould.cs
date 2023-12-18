@@ -6,7 +6,7 @@ using System.Diagnostics;
 public class AppAuthServiceShould : IDisposable
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
-    private const string TABLE = "TestAppAuthService";
+    private const string TABLE = "TestAuthentication";
     private const string USER_ID_TYPE = "UserId";
     private const string PROOF_TYPE = "Password";
     private const string CLAIM_TYPE = "UserRole";
