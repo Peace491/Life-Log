@@ -299,6 +299,11 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             parameters += $"{parameter} = \"{value}\"" + ",";
         }
 
+        if (parameters.Length == 0) // Every argument is null
+        {
+            throw new ArgumentNullException();
+        }
+
         parameters = parameters.Remove(parameters.Length - 1); // Remove extra comma at the end
 
         sql += parameters
