@@ -6,9 +6,6 @@ using Peace.Lifelog.UserManagement;
 
 public class AppUserManagementServiceShould : IDisposable
 {
-    
-
-
     // Setup for all test
     public AppUserManagementServiceShould()
     {
@@ -55,6 +52,7 @@ public class AppUserManagementServiceShould : IDisposable
 
     }
 
+    #region Create Account Tests
     [Fact]
     public async void AppUserManagementServiceCreateAccountShould_CreateAnAccountInTheDatabase()
     {
@@ -182,7 +180,9 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(createAccountResponse.HasError == true);
     }
+    #endregion
 
+    #region Recover Account Tests
     [Fact]
     public async void AppUserManagementServiceRecoverAccountShould_RecoverUserIdWithMfaId()
     {
@@ -399,6 +399,7 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(errorIsThrown);
     }
+
     [Fact]
     public async void AppUserManagementServiceRecoverMfaAccountShouldNot_RecoverAnAccountThatDoesNotExist()
     {
@@ -420,7 +421,7 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(recoverProfileResponse.HasError);
     }
-
+    
     [Fact]
     public async void AppUserManagementServiceRecoverStatusAccountShouldNot_RecoverAnAccountThatDoesNotExist()
     {
@@ -440,7 +441,9 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(recoverProfileResponse.HasError);
     }
+    #endregion
 
+    #region Modify Profile Tests
     [Fact]
     public async void AppUserManagementServiceModifyProfileShould_ModifyTheProfileInTheDatabase()
     {
@@ -624,6 +627,9 @@ public class AppUserManagementServiceShould : IDisposable
 
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
     }
+    #endregion
+
+    #region Delete Account Tests
 
     [Fact]
     public async void AppUserManagementServiceDeleteAccountShould_DeleteAnAccountInTheDatabase()
@@ -700,4 +706,5 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(errorIsThrown);
     }
+    #endregion
 }
