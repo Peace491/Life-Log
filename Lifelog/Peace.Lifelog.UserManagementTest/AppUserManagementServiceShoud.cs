@@ -521,83 +521,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceDeleteAccountShould_DeleteAnAccountInTheDatabase()
-    {
-        //Arrange
-        var timer = new Stopwatch();
-
-        var appUserManagementService = new AppUserManagementService();
-
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-        var mockUserId = "2";
-        var mockMfaId = "3";
-        var mockPassword = "password";
-        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
-
-        var testAccountRequest = new TestAccountRequest();
-
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
-
-        var createAccountResponse = await appUserManagementService.CreateAccount(testAccountRequest);
-
-        // Create test account
-        await appUserManagementService.CreateAccount(testAccountRequest);
-
-
-        var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
-
-        // Act
-        timer.Start();
-        var deleteAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
-        timer.Stop();
-
-        var readResponse = await readDataOnlyDAO.ReadData(readAccountSql);
-
-        // Assert
-        Assert.True(deleteAccountResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
-        Assert.True(readResponse.Output is null);
-
-    }
-
-    [Fact]
-    public async void AppUserManagementServiceDeleteAccountShould_ThrowArgumentNullErrorIfUserIdIsNull()
-    {
-        //Arrange
-        var appUserManagementService = new AppUserManagementService();
-
-        var mockMfaId = "2";
-        var mockPassword = "password";
-
-        var testAccountRequest = new TestAccountRequest();
-
-        testAccountRequest.UserId = (USER_ID_TYPE, string.Empty);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
-
-        var errorIsThrown = false;
-
-        // Act
-        try
-        {
-            var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
-        }
-        catch (ArgumentNullException)
-        {
-            errorIsThrown = true;
-        }
-
-        // Assert
-        Assert.True(errorIsThrown);
-    }
-
-    [Fact]
-    public async void AppUserManagementServiceModifyProfileShould_ThrowArguementNullErrorIfUserIdIsNull()
+    public async void AppUserManagementServiceModifyProfileShould_ThrowArgumentNullExceptionIfUserIdIsNull()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -627,7 +551,7 @@ public class AppUserManagementServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppUserManagementServiceModifyProfileShould_ThrowArguementNullErrorIfUserDetailsIsNull()
+    public async void AppUserManagementServiceModifyProfileShould_ThrowArgumentNullExceptionIfUserDetailsIsNull()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -716,5 +640,81 @@ public class AppUserManagementServiceShould : IDisposable
         Assert.True(modifyProfileResponse.HasError == true);
 
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceDeleteAccountShould_DeleteAnAccountInTheDatabase()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var appUserManagementService = new AppUserManagementService();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "2";
+        var mockMfaId = "3";
+        var mockPassword = "password";
+        var mockUserHash = ")@#$*%!)#%*!dgjwodwnjvon";
+
+        var testAccountRequest = new TestAccountRequest();
+
+        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+
+        var createAccountResponse = await appUserManagementService.CreateAccount(testAccountRequest);
+
+        // Create test account
+        await appUserManagementService.CreateAccount(testAccountRequest);
+
+
+        var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
+
+        // Act
+        timer.Start();
+        var deleteAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+        timer.Stop();
+
+        var readResponse = await readDataOnlyDAO.ReadData(readAccountSql);
+
+        // Assert
+        Assert.True(deleteAccountResponse.HasError == false);
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(readResponse.Output is null);
+
+    }
+
+    [Fact]
+    public async void AppUserManagementServiceDeleteAccountShould_ThrowArgumentNullErrorIfUserIdIsNull()
+    {
+        //Arrange
+        var appUserManagementService = new AppUserManagementService();
+
+        var mockMfaId = "2";
+        var mockPassword = "password";
+
+        var testAccountRequest = new TestAccountRequest();
+
+        testAccountRequest.UserId = (USER_ID_TYPE, string.Empty);
+        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
     }
 }

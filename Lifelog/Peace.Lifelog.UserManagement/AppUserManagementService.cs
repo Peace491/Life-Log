@@ -203,53 +203,6 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         return response;
     }
 
-    public async Task<Response> DeleteAccount(IUserAccountRequest userAccountRequest)
-    {
-        #region Input Validation
-        if (String.IsNullOrEmpty(userAccountRequest.ModelName))
-        {
-            throw new ArgumentNullException();
-        }
-
-        if (String.IsNullOrEmpty(userAccountRequest.UserId.Type) || String.IsNullOrEmpty(userAccountRequest.UserId.Value))
-        {
-            throw new ArgumentNullException();
-        }
-        #endregion
-
-        // Create Response
-        var response = new Response();
-
-        // Sql string
-        var sql = $"DELETE FROM {userAccountRequest.ModelName} WHERE {userAccountRequest.UserId.Type}=\"{userAccountRequest.UserId.Value}\"";
-
-        var deleteOnlyDAO = new DeleteDataOnlyDAO();
-
-        // Get Response
-        response = await deleteOnlyDAO.DeleteData(sql);
-
-        if (response.Output is null) 
-        {
-            response.HasError = true;
-            response.ErrorMessage = "Account does not exist";
-        }
-
-        // Log Account deletion
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
-        var logging = new Logging.Logging(logTarget);
-
-        if (response.HasError) {
-            var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
-        }
-        else {
-            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
-        }
-
-        return response;
-    }
-
     public async Task<Response> ModifyProfile(IUserProfileRequest userProfileRequest)
     {
         #region Input Validation
@@ -338,5 +291,52 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         return response;
         
+    }
+
+    public async Task<Response> DeleteAccount(IUserAccountRequest userAccountRequest)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userAccountRequest.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        if (String.IsNullOrEmpty(userAccountRequest.UserId.Type) || String.IsNullOrEmpty(userAccountRequest.UserId.Value))
+        {
+            throw new ArgumentNullException();
+        }
+        #endregion
+
+        // Create Response
+        var response = new Response();
+
+        // Sql string
+        var sql = $"DELETE FROM {userAccountRequest.ModelName} WHERE {userAccountRequest.UserId.Type}=\"{userAccountRequest.UserId.Value}\"";
+
+        var deleteOnlyDAO = new DeleteDataOnlyDAO();
+
+        // Get Response
+        response = await deleteOnlyDAO.DeleteData(sql);
+
+        if (response.Output is null) 
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Account does not exist";
+        }
+
+        // Log Account deletion
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
+        }
+
+        return response;
     }
 }
