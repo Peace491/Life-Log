@@ -5,8 +5,18 @@ using System.Security.Policy;
 
 namespace Peace.Lifelog.Security;
 
+/// <summary>
+/// HashService, containing methods relating to hashing, namely "Hasher"
+/// </summary>
 public class HashService : IHasher
 {
+    /// <summary>
+    /// Takes in plaintext and returns hash of the plaintext. 
+    /// If salt or pepper is involved in the hashing of the input, concatenate it onto the input before passing it to Hasher.
+    /// Catches null input as ArgumentNullException
+    /// </summary>
+    /// <param name="plaintext"></param>
+    /// <returns></returns>
     public Response Hasher(string plaintext)
     {
         var response = new Response();
