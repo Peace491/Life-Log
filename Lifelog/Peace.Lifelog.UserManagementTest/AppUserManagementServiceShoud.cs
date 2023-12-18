@@ -6,21 +6,7 @@ using Peace.Lifelog.UserManagement;
 
 public class AppUserManagementServiceShould : IDisposable
 {
-    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3;
-    private const string ACCOUNT_TABLE = "TestAccount";
-    private const string PROFILE_TABLE = "TestProfile";
-
-    // Account Field
-    private const string USER_ID_TYPE = "Email";
-    private const string MFA_ID_TYPE = "Phone";
-    private const string USER_HASH_TYPE = "UserHash";
-    private const string CREATION_DATE_TYPE = "CreationDate";
-    private const string PASSWORD_TYPE = "OTP";
-    private const string STATUS_TYPE = "Status";
-
-    // Profile Field
-    private const string DOB_TYPE = "DateOfBirth";
-    private const string ZIP_CODE_TYPE = "ZipCode";
+    
 
 
     // Setup for all test
@@ -28,26 +14,26 @@ public class AppUserManagementServiceShould : IDisposable
     {
 
         var DDLTransactionDAO = new DDLTransactionDAO();
-        var createMockAccountTableSql = $"CREATE TABLE {ACCOUNT_TABLE} ("
-        + $"{USER_ID_TYPE} varchar(32) NOT NULL," +
-        $"{MFA_ID_TYPE} varchar(9) NOT NULL," +
-        $"{USER_HASH_TYPE} varchar(32) NOT NULL," +
-        $"{CREATION_DATE_TYPE} date NOT NULL," +
-        $"{PASSWORD_TYPE} varchar(32) NOT NULL," +
-        $"{STATUS_TYPE} varchar(10) NOT NULL," +
-        $"PRIMARY KEY ({USER_ID_TYPE})" +
+        var createMockAccountTableSql = $"CREATE TABLE {TestVariables.ACCOUNT_TABLE} ("
+        + $"{TestVariables.USER_ID_TYPE} varchar(32) NOT NULL," +
+        $"{TestVariables.MFA_ID_TYPE} varchar(9) NOT NULL," +
+        $"{TestVariables.USER_HASH_TYPE} varchar(32) NOT NULL," +
+        $"{TestVariables.CREATION_DATE_TYPE} date NOT NULL," +
+        $"{TestVariables.PASSWORD_TYPE} varchar(32) NOT NULL," +
+        $"{TestVariables.STATUS_TYPE} varchar(10) NOT NULL," +
+        $"PRIMARY KEY ({TestVariables.USER_ID_TYPE})" +
         ");";
 
-        var createMockProfileTable = $"CREATE TABLE {PROFILE_TABLE} ("
-        + $"{USER_ID_TYPE} varchar(32) NOT NULL," +
-        $"{DOB_TYPE} date NOT NULL," +
-        $"{ZIP_CODE_TYPE} varchar(10) NOT NULL," +
-        $"CONSTRAINT LifelogProfile_pk PRIMARY KEY ({USER_ID_TYPE})" +
+        var createMockProfileTable = $"CREATE TABLE {TestVariables.PROFILE_TABLE} ("
+        + $"{TestVariables.USER_ID_TYPE} varchar(32) NOT NULL," +
+        $"{TestVariables.DOB_TYPE} date NOT NULL," +
+        $"{TestVariables.ZIP_CODE_TYPE} varchar(10) NOT NULL," +
+        $"CONSTRAINT LifelogProfile_pk PRIMARY KEY ({TestVariables.USER_ID_TYPE})" +
         ");";
 
-        var foreignKeyConstraint = $"ALTER TABLE {PROFILE_TABLE} ADD CONSTRAINT Table_4_LifelogAccount "
-        + $"FOREIGN KEY Table_4_LifelogAccount ({USER_ID_TYPE}) " +
-        $"REFERENCES {ACCOUNT_TABLE} ({USER_ID_TYPE}) " +
+        var foreignKeyConstraint = $"ALTER TABLE {TestVariables.PROFILE_TABLE} ADD CONSTRAINT Table_4_LifelogAccount "
+        + $"FOREIGN KEY Table_4_LifelogAccount ({TestVariables.USER_ID_TYPE}) " +
+        $"REFERENCES {TestVariables.ACCOUNT_TABLE} ({TestVariables.USER_ID_TYPE}) " +
         "ON DELETE CASCADE " +
         "ON UPDATE CASCADE;";
 
@@ -61,8 +47,8 @@ public class AppUserManagementServiceShould : IDisposable
     {
         var DDLTransactionDAO = new DDLTransactionDAO();
 
-        var deleteMockAccountTableSql = $"DROP TABLE {ACCOUNT_TABLE}";
-        var deleteMockProfileTableSql = $"DROP TABLE {PROFILE_TABLE}";
+        var deleteMockAccountTableSql = $"DROP TABLE {TestVariables.ACCOUNT_TABLE}";
+        var deleteMockProfileTableSql = $"DROP TABLE {TestVariables.PROFILE_TABLE}";
 
         await DDLTransactionDAO.ExecuteDDLCommand(deleteMockProfileTableSql);
         await DDLTransactionDAO.ExecuteDDLCommand(deleteMockAccountTableSql);
@@ -86,13 +72,13 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
-        var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
+        var readAccountSql = $"SELECT * FROM {TestVariables.ACCOUNT_TABLE} WHERE {TestVariables.USER_ID_TYPE} = {mockUserId}";
 
         // Act
         timer.Start();
@@ -104,7 +90,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(createAccountResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(readResponse.Output.Count == 1);
 
     }
@@ -120,7 +106,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, string.Empty);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, string.Empty);
 
         var errorIsThrown = false;
 
@@ -149,7 +135,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
 
         var errorIsThrown = false;
 
@@ -182,11 +168,11 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         await appUserManagementService.CreateAccount(testAccountRequest);
 
@@ -212,18 +198,18 @@ public class AppUserManagementServiceShould : IDisposable
 
         var createAccountRequest = new TestAccountRequest();
 
-        createAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        createAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        createAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        createAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        createAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        createAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        createAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        createAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        createAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        createAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         var createAccountResponse = await appUserManagementService.CreateAccount(createAccountRequest);
 
         var recoverAccountRequest = new TestAccountRequest();
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
 
         // Act
         timer.Start();
@@ -238,7 +224,7 @@ public class AppUserManagementServiceShould : IDisposable
             Assert.True(responseData[0].ToString() == mockUserId);
         }
 
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
 
     }
 
@@ -261,12 +247,12 @@ public class AppUserManagementServiceShould : IDisposable
 
         var createAccountRequest = new TestAccountRequest();
 
-        createAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        createAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        createAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        createAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        createAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
-        createAccountRequest.AccountStatus = (STATUS_TYPE, disabledStatus);
+        createAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        createAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        createAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        createAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        createAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
+        createAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, disabledStatus);
 
         var createAccountResponse = await appUserManagementService.CreateAccount(createAccountRequest);
 
@@ -274,10 +260,10 @@ public class AppUserManagementServiceShould : IDisposable
 
         var recoverAccountRequest = new TestAccountRequest();
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
-        var readAccountStatusSql = $"SELECT {STATUS_TYPE} FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = \"{mockUserId}\"";
+        var readAccountStatusSql = $"SELECT {TestVariables.STATUS_TYPE} FROM {TestVariables.ACCOUNT_TABLE} WHERE {TestVariables.USER_ID_TYPE} = \"{mockUserId}\"";
 
         // Act
         timer.Start();
@@ -294,7 +280,7 @@ public class AppUserManagementServiceShould : IDisposable
             Assert.True(responseData[0].ToString() == enableStatus);
         }
 
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
 
     }
 
@@ -308,8 +294,8 @@ public class AppUserManagementServiceShould : IDisposable
         string mockUserId = null;
         var enableStatus = "Enabled";
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
         var errorIsThrown = false;
 
@@ -337,8 +323,8 @@ public class AppUserManagementServiceShould : IDisposable
         string mockUserId = "phongNeedsBetterVariableNames";
         string enableStatus = null;
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
         var errorIsThrown = false;
 
@@ -366,8 +352,8 @@ public class AppUserManagementServiceShould : IDisposable
         string mockUserId = null;
         var enableStatus = "Enabled";
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
         var errorIsThrown = false;
 
@@ -395,8 +381,8 @@ public class AppUserManagementServiceShould : IDisposable
         string mockUserId = "phongNeedsBetterVariableNames";
         string enableStatus = null;
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
         var errorIsThrown = false;
 
@@ -424,9 +410,9 @@ public class AppUserManagementServiceShould : IDisposable
         string mockMfaId = "multiFactorIsForTheBrids";
         var enableStatus = "Enabled";
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
         // Act
         var recoverProfileResponse = await appUserManagementService.RecoverMfaAccount(recoverAccountRequest);
@@ -445,8 +431,8 @@ public class AppUserManagementServiceShould : IDisposable
         string mockUserId = "jackDoesNotExist";
         var enableStatus = "Enabled";
 
-        recoverAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        recoverAccountRequest.AccountStatus = (STATUS_TYPE, enableStatus);
+        recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
 
         // Act
         var recoverProfileResponse = await appUserManagementService.RecoverStatusAccount(recoverAccountRequest);
@@ -475,11 +461,11 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         await appUserManagementService.CreateAccount(testAccountRequest);
 
@@ -488,17 +474,17 @@ public class AppUserManagementServiceShould : IDisposable
         var oldZipCode = "12345-6789";
         var newZipCode = "54321-9876";
 
-        var createProfileSql = $"INSERT INTO {PROFILE_TABLE} ({USER_ID_TYPE}, {DOB_TYPE}, {ZIP_CODE_TYPE}) "
+        var createProfileSql = $"INSERT INTO {TestVariables.PROFILE_TABLE} ({TestVariables.USER_ID_TYPE}, {TestVariables.DOB_TYPE}, {TestVariables.ZIP_CODE_TYPE}) "
                                 + $"VALUES (\"{mockUserId}\", \"{mockDob}\", \"{oldZipCode}\")";
 
-        var readProfileSql = $"SELECT {ZIP_CODE_TYPE} FROM {PROFILE_TABLE} WHERE {USER_ID_TYPE} = \"{mockUserId}\"";
+        var readProfileSql = $"SELECT {TestVariables.ZIP_CODE_TYPE} FROM {TestVariables.PROFILE_TABLE} WHERE {TestVariables.USER_ID_TYPE} = \"{mockUserId}\"";
 
         await createDataOnlyDAO.CreateData(createProfileSql);
 
         var testProfileRequest = new TestProfileRequest();
 
-        testProfileRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testProfileRequest.ZipCode = (ZIP_CODE_TYPE, newZipCode);
+        testProfileRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, newZipCode);
 
 
         // Act
@@ -516,7 +502,7 @@ public class AppUserManagementServiceShould : IDisposable
             Assert.True(responseData[0].ToString() == newZipCode);
         }
 
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
 
     }
 
@@ -530,7 +516,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testProfileRequest = new TestProfileRequest();
 
-        testProfileRequest.UserId = (USER_ID_TYPE, string.Empty);
+        testProfileRequest.UserId = (TestVariables.USER_ID_TYPE, string.Empty);
 
         var errorIsThrown = false;
 
@@ -562,9 +548,9 @@ public class AppUserManagementServiceShould : IDisposable
 
         var user = "user007";
 
-        testProfileRequest.UserId = (USER_ID_TYPE, user);
-        testProfileRequest.ZipCode = (ZIP_CODE_TYPE, string.Empty);
-        testProfileRequest.DOB = (DOB_TYPE, string.Empty);
+        testProfileRequest.UserId = (TestVariables.USER_ID_TYPE, user);
+        testProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, string.Empty);
+        testProfileRequest.DOB = (TestVariables.DOB_TYPE, string.Empty);
 
         var errorIsThrown = false;
 
@@ -604,11 +590,11 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         await appUserManagementService.CreateAccount(testAccountRequest);
 
@@ -617,15 +603,12 @@ public class AppUserManagementServiceShould : IDisposable
         var oldZipCode = "12345-6789";
         var newZipCode = "54321-9876";
 
-        var createProfileSql = $"INSERT INTO {PROFILE_TABLE} ({USER_ID_TYPE}, {DOB_TYPE}, {ZIP_CODE_TYPE}) "
-                                + $"VALUES (\"{mockUserId}\", \"{mockDob}\", \"{oldZipCode}\")";
-
-        var readProfileSql = $"SELECT {ZIP_CODE_TYPE} FROM {PROFILE_TABLE} WHERE {USER_ID_TYPE} = \"{mockUserId}\"";
+        var readProfileSql = $"SELECT {TestVariables.ZIP_CODE_TYPE} FROM {TestVariables.PROFILE_TABLE} WHERE {TestVariables.USER_ID_TYPE} = \"{mockUserId}\"";
 
         var testProfileRequest = new TestProfileRequest();
 
-        testProfileRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testProfileRequest.ZipCode = (ZIP_CODE_TYPE, newZipCode);
+        testProfileRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, newZipCode);
 
 
         // Act
@@ -639,7 +622,7 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(modifyProfileResponse.HasError == true);
 
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
     }
 
     [Fact]
@@ -659,11 +642,11 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, mockUserId);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.UserHash = (USER_HASH_TYPE, mockUserHash);
-        testAccountRequest.CreationDate = (CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.UserHash = (TestVariables.USER_HASH_TYPE, mockUserHash);
+        testAccountRequest.CreationDate = (TestVariables.CREATION_DATE_TYPE, DateTime.Now.ToString("yyyy-MM-dd"));
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         var createAccountResponse = await appUserManagementService.CreateAccount(testAccountRequest);
 
@@ -671,7 +654,7 @@ public class AppUserManagementServiceShould : IDisposable
         await appUserManagementService.CreateAccount(testAccountRequest);
 
 
-        var readAccountSql = $"SELECT * FROM {ACCOUNT_TABLE} WHERE {USER_ID_TYPE} = {mockUserId}";
+        var readAccountSql = $"SELECT * FROM {TestVariables.ACCOUNT_TABLE} WHERE {TestVariables.USER_ID_TYPE} = {mockUserId}";
 
         // Act
         timer.Start();
@@ -682,7 +665,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(deleteAccountResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(readResponse.Output is null);
 
     }
@@ -698,9 +681,9 @@ public class AppUserManagementServiceShould : IDisposable
 
         var testAccountRequest = new TestAccountRequest();
 
-        testAccountRequest.UserId = (USER_ID_TYPE, string.Empty);
-        testAccountRequest.MfaId = (MFA_ID_TYPE, mockMfaId);
-        testAccountRequest.Password = (PASSWORD_TYPE, mockPassword);
+        testAccountRequest.UserId = (TestVariables.USER_ID_TYPE, string.Empty);
+        testAccountRequest.MfaId = (TestVariables.MFA_ID_TYPE, mockMfaId);
+        testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         var errorIsThrown = false;
 
