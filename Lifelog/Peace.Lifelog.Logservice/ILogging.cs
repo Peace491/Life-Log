@@ -4,5 +4,5 @@ using DomainModels;
 
 public interface ILogging
 {
-    Task<Response> CreateLog(string table, string level, string category, string? message);
+    Task<Response> CreateLog(string table, string userHash, string level, string category, string? message);
 }

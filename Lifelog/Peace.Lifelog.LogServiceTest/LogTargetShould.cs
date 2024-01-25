@@ -11,6 +11,8 @@ public class LogTargetShould : IDisposable
     private const int LOG_ID_INDEX = 0;
     private const string TABLE = "MockLogTarget";
 
+    private const string TEST_HASH = "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=";
+
     // Setup for all test
     public LogTargetShould()
     {
@@ -19,6 +21,7 @@ public class LogTargetShould : IDisposable
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
             + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
             + "LogTimestamp TIMESTAMP,"
+            + "LogUserHash VARCHAR(255),"
             + "LogLevel VARCHAR(255),"
             + "LogCategory VARCHAR(255),"
             + "LogMessage TEXT"
@@ -32,7 +35,7 @@ public class LogTargetShould : IDisposable
             + $"    SET MESSAGE_TEXT = 'Updates to the {TABLE} table are not allowed.'; "
             + "END;";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        var test1 = DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
         var test = DDLTransactionDAO.ExecuteDDLCommand(createImmutableTriggerSql);
 
     }
@@ -67,9 +70,9 @@ public class LogTargetShould : IDisposable
         var logCountSql = $"SELECT COUNT(*) FROM {TABLE}";
 
         // Act
-        var createFirstLogResponse = await logTarget.WriteLog(TABLE, testLogLevel, testLogCategory, testLogMessage);
+        var createFirstLogResponse = await logTarget.WriteLog(TABLE, TEST_HASH, testLogLevel, testLogCategory, testLogMessage);
         var initialReadResponse = await readOnlyDAO.ReadData(logCountSql);
-        var createSecondLogResponse = await logTarget.WriteLog(TABLE, testLogLevel, testLogCategory, testLogMessage);
+        var createSecondLogResponse = await logTarget.WriteLog(TABLE, TEST_HASH, testLogLevel, testLogCategory, testLogMessage);
         var finalReadResponse = await readOnlyDAO.ReadData(logCountSql);
 
         var deleteFirstSql = $"DELETE FROM {TABLE} Where LogId={createFirstLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
@@ -121,7 +124,7 @@ public class LogTargetShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logTarget.WriteLog(TABLE, testLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logTarget.WriteLog(TABLE, TEST_HASH, testLogLevel, testLogCategory, testLogMessage);
         string updateAttemptSql = $"UPDATE {TABLE} SET LogMessage = 'barn burner' WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
         var updateLogResponse = await updateOnlyDao.UpdateData(updateAttemptSql);
         timer.Stop();

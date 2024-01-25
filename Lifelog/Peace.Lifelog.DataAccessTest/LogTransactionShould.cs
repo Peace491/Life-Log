@@ -74,8 +74,7 @@ public class LogTransactionShould : IDisposable
     public async void LogTransactionShould_LogReadTransactionInDataStore()
     {
         // Arrange
-        
-
+    
         var timer = new Stopwatch();
         var createOnlyDAO = new CreateDataOnlyDAO();
         var readOnlyDAO = new ReadDataOnlyDAO();
