@@ -96,10 +96,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
         }
 
         return response;
@@ -153,10 +153,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
         return response;
@@ -213,10 +213,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
         return response;
@@ -311,10 +311,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
+            logging.CreateLog("Logs", "Info", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
         }
 
         return response;
@@ -371,10 +371,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
+            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
         }
 
         return response;

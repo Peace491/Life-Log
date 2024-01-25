@@ -33,7 +33,7 @@ public class LogTransaction : ILogTransaction
                 command.Connection = connection;
 
                 // Define the SQL command
-                string sql = $"INSERT INTO Logs (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{level}', 'Persistent Data Store', '{message}')";
+                string sql = $"INSERT INTO Logs (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (NOW(), 'temp', '{level}', 'Persistent Data Store', '{message}')";
                 command.CommandText = sql;
 
                 // Define the transaction

@@ -13,6 +13,8 @@ public class LoggingShould : IDisposable
     private const int LOG_ID_INDEX = 0;
     private const string TABLE = "MockLogs";
 
+    private const string TEST_HASH = "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=";
+
     // Setup for all test
     public LoggingShould()
     {
@@ -21,6 +23,7 @@ public class LoggingShould : IDisposable
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
             + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
             + "LogTimestamp TIMESTAMP,"
+            + "LogUserHash VARCHAR(255),"
             + "LogLevel VARCHAR(255),"
             + "LogCategory VARCHAR(255),"
             + "LogMessage TEXT"
@@ -55,7 +58,7 @@ public class LoggingShould : IDisposable
     [Fact]
     public async void LoggingShould_CreateAnInfoLog()
     {
-        // Arrange
+        // Arrange 
         string infoLogLevel = "Info";
         string testLogCategory = "View";
         string? testLogMessage = null;
@@ -73,7 +76,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, infoLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH, infoLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -87,7 +90,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[2].ToString() == infoLogLevel);
+            Assert.True(readLogResponseData[3].ToString() == infoLogLevel);
         }
         
         // Cleanup
@@ -119,7 +122,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, debugLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  debugLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -133,7 +136,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[2].ToString() == debugLogLevel);
+            Assert.True(readLogResponseData[3].ToString() == debugLogLevel);
         }
         
         // Cleanup
@@ -166,7 +169,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, warningLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  warningLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -180,7 +183,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[2].ToString() == warningLogLevel);
+            Assert.True(readLogResponseData[3].ToString() == warningLogLevel);
         }
         
         // Cleanup
@@ -213,7 +216,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, errorLogLevel, testLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  errorLogLevel, testLogCategory, testLogMessage);
         
         timer.Stop();
         
@@ -228,7 +231,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[2].ToString() == errorLogLevel);
+            Assert.True(readLogResponseData[3].ToString() == errorLogLevel);
         }
         
         // Cleanup
@@ -256,7 +259,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidLevelResponse = await logger.CreateLog(TABLE, invalidLogLevel, testLogCategory, testLogMessage);
+        var invalidLevelResponse = await logger.CreateLog(TABLE, TEST_HASH,  invalidLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
         // Assert
@@ -288,7 +291,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, viewLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, viewLogCategory, testLogMessage);
         timer.Stop();
 
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -303,7 +306,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[3].ToString() == viewLogCategory);
+            Assert.True(readLogResponseData[4].ToString() == viewLogCategory);
         }
         
         // Cleanup
@@ -335,7 +338,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, businessLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, businessLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -349,7 +352,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[3].ToString() == businessLogCategory);
+            Assert.True(readLogResponseData[4].ToString() == businessLogCategory);
         }
         
         // Cleanup
@@ -382,7 +385,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, serverLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, serverLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -396,7 +399,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[3].ToString() == serverLogCategory);
+            Assert.True(readLogResponseData[4].ToString() == serverLogCategory);
         }
         
         // Cleanup
@@ -429,7 +432,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, dataLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, dataLogCategory, testLogMessage);
         timer.Stop();
         
         var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
@@ -443,7 +446,7 @@ public class LoggingShould : IDisposable
         Assert.True(readLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[3].ToString() == dataLogCategory);
+            Assert.True(readLogResponseData[4].ToString() == dataLogCategory);
         }
         
         // Cleanup
@@ -476,7 +479,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var createLogResponse = await logger.CreateLog(TABLE, testLogLevel, persistentDataStoreLogCategory, testLogMessage);
+        var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, persistentDataStoreLogCategory, testLogMessage);
         var readSql = $"SELECT * from {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
@@ -487,7 +490,7 @@ public class LoggingShould : IDisposable
         Assert.True(createLogResponse.HasError == false);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
         {
-            Assert.True(readLogResponseData[3].ToString() == persistentDataStoreLogCategory);
+            Assert.True(readLogResponseData[4].ToString() == persistentDataStoreLogCategory);
         }
         
         // Cleanup
@@ -514,7 +517,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidResponse = await logger.CreateLog(TABLE, testLogLevel, invalidLogCategory, testLogMessage);
+        var invalidResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, invalidLogCategory, testLogMessage);
         timer.Stop();
 
         // Assert
@@ -540,7 +543,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidMessageResponse = await logger.CreateLog(TABLE, testLogLevel, testLogCategory, validLogMessage);
+        var invalidMessageResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, testLogCategory, validLogMessage);
         timer.Stop();
 
         // Assert
@@ -585,7 +588,7 @@ public class LoggingShould : IDisposable
 
         // Act
         timer.Start();
-        var invalidMessageResponse = await logger.CreateLog(TABLE, testLogLevel, testLogCategory, invalidLogMessage);
+        var invalidMessageResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, testLogCategory, invalidLogMessage);
         timer.Stop();
 
         // Assert

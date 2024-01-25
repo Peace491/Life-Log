@@ -13,7 +13,7 @@ public class Logging : ILogging
     public async Task<Response> CreateLog(string table, string userHash, string level, string category, string? message)
     {
         int MAXIMUM_MESSAGE_LENGTH = 2000;
-        int HASH_LENGTH = 64;
+        int HASH_LENGTH = 44;
         HashSet<string> validLogLevels = new HashSet<string>
         {
             "Info", 
