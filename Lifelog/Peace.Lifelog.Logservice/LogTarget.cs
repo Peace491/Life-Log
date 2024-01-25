@@ -11,9 +11,9 @@ public class LogTarget : ILogTarget
     {
         this.createOnlyDAO = createOnlyDAO;
     }
-    public async Task<Response> WriteLog(string table, string level, string category, string? message)
+    public async Task<Response> WriteLog(string table, string userHash, string level, string category, string? message)
     {
-        string createLogSql = $"INSERT INTO {table} (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{level}', '{category}', '{message}')"; // Need to change date format
+        string createLogSql = $"INSERT INTO {table} (LogTimestamp, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{userHash}', '{level}', '{category}', '{message}')"; // Need to change date format
 
         var createLogResponse = await createOnlyDAO.CreateData(createLogSql); // insert sql statement to insert into log table.
 

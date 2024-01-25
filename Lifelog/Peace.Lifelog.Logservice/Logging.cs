@@ -1,5 +1,6 @@
 namespace Peace.Lifelog.Logging;
 
+using System.Data;
 using System.Threading.Tasks;
 using DomainModels;
 using MySqlX.XDevAPI.Relational;
@@ -9,9 +10,10 @@ public class Logging : ILogging
 {
     private readonly ILogTarget _logTarget;
     public Logging(ILogTarget logTarget) => _logTarget = logTarget; // Composition Root -> Entry Point
-    public async Task<Response> CreateLog(string table, string level, string category, string? message)
+    public async Task<Response> CreateLog(string table, string userHash, string level, string category, string? message)
     {
         int MAXIMUM_MESSAGE_LENGTH = 2000;
+        int HASH_LENGTH = 64;
         HashSet<string> validLogLevels = new HashSet<string>
         {
             "Info", 
@@ -28,6 +30,12 @@ public class Logging : ILogging
             "Persistent Data Store"
         };
         var response = new Response();
+
+        if (userHash.Length != HASH_LENGTH)
+        {
+            response.HasError = true;
+            response.ErrorMessage = $"'{userHash.Length}' is not the correct length, indicating an invalid hash";
+        }
 
         if (!validLogLevels.Contains(level))
         {
@@ -48,7 +56,7 @@ public class Logging : ILogging
             return response;
         }  
 
-        response = await _logTarget.WriteLog(table, level, category, message);
+        response = await _logTarget.WriteLog(table, userHash, level, category, message);
 
         return response;
     }
