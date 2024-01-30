@@ -2,8 +2,8 @@
 
 public class LLIRecurrence
 {
-    public LLIRecurrenceStatus LLIRecurrenceStatus { get; set; } = LLIRecurrenceStatus.Off;
-    public LLIRecurrenceFrequency? LLIRecurrenceFrequency { get; set; } = null;
+    public LLIRecurrenceStatus Status { get; set; } = LLIRecurrenceStatus.Off;
+    public LLIRecurrenceFrequency? Frequency { get; set; } = null;
 }
 
 public enum LLIRecurrenceStatus

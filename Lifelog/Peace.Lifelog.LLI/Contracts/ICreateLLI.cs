@@ -4,5 +4,5 @@ using DomainModels;
 
 public interface ICreateLLI
 {
-    Response CreateLLI(LLI lli);
+    Task<Response> CreateLLI(LLI lli);
 }
