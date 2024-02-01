@@ -3,7 +3,7 @@ using Peace.Lifelog.UserManagement;
 
 namespace Peace.Lifelog.UserManagementTest;
 
-public class TestProfileRequest : IUserProfileRequest
+public class LifelogProfileRequest : IUserProfileRequest
 {
     public string ModelName { get; } = "LifelogProfile";
     public (string Type, string Value) UserId { get; set; }
