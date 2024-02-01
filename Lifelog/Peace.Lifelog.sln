@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagemen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LLI", "Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj", "{B4BF5E99-A333-429B-8F8D-91C39EBD07BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LLITest", "Peace.Lifelog.LLITest\Peace.Lifelog.LLITest.csproj", "{8F687E1F-A815-4E10-8E12-81460B30490B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{B4BF5E99-A333-429B-8F8D-91C39EBD07BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4BF5E99-A333-429B-8F8D-91C39EBD07BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4BF5E99-A333-429B-8F8D-91C39EBD07BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F687E1F-A815-4E10-8E12-81460B30490B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F687E1F-A815-4E10-8E12-81460B30490B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F687E1F-A815-4E10-8E12-81460B30490B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F687E1F-A815-4E10-8E12-81460B30490B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

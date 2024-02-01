@@ -3,7 +3,7 @@
 public class LLIRecurrence
 {
     public LLIRecurrenceStatus Status { get; set; } = LLIRecurrenceStatus.Off;
-    public LLIRecurrenceFrequency? Frequency { get; set; } = null;
+    public LLIRecurrenceFrequency? Frequency { get; set; } = LLIRecurrenceFrequency.None;
 }
 
 public enum LLIRecurrenceStatus
@@ -16,5 +16,6 @@ public enum LLIRecurrenceFrequency
 {
     Weekly,
     Monthly,
-    Yearly
+    Yearly,
+    None
 }

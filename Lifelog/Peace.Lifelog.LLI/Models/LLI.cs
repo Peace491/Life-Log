@@ -8,7 +8,7 @@ public class LLI
     public LLICategory Category { get; set; }
     public LLIStatus Status { get; set; } = LLIStatus.Active;
     public LLIVisibility Visibility { get; set; } = LLIVisibility.Public;
-    public DateOnly? Deadline { get; set; } = null;
+    public string Deadline { get; set; } = string.Empty;
     public int? Cost { get; set; } = null;
     public LLIRecurrence Recurrence { get; set; } = new LLIRecurrence(); // LLIRecurrence has the default values
 }

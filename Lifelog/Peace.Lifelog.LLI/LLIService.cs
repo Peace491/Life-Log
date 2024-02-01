@@ -10,7 +10,7 @@ public class LLIService : ICreateLLI
     {
         var response = new Response();
 
-        var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, ReccurenceStatus, ReccurenceFrequency) VALUES ("
+        var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency) VALUES ("
         + $"\"{lli.UserHash}\", "
         + $"\"{lli.Title}\", "
         + $"\"{lli.Category}\", "
