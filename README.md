@@ -28,7 +28,7 @@ __Quick Access:__
 
 Prior to coding we collected the application requirements from our client, in this case our Professor Vatanak Vong. Throughout the process, our professor acted as the client, and we collected requirements and demonstrated parts of the application to him, in sections of code called "Milestones"
 
-Prior to coding we presented the design and structure of our code to our client. The design was demonstrated with a High Level Design and Addendum, a Project Plan that includes a Gantt Chart, Project Roadmap and Sitemap, Network Diagram, Data Access LLD, Logging LLD, Security Library LLD and User Management Library LLD.
+We presented the design and structure of our code to our client before implementaiton began. The design was demonstrated with a High Level Design and Addendum, a Project Plan that includes a Gantt Chart, Project Roadmap and Sitemap, Network Diagram, Data Access LLD, Logging LLD, Security Library LLD and User Management Library LLD.
 
 __Quick Access :__
 - [High Level Design](https://github.com/Peace491/Life-Log/tree/main/Project%20Documents/Milestone%201/High%20Level%20Design)
