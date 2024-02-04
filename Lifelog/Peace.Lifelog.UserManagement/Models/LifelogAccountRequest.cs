@@ -2,7 +2,7 @@
 
 using Peace.Lifelog.UserManagement;
 
-public class TestAccountRequest : IUserAccountRequest, IMultifactorAccountRequest, IStatusAccountRequest
+public class LifelogAccountRequest : IUserAccountRequest, IMultifactorAccountRequest, IStatusAccountRequest
 {
     public string ModelName { get; } = "LifelogAccount";
     public (string Type, string Value) UserId { get; set; }
