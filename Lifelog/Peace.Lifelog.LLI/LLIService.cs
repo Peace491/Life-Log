@@ -42,9 +42,9 @@ public class LLIService : ICreateLLI
 
         response = await createDataOnlyDAO.CreateData(sql);
 
-        // Log LLI Creation
-        var logTarget = new LogTarget(createDataOnlyDAO);
-        var logging = new Logging.Logging(logTarget);
+        // // Log LLI Creation
+        // var logTarget = new LogTarget(createDataOnlyDAO);
+        // var logging = new Logging.Logging(logTarget);
 
         // if (response.HasError) {
         //     var errorMessage = response.ErrorMessage;
