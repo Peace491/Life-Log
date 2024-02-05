@@ -22,6 +22,10 @@ public class LifelogUserManagementService : ICreateLifelogUser
         lifelogAccountRequest.UserHash = ("UserHash", userHash);
         lifelogProfileRequest.UserId = ("UserHash", userHash); // UserId is the literal user identification. It is not the column name. With user profile, we are identifying the user using UserHash
 
+        // Populate the creation date for user account
+        lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
+        lifelogAccountRequest.Salt = ("Salt", "Bad Salt"); // TODO: Implement Salt function
+
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
 
@@ -58,7 +62,7 @@ public class LifelogUserManagementService : ICreateLifelogUser
         
         // TODO: handle success outcome
         response.HasError = false;
-        response.Output = ["This worked"];
+        response.Output = [userHash];
         return response;
     }
 
