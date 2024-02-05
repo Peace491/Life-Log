@@ -20,7 +20,7 @@ public class LifelogUserManagementService : ICreateLifelogUser
         var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value);
 
         lifelogAccountRequest.UserHash = ("UserHash", userHash);
-        lifelogProfileRequest.UserId = ("UserHash", userHash);
+        lifelogProfileRequest.UserId = ("UserHash", userHash); // UserId is the literal user identification. It is not the column name. With user profile, we are identifying the user using UserHash
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
