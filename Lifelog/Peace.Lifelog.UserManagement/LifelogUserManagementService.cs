@@ -7,35 +7,29 @@ namespace Peace.Lifelog.UserManagement;
 
 public class LifelogUserManagementService : ICreateLifelogUser
 {
-    public async Task<Response> CreateLifelogUser(LifelogAccountRequest accountRequest, LifelogProfileRequest profileRequest)
+    private readonly AppUserManagementService appUserManagementService = new AppUserManagementService();
+
+    private readonly CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+
+
+    public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
-        var userHash = "";    
         var response = new Response();    
 
-        // Create Lifelog User Hash
-        var hashService = new HashService();
-        var appUserManagementService = new AppUserManagementService();
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        // Create the user hash string from the user id
+        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value);
 
-        // TODO: POPULATE 'accountRequest' salt
+        lifelogAccountRequest.UserHash = ("UserHash", userHash);
+        lifelogProfileRequest.UserId = ("UserHash", userHash); // UserId is the literal user identification. It is not the column name. With user profile, we are identifying the user using UserHash
 
-        // TODO: IMPLEMENT SALT FUNC
+        // Populate the creation date for user account
+        lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
+        lifelogAccountRequest.Salt = ("Salt", "Bad Salt"); // TODO: Implement Salt function
 
+        // Populate user account table
+        var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
 
-        var hashResponse = hashService.Hasher(accountRequest.UserId + /*accountRequest.Salt*/ "badsalt"); 
-
-        if (hashResponse.Output is not null)
-        {
-            foreach (String hashOutput in hashResponse.Output)
-            {
-                accountRequest.UserHash = ("UserHash", hashOutput);
-                userHash = hashOutput;
-            }
-        }
-
-        Response createAccountResponse = await appUserManagementService.CreateAccount(accountRequest);
-        
-        if (createAccountResponse.HasError == true) 
+        if (createLifelogAccountResponse.HasError == true) 
         {
             // TODO: HANDLE ERROR
             response.HasError = false;
@@ -43,13 +37,8 @@ public class LifelogUserManagementService : ICreateLifelogUser
             return response;
         }
 
-        // Define SQL
-        // TODO: store SQL elsewhere on proj in  playbook
-        var createUserHashSql = $"INSERT INTO LifelogUserHash (UserId, UserHash) VALUES (\"{accountRequest.UserId}\", \"{accountRequest.UserHash}\");";
-        var createLifelogProfileSql = $"INSERT INTO LifelogProfile VALUES (\"{userHash}\", \"{profileRequest.DOB}\", \"{profileRequest.ZipCode}\");";  
-
-        // Populate user hash and user profile tables
-        Response createUserHashResponse = await createDataOnlyDAO.CreateData(createUserHashSql);
+        // Populate user hash table
+        var createUserHashResponse = await createUserHashInDB(lifelogAccountRequest.UserId.Value, userHash);
 
         if (createUserHashResponse.HasError == true) 
         {
@@ -59,7 +48,8 @@ public class LifelogUserManagementService : ICreateLifelogUser
             return response;
         }
 
-        Response createLifelogProfileResponse = await createDataOnlyDAO.CreateData(createLifelogProfileSql); 
+        // Populate user profile table
+        var createLifelogProfileResponse = await createLifelogProfileInDB(lifelogProfileRequest);
 
         if (createLifelogProfileResponse.HasError == true) 
         {
@@ -68,10 +58,64 @@ public class LifelogUserManagementService : ICreateLifelogUser
             response.ErrorMessage = "Failed to create LifelogProfle";
             return response;
         }
+
         
         // TODO: handle success outcome
         response.HasError = false;
-        response.Output = ["This worked"];
+        response.Output = [userHash];
         return response;
+    }
+
+    // Helper functions
+    private string createUserHashWithGivenId(string userId) 
+    {
+        // Create Lifelog User Hash
+        var userHash = "";   
+        var hashService = new HashService();
+
+        // TODO: POPULATE 'accountRequest' salt
+
+        // TODO: IMPLEMENT SALT FUNC
+
+
+        var hashResponse = hashService.Hasher(userId + /*accountRequest.Salt*/ "badsalt"); 
+
+        if (hashResponse.Output is not null)
+        {
+            foreach (String hashOutput in hashResponse.Output)
+            {
+                
+                userHash = hashOutput;
+            }
+        }
+
+        return userHash;
+
+    }
+
+    private async Task<Response> createLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
+    {
+        Response createAccountResponse = await appUserManagementService.CreateAccount(lifelogAccountRequest);
+
+        return createAccountResponse;
+
+    }
+
+    private async Task<Response> createUserHashInDB(string userId, string userHash) 
+    {
+        var createUserHashSql = $"INSERT INTO LifelogUserHash (UserId, UserHash) VALUES (\"{userId}\", \"{userHash}\");";
+
+        Response createUserHashResponse = await createDataOnlyDAO.CreateData(createUserHashSql);
+
+        return createUserHashResponse;
+    }
+
+    private async Task<Response> createLifelogProfileInDB(LifelogProfileRequest lifelogProfileRequest)
+    {
+        var createLifelogProfileSql = $"INSERT INTO LifelogProfile VALUES (\"{lifelogProfileRequest.UserId.Value}\", \"{lifelogProfileRequest.DOB.Value}\", \"{lifelogProfileRequest.ZipCode.Value}\");";  
+
+        Response createLifelogProfileResponse = await createDataOnlyDAO.CreateData(createLifelogProfileSql); 
+
+        return createLifelogProfileResponse;
     }
 }

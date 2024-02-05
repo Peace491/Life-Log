@@ -10,6 +10,20 @@ public class LLIService : ICreateLLI
     {
         var response = new Response();
 
+        if (lli.Title.Length > 50)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLI Title is too long";
+            return response;
+        }
+
+        if (lli.Description is not null && lli.Description.Length > 200)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLI Description is too long";
+            return response;
+        }
+
         var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency) VALUES ("
         + $"\"{lli.UserHash}\", "
         + $"\"{lli.Title}\", "
