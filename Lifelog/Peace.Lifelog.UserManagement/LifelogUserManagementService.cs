@@ -8,6 +8,7 @@ namespace Peace.Lifelog.UserManagement;
 public class LifelogUserManagementService : ICreateLifelogUser
 {
     private readonly AppUserManagementService appUserManagementService = new AppUserManagementService();
+    private readonly SaltService saltService = new SaltService();
 
     private readonly CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
 
@@ -15,6 +16,8 @@ public class LifelogUserManagementService : ICreateLifelogUser
     public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
         var response = new Response();    
+
+        var saltResponse = saltService.getSalt();
 
         // Create the user hash string from the user id
         var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value);
@@ -24,7 +27,11 @@ public class LifelogUserManagementService : ICreateLifelogUser
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
-        lifelogAccountRequest.Salt = ("Salt", "Bad Salt"); // TODO: Implement Salt function
+        
+        foreach (List<Object> output in saltResponse.Output)
+        {
+            lifelogAccountRequest.Salt = ("Salt", output[0].ToString());
+        }
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
