@@ -19,8 +19,13 @@ public class LifelogUserManagementService : ICreateLifelogUser
 
         var saltResponse = saltService.getSalt();
 
+        foreach (List<Object> output in saltResponse.Output)
+        {
+            lifelogAccountRequest.Salt = ("Salt", output[0].ToString());
+        }
+
         // Create the user hash string from the user id
-        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value);
+        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value + lifelogAccountRequest.Salt.Value);
 
         lifelogAccountRequest.UserHash = ("UserHash", userHash);
         lifelogProfileRequest.UserId = ("UserHash", userHash); // UserId is the literal user identification. It is not the column name. With user profile, we are identifying the user using UserHash
@@ -28,10 +33,7 @@ public class LifelogUserManagementService : ICreateLifelogUser
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
         
-        foreach (List<Object> output in saltResponse.Output)
-        {
-            lifelogAccountRequest.Salt = ("Salt", output[0].ToString());
-        }
+  
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
