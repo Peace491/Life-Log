@@ -8,6 +8,7 @@ namespace Peace.Lifelog.UserManagement;
 public class LifelogUserManagementService : ICreateLifelogUser
 {
     private readonly AppUserManagementService appUserManagementService = new AppUserManagementService();
+    private readonly SaltService saltService = new SaltService();
 
     private readonly CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
 
@@ -16,15 +17,23 @@ public class LifelogUserManagementService : ICreateLifelogUser
     {
         var response = new Response();    
 
+        var saltResponse = saltService.getSalt();
+
+        foreach (List<Object> output in saltResponse.Output)
+        {
+            lifelogAccountRequest.Salt = ("Salt", output[0].ToString());
+        }
+
         // Create the user hash string from the user id
-        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value);
+        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value + lifelogAccountRequest.Salt.Value);
 
         lifelogAccountRequest.UserHash = ("UserHash", userHash);
         lifelogProfileRequest.UserId = ("UserHash", userHash); // UserId is the literal user identification. It is not the column name. With user profile, we are identifying the user using UserHash
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
-        lifelogAccountRequest.Salt = ("Salt", "Bad Salt"); // TODO: Implement Salt function
+        
+  
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
