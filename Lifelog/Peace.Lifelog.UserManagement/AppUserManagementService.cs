@@ -106,6 +106,123 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
     }
 
+    public async Task<Response> CreateProfile(IUserProfileRequest userProfileRequest)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userProfileRequest.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        var properties = userProfileRequest.GetType().GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.Name == "ModelName") { continue; }
+            var tupleString = userProfileRequest.GetType().GetProperty(property.Name).GetValue(userProfileRequest, null).ToString();
+
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
+
+            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+            {
+                throw new ArgumentNullException();
+            }
+        }
+
+        #endregion
+
+        var response = new Response();
+
+        // Creating sql statement
+        string sql = $"INSERT INTO {userProfileRequest.ModelName} ";
+
+        string parameters = "(";
+        string values = "(";
+
+        foreach (var property in properties)
+        {
+            if (property.Name == "ModelName") { continue; }
+
+            var tupleString = userProfileRequest.GetType().GetProperty(property.Name).GetValue(userProfileRequest, null).ToString();
+
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
+
+            parameters += $"{parameter}" + ",";
+            values += $"\"{value}\"" + ",";
+        }
+
+        parameters = parameters.Remove(parameters.Length - 1);
+        values = values.Remove(values.Length - 1); // Remove extra comma at the end
+
+        sql += parameters + ")" + " VALUES " + values + ");";
+
+        // Create user account in DB
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        var createResponse = await createDataOnlyDAO.CreateData(sql);
+
+        // Populate Response
+        response = createResponse;
+
+        // Log Account Creation
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", userProfileRequest.UserId.Value, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", userProfileRequest.UserId.Value, "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} profile creation successful");
+        }
+
+        return response;
+
+    }
+
+    public async Task<Response> CreateUserHash(IUserHashRequest userHashRequest)
+    {
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var createUserHashSql = 
+        $"INSERT INTO {userHashRequest.ModelName} ({userHashRequest.UserId.Type}, {userHashRequest.UserHash.Type}) " 
+        + $"VALUES (\"{userHashRequest.UserId.Value}\", \"{userHashRequest.UserHash.Value}\");";  
+
+        var response = await createDataOnlyDAO.CreateData(createUserHashSql); 
+
+        // Log Account Creation
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", userHashRequest.UserHash.Value, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", userHashRequest.UserHash.Value, "Info", "Persistent Data Store", $"{userHashRequest.UserHash.Value} user hash creation successful");
+        }
+
+        return response;
+    }
+
     /// <summary>
     /// Recovery an Account that use the MFA model
     /// </summary>
