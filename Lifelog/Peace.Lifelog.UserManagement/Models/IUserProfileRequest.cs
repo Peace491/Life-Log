@@ -2,9 +2,9 @@
 /// <summary>
 /// For all User Profile
 /// </summary>
-public interface IUserProfileRequest
+public interface IUserProfileRequest : IUserManagementRequest
 {
-    public string ModelName { get; }
+    public new string ModelName { get; }
     public (string Type, string Value) UserId { get; set; }
 
 }

@@ -2,8 +2,8 @@
 /// <summary>
 /// For all User Account
 /// </summary>
-public interface IUserAccountRequest
+public interface IUserAccountRequest : IUserManagementRequest
 {
-    public string ModelName { get; }
+    public new string ModelName { get; }
     public (string Type, string Value) UserId { get; set; }
 }

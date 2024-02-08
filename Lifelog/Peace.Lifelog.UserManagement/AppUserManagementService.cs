@@ -21,30 +21,15 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             throw new ArgumentNullException();
         }
 
-        var properties = userAccountRequest.GetType().GetProperties();
-        foreach (var property in properties)
+        var propertiesTypeValueList = loopThroughRequestInterfaceToGetTypeAndValueForProperties(userAccountRequest);
+
+        foreach (var property in propertiesTypeValueList)
         {
-            if (property.Name == "ModelName") { continue; }
-            var tupleString = userAccountRequest.GetType().GetProperty(property.Name).GetValue(userAccountRequest, null).ToString();
-
-            // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
-            {
-                tupleValues[i] = tupleValues[i].Trim();
-            }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value)) 
             {
                 throw new ArgumentNullException();
             }
         }
-
         #endregion
 
         var response = new Response();
@@ -55,26 +40,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         string parameters = "(";
         string values = "(";
 
-        foreach (var property in properties)
+        foreach (var property in propertiesTypeValueList)
         {
-            if (property.Name == "ModelName") { continue; }
-
-            var tupleString = userAccountRequest.GetType().GetProperty(property.Name).GetValue(userAccountRequest, null).ToString();
-
-            // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
-            {
-                tupleValues[i] = tupleValues[i].Trim();
-            }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            parameters += $"{parameter}" + ",";
-            values += $"\"{value}\"" + ",";
+            parameters += $"{property.Type}" + ",";
+            values += $"\"{property.Value}\"" + ",";
         }
 
         parameters = parameters.Remove(parameters.Length - 1);
@@ -114,25 +83,11 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             throw new ArgumentNullException();
         }
 
-        var properties = userProfileRequest.GetType().GetProperties();
-        foreach (var property in properties)
+        var propertiesTypeValueList = loopThroughRequestInterfaceToGetTypeAndValueForProperties(userProfileRequest);
+
+        foreach (var property in propertiesTypeValueList)
         {
-            if (property.Name == "ModelName") { continue; }
-            var tupleString = userProfileRequest.GetType().GetProperty(property.Name).GetValue(userProfileRequest, null).ToString();
-
-            // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
-            {
-                tupleValues[i] = tupleValues[i].Trim();
-            }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value)) 
             {
                 throw new ArgumentNullException();
             }
@@ -148,26 +103,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         string parameters = "(";
         string values = "(";
 
-        foreach (var property in properties)
+        foreach (var property in propertiesTypeValueList)
         {
-            if (property.Name == "ModelName") { continue; }
-
-            var tupleString = userProfileRequest.GetType().GetProperty(property.Name).GetValue(userProfileRequest, null).ToString();
-
-            // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
-            {
-                tupleValues[i] = tupleValues[i].Trim();
-            }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            parameters += $"{parameter}" + ",";
-            values += $"\"{value}\"" + ",";
+            parameters += $"{property.Type}" + ",";
+            values += $"\"{property.Value}\"" + ",";
         }
 
         parameters = parameters.Remove(parameters.Length - 1);
@@ -495,5 +434,37 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         }
 
         return response;
+    }
+
+    // Helper functions 
+
+    // This function do the code introspection to get the property and value name of an object that implement the IUserManagementRequestInterface
+    private List<(string Type, string Value)> loopThroughRequestInterfaceToGetTypeAndValueForProperties(IUserManagementRequest userManagementRequest)
+    {
+        var typeValueList = new List<(string Type, string Value)>();
+
+        var properties = userManagementRequest.GetType().GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.Name == "ModelName") { continue; }
+            var tupleString = userManagementRequest.GetType().GetProperty(property.Name).GetValue(userManagementRequest, null).ToString();
+
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
+
+            typeValueList.Add((parameter, value));
+        }
+
+        return typeValueList;
+
     }
 }
