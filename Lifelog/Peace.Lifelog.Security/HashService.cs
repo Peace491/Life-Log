@@ -1,7 +1,7 @@
 ﻿using DomainModels;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using System.Security.Policy;
+
 
 namespace Peace.Lifelog.Security;
 
@@ -37,7 +37,7 @@ public class HashService : IHasher
         catch (ArgumentNullException)
         {
             response.HasError = true;
-            response.ErrorMessage = "Password is null";
+            response.ErrorMessage = "plaintext input is null";
             return response;
         }
     }
