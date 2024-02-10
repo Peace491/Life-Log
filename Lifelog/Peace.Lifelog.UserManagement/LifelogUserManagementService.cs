@@ -19,9 +19,9 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         var saltResponse = saltService.getSalt();
 
-        foreach (List<Object> output in saltResponse.Output)
+        foreach (string output in saltResponse.Output)
         {
-            lifelogAccountRequest.Salt = ("Salt", output[0].ToString());
+            lifelogAccountRequest.Salt = ("Salt", output);
         }
 
         // Create the user hash string from the user id
@@ -32,8 +32,8 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
-        
-  
+
+
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
@@ -41,7 +41,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         if (createLifelogAccountResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            response.HasError = false;
+            response.HasError = true;
             response.ErrorMessage = "Failed to create Account table entry";
             return response;
         }
@@ -52,7 +52,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         if (createUserHashResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            response.HasError = false;
+            response.HasError = true;
             response.ErrorMessage = "Failed to create UserHash table entry";
             return response;
         }
@@ -63,7 +63,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         if (createLifelogProfileResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            response.HasError = false;
+            response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogProfle";
             return response;
         }
@@ -131,14 +131,6 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
     }
 
-    private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
-    {
-        Response deleteAccountResponse = await appUserManagementService.DeleteAccount(lifelogAccountRequest);
-
-        return deleteAccountResponse;
-
-    }
-
     private async Task<Response> createUserHashInDB(string userId, string userHash)
     {
         var createUserHashSql = $"INSERT INTO LifelogUserHash (UserId, UserHash) VALUES (\"{userId}\", \"{userHash}\");";
@@ -155,5 +147,12 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         Response createLifelogProfileResponse = await createDataOnlyDAO.CreateData(createLifelogProfileSql);
 
         return createLifelogProfileResponse;
+    }
+    private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
+    {
+        Response deleteAccountResponse = await appUserManagementService.DeleteAccount(lifelogAccountRequest);
+
+        return deleteAccountResponse;
+
     }
 }

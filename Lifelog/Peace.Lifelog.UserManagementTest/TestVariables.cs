@@ -11,6 +11,7 @@
     public const string CREATION_DATE_TYPE = "CreationDate";
     public const string PASSWORD_TYPE = "OTP";
     public const string STATUS_TYPE = "Status";
+    public const string ROLE_TYPE = "Role";
 
     // Profile Field
     public const string DOB_TYPE = "DateOfBirth";
