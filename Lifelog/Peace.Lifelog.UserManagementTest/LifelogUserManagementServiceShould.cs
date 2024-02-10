@@ -53,8 +53,7 @@ public class LifelogUserManagementServiceShould
         Assert.True(readResponse.Output.Count == 1);
 
         //Cleanup
-        var deleteSql = $"DELETE FROM LifelogAccount WHERE UserId = \"{mockUserId}\"";
-        var deleteAccountResponse = await deleteDataOnlyDAO.DeleteData(deleteSql);
+        var deleteAccountResponse = await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
 
     }
     /*
@@ -174,5 +173,54 @@ public class LifelogUserManagementServiceShould
             // Assert
             Assert.True(createAccountResponse.HasError == true);
         }*/
+    #endregion
+
+    #region Delete Lifelog User Tests
+    [Fact]
+    public async void LifelogUserManagementServiceDeleteAccountShould_DeleteAnAccountInTheDatabase()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var LifelogUserManagementService = new LifelogUserManagementService();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var mockUserId = "TestUserCreation";
+        var mockRole = "Normal";
+        var mockMfaId = "2";
+
+        // Creating User Profile based off User Account
+        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
+        var mockZipCode = "92612";
+
+
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", mockUserId);
+        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
+        testLifelogAccountRequest.Role = ("Role", mockRole);
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+        testLifelogProfileRequest.DOB = ("DOB", mockDob);
+        testLifelogProfileRequest.ZipCode = ("ZipCode", mockZipCode);
+
+        var readAccountSql = $"SELECT * FROM LifelogAccount WHERE UserId = \"{mockUserId}\"";
+        var createAccountResponse = await LifelogUserManagementService.CreateLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+
+        // Act
+        timer.Start();
+        var deleteAccountResponse = await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+        timer.Stop();
+
+        var readResponse = await readDataOnlyDAO.ReadData(readAccountSql);
+
+
+        // Assert
+        Assert.True(deleteAccountResponse.HasError == false);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(readResponse.Output is null);
+
+    }
+
     #endregion
 }
