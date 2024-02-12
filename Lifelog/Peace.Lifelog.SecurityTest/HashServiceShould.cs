@@ -9,7 +9,7 @@ using System.Security.Policy;
 public class HashServiceShould
 {
     private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;
-    private const string HASH_NULL_PASSWORD_MESSAGE = "Password is null";
+    private const string HASH_NULL_PASSWORD_MESSAGE = "plaintext input is null";
     
     [Fact]
     public void HasherShould_ReproduceOutputsWithSameInput()
