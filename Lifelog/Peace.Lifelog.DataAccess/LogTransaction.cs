@@ -13,7 +13,7 @@ public class LogTransaction : ILogTransaction
         return new MySqlConnection(connectionString);
     }
 
-    public async Task<Response> CreateDataAccessTransactionLog(string level, string message)
+    public async Task<Response> CreateDataAccessTransactionLog(string level, string message, string userHash = "System")
     {
         var response = new Response();
 
@@ -33,7 +33,7 @@ public class LogTransaction : ILogTransaction
                 command.Connection = connection;
 
                 // Define the SQL command
-                string sql = $"INSERT INTO Logs (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (NOW(), 'temp', '{level}', 'Persistent Data Store', '{message}')";
+                string sql = $"INSERT INTO Logs (Timestamp, UserHash, Level, Category, Message) VALUES (NOW(), \"{userHash}\", \"{level}\", \"Persistent Data Store\", \"{message}\");";
                 command.CommandText = sql;
 
                 // Define the transaction
