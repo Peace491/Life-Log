@@ -1,17 +1,32 @@
 ﻿namespace Peace.Lifelog.DataAccessTest;
 
+using DomainModels;
 using Peace.Lifelog.DataAccess;
-
+using Peace.Lifelog.UserManagement;
+using Peace.Lifelog.UserManagementTest;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
-public class LogTransactionShould : IDisposable
+public class LogTransactionShould : IAsyncLifetime, IDisposable 
 {
     private const int DEFAULT_RECORD_COUNT = 1;
 
     private const string TABLE = "logTransactionMockData";
 
-    // Setup for all test
-    public LogTransactionShould()
+    private LifelogAccountRequest LIFELOG_ACCOUNT_REQUEST = new LifelogAccountRequest();
+
+    private const string USER_ID = "TestLLIServiceAccount";
+    private string USER_HASH = "";
+    private const string MFA_ID = "TestLLIServiceMFA";
+    private const string ROLE = "Normal";
+
+    private LifelogProfileRequest LIFELOG_PROFILE_REQUEST = new LifelogProfileRequest();
+
+    private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
+    private string DEADLINE = DateTime.Today.ToString("yyyy-MM-dd");
+    private const string ZIP_CODE = "92612";
+
+    public async Task InitializeAsync()
     {
         var DDLTransactionDAO = new DDLTransactionDAO();
 
@@ -22,12 +37,35 @@ public class LogTransactionShould : IDisposable
             + "PRIMARY KEY (Id, Category)"
         + ");";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        await DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+
+        // Create Test User Account
+        
+        var lifelogUserManagementService = new LifelogUserManagementService();
+
+        LIFELOG_ACCOUNT_REQUEST.UserId = ("UserId", USER_ID);
+        LIFELOG_ACCOUNT_REQUEST.MfaId = ("MfaId", MFA_ID);
+        LIFELOG_ACCOUNT_REQUEST.Role = ("Role", ROLE);
+
+        LIFELOG_PROFILE_REQUEST.DOB = ("DOB", DOB);
+        LIFELOG_PROFILE_REQUEST.ZipCode = ("ZipCode", ZIP_CODE);
+
+
+        var createAccountResponse = await lifelogUserManagementService.CreateLifelogUser(LIFELOG_ACCOUNT_REQUEST, LIFELOG_PROFILE_REQUEST);
+        string test = "";
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     // Cleanup for all tests
     public async void Dispose()
     {
+        var lifelogUserManagementService = new LifelogUserManagementService();
+        var deleteAccountResponse = lifelogUserManagementService.DeleteLifelogUser(LIFELOG_ACCOUNT_REQUEST, LIFELOG_PROFILE_REQUEST);
+
         var DDLTransactionDAO = new DDLTransactionDAO();
 
         var deleteMockTableSql = $"DROP TABLE {TABLE}";
