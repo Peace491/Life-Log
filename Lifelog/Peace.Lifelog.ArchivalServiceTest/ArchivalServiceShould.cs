@@ -1,6 +1,6 @@
 namespace Peace.Lifelog.ArchivalServiceTest;
 
-public class UnitTest1
+public class ArchivalServiceShould
 {
     [Fact]
     public void ArchivalServiceShould_SucessfullyArchive()
