@@ -1,8 +1,5 @@
 ﻿namespace Peace.Lifelog.Security;
 using DomainModels;
-using Microsoft.VisualBasic;
-using Org.BouncyCastle.Crypto.Signers;
-using System.ComponentModel;
 using System.Security.Cryptography;
 public class SaltService
 {
@@ -10,18 +7,24 @@ public class SaltService
     public Response getSalt()
     {
         var response = new Response();
-        try 
+        try
         {
             var rng = new RNGCryptoServiceProvider();
             byte[] saltArray = new byte[saltLength];
 
             rng.GetBytes(saltArray);
-            var salt = Convert.ToBase64String(saltArray);
-            
+
+            // Convert the byte array to a hexadecimal string representation
+            string saltHex = BitConverter.ToString(saltArray).Replace("-", "");
+
+            // Truncate the hexadecimal string to the desired length
+            string salt = saltHex.Substring(0, 32);
+
             response.HasError = false;
             response.Output = [salt];
             return response;
-        } 
+
+        }
         catch (Exception)
         {
             response.HasError = true;

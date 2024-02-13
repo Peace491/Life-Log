@@ -21,30 +21,15 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             throw new ArgumentNullException();
         }
 
-        var properties = userAccountRequest.GetType().GetProperties();
-        foreach (var property in properties)
+        var propertiesTypeValueList = loopThroughRequestInterfaceToGetTypeAndValueForProperties(userAccountRequest);
+
+        foreach (var property in propertiesTypeValueList)
         {
-            if (property.Name == "ModelName") { continue; }
-            var tupleString = userAccountRequest.GetType().GetProperty(property.Name).GetValue(userAccountRequest, null).ToString();
-
-            // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
-            {
-                tupleValues[i] = tupleValues[i].Trim();
-            }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value)) 
             {
                 throw new ArgumentNullException();
             }
         }
-
         #endregion
 
         var response = new Response();
@@ -55,26 +40,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         string parameters = "(";
         string values = "(";
 
-        foreach (var property in properties)
+        foreach (var property in propertiesTypeValueList)
         {
-            if (property.Name == "ModelName") { continue; }
-
-            var tupleString = userAccountRequest.GetType().GetProperty(property.Name).GetValue(userAccountRequest, null).ToString();
-
-            // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
-            {
-                tupleValues[i] = tupleValues[i].Trim();
-            }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            parameters += $"{parameter}" + ",";
-            values += $"\"{value}\"" + ",";
+            parameters += $"{property.Type}" + ",";
+            values += $"\"{property.Value}\"" + ",";
         }
 
         parameters = parameters.Remove(parameters.Length - 1);
@@ -104,6 +73,93 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         return response;
 
+    }
+
+    public async Task<Response> CreateProfile(IUserProfileRequest userProfileRequest)
+    {
+        #region Input Validation
+        if (String.IsNullOrEmpty(userProfileRequest.ModelName))
+        {
+            throw new ArgumentNullException();
+        }
+
+        var propertiesTypeValueList = loopThroughRequestInterfaceToGetTypeAndValueForProperties(userProfileRequest);
+
+        foreach (var property in propertiesTypeValueList)
+        {
+            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value)) 
+            {
+                throw new ArgumentNullException();
+            }
+        }
+
+        #endregion
+
+        var response = new Response();
+
+        // Creating sql statement
+        string sql = $"INSERT INTO {userProfileRequest.ModelName} ";
+
+        string parameters = "(";
+        string values = "(";
+
+        foreach (var property in propertiesTypeValueList)
+        {
+            parameters += $"{property.Type}" + ",";
+            values += $"\"{property.Value}\"" + ",";
+        }
+
+        parameters = parameters.Remove(parameters.Length - 1);
+        values = values.Remove(values.Length - 1); // Remove extra comma at the end
+
+        sql += parameters + ")" + " VALUES " + values + ");";
+
+        // Create user account in DB
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        var createResponse = await createDataOnlyDAO.CreateData(sql);
+
+        // Populate Response
+        response = createResponse;
+
+        // Log Account Creation
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", userProfileRequest.UserId.Value, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", userProfileRequest.UserId.Value, "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} profile creation successful");
+        }
+
+        return response;
+
+    }
+
+    public async Task<Response> CreateUserHash(IUserHashRequest userHashRequest)
+    {
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var createUserHashSql = 
+        $"INSERT INTO {userHashRequest.ModelName} ({userHashRequest.UserId.Type}, {userHashRequest.UserHash.Type}) " 
+        + $"VALUES (\"{userHashRequest.UserId.Value}\", \"{userHashRequest.UserHash.Value}\");";  
+
+        var response = await createDataOnlyDAO.CreateData(createUserHashSql); 
+
+        // Log Account Creation
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            var errorMessage = response.ErrorMessage;
+            logging.CreateLog("Logs", userHashRequest.UserHash.Value, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            logging.CreateLog("Logs", userHashRequest.UserHash.Value, "Info", "Persistent Data Store", $"{userHashRequest.UserHash.Value} user hash creation successful");
+        }
+
+        return response;
     }
 
     /// <summary>
@@ -378,5 +434,37 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         }
 
         return response;
+    }
+
+    // Helper functions 
+
+    // This function do the code introspection to get the property and value name of an object that implement the IUserManagementRequestInterface
+    private List<(string Type, string Value)> loopThroughRequestInterfaceToGetTypeAndValueForProperties(IUserManagementRequest userManagementRequest)
+    {
+        var typeValueList = new List<(string Type, string Value)>();
+
+        var properties = userManagementRequest.GetType().GetProperties();
+        foreach (var property in properties)
+        {
+            if (property.Name == "ModelName") { continue; }
+            var tupleString = userManagementRequest.GetType().GetProperty(property.Name).GetValue(userManagementRequest, null).ToString();
+
+            // Remove parentheses and split by comma
+            var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+            // Trim spaces from each value
+            for (int i = 0; i < tupleValues.Length; i++)
+            {
+                tupleValues[i] = tupleValues[i].Trim();
+            }
+
+            var parameter = tupleValues[0];
+            var value = tupleValues[1];
+
+            typeValueList.Add((parameter, value));
+        }
+
+        return typeValueList;
+
     }
 }
