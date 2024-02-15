@@ -1,0 +1,33 @@
+html, body, #root {
+    height: 100%;
+}
+
+html, body {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+}
+
+.info-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-section {
+    display: grid;
+    grid-template-rows: 1fr 2fr 2fr;
+}
+
+.user-credential {
+    display: flex;
+    flex-direction: column;
+}

@@ -1,5 +1,4 @@
-﻿using System.Dynamic;
-using Peace.Lifelog.UserManagement;
+﻿using Peace.Lifelog.UserManagement;
 
 namespace Peace.Lifelog.UserManagementTest;
 
