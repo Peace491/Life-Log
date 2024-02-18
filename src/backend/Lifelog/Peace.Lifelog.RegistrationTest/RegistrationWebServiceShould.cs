@@ -7,7 +7,7 @@ using Peace.Lifelog.RegistrationWebService;
 public class RegistrationWebServiceShould
 {
 
-    private const string EMAIL = "zarifshams@gmail.com";
+    private const string EMAIL = "zarif.shams@gmail.com";
     private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
     private const string ZIPCODE = "90716";
     private const string USERROLE = "Normal";
@@ -46,7 +46,7 @@ public void RegistrationWebServiceShould_EmailBeAtLeast3Chars()
 public void RegistrationWebServiceShould_EmailOnlyBeAlphanumeric()
 {
     // Arrange
-    string invalidEmail = "zarif-123@gmail.com";
+    string invalidEmail = "zarif-123!@gmail.com";
     var testRegUser = new RegistrationWebService();
 
     // Act
@@ -88,9 +88,9 @@ public void RegistrationWebServiceShould_HaveValidZipCode()
 public void RegistrationWebServiceShould_InputsBeNotNull()
 {
     // Arrange
-    string emptyEmail= "";
-    string emptyDOB = "";
-    string emptyZipCode = "";
+    string emptyEmail= ""; 
+    string emptyDOB = ""; // <-should this be empty or null?
+    string emptyZipCode = ""; 
     var testRegUser = new RegistrationWebService();
 
     // Act
