@@ -2,20 +2,20 @@
 
 public class LLIRecurrence
 {
-    public LLIRecurrenceStatus Status { get; set; } = LLIRecurrenceStatus.Off;
-    public LLIRecurrenceFrequency? Frequency { get; set; } = LLIRecurrenceFrequency.None;
+    public string Status { get; set; } = LLIRecurrenceStatus.Off;
+    public string Frequency { get; set; } = LLIRecurrenceFrequency.None;
 }
 
-public enum LLIRecurrenceStatus
+public class LLIRecurrenceStatus
 {
-    On,
-    Off
+    public static string On = "On";
+    public static string Off = "Off";
 }
 
-public enum LLIRecurrenceFrequency
+public class LLIRecurrenceFrequency
 {
-    Weekly,
-    Monthly,
-    Yearly,
-    None
+    public static string Weekly = "Weekly";
+    public static string Monthly = "Monthly";
+    public static string Yearly = "Yearly";
+    public static string None = "None";
 }

@@ -179,16 +179,16 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                         lli.Title = attribute.ToString() ?? "";
                         break;
                     case 3:
-                        lli.Category = (LLICategory) Enum.Parse(typeof(LLICategory), attribute.ToString() ?? "");
+                        lli.Category = attribute.ToString() ?? "";
                         break;
                     case 4:
                         lli.Description = attribute.ToString() ?? "";
                         break;
                     case 5:
-                        lli.Status = (LLIStatus) Enum.Parse(typeof(LLIStatus), attribute.ToString() ?? "");
+                        lli.Status = attribute.ToString() ?? "";
                         break;
                     case 6:
-                        lli.Visibility = (LLIVisibility) Enum.Parse(typeof(LLIVisibility), attribute.ToString() ?? "");
+                        lli.Visibility = attribute.ToString() ?? "";
                         break;
                     case 7:
                         lli.Deadline = attribute.ToString() ?? "";
@@ -197,10 +197,10 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                         lli.Cost = Convert.ToInt32(attribute);
                         break;
                     case 9:
-                        lli.Recurrence.Status = (LLIRecurrenceStatus) Enum.Parse(typeof(LLIRecurrenceStatus), attribute.ToString() ?? "");
+                        lli.Recurrence.Status = attribute.ToString() ?? "";
                         break;
                     case 10:
-                        lli.Recurrence.Frequency = (LLIRecurrenceFrequency) Enum.Parse(typeof(LLIRecurrenceFrequency), attribute.ToString() ?? "");
+                        lli.Recurrence.Frequency = attribute.ToString() ?? "";
                         break;
                     default:
                         break;
