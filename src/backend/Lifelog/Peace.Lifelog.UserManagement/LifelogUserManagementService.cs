@@ -93,7 +93,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         if (deleteLifelogAccountResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            response.HasError = false;
+            response.HasError = true;
             response.ErrorMessage = "Failed to delete Account table entry";
             return response;
         }
@@ -140,7 +140,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
     }
 
-    private async Task<Response> createUserHashInDB(LifelogUserHashRequest lifelogUserHashRequest) 
+    private async Task<Response> createUserHashInDB(LifelogUserHashRequest lifelogUserHashRequest)
     {
         Response createUserHashResponse = await appUserManagementService.CreateUserHash(lifelogUserHashRequest);
 
@@ -153,7 +153,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         return createLifelogProfileResponse;
     }
-    
+
     private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
     {
         Response deleteAccountResponse = await appUserManagementService.DeleteAccount(lifelogAccountRequest);
