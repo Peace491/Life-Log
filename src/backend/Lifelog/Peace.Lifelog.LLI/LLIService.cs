@@ -7,9 +7,16 @@ namespace Peace.Lifelog.LLI;
 
 public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 {
-    public async Task<Response> CreateLLI(LLI lli)
+    public async Task<Response> CreateLLI(string userHash, LLI lli)
     {
         var response = new Response();
+
+        if (userHash == string.Empty)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "User Hash must not be empty";
+            return response;
+        }
 
         if (lli.Title.Length > 50)
         {
@@ -26,7 +33,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
 
         var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency) VALUES ("
-        + $"\"{lli.UserHash}\", "
+        + $"\"{userHash}\", "
         + $"\"{lli.Title}\", "
         + $"\"{lli.Category}\", "
         + $"\"{lli.Description}\", "
