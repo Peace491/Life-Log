@@ -36,24 +36,24 @@ public void RegistrationWebServiceShould_EmailBeAtLeast3Chars()
     var testRegUser = new RegistrationWebService();
 
     // Act
-    var validEmailFormatResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
+    var threeCharsResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
 
     // Assert
-    Assert.True(validEmailFormatResponse == false);
+    Assert.True(threeCharsResponse == false);
 }
 
 [Fact]
 public void RegistrationWebServiceShould_EmailOnlyBeAlphanumeric()
 {
     // Arrange
-    string invalidEmail = "zarif-123!@gmail.com";
+    string invalidEmail = "zarif&123!@gmail.com";
     var testRegUser = new RegistrationWebService();
 
     // Act
-    var validEmailFormatResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
+    var alphanumericResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
 
     // Assert
-    Assert.True(validEmailFormatResponse == false);
+    Assert.True(alphanumericResponse == false);
 }
 
 [Fact]
@@ -64,10 +64,10 @@ public void RegistrationWebServiceShould_HaveValidDOB()
     var testRegUser = new RegistrationWebService();
 
     // Act
-    var validEmailFormatResponse = testRegUser.RegisterUser(EMAIL, invalidDOB, ZIPCODE, USERROLE);
+    var validDOBResponse = testRegUser.RegisterUser(EMAIL, invalidDOB, ZIPCODE, USERROLE);
 
     // Assert
-    Assert.True(validEmailFormatResponse == false);
+    Assert.True(validDOBResponse == false);
 }
 
 [Fact]
@@ -78,7 +78,7 @@ public void RegistrationWebServiceShould_HaveValidZipCode()
     var testRegUser = new RegistrationWebService();
 
     // Act
-    var validEmailFormatResponse = testRegUser.RegisterUser(EMAIL, DOB, ZIPCODE, USERROLE);
+    var validZipCodeResponse = testRegUser.RegisterUser(EMAIL, DOB, invalidZipCode, USERROLE);
 
     // Assert
     Assert.True(validEmailFormatResponse == false);
@@ -94,10 +94,10 @@ public void RegistrationWebServiceShould_InputsBeNotNull()
     var testRegUser = new RegistrationWebService();
 
     // Act
-    var validEmailFormatResponse = testRegUser.RegisterUser(emptyEmail, emptyDOB, emptyZipCode, USERROLE);
+    var inputNotNullResponse = testRegUser.RegisterUser(emptyEmail, emptyDOB, emptyZipCode, USERROLE);
 
     // Assert
-    Assert.True(validEmailFormatResponse == false);
+    Assert.True(inputNotNullResponse == false);
 }
 
 
