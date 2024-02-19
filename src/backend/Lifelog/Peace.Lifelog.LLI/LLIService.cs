@@ -1,4 +1,5 @@
-﻿using DomainModels;
+﻿using System.Reflection.Metadata.Ecma335;
+using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
@@ -58,9 +59,35 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
     }
 
-    public Task<Response> GetAllLLIFromUser(string userHash, int pageNumber = 0)
+    public async Task<Response> GetAllLLIFromUser(string userHash, int pageNumber = 0)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+
+        if (userHash == string.Empty) {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide a user hash";
+            return response;
+        }
+
+        var sql = $"SELECT * FROM LLI WHERE userHash = \"{userHash}\"";
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        if (pageNumber == 0)
+        {
+            response = await readDataOnlyDAO.ReadData(sql);
+        }
+        else {
+            response = await readDataOnlyDAO.ReadData(sql, 10, pageNumber);
+        }
+
+        var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(response);
+
+        response.Output = lliOutput;
+
+        return response;
+
+        
     }
 
     public Task<Response> GetSingleLLIFromUser(string userHash, LLI lli)
@@ -68,13 +95,126 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         throw new NotImplementedException();
     }
 
-    public Task<Response> UpdateLLI(string userHash, LLI oldLLI, LLI newLLI)
+    public async Task<Response> UpdateLLI(string userHash, LLI oldLLI, LLI newLLI)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+
+        if (newLLI.Title.Length > 50)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLI Title is too long";
+            return response;
+        }
+
+        if (newLLI.Description is not null && newLLI.Description.Length > 200)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLI Description is too long";
+            return response;
+        }
+
+        string sql = "UPDATE LLI SET "
+        + (newLLI.Title != string.Empty ? $"Title = \"{newLLI.Title}\"," : "")
+        + (newLLI.Category != null ? $"Category = \"{newLLI.Category}\"," : "")
+        + (newLLI.Description != null ? $"Description = \"{newLLI.Description}\"," : "")
+        + (newLLI.Status != null ? $"Status = \"{newLLI.Status}\"," : "")
+        + (newLLI.Visibility != null ? $"Visibility = \"{newLLI.Visibility}\"," : "")
+        + (newLLI.Deadline != string.Empty ? $"Deadline = \"{newLLI.Deadline}\"," : "")
+        + (newLLI.Cost != null ? $"Cost = {newLLI.Cost}," : "")
+        + (newLLI.Recurrence.Status != null ? $"RecurrenceStatus = \"{newLLI.Recurrence.Status}\"," : "")
+        + (newLLI.Recurrence.Frequency != null ? $"RecurrenceFrequency = \"{newLLI.Recurrence.Frequency}\"," : "");
+
+        sql = sql.Remove(sql.Length - 1);
+
+        sql += $"WHERE UserHash = \"{userHash}\";";
+
+        var updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        response = await updateDataOnlyDAO.UpdateData(sql);
+
+        return response;
     }
 
-    public Task<Response> DeleteLLI(string userHash, LLI lli)
+    public async Task<Response> DeleteLLI(string userHash, LLI lli)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+
+        if (userHash == string.Empty) {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide a user hash";
+            return response;
+        }
+
+        var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\"";
+
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        response = await deleteDataOnlyDAO.DeleteData(sql);
+
+        return response;
     }
+
+    // Helper
+    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response response)
+    {
+        List<Object> lliList = new List<Object>();
+
+        if (response.Output == null){
+            return null;
+        }
+
+        foreach (List<Object> LLI in response.Output)
+        {
+            
+            var lli = new LLI();
+
+            int index = 0;
+            
+            foreach (var attribute in LLI) {
+                if (attribute is null) continue;
+                
+                switch(index){
+                    case 1:
+                        lli.UserHash = attribute.ToString() ?? "";
+                        break;
+                    case 2:
+                        lli.Title = attribute.ToString() ?? "";
+                        break;
+                    case 3:
+                        lli.Category = (LLICategory) Enum.Parse(typeof(LLICategory), attribute.ToString() ?? "");
+                        break;
+                    case 4:
+                        lli.Description = attribute.ToString() ?? "";
+                        break;
+                    case 5:
+                        lli.Status = (LLIStatus) Enum.Parse(typeof(LLIStatus), attribute.ToString() ?? "");
+                        break;
+                    case 6:
+                        lli.Visibility = (LLIVisibility) Enum.Parse(typeof(LLIVisibility), attribute.ToString() ?? "");
+                        break;
+                    case 7:
+                        lli.Deadline = attribute.ToString() ?? "";
+                        break;
+                    case 8:
+                        lli.Cost = Convert.ToInt32(attribute);
+                        break;
+                    case 9:
+                        lli.Recurrence.Status = (LLIRecurrenceStatus) Enum.Parse(typeof(LLIRecurrenceStatus), attribute.ToString() ?? "");
+                        break;
+                    case 10:
+                        lli.Recurrence.Frequency = (LLIRecurrenceFrequency) Enum.Parse(typeof(LLIRecurrenceFrequency), attribute.ToString() ?? "");
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            lliList.Add(lli);
+            
+        }
+
+        return lliList;
+    }
+
+    
 }

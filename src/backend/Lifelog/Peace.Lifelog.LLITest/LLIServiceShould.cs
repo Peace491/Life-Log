@@ -1,6 +1,7 @@
 namespace Peace.Lifelog.LLITest;
 
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DomainModels;
 using Peace.Lifelog.DataAccess;
@@ -64,14 +65,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceShould_CreateAnLLIInTheDatabase()
     {
         // Arrange
-        string testLLITitle = "Test LLI Title";
+        string testLLITitle = "Test Create LLI Title";
 
         var LLIService = new LLIService();
 
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
         testLLI.Title = testLLITitle;
-        testLLI.Description = "Test LLI Description";
+        testLLI.Description = "Test Create LLI Description";
         testLLI.Category = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
@@ -131,7 +132,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";
         testLLI.Title = testLLITitle;
-        testLLI.Description = "Test LLI Description";
+        testLLI.Description = "Test Create LLI Description";
         testLLI.Category = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
@@ -160,14 +161,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceShould_ThrowAnErrorIfTheTitleIsTooLong()
     {
         // Arrange
-        string testLLITitle = "Test LLI Title";
+        string testLLITitle = "Test Create LLI Title";
 
         var LLIService = new LLIService();
 
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
         testLLI.Title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-        testLLI.Description = "Test LLI Description";
+        testLLI.Description = "Test Create LLI Description";
         testLLI.Category = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
@@ -197,13 +198,13 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceShould_ThrowAnErrorIfDescriptionIsTooLong()
     {
         // Arrange
-        string testLLITitle = "Test LLI Title";
+        string testLLITitle = "Test Create LLI Title";
 
         var LLIService = new LLIService();
 
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";
-        testLLI.Title = "Test LLI Title";
+        testLLI.Title = "Test Create LLI Title";
         testLLI.Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
         testLLI.Category = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
@@ -271,7 +272,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceShould_GetAllLLIForAUser()
     {
         // Arrange
-        string testLLITitle = "Test LLI Title";
+        string testLLITitle = "Test Get LLI Title";
 
         var LLIService = new LLIService();
 
@@ -283,7 +284,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
             var testLLI = new LLI();
             testLLI.UserHash = USER_HASH;
             testLLI.Title = testLLITitle;
-            testLLI.Description = $"Test LLI number {i}";
+            testLLI.Description = $"Test Get LLI number {i}";
             testLLI.Category = LLICategory.Travel;
             testLLI.Status = LLIStatus.Active;
             testLLI.Visibility = LLIVisibility.Public;
@@ -302,7 +303,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
 
         // Assert
-        Assert.True(readResponse.HasError = false);
+        Assert.True(readResponse.HasError == false);
         Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == numberOfLLI);
 
@@ -322,6 +323,12 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         // Arrange
         string testOldLLITitle = "Test LLI Title";
         string testNewLLITitle = "New LLI Title";
+        string testOldLLIDescription = "Test Update LLI";
+        string testNewLLIDescription = "Test New Update LLI"; 
+        int testOldLLICost = 0;
+        int testNewLLICost = 1;
+
+
 
         var LLIService = new LLIService();
 
@@ -329,12 +336,12 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var testOldLLI = new LLI();
         testOldLLI.UserHash = USER_HASH;
         testOldLLI.Title = testOldLLITitle;
-        testOldLLI.Description = $"Test Update LLI";
+        testOldLLI.Description = testOldLLIDescription;
         testOldLLI.Category = LLICategory.Travel;
         testOldLLI.Status = LLIStatus.Active;
         testOldLLI.Visibility = LLIVisibility.Public;
         testOldLLI.Deadline = DEADLINE;
-        testOldLLI.Cost = 0;
+        testOldLLI.Cost = testOldLLICost;
         
         var LLIRecurrence = new LLIRecurrence();
         LLIRecurrence.Status = LLIRecurrenceStatus.On;
@@ -346,22 +353,27 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         // New LLI
         var testNewLLI = new LLI();
         testNewLLI.Title = testNewLLITitle;
+        testNewLLI.Description = testNewLLIDescription;
         testNewLLI.Category = LLICategory.Outdoor;
+        testNewLLI.Status = LLIStatus.Postponed;
+        testNewLLI.Visibility = LLIVisibility.Private;
+        testNewLLI.Cost = testNewLLICost;
         
         // Act
-        var updateResponse = LLIService.UpdateLLI(USER_HASH, testOldLLI, testNewLLI);
+        var updateResponse = await LLIService.UpdateLLI(USER_HASH, testOldLLI, testNewLLI);
 
         var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
 
         // Assert
         Assert.True(readResponse.Output != null);
-        foreach (List<Object> LLI in readResponse.Output)
+        foreach (LLI lli in readResponse.Output)
         {
-            foreach (var attribute in LLI) 
-            {
-                // TODO
-            }
-            
+            Assert.True(lli.Title == testNewLLITitle);
+            Assert.True(lli.Description == testNewLLIDescription);
+            Assert.True(lli.Category == testNewLLI.Category);
+            Assert.True(lli.Status == testNewLLI.Status);
+            Assert.True(lli.Visibility == testNewLLI.Visibility);
+            Assert.True(lli.Cost == testNewLLICost);
         }
         
         // Cleanup
@@ -409,7 +421,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
 
         // Assert
-        Assert.True(deleteResponse.HasError = false);
+        Assert.True(deleteResponse.HasError == false);
         Assert.True(readResponse.Output == null);
     }
 
