@@ -4,7 +4,7 @@ using Peace.Lifelog.Logging;
 
 namespace Peace.Lifelog.LLI;
 
-public class LLIService : ICreateLLI
+public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 {
     public async Task<Response> CreateLLI(LLI lli)
     {
@@ -56,5 +56,25 @@ public class LLIService : ICreateLLI
 
         return response;
 
+    }
+
+    public Task<Response> GetAllLLIFromUser(string userHash, int pageNumber = 0)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Response> GetSingleLLIFromUser(string userHash, LLI lli)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Response> UpdateLLI(string userHash, LLI oldLLI, LLI newLLI)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Response> DeleteLLI(string userHash, LLI lli)
+    {
+        throw new NotImplementedException();
     }
 }
