@@ -86,7 +86,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.Recurrence = LLIRecurrence;
 
         // Act
-        var createLLIResponse = await LLIService.CreateLLI(testLLI);
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
@@ -146,7 +146,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.Recurrence = LLIRecurrence;
 
         // Act
-        var createLLIResponse = await LLIService.CreateLLI(testLLI);
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
@@ -182,7 +182,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.Recurrence = LLIRecurrence;
 
         // Act
-        var createLLIResponse = await LLIService.CreateLLI(testLLI);
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
@@ -219,7 +219,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.Recurrence = LLIRecurrence;
 
         // Act
-        var createLLIResponse = await LLIService.CreateLLI(testLLI);
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
@@ -296,7 +296,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
             LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
 
             testLLI.Recurrence = LLIRecurrence;
-            var createLLIResponse = await LLIService.CreateLLI(testLLI);
+            var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
         }
         
         // Act
@@ -348,10 +348,19 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
 
         testOldLLI.Recurrence = LLIRecurrence;
-        var createLLIResponse = await LLIService.CreateLLI(testOldLLI);
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testOldLLI);
+
+        string id = string.Empty;
+        var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
+        if (readResponse.Output != null) {
+            foreach (LLI lli in readResponse.Output) {
+                id = lli.LLIID;
+            }
+        }
 
         // New LLI
         var testNewLLI = new LLI();
+        testNewLLI.LLIID = id;
         testNewLLI.Title = testNewLLITitle;
         testNewLLI.Description = testNewLLIDescription;
         testNewLLI.Category = LLICategory.Outdoor;
@@ -360,9 +369,9 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testNewLLI.Cost = testNewLLICost;
         
         // Act
-        var updateResponse = await LLIService.UpdateLLI(USER_HASH, testOldLLI, testNewLLI);
+        var updateResponse = await LLIService.UpdateLLI(USER_HASH, testNewLLI);
 
-        var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
+        readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
 
         // Assert
         Assert.True(readResponse.Output != null);
@@ -412,13 +421,20 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
 
         testLLI.Recurrence = LLIRecurrence;
-        var createLLIResponse = await LLIService.CreateLLI(testLLI);
-        
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
+
+        if (readResponse.Output != null) {
+            foreach (LLI lli in readResponse.Output) {
+                testLLI = lli;
+            }
+        }
         
         // Act
         var deleteResponse = await LLIService.DeleteLLI(USER_HASH, testLLI);
 
-        var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
+        readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
 
         // Assert
         Assert.True(deleteResponse.HasError == false);

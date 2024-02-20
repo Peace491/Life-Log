@@ -102,18 +102,18 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         throw new NotImplementedException();
     }
 
-    public async Task<Response> UpdateLLI(string userHash, LLI oldLLI, LLI newLLI)
+    public async Task<Response> UpdateLLI(string userHash, LLI lli)
     {
         var response = new Response();
 
-        if (newLLI.Title.Length > 50)
+        if (lli.Title.Length > 50)
         {
             response.HasError = true;
             response.ErrorMessage = "LLI Title is too long";
             return response;
         }
 
-        if (newLLI.Description is not null && newLLI.Description.Length > 200)
+        if (lli.Description is not null && lli.Description.Length > 200)
         {
             response.HasError = true;
             response.ErrorMessage = "LLI Description is too long";
@@ -121,19 +121,19 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
 
         string sql = "UPDATE LLI SET "
-        + (newLLI.Title != string.Empty ? $"Title = \"{newLLI.Title}\"," : "")
-        + (newLLI.Category != null ? $"Category = \"{newLLI.Category}\"," : "")
-        + (newLLI.Description != null ? $"Description = \"{newLLI.Description}\"," : "")
-        + (newLLI.Status != null ? $"Status = \"{newLLI.Status}\"," : "")
-        + (newLLI.Visibility != null ? $"Visibility = \"{newLLI.Visibility}\"," : "")
-        + (newLLI.Deadline != string.Empty ? $"Deadline = \"{newLLI.Deadline}\"," : "")
-        + (newLLI.Cost != null ? $"Cost = {newLLI.Cost}," : "")
-        + (newLLI.Recurrence.Status != null ? $"RecurrenceStatus = \"{newLLI.Recurrence.Status}\"," : "")
-        + (newLLI.Recurrence.Frequency != null ? $"RecurrenceFrequency = \"{newLLI.Recurrence.Frequency}\"," : "");
+        + (lli.Title != string.Empty && lli.Title != string.Empty ? $"Title = \"{lli.Title}\"," : "")
+        + (lli.Category != null && lli.Category != string.Empty ? $"Category = \"{lli.Category}\"," : "")
+        + (lli.Description != null && lli.Description != string.Empty? $"Description = \"{lli.Description}\"," : "")
+        + (lli.Status != null && lli.Status != string.Empty ? $"Status = \"{lli.Status}\"," : "")
+        + (lli.Visibility != null && lli.Visibility != string.Empty ? $"Visibility = \"{lli.Visibility}\"," : "")
+        + (lli.Deadline != string.Empty && lli.Deadline != string.Empty ? $"Deadline = \"{lli.Deadline}\"," : "")
+        + (lli.Cost != null ? $"Cost = {lli.Cost}," : "")
+        + (lli.Recurrence.Status != null && lli.Recurrence.Status != string.Empty ? $"RecurrenceStatus = \"{lli.Recurrence.Status}\"," : "")
+        + (lli.Recurrence.Frequency != null && lli.Recurrence.Frequency != string.Empty ? $"RecurrenceFrequency = \"{lli.Recurrence.Frequency}\"," : "");
 
         sql = sql.Remove(sql.Length - 1);
 
-        sql += $"WHERE UserHash = \"{userHash}\";";
+        sql += $" WHERE LLIId = \"{lli.LLIID}\";";
 
         var updateDataOnlyDAO = new UpdateDataOnlyDAO();
         response = await updateDataOnlyDAO.UpdateData(sql);
@@ -151,7 +151,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             return response;
         }
 
-        var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\"";
+        var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\" AND LLIId = \"{lli.LLIID}\";";
 
         var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         response = await deleteDataOnlyDAO.DeleteData(sql);
@@ -179,6 +179,9 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                 if (attribute is null) continue;
                 
                 switch(index){
+                    case 0:
+                        lli.LLIID = attribute.ToString() ?? "";
+                        break;
                     case 1:
                         lli.UserHash = attribute.ToString() ?? "";
                         break;

@@ -2,8 +2,8 @@
 
 public class LLICategory
 {
-    public static string MentalHealth = "MentalHealth";
-    public static string PhysicalHealth = "PhysicalHealth";
+    public static string MentalHealth = "Mental Health";
+    public static string PhysicalHealth = "Physical Health";
     public static string Outdoor = "Outdoor";
     public static string Sport = "Sport";
     public static string Art = "Art";

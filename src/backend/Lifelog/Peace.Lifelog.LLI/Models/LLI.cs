@@ -2,6 +2,7 @@
 
 public class LLI
 {
+    public string LLIID { get; set; } = string.Empty;
     public string UserHash { get; set; } = string.Empty; // Need to reimplement using a global UserHash model later on
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; } = null;
