@@ -1,9 +1,6 @@
 namespace Peace.Lifelog.LLITest;
 
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.UserManagement;
@@ -126,11 +123,12 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     {
         // Arrange
         string testLLITitle = "Test LLI Title";
+        string invalidUserHash = "Test Invalid User Hash";
 
         var LLIService = new LLIService();
 
         var testLLI = new LLI();
-        testLLI.UserHash = "Test Invalid User Hash";
+        testLLI.UserHash = invalidUserHash;
         testLLI.Title = testLLITitle;
         testLLI.Description = "Test Create LLI Description";
         testLLI.Category = LLICategory.Travel;
@@ -146,7 +144,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.Recurrence = LLIRecurrence;
 
         // Act
-        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+        var createLLIResponse = await LLIService.CreateLLI(invalidUserHash, testLLI);
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
