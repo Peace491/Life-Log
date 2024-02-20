@@ -1,9 +1,9 @@
 ﻿namespace Peace.Lifelog.LLI;
 
-public enum LLIStatus
+public class LLIStatus
 {
-    Active,
-    Postponed,
-    Completed
+    public static string Active = "Active";
+    public static string Postponed = "Postponed";
+    public static string Completed = "Completed";
 
 }
