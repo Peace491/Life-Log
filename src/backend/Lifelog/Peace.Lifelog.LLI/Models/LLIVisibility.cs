@@ -1,8 +1,8 @@
 ﻿namespace Peace.Lifelog.LLI;
 
-public enum LLIVisibility
+public class LLIVisibility
 {
-    Public,
-    Private
+    public static string Public = "Public";
+    public static string Private = "Private";
 
 }
