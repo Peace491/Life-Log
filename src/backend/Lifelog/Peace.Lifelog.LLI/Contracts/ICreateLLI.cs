@@ -4,5 +4,5 @@ using DomainModels;
 
 public interface ICreateLLI
 {
-    Task<Response> CreateLLI(LLI lli);
+    Task<Response> CreateLLI(string userHash, LLI lli);
 }
