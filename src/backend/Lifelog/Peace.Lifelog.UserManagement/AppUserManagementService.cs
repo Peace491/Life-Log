@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization;
-using DomainModels;
+﻿using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
@@ -25,7 +24,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         foreach (var property in propertiesTypeValueList)
         {
-            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value)) 
+            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value))
             {
                 throw new ArgumentNullException();
             }
@@ -63,11 +62,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
         }
 
@@ -87,7 +88,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         foreach (var property in propertiesTypeValueList)
         {
-            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value)) 
+            if (String.IsNullOrEmpty(property.Type) || String.IsNullOrEmpty(property.Value))
             {
                 throw new ArgumentNullException();
             }
@@ -126,11 +127,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", userProfileRequest.UserId.Value, "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", userProfileRequest.UserId.Value, "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} profile creation successful");
         }
 
@@ -141,21 +144,23 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
     public async Task<Response> CreateUserHash(IUserHashRequest userHashRequest)
     {
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var createUserHashSql = 
-        $"INSERT INTO {userHashRequest.ModelName} ({userHashRequest.UserId.Type}, {userHashRequest.UserHash.Type}) " 
-        + $"VALUES (\"{userHashRequest.UserId.Value}\", \"{userHashRequest.UserHash.Value}\");";  
+        var createUserHashSql =
+        $"INSERT INTO {userHashRequest.ModelName} ({userHashRequest.UserId.Type}, {userHashRequest.UserHash.Type}) "
+        + $"VALUES (\"{userHashRequest.UserId.Value}\", \"{userHashRequest.UserHash.Value}\");";
 
-        var response = await createDataOnlyDAO.CreateData(createUserHashSql); 
+        var response = await createDataOnlyDAO.CreateData(createUserHashSql);
 
         // Log Account Creation
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", userHashRequest.UserHash.Value, "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", userHashRequest.UserHash.Value, "Info", "Persistent Data Store", $"{userHashRequest.UserHash.Value} user hash creation successful");
         }
 
@@ -194,9 +199,9 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
-        response  = await readDataOnlyDAO.ReadData(sql);
+        response = await readDataOnlyDAO.ReadData(sql);
 
-        if (response.Output is null) 
+        if (response.Output is null)
         {
             response.HasError = true;
             response.ErrorMessage = "Account does not exist";
@@ -207,11 +212,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
@@ -245,13 +252,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         var response = new Response();
 
-        string sql = $"UPDATE {userAccountRequest.ModelName} " 
+        string sql = $"UPDATE {userAccountRequest.ModelName} "
                     + $"SET {userAccountRequest.AccountStatus.Type} = \"{userAccountRequest.AccountStatus.Value}\" "
                     + $"WHERE {userAccountRequest.UserId.Type} = \"{userAccountRequest.UserId.Value}\"";
 
         var updateDataOnlyDAO = new UpdateDataOnlyDAO();
 
-        response  = await updateDataOnlyDAO.UpdateData(sql);
+        response = await updateDataOnlyDAO.UpdateData(sql);
 
         foreach (int rowsAffected in response.Output)
         {
@@ -267,11 +274,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
@@ -341,7 +350,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         parameters = parameters.Remove(parameters.Length - 1); // Remove extra comma at the end
 
         sql += parameters
-            + $" WHERE {userProfileRequest.UserId.Type} = \"{userProfileRequest.UserId.Value}\"" +  ";";
+            + $" WHERE {userProfileRequest.UserId.Type} = \"{userProfileRequest.UserId.Value}\"" + ";";
 
         // Create user account in DB
         var updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -365,16 +374,18 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", "Info", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
         }
 
         return response;
-        
+
     }
 
     /// <summary>
@@ -425,11 +436,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
+        if (response.HasError)
+        {
             var errorMessage = response.ErrorMessage;
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
         }
 
