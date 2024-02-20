@@ -5,6 +5,8 @@ using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.Logging;
 using System;
 using System.Text.RegularExpressions;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 public class RegistrationWebService()
 {
@@ -55,13 +57,51 @@ public class RegistrationWebService()
 
         // implement check if any zipcode outside of LA county then return response has error
 
+
+
+
         if(email == "" || DOB == "" || zipCode == ""){
             response.HasError = true;
             response.ErrorMessage = "The non-nullable option is null.";
             return response;
         }
 
+        // send a confirmation email to the user using mailkit, after user confirms then create user
 
+
+        // create the Normal user
+
+
+    }
+
+
+    public async void SendEmail(string email){
+
+        string lifelogEmail = "";   // add lifelog email and pass
+        string lifelogPassword = "";
+
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Lifelog", lifelogEmail));
+        message.To.Add(new MailboxAddress("", email));
+        message.Subject = "Your OTP for Lifelog!"
+
+        //  Create a OTP for our account
+        string registrationOTP = "";
+
+        var body = new BodyBuilder();
+        body.HtmlBody = $"<p>Thank you for registering! Please use this OTP {registrationOTP} to confirm your registration.</p>";
+
+        message.Body = body.ToMessageBody();
+
+        using (var emailClient = new SmtpClient()){
+            emailClient.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
+
+            client.Authenticate (lifelogEmail, lifelogPassword);
+
+            client.Send(message);
+
+            client.Disconnect (true);
+        }
 
     }
 

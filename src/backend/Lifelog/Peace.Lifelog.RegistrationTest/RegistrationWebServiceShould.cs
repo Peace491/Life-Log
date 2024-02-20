@@ -9,7 +9,7 @@ public class RegistrationWebServiceShould
 
     private const string EMAIL = "zarif.shams@gmail.com";
     private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
-    private const string ZIPCODE = "90716";
+    private const string ZIPCODE = "90716"; 
     private const string USERROLE = "Normal";
 
 #region Invalid Input Tests
