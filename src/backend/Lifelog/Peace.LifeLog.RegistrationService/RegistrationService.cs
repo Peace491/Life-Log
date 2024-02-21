@@ -1,4 +1,4 @@
-namespace RegistrationWebService;
+namespace RegistrationService;
 
 using DomainModels;
 using Peace.Lifelog.UserManagement;
@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using MimeKit;
 using MailKit.Net.Smtp;
 
-public class RegistrationWebService()
+public class RegistrationService()
 {
 
 
@@ -77,8 +77,8 @@ public class RegistrationWebService()
 
     public async void SendEmail(string email){
 
-        string lifelogEmail = "";   // add lifelog email and pass
-        string lifelogPassword = "";
+        string lifelogEmail = "peacesuperuser1@gmail.com";   // add lifelog email and pass
+        string lifelogPassword = "Peacesuperuser1$";
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Lifelog", lifelogEmail));

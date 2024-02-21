@@ -23,7 +23,7 @@
 
 <ItemGroup>
   
-  <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.RegistrationWebService.csproj" />
+  <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.RegistrationService.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.UserManagement.csproj" />
 </ItemGroup>

@@ -2,9 +2,9 @@ namespace Peace.Lifelog.RegistrationTest;
 
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.UserManagement;
-using Peace.Lifelog.RegistrationWebService;
+using Peace.Lifelog.RegistrationService;
 
-public class RegistrationWebServiceShould
+public class RegistrationServiceShould
 {
 
     private const string EMAIL = "zarif.shams@gmail.com";
@@ -14,7 +14,7 @@ public class RegistrationWebServiceShould
 
 #region Invalid Input Tests
 [Fact]
-public void RegistrationWebServiceShould_HaveValidEmailFormat()
+public void RegistrationServiceShould_HaveValidEmailFormat()
 {
     // Arrange
     string invalidEmail = "invalid@com.";
@@ -29,7 +29,7 @@ public void RegistrationWebServiceShould_HaveValidEmailFormat()
 }
 
 [Fact]
-public void RegistrationWebServiceShould_EmailBeAtLeast3Chars()
+public void RegistrationServiceShould_EmailBeAtLeast3Chars()
 {
     // Arrange
     string invalidEmail = "z@gmail.com";
@@ -43,7 +43,7 @@ public void RegistrationWebServiceShould_EmailBeAtLeast3Chars()
 }
 
 [Fact]
-public void RegistrationWebServiceShould_EmailOnlyBeAlphanumeric()
+public void RegistrationServiceShould_EmailOnlyBeAlphanumeric()
 {
     // Arrange
     string invalidEmail = "zarif&123!@gmail.com";
@@ -57,7 +57,7 @@ public void RegistrationWebServiceShould_EmailOnlyBeAlphanumeric()
 }
 
 [Fact]
-public void RegistrationWebServiceShould_HaveValidDOB()
+public void RegistrationServiceShould_HaveValidDOB()
 {
     // Arrange
     string invalidDOB = "1969-01-01";
@@ -71,7 +71,7 @@ public void RegistrationWebServiceShould_HaveValidDOB()
 }
 
 [Fact]
-public void RegistrationWebServiceShould_HaveValidZipCode()
+public void RegistrationServiceShould_HaveValidZipCode()
 {
     // Arrange
     string invalidZipCode = "90623";
@@ -85,7 +85,7 @@ public void RegistrationWebServiceShould_HaveValidZipCode()
 }
 
 [Fact]
-public void RegistrationWebServiceShould_InputsBeNotNull()
+public void RegistrationServiceShould_InputsBeNotNull()
 {
     // Arrange
     string emptyEmail= ""; 

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.17.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-rc.1.23421.29" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
+    <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
+  </ItemGroup>
+
+
+</Project>
