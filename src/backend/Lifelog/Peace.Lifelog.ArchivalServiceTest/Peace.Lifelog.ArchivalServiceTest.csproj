@@ -22,4 +22,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.ArchivalService\Peace.Lifelog.ArchivalService.csproj" />
+  </ItemGroup>
+
 </Project>
