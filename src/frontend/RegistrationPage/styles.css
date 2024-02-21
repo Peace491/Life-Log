@@ -97,6 +97,11 @@ main {
     height: 100%;
 }
 
+@keyframes height-change {
+    from {height: 70%}
+    to {height: 85%}
+}
+
 .registration-form-container {
     height: 70%;
     min-height: 400px;
@@ -114,7 +119,6 @@ main {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    
 }
 
 .registration-title {
@@ -141,6 +145,7 @@ main {
     font-size: 1em;
     color: #626262;
     font-weight: 300;
+    text-align: center;
 }
 
 .registration-input-container {
@@ -149,6 +154,11 @@ main {
     align-items: center;
     justify-content: center;
     gap: 10px;
+}
+
+@keyframes input-color-change {
+    from {background-color: #FFFFFF;}
+    to {background-color: #F5C992;}
 }
 
 .registration-input-container>input {
@@ -184,8 +194,14 @@ input.zipcode-input {
     background-image:url('./Assets/pin.svg');
 }
 
+@keyframes otp-input-appear {
+    from {opacity: 0;}
+    to {opacity: 100;}
+}
+
 input.otp-input {
     background-image:url('./Assets/lock.svg');
+    opacity: 0;
 }
 
 .registration-submit-container {

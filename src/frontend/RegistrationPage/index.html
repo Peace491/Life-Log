@@ -30,17 +30,17 @@
             </div>
 
             <div class="registration-prompt-container">
-                <h3>Create Your Lifelog Account</h3>
+                <h3 id="registration-prompt">Create Your Lifelog Account</h3>
             </div>
 
             <div class="registration-input-container" id="registration-input-container">
-                <input class="username-input" id="username-input" placeholder="Email">
-                <input class="dob-input" id="dob-input" placeholder="Birth Date" onpointerenter="(this.type='date')">
-                <input class="zipcode-input" id="zipcode-input" placeholder="Zip Code">
+                <input class="username-input" id="username-input" placeholder="Email" autocomplete="off">
+                <input class="dob-input" id="dob-input" placeholder="Birth Date" onpointerenter="(this.type='date')" autocomplete="off">
+                <input class="zipcode-input" id="zipcode-input" placeholder="Zip Code" autocomplete="off">
             </div>
             
             <div class="registration-submit-container">
-                <button onclick="onSubmitRegistrationCredentials()">Continue</button>
+                <button id="submit-credential-button" onclick="onSubmitRegistrationCredentials()">Continue</button>
             </div>
             
         </div>
