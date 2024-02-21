@@ -67,7 +67,7 @@ public class RegistrationService()
         }
 
         // send a confirmation email to the user using mailkit, after user confirms then create user
-        SendEmail(email);
+        SendOTPEmail(email);
 
 
 
@@ -75,7 +75,7 @@ public class RegistrationService()
     }
 
 
-    public async void SendEmail(string email){
+    public async void SendOTPEmail(string email){ // Should probably be in Security Library
 
         string lifelogEmail = "peacesuperuser1@gmail.com";   // add lifelog email and pass
         string lifelogPassword = "Peacesuperuser1$";
@@ -105,20 +105,31 @@ public class RegistrationService()
 
     }
 
+    public async void RegisterNormalUser(string email, string DOB, string zipCode){
+        RegisterUser(email, DOB, zipCode, "Normal User");
+    }
+
+    public async void RegisterAdminUser(string email, string DOB, string zipCode){
+        RegisterUser(email, DOB, zipCode, "Admin");
+    }
+
+
     public async void RegisterUser(string email, string DOB, string zipCode, string userRole){
+
+        // TODO: Check OTP before doing register user
 
         // TODO: populate variables to create profileRequest and accountRequest
 
-        string userID;
-        string userHash;
+        string userID = email;  // profile request does not need this
+        string userHash;    // method to create userhash is provided
         string creationDate = DateTime.Today.ToString("yyyy-MM-dd");
 
         var saltService = new SaltService()
         var saltResponse = saltService.getSalt();
         string salt = saltResponse.Output;
 
-        string role;
-        string mfaId;
+        string role = userRole;
+        
 
         var profileRequest = new LifelogProfileRequest(userID, DOB, zipCode);
         var accountRequest = new LifelogAccountRequest(userID, userHash, creationDate, salt, role, mfaId);
