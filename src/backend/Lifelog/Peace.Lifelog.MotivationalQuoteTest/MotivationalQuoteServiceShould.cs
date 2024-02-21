@@ -11,95 +11,91 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
 {
     private const string QUOTE = "TestMotivationalQuoteServiceQuote";
     private const string AUTHOR = "TestMotivationalQuoteServiceAuthor";
+    private const string TIME = DateTime.Now.ToString("hh:mm:ss tt");
 
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfImpartialQuote()
     {
         //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
+        var wrongQuote = "TestMotivationalQuote";
+
+        var invalidQuote = new Phrase();
+        var invalidAuthor = new Phrase();
+        
+        invalidQuote.Quote = wrongQuote;
+        invalidQuote.Author = AUTHOR;
+        invalidAuthor.Quote = QUOTE; 
+        invalidAuthor.Author = wrongAuthor; 
 
         //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
+        var validQuoteResponse = MotivationQuoteService.ICheckPhrase(invalidQuote);
+        var validAuthorResponse = MotivationQuoteService.ICheckPhrase(invalidAuthor);
 
         // Assert
-        Assert.True(validQuoteAuthorResponse == false);
+        Assert.True(validQuoteResponse.HasError == true);
+        Assert.True(validAuthorResponse.HasError == true);
     }
 
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
+    /*[Fact]
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfUnableToRetrievePhrase()
     {
         //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
+        var wrongQuote = "WrongQuote";
+        var wrongAuthor = "WrongAuthor";
+
+        var invalidQuote = new Phrase();
+        var invalidAuthor = new Phrase();
+        
+        invalidQuote.Quote = (wrongQuote, AUTHOR);
+        invalidAuthor.Author = (Quote, wrongAuthor); 
 
         //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
+        var validQuoteResponse = MotivationQuoteService.RegisterUser(invalidQuote);
+        var validAuthorResponse = MotivationQuoteService.RegisterUser(invalidAuthor);
 
         // Assert
-        Assert.True(validQuoteAuthorResponse == false);
-    }
+        Assert.True(validQuoteResponse.HasError == true);
+        Assert.True(validAuthorResponse.HasError == true);
+    }*/
 
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
+    [Fact]
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangePrior()
     {
         //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
+        string priorTime = "11:59:55 PM";
+
+        var correctPhrase = new Phrase();
+        
+        correctPhrase.Quote = QUOTE;
+        correctPhrase.Author = AUTHOR; 
+        correctPhrase.CurrentTime = priorTime; 
+                
 
         //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
+        var validTimeResponse = MotivationQuoteService.ICheckPhrase(correctPhrase);
 
         // Assert
-        Assert.True(validQuoteAuthorResponse == false);
+        Assert.True(validTimeResponse.HasError == true);
     }
 
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
+    [Fact]
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangeAfter()
     {
         //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
+        string afterTime = "00:00:05 AM";
+
+        var correctPhrase = new Phrase();
+        
+        correctPhrase.Quote = QUOTE;
+        correctPhrase.Author = AUTHOR; 
+        correctPhrase.CurrentTime = afterTime; 
+                
 
         //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
+        var validTimeResponse = MotivationQuoteService.ICheckPhrase(correctPhrase);
 
         // Assert
-        Assert.True(validQuoteAuthorResponse == false);
+        Assert.True(validTimeResponse.HasError == true);
     }
 
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
-    {
-        //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
-
-        //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
-
-        // Assert
-        Assert.True(validQuoteAuthorResponse == false);
-    }
-
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
-    {
-        //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
-
-        //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
-
-        // Assert
-        Assert.True(validQuoteAuthorResponse == false);
-    }
-
-    public async void MotivationalQuoteServiceShould_ImpartialQuote()
-    {
-        //Arrange
-        string invalidQuote = "WrongQuote";
-        string invalidAuthor = "WrongAuthor";
-
-        //Act
-        var validQuoteAuthorResponse = testRegUser.RegisterUser(invalidQuote, AUTHOR);
-
-        // Assert
-        Assert.True(validQuoteAuthorResponse == false);
-    }
+    
 }
