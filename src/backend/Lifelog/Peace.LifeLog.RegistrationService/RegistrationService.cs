@@ -3,6 +3,7 @@ namespace RegistrationService;
 using DomainModels;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 using System;
 using System.Text.RegularExpressions;
 using MimeKit;
@@ -11,8 +12,7 @@ using MailKit.Net.Smtp;
 public class RegistrationService()
 {
 
-
-    public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole)
+    public async Task<Response> CheckInputValidation(string email, string DOB, string zipCode)
     {
         var response = new Response();
         
@@ -55,7 +55,7 @@ public class RegistrationService()
             return response;
         }
 
-        // implement check if any zipcode outside of LA county then return response has error
+        // TODO: check if any zipcode outside of LA county then return response has error
 
 
 
@@ -67,9 +67,9 @@ public class RegistrationService()
         }
 
         // send a confirmation email to the user using mailkit, after user confirms then create user
+        SendEmail(email);
 
 
-        // create the Normal user
 
 
     }
@@ -85,7 +85,7 @@ public class RegistrationService()
         message.To.Add(new MailboxAddress("", email));
         message.Subject = "Your OTP for Lifelog!"
 
-        //  Create a OTP for our account
+        // TODO: create OTP generator ??
         string registrationOTP = "";
 
         var body = new BodyBuilder();
@@ -96,12 +96,35 @@ public class RegistrationService()
         using (var emailClient = new SmtpClient()){
             emailClient.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
 
-            client.Authenticate (lifelogEmail, lifelogPassword);
+            emailClient.Authenticate (lifelogEmail, lifelogPassword);
 
-            client.Send(message);
+            emailClient.Send(message);
 
-            client.Disconnect (true);
+            emailClient.Disconnect (true);
         }
+
+    }
+
+    public async void RegisterUser(string email, string DOB, string zipCode, string userRole){
+
+        // TODO: populate variables to create profileRequest and accountRequest
+
+        string userID;
+        string userHash;
+        string creationDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+        var saltService = new SaltService()
+        var saltResponse = saltService.getSalt();
+        string salt = saltResponse.Output;
+
+        string role;
+        string mfaId;
+
+        var profileRequest = new LifelogProfileRequest(userID, DOB, zipCode);
+        var accountRequest = new LifelogAccountRequest(userID, userHash, creationDate, salt, role, mfaId);
+
+        var userManagementService = new LifelogUserManagementService();
+        var createLifelogUserResponse = userManagementService.CreateLifelogUser(accountRequest, profileRequest);
 
     }
 

@@ -18,6 +18,8 @@
     <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
     <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" />
+
   </ItemGroup>
 
 
