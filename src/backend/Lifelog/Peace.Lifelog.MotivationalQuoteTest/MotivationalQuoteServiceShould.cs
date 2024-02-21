@@ -25,7 +25,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
         
 
         //Act
-        var validQuoteResponse = MotivationQuoteService.IGetPhrase(correctPhrase);
+        var validQuoteResponse = MotivationQuoteService.IGetQuote(correctPhrase);
 
         // Assert
         Assert.True(validPhraseResponse.HasError == false);
@@ -44,7 +44,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
         
 
         //Act
-        var validQuoteResponse = MotivationQuoteService.ISendPhrase(correctPhrase);
+        var validQuoteResponse = MotivationQuoteService.IGetQuote(correctPhrase);
 
         // Assert
         Assert.True(validPhraseResponse.HasError == true);
@@ -63,7 +63,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
         invalidQuote.Author = AUTHOR;
 
         //Act
-        var validQuoteResponse = MotivationQuoteService.ICheckPhrase(invalidQuote);
+        var validQuoteResponse = MotivationQuoteService.ICheckQuote(invalidQuote);
 
         // Assert
         Assert.True(validQuoteResponse.HasError == true);
@@ -82,7 +82,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
         invalidAuthor.Author = wrongAuthor; 
 
         //Act
-        var validAuthorResponse = MotivationQuoteService.RegisterUser(invalidAuthor);
+        var validAuthorResponse = MotivationQuoteService.ICheckAuthor(invalidAuthor);
 
         // Assert
         Assert.True(validAuthorResponse.HasError == true);
@@ -125,7 +125,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
                 
 
         //Act
-        var validTimeResponse = MotivationQuoteService.ICheckPhrase(correctPhrase);
+        var validTimeResponse = MotivationQuoteService.ICheckTime(correctPhrase);
 
         // Assert
         Assert.True(validTimeResponse.HasError == true);
@@ -146,7 +146,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
                 
 
         //Act
-        var validTimeResponse = MotivationQuoteService.ICheckPhrase(correctPhrase);
+        var validTimeResponse = MotivationQuoteService.ICheckTime(correctPhrase);
 
         // Assert
         Assert.True(validTimeResponse.HasError == true);

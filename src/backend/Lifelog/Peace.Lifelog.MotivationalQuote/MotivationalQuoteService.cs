@@ -43,14 +43,59 @@ public class MotivationalQuoteServiceShould : IReadPhrase, ICheckPhrase, ISendPh
         }            
     }
     
-    public async Task<Response> IReadPhrase(Phrase phrase)
+    public async Task<Response> ICheckTime(Phrase phrase)
     {
         var response = new Response();
 
+        if(DateTime.Parse(phrase.Time) < DateTime.Parse("11:59:59 PM"))
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Quote changed prior to 12:00 AM";
+            return response;
+        }
+
+        if(DateTime.Parse(phrase.Time) > DateTime.Parse("00:00:03 AM"))
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Quote changed after 12:00 AM";
+            return response;
+        }     
+
+        return response;           
+    }
+    
+    public async Task<Response> ICheckPhrase(Phrase phrase)
+    {
+        var response = new Response();
+
+        //var newQuote = $"SELECT Quote FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET 1";
+        
+        //var newAuthor = $"SELECT Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET 1";
+        
+        
         if (string.IsNullOrEmpty(phrase.Quote))
         {
             response.HasError = true;
             response.ErrorMessage = "The quote cannot be empty.";
+            return response;
+        }
+
+        if (string.IsNullOrEmpty(phrase.Author)) 
+        {
+            response.HasError = true;
+            response.ErrorMessage = "The author cannot be empty.";
+            return response;
+        }
+
+        if (ICheckQuote(phrase) == false)
+        {
+            response = ICheckQuote(phrase);
+            return response;
+        }
+
+        if (ICheckAuthor(phrase) == false)
+        {
+            response = ICheckAuthor(phrase);
             return response;
         }
     }
@@ -67,13 +112,6 @@ public class MotivationalQuoteServiceShould : IReadPhrase, ICheckPhrase, ISendPh
         var response = new Response();
 
                
-    }
-
-    public async Task<Response> ICheckTime(Phrase phrase)
-    {
-        var response = new Response();
-
-                
     }
 
     public async Task<Response> ISendPhrase(Phrase phrase)
