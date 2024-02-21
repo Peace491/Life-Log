@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="registration.js"></script> 
 
 </head>
 <body>
@@ -22,7 +23,7 @@
     </header>
 
     <main>
-        <div class="registration-form-container">
+        <div class="registration-form-container" id="registration-form-container">
             
             <div class="registration-title">
                 <h1>Sign Up</h1>
@@ -32,14 +33,14 @@
                 <h3>Create Your Lifelog Account</h3>
             </div>
 
-            <div class="registration-input-container">
-                <input class="username-input" placeholder="Email">
-                <input class="dob-input" placeholder="Birth Date" onpointerenter="(this.type='date')">
-                <input class="zipcode-input" placeholder="Zip Code">
+            <div class="registration-input-container" id="registration-input-container">
+                <input class="username-input" id="username-input" placeholder="Email">
+                <input class="dob-input" id="dob-input" placeholder="Birth Date" onpointerenter="(this.type='date')">
+                <input class="zipcode-input" id="zipcode-input" placeholder="Zip Code">
             </div>
             
             <div class="registration-submit-container">
-                <button onclick="location.href='https://google.com'">Continue</button>
+                <button onclick="onSubmitRegistrationCredentials()">Continue</button>
             </div>
             
         </div>
