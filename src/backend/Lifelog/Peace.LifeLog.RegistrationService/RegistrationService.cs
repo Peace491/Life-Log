@@ -106,7 +106,7 @@ public class RegistrationService()
     }
 
     public async void RegisterNormalUser(string email, string DOB, string zipCode){
-        RegisterUser(email, DOB, zipCode, "Normal User");
+        RegisterUser(email, DOB, zipCode, "Normal");
     }
 
     public async void RegisterAdminUser(string email, string DOB, string zipCode){
@@ -118,31 +118,21 @@ public class RegistrationService()
 
         // TODO: Check OTP before doing register user
 
-        // TODO: populate variables to create profileRequest and accountRequest
-
-        string userID = email;  // profile request does not need this
-        string userHash;    // method to create userhash is provided
-        string creationDate = DateTime.Today.ToString("yyyy-MM-dd");
-
-        var saltService = new SaltService()
-        var saltResponse = saltService.getSalt();
-        string salt = saltResponse.Output;
-
+        string userID = email;  
         string role = userRole;
         
+        var profileRequest = new LifelogProfileRequest();
+        var accountRequest = new LifelogAccountRequest();
 
-        var profileRequest = new LifelogProfileRequest(userID, DOB, zipCode);
-        var accountRequest = new LifelogAccountRequest(userID, userHash, creationDate, salt, role, mfaId);
+        accountRequest.UserId = ("UserId", userID);
+        accountRequest.Role = ("Role", role);
+
+        profileRequest.DOB = ("DOB", DOB);
+        profileRequest.ZipCode = ("ZipCode", zipCode);
 
         var userManagementService = new LifelogUserManagementService();
-        var createLifelogUserResponse = userManagementService.CreateLifelogUser(accountRequest, profileRequest);
+        var createLifelogUserResponse = await userManagementService.CreateLifelogUser(accountRequest, profileRequest);
 
     }
-
-
-
-
-
-
 
 }

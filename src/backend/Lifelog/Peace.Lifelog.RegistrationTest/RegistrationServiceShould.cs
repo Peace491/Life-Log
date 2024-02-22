@@ -10,21 +10,37 @@ public class RegistrationServiceShould
     private const string EMAIL = "zarif.shams@gmail.com";
     private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
     private const string ZIPCODE = "90716"; 
-    private const string USERROLE = "Normal";
 
-#region Invalid Input Tests
+
+#region Input Tests
+
+[Fact]
+public void RegistrationServiceShould_HaveValidInputs()
+{
+    
+    // Arrange
+    var registrationService = new RegistrationService();
+
+    // Act
+    var validEmailFormatResponse = registrationService.CheckInputValidation(EMAIL, DOB, ZIPCODE);
+
+    // Assert
+    Assert.True(validEmailFormatResponse.HasError == false);
+
+}
+
 [Fact]
 public void RegistrationServiceShould_HaveValidEmailFormat()
 {
     // Arrange
     string invalidEmail = "invalid@com.";
-    var testRegUser = new RegistrationWebService();
+    var registrationService = new RegistrationService();
 
     // Act
-    var validEmailFormatResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
+    var validEmailFormatResponse = registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
 
     // Assert
-    Assert.True(validEmailFormatResponse == false);
+    Assert.True(validEmailFormatResponse.HasError == false);
 
 }
 
@@ -33,13 +49,13 @@ public void RegistrationServiceShould_EmailBeAtLeast3Chars()
 {
     // Arrange
     string invalidEmail = "z@gmail.com";
-    var testRegUser = new RegistrationWebService();
+    var registrationService = new RegistrationService();
 
     // Act
-    var threeCharsResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
+    var threeCharsResponse = registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
 
     // Assert
-    Assert.True(threeCharsResponse == false);
+    Assert.True(threeCharsResponse.HasError == false);
 }
 
 [Fact]
@@ -47,13 +63,13 @@ public void RegistrationServiceShould_EmailOnlyBeAlphanumeric()
 {
     // Arrange
     string invalidEmail = "zarif&123!@gmail.com";
-    var testRegUser = new RegistrationWebService();
+    var registrationService = new RegistrationService();
 
     // Act
-    var alphanumericResponse = testRegUser.RegisterUser(invalidEmail, DOB, ZIPCODE, USERROLE);
+    var alphanumericResponse = registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
 
     // Assert
-    Assert.True(alphanumericResponse == false);
+    Assert.True(alphanumericResponse.HasError == false);
 }
 
 [Fact]
@@ -61,13 +77,13 @@ public void RegistrationServiceShould_HaveValidDOB()
 {
     // Arrange
     string invalidDOB = "1969-01-01";
-    var testRegUser = new RegistrationWebService();
+    var registrationService = new RegistrationService();
 
     // Act
-    var validDOBResponse = testRegUser.RegisterUser(EMAIL, invalidDOB, ZIPCODE, USERROLE);
+    var validDOBResponse = registrationService.CheckInputValidation(EMAIL, invalidDOB, ZIPCODE);
 
     // Assert
-    Assert.True(validDOBResponse == false);
+    Assert.True(validDOBResponse.HasError == false);
 }
 
 [Fact]
@@ -75,13 +91,13 @@ public void RegistrationServiceShould_HaveValidZipCode()
 {
     // Arrange
     string invalidZipCode = "90623";
-    var testRegUser = new RegistrationWebService();
+    var registrationService = new RegistrationService();
 
     // Act
-    var validZipCodeResponse = testRegUser.RegisterUser(EMAIL, DOB, invalidZipCode, USERROLE);
+    var validZipCodeResponse = registrationService.CheckInputValidation(EMAIL, DOB, invalidZipCode);
 
     // Assert
-    Assert.True(validEmailFormatResponse == false);
+    Assert.True(validZipCodeResponse.HasError == false);
 }
 
 [Fact]
@@ -91,13 +107,13 @@ public void RegistrationServiceShould_InputsBeNotNull()
     string emptyEmail= ""; 
     string emptyDOB = ""; // <-should this be empty or null?
     string emptyZipCode = ""; 
-    var testRegUser = new RegistrationWebService();
+    var registrationService = new RegistrationService();
 
     // Act
-    var inputNotNullResponse = testRegUser.RegisterUser(emptyEmail, emptyDOB, emptyZipCode, USERROLE);
+    var inputNotNullResponse = registrationService.CheckInputValidation(emptyEmail, emptyDOB, emptyZipCode);
 
     // Assert
-    Assert.True(inputNotNullResponse == false);
+    Assert.True(inputNotNullResponse.HasError == false);
 }
 
 
