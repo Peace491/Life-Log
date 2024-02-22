@@ -1,72 +1,86 @@
 namespace Peace.Lifelog.ArchivalServiceTest;
 
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Peace.Lifelog.ArchivalService;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
+using ZstdSharp.Unsafe;
+
 public class ArchivalServiceShould
 {
-    private const int MAX_EXECUTION_TIME_IN_SECONDS = 3001;
+    private const int MAX_EXECUTION_TIME_IN_MILLISECONDS = 60001;
     private const int LOG_ID_INDEX = 0;
-    private const string TABLE = "Logs";
+    private const string TABLE = "MockLogs";
 
     private const string TEST_HASH = "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=";
+    private const string LEVEL = "Debug";
+    private const string CATEGORY = "View";
+    private const string MESSAGE = "Hard Insert for testing";
+
+    public ArchivalServiceShould()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var createMockTableSql = $"CREATE TABLE {TABLE} ("
+            + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
+            + "LogTimestamp TIMESTAMP,"
+            + "LogUserHash VARCHAR(255),"
+            + "LogLevel VARCHAR(255),"
+            + "LogCategory VARCHAR(255),"
+            + "LogMessage TEXT"
+        + ");";
+
+        var createImmutableTriggerSql = "DELIMITER //"
+            + "CREATE TRIGGER prevent_log_updates_trigger"
+            + $"BEFORE UPDATE ON {TABLE}"
+            + "FOR EACH ROW"
+            + "BEGIN"
+            +  "    SIGNAL SQLSTATE '45000'"
+            +  $"    SET MESSAGE_TEXT = 'Updates to the {TABLE} table are not allowed.'"
+            + ";"
+            + "END;"
+            + "//"
+            + "DELIMITER ;";
+
+        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        DDLTransactionDAO.ExecuteDDLCommand(createImmutableTriggerSql);
+    }
+
+    // Cleanup for all tests
+    public async void Dispose()
+    {
+        var DDLTransactionDAO = new DDLTransactionDAO();
+
+        var deleteMockTableSql = $"DROP TABLE {TABLE}";
+
+        await DDLTransactionDAO.ExecuteDDLCommand(deleteMockTableSql);
+    }
 
     #region Success
-    // On Success
     [Fact]
-    public async void ArchivalServiceShould_SelectLogsOlderThan30DaysOld()
+    public async void ArchivalServiceShould_Archive()
     {
-        /* // Arrange 
-        string testLevel = "Debug";
-        string testCategory = "View";
-        string? testMessage = null;
-
-        // Need to initlaize all types of DAO for checking accuracy and cleanup.
-        var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
-        var logger = new Logging(logTarget);
-        var readOnlyDAO = new ReadDataOnlyDAO();
-        var deleteDataDAO = new DeleteDataOnlyDAO(); 
-
-        var createLogResponse1 = await logger.CreateLog(TABLE, TEST_HASH, testLevel, testCategory, testMessage);
-        var createLogResponse2 = await logger.CreateLog(TABLE, TEST_HASH, testLevel, testCategory, testMessage);
-        var createLogResponse3 = await logger.CreateLog(TABLE, TEST_HASH, testLevel, testCategory, testMessage);
         
-        string readLogs = $"SELECT * FROM {TABLE} WHERE LogTimestamp > DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
-        
-        var readLogResponse = await readOnlyDAO.ReadData(readLogs, 1000000);
-
-        string archiveString = ""; 
-
-        using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt")))
-        {
-
-                outputFile.WriteLine(line);
-        }
-        foreach (List<Object> readLogData in readLogResponse.Output)
-        {
-            foreach (object element in readLogData)
-            {
-                archiveString += element.ToString();
-            }
-                
-        }
-
-
-        Assert.True(true); */
-    }
-    [Fact]
-    public async void ArchivalServiceShould_DeleteArchivedLogsFromLogTable()
-    {
+        // Arrange 
         var archivalService = new ArchivalService();
+        Stopwatch timer = new Stopwatch();
+        var createOnlyDAO = new CreateDataOnlyDAO();
 
-        var archivalResponse = await archivalService.Archive(DateTime.Today);
+        // Act
+        var logInsert = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var createLogResponse = await createOnlyDAO.CreateData(logInsert);
+        timer.Start();
+        var archivalResponse = await archivalService.Archive(DateTime.Today, TABLE);
+        timer.Stop();
 
+        // Assert 
         Assert.True(archivalResponse.HasError == false);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_MILLISECONDS);
+        Dispose();
     }
     [Fact]
-    public void ArchivalServiceShould_UploadCompressedFiletoS3Bucket()
+    public async void ArchivalServiceShould_RemoveArchivedLogsFromLogTable()
     {
 
     }

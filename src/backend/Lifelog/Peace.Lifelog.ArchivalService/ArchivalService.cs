@@ -8,7 +8,7 @@ namespace Peace.Lifelog.ArchivalService;
 
 public class ArchivalService : IArchive
 {
-    public async Task<Response> Archive(DateTime dateTime)
+    public async Task<Response> Archive(DateTime dateTime, string table)
     {
         // Init response 
         var response = new Response();
@@ -20,25 +20,24 @@ public class ArchivalService : IArchive
         var deleteDAO = new DeleteDataOnlyDAO();
 
         // Init Logger keep having logger init issues
-        var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var logTarget = new LogTarget(createDataOnlyDAO);
         var logger = new Logging.Logging(logTarget);
 
         // Init SQL 
         string SELECT = "SELECT "; 
         string DELETE = "DELETE "; 
-        string validLogs = "* FROM Logs WHERE LogTimestamp > DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
+        string validLogs = $"* FROM {table} WHERE LogTimestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
 
         // Init archive filenames from input
-        string year = dateTime.Year.ToString();
-        string month = dateTime.Month.ToString("00");
+        string dt = dateTime.ToLongDateString();
 
-        string txtName = $"{year}_{month}archive.txt";
-        string archiveName = $"{year}_{month}archive.zip"; 
+        string txtName = $"{dt}archive.txt";
+        string archiveName = $"{dt}archive.zip"; 
         
-        // 
+
         string level = "ERROR";
         string category = "View";
+
         try // Protect against failure
         {
             // Get the target folder
@@ -93,14 +92,14 @@ public class ArchivalService : IArchive
 
             // Offload/Delete logs older than 30 days old
             category = "Persistent Data Store";
-            // var deleteResponse = await readDAO.ReadData(DELETE + validLogs);
+            var deleteResponse = await readDAO.ReadData(DELETE + validLogs);
 
             // Log archival operation 
             level = "Info";
             category = "View";
 
             response.HasError = false;
-            _ = await logger.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", level, category, response.ErrorMessage);
+            _ = await logger.CreateLog(table, "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", level, category, response.ErrorMessage);
         } 
         catch (Exception exception)
         {
@@ -108,7 +107,7 @@ public class ArchivalService : IArchive
             response.ErrorMessage = exception.GetBaseException().Message; 
 
             // Log on failure
-            _ = await logger.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", level, category, response.ErrorMessage);
+            _ = await logger.CreateLog(table, "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", level, category, response.ErrorMessage);
         }
         
         return response;
