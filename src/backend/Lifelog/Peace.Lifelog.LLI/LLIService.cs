@@ -32,6 +32,26 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             return response;
         }
 
+        if (lli.Deadline != string.Empty)
+        {
+            var deadlineYear = Convert.ToInt32(lli.Deadline.Substring(0, 4));
+
+            if (deadlineYear < 1960 || deadlineYear > 2100) 
+            {
+                response.HasError = true;
+                response.ErrorMessage = "LLI Deadline is out of range";
+                return response;
+            }
+        }
+        
+
+        if (lli.Cost is not null && lli.Cost < 0)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLI Cost must not be negative";
+            return response;
+        }
+
         var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency) VALUES ("
         + $"\"{userHash}\", "
         + $"\"{lli.Title}\", "
@@ -50,29 +70,31 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         response = await createDataOnlyDAO.CreateData(sql);
 
-        // // Log LLI Creation
-        // var logTarget = new LogTarget(createDataOnlyDAO);
-        // var logging = new Logging.Logging(logTarget);
+        // Log LLI Creation
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
 
-        // if (response.HasError) {
-        //     var errorMessage = response.ErrorMessage;
-        //     logging.CreateLog("Logs", "ERROR", "Persistent Data Store", errorMessage);
-        // }
-        // else {
-        //     logging.CreateLog("Logs", "Info", "Persistent Data Store", $"{lli.UserHash} created a LLI");
-        // }
+        if (response.HasError) {
+            response.ErrorMessage = "LLI fields are invalid";
+
+            var errorMessage = response.ErrorMessage;
+            var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{lli.UserHash} created a LLI");
+        }
 
         return response;
 
     }
 
-    public async Task<Response> GetAllLLIFromUser(string userHash, int pageNumber = 0)
+    public async Task<Response> GetAllLLIFromUser(string userHash)
     {
         var response = new Response();
 
         if (userHash == string.Empty) {
             response.HasError = true;
-            response.ErrorMessage = "Must provide a user hash";
+            response.ErrorMessage = "UserHash can not be empty";
             return response;
         }
 
@@ -80,13 +102,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
-        if (pageNumber == 0)
-        {
-            response = await readDataOnlyDAO.ReadData(sql);
-        }
-        else {
-            response = await readDataOnlyDAO.ReadData(sql, 10, pageNumber);
-        }
+        response = await readDataOnlyDAO.ReadData(sql);
 
         var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(response);
 
@@ -106,6 +122,13 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
+        if (userHash == string.Empty)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "User Hash must not be empty";
+            return response;
+        }
+
         if (lli.Title.Length > 50)
         {
             response.HasError = true;
@@ -117,6 +140,26 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         {
             response.HasError = true;
             response.ErrorMessage = "LLI Description is too long";
+            return response;
+        }
+
+        if (lli.Deadline != string.Empty)
+        {
+            var deadlineYear = Convert.ToInt32(lli.Deadline.Substring(0, 4));
+
+            if (deadlineYear < 1960 || deadlineYear > 2100) 
+            {
+                response.HasError = true;
+                response.ErrorMessage = "LLI Deadline is out of range";
+                return response;
+            }
+        }
+        
+
+        if (lli.Cost is not null && lli.Cost < 0)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLI Cost must not be negative";
             return response;
         }
 
@@ -138,6 +181,21 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var updateDataOnlyDAO = new UpdateDataOnlyDAO();
         response = await updateDataOnlyDAO.UpdateData(sql);
 
+        // Log LLI Creation
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            response.ErrorMessage = "LLI fields are invalid";
+
+            var errorMessage = response.ErrorMessage;
+            var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{lli.UserHash} updated a LLI");
+        }
+
         return response;
     }
 
@@ -147,8 +205,15 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         if (userHash == string.Empty) {
             response.HasError = true;
-            response.ErrorMessage = "Must provide a user hash";
+            response.ErrorMessage = "UserHash can not be empty";
             return response;
+        }
+
+        if (lli.LLIID == string.Empty || lli.LLIID is null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "LLIId can not be empty";
+            return response;   
         }
 
         var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\" AND LLIId = \"{lli.LLIID}\";";
