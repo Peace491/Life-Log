@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Home Page</title>
     <link rel="stylesheet" href="styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="login.js"></script> 
 </head>
 <body>
     <header>
-        <div class="logo">
+        <div class="logo-container">
+            <img src = "../Assets/logo.svg" alt="Lifelog Logo" class="logo"/>
+        </div>
+        <div class="header-contents-container">
 
         </div>
     </header>
@@ -16,34 +24,41 @@
     <main>
         <div class="info-section">
             <div class="welcome-container">
-                <h1>Welcome to <b>Life Log</b></h1>
+                <h1>Welcome to <span class="bold-text">Life Log</span></h1>
             </div>
             <div class="quote-container">
                 <div class="quote-box">
+                    <img src = "../Assets/quotes.png" alt="quote-logo" class="quote-logo-bottom"/>
+                    <img src = "../Assets/quotes.png" alt="quote-logo" class="quote-logo-top"/>
                     <div class="quote">
                         <h2>If you can dream it, you can do it</h2>
                     </div>
                     <div class="quote-author">
-                        <h3>Albert Einstein</h3>
+                        <h3> -Albert Einstein</h3>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="login-section">
-            <div class="login-container">
+            <div class="login-container" id="login-container">
                 <div class="login-sign">
-                    Log In
+                    <h1>Log In</h1>
                 </div>
-                <div class="user-credential">
-                    <input class="username-input" value="Username">
-                    <input class="password-input" value="Password">
+
+                <div class="login-prompt-container">
+                    <h3 id="login-prompt">Welcome Back!</h3>
                 </div>
-                <div class="submit">
-                    <button>Continue</button>
+
+                <div class="login-input-container" id="login-input-container">
+                    <input class="username-input" id="username-input" placeholder="Email" autocomplete="off">
+                </div>
+
+                <div class="login-submit-container">
+                    <button id="submit-credential-button" onclick="onSubmitRegistrationCredentials()">Continue</button>
                 </div>
                 <div class="registration">
-                    <p>Create one? <a href="google.com">Sign up</a></p>
+                    <p>Create one? <a class="sing-up-link" href="google.com">Sign up</a></p>
                 </div>
             </div>
         </div>
