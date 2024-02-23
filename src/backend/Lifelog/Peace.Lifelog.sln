@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagemen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LLIWebService", "Peace.Lifelog.LLIWebService\Peace.Lifelog.LLIWebService.csproj", "{94210E3C-2FBD-4707-9284-6972FDA1CD14}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.ArchivalService", "Peace.Lifelog.ArchivalService\Peace.Lifelog.ArchivalService.csproj", "{1F57B892-C1D0-499C-87AC-67640E0FACCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.ArchivalServiceTest", "Peace.Lifelog.ArchivalServiceTest\Peace.Lifelog.ArchivalServiceTest.csproj", "{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{94210E3C-2FBD-4707-9284-6972FDA1CD14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94210E3C-2FBD-4707-9284-6972FDA1CD14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94210E3C-2FBD-4707-9284-6972FDA1CD14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F57B892-C1D0-499C-87AC-67640E0FACCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F57B892-C1D0-499C-87AC-67640E0FACCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F57B892-C1D0-499C-87AC-67640E0FACCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F57B892-C1D0-499C-87AC-67640E0FACCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
