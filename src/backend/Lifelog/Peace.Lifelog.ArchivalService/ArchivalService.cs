@@ -14,6 +14,12 @@ public class ArchivalService : IArchive
         var response = new Response();
         response.HasError = true;
 
+        if (dateTime != DateTime.Today)
+        {
+            response.ErrorMessage = "Invalid Date Passed to archival";
+            return response;
+        }
+
         // Init nessesary DAOS
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var readDAO = new ReadDataOnlyDAO();
@@ -24,9 +30,9 @@ public class ArchivalService : IArchive
         var logger = new Logging.Logging(logTarget);
 
         // Init SQL 
-        string SELECT = "SELECT "; 
+        string SELECT = "SELECT *"; 
         string DELETE = "DELETE "; 
-        string validLogs = $"* FROM {table} WHERE LogTimestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
+        string validLogs = $"FROM {table} WHERE LogTimestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
 
         // Init archive filenames from input
         string dt = dateTime.ToLongDateString();
@@ -92,7 +98,7 @@ public class ArchivalService : IArchive
 
             // Offload/Delete logs older than 30 days old
             category = "Persistent Data Store";
-            var deleteResponse = await readDAO.ReadData(DELETE + validLogs);
+            var deleteResponse = await deleteDAO.DeleteData(DELETE + validLogs);
 
             // Log archival operation 
             level = "Info";
