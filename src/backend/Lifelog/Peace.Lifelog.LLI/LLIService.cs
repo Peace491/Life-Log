@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Runtime.Serialization;
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
@@ -53,7 +54,51 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
         #endregion
 
-        var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency) VALUES ("
+        #region Check for completion within the last year
+        var completionDateCheckSql = "SELECT CompletionDate "
+        + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\"";
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        var completionDateCheckResponse = await readDataOnlyDAO.ReadData(completionDateCheckSql);
+
+        if (completionDateCheckResponse.Output != null)
+        {
+            foreach(List<Object> lliOutput in completionDateCheckResponse.Output)
+            {
+                foreach (var attribute in lliOutput) 
+                {
+                    if (attribute is null || attribute.ToString() == string.Empty)
+                    {
+                        continue;
+                    }
+
+                    var lliCompletionDate = attribute.ToString().Substring(0, 9);
+
+                    if (lliCompletionDate == string.Empty)
+                    {
+                        continue;
+                    }
+
+                    var completionDate = DateTime.ParseExact(lliCompletionDate, "M/d/yyyy", null);
+                    var today = DateTime.Now;
+                    var oneYearAgo = today.AddYears(-1);
+
+                    if (completionDate > oneYearAgo) // LLI can not be created if it has been completed in the last year
+                    {
+                        response.HasError = true;
+                        response.ErrorMessage = "LLI has been completed within the last year";
+                        return response;
+                    }
+                    
+                }
+                
+            }
+        }
+        #endregion
+
+        #region Create LLI in DB
+        var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency, CreationDate, CompletionDate) VALUES ("
         + $"\"{userHash}\", "
         + $"\"{lli.Title}\", "
         + $"\"{lli.Category}\", "
@@ -63,15 +108,17 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + $"\"{lli.Deadline}\", "
         + $"{lli.Cost}, "
         + $"\"{lli.Recurrence.Status}\", "
-        + $"\"{lli.Recurrence.Frequency}\""
+        + $"\"{lli.Recurrence.Frequency}\", "
+        + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", "
+        + $"null"
         + ");";
 
-        // Create LLI in DB
         var createDataOnlyDAO = new CreateDataOnlyDAO();
 
         response = await createDataOnlyDAO.CreateData(sql);
+        #endregion
 
-        // Log LLI Creation
+        #region Log
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
@@ -84,6 +131,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         else {
             var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{lli.UserHash} created a LLI");
         }
+        #endregion
 
         return response;
 
@@ -176,7 +224,8 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + (lli.Deadline != string.Empty && lli.Deadline != string.Empty ? $"Deadline = \"{lli.Deadline}\"," : "")
         + (lli.Cost != null ? $"Cost = {lli.Cost}," : "")
         + (lli.Recurrence.Status != null && lli.Recurrence.Status != string.Empty ? $"RecurrenceStatus = \"{lli.Recurrence.Status}\"," : "")
-        + (lli.Recurrence.Frequency != null && lli.Recurrence.Frequency != string.Empty ? $"RecurrenceFrequency = \"{lli.Recurrence.Frequency}\"," : "");
+        + (lli.Recurrence.Frequency != null && lli.Recurrence.Frequency != string.Empty ? $"RecurrenceFrequency = \"{lli.Recurrence.Frequency}\"," : "")
+        + (lli.CompletionDate != null && lli.CompletionDate != string.Empty ? $"CompletionDate = \"{lli.CompletionDate}\"," : "");
 
         sql = sql.Remove(sql.Length - 1);
 
@@ -282,6 +331,12 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                         break;
                     case 10:
                         lli.Recurrence.Frequency = attribute.ToString() ?? "";
+                        break;
+                    case 11:
+                        lli.CreationDate = attribute.ToString() ?? "";
+                        break;
+                    case 12:
+                        lli.CompletionDate = attribute.ToString() ?? "";
                         break;
                     default:
                         break;

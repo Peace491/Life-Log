@@ -1,6 +1,7 @@
 namespace Peace.Lifelog.LLITest;
 
 using System.Threading.Tasks;
+using Org.BouncyCastle.Asn1.Misc;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.UserManagement;
@@ -374,6 +375,81 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         Assert.True(createLLIResponse.HasError);
         Assert.True(createLLIResponse.ErrorMessage == "LLI fields are invalid");
         Assert.Null(readResponse.Output);
+    }
+
+    [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfALLIWithTheSameTitleHasBeenCreatedInThePastYear()
+    {
+        // Arrange
+        var testLLITitle = "Test Create LLI Within A Year";
+        var LLIService = new LLIService();
+
+        var testLLI = new LLI();
+        testLLI.UserHash = USER_HASH;
+        testLLI.Title = testLLITitle;
+        testLLI.Description = "Test LLI Description";
+        testLLI.Category = LLICategory.Travel;
+        testLLI.Status = LLIStatus.Active;
+        testLLI.Visibility = LLIVisibility.Public;
+        testLLI.Deadline = "2011-11-11"; // Invalid date format
+        testLLI.Cost = 0;
+
+        var LLIRecurrence = new LLIRecurrence();
+        LLIRecurrence.Status = LLIRecurrenceStatus.On;
+        LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
+
+        testLLI.Recurrence = LLIRecurrence;
+
+        // Act
+        // Create LLI
+        var _ = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Update LLI to be completed
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
+        var readResponse = await readDataOnlyDAO.ReadData(readLLISql);
+
+        string? LLIId = "";
+
+        if (readResponse.Output != null)
+        {
+            // The read sql return a list of LLI with a list of attribute within that LLI 
+            foreach (List<Object> LLI in readResponse.Output)
+            {
+                foreach (var attribute in LLI) 
+                {
+                    LLIId = attribute.ToString(); // There is only one attribute being return, which is the LLIId
+                }
+                
+            }
+        }
+
+        var updateLLICompletionDate = new LLI();
+        updateLLICompletionDate.LLIID = LLIId;
+        updateLLICompletionDate.CompletionDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+        var __ = await LLIService.UpdateLLI(USER_HASH, updateLLICompletionDate);
+
+        // Create Second LLI After First LLI
+        var createSecondLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        
+
+        //Assert
+        Assert.True(createSecondLLIResponse.HasError);
+        Assert.True(createSecondLLIResponse.ErrorMessage == "LLI has been completed within the last year");
+
+        // Cleanup
+        
+
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        
+        
+        var deleteLLISql = $"DELETE FROM LLI WHERE LLIId=\"{LLIId}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deleteLLISql);
+        
     }
 
     [Fact]
