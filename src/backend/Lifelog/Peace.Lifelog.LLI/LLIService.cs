@@ -11,6 +11,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
+        #region Input Validation
         if (userHash == string.Empty)
         {
             response.HasError = true;
@@ -44,13 +45,13 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             }
         }
         
-
         if (lli.Cost is not null && lli.Cost < 0)
         {
             response.HasError = true;
             response.ErrorMessage = "LLI Cost must not be negative";
             return response;
         }
+        #endregion
 
         var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency) VALUES ("
         + $"\"{userHash}\", "
@@ -92,11 +93,13 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
+        #region Input Validation
         if (userHash == string.Empty) {
             response.HasError = true;
             response.ErrorMessage = "UserHash can not be empty";
             return response;
         }
+        #endregion
 
         var sql = $"SELECT * FROM LLI WHERE userHash = \"{userHash}\"";
 
@@ -122,6 +125,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
+        #region Input Validation
         if (userHash == string.Empty)
         {
             response.HasError = true;
@@ -154,7 +158,6 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                 return response;
             }
         }
-        
 
         if (lli.Cost is not null && lli.Cost < 0)
         {
@@ -162,6 +165,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             response.ErrorMessage = "LLI Cost must not be negative";
             return response;
         }
+        #endregion
 
         string sql = "UPDATE LLI SET "
         + (lli.Title != string.Empty && lli.Title != string.Empty ? $"Title = \"{lli.Title}\"," : "")
@@ -203,6 +207,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
+        #region Input Validation
         if (userHash == string.Empty) {
             response.HasError = true;
             response.ErrorMessage = "UserHash can not be empty";
@@ -215,6 +220,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             response.ErrorMessage = "LLIId can not be empty";
             return response;   
         }
+        #endregion
 
         var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\" AND LLIId = \"{lli.LLIID}\";";
 
