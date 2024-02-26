@@ -1,90 +1,72 @@
+using Microsoft.Net.Http.Headers;
 using Peace.Lifelog.LLI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+/* Registration of objects for .NET's DI Container */
 
-// Configure the HTTP request pipeline.
+builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
+
+// Creation of the WebApplication host object
+var app = builder.Build(); // Only part needed to execute Web API project
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+/* Setup of Middleware Pipeline */
+
 app.UseHttpsRedirection();
 
-app.MapPost("/postLLI", async (string userHash, string title, string category, string description, string status, string visibility, string deadline, int cost, string recurrenceStatus, string recurrenceFrequency) => {
-    var lliService = new LLIService();
-
-    var lli = new LLI();
-    lli.Title = title;
-    lli.Category = category;
-    lli.Description = description;
-    lli.Status = status;
-    lli.Visibility = visibility;
-    lli.Deadline = deadline;
-    lli.Cost = cost;
-    lli.Recurrence.Status = recurrenceStatus;
-    lli.Recurrence.Frequency = recurrenceFrequency;
-
-    var response = await lliService.CreateLLI(userHash, lli);
-
-    return response;
-
-})
-.WithName("CreateLLIForUser")
-.WithOpenApi();
-
-app.MapGet("/getAllLLI", async (string userHash) =>
+// Defining a custom middleware AND adding it to Kestral's request pipeline
+// Custom middleware to improve security by stopping web server from advertising itself 
+app.Use(async (httpContext, next) =>
 {
-    var lliService = new LLIService();
-    var response = await lliService.GetAllLLIFromUser(userHash);
 
-    return response.Output;        
-})
-.WithName("GetAllLLIForUser")
-.WithOpenApi();
+    // No inbound code to be executed
+    //
+    //
+    httpContext.Response.Headers.Server = "";
 
-app.MapPut("/putLLI", async (string userHash, string lliId, string title = "", string category = "", 
-string description = "", string status = "", string visibility = "", string deadline = "", 
-int? cost = null, string recurrenceStatus = "", string recurrenceFrequency = "") => {
-    var lliService = new LLIService();
+    // Go to next middleware
+    await next(httpContext);
 
-    var newLLI = new LLI();
-    newLLI.LLIID = lliId;
-    newLLI.Title = title;
-    newLLI.Category = category;
-    newLLI.Description = description;
-    newLLI.Status = status;
-    newLLI.Visibility = visibility;
-    newLLI.Deadline = deadline;
-    newLLI.Cost = cost;
-    newLLI.Recurrence.Status = recurrenceStatus;
-    newLLI.Recurrence.Frequency = recurrenceFrequency;
+    // Explicitly only wanting code to execite on the way out of pipeline (Response/outbound direction)
+    if (httpContext.Response.Headers.ContainsKey(HeaderNames.XPoweredBy))
+    {
+        httpContext.Response.Headers.Remove(HeaderNames.XPoweredBy);
+    }
+});
 
-    var response = await lliService.UpdateLLI(userHash, newLLI);
 
-    return response;
+// Defining a custom middleware AND adding it to Kestral's request pipeline
+app.Use((httpContext, next) =>
+{
+    if (httpContext.Request.Method.ToUpper() == nameof(HttpMethod.Options).ToUpper() &&
+        httpContext.Request.Headers.XRequestedWith == "XMLHttpRequest")
+    {
+        var allowedMethods = new List<string>()
+        {
+            HttpMethods.Get,
+            HttpMethods.Post,
+            HttpMethods.Options,
+            HttpMethods.Head
+        };
 
-})
-.WithName("UpdateLLIForUser")
-.WithOpenApi();
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "*");
+        httpContext.Response.Headers.AccessControlAllowMethods = string.Join(",", allowedMethods); // "GET, POST, OPTIONS, HEAD"
+        httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+        httpContext.Response.Headers.AccessControlMaxAge = TimeSpan.FromHours(2).Seconds.ToString();
+    }
 
-app.MapDelete("/deleteLLI", async (string userHash, string lliId) => {
-    var lliService = new LLIService();
-    var lli = new LLI();
-    lli.LLIID = lliId;
+    return next(httpContext);
+});
 
-    var response = await lliService.DeleteLLI(userHash, lli);
+app.MapControllers(); // Needed for mapping the routes defined in Controllers
 
-    return response;
-})
-.WithName("DeleteLLIForUser")
-.WithOpenApi();
-
-app.Run();
+app.Run(); // Only part needed to execute Web API project
