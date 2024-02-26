@@ -1,7 +1,6 @@
 namespace Peace.Lifelog.LLITest;
 
 using System.Threading.Tasks;
-using Org.BouncyCastle.Asn1.Misc;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.UserManagement;
