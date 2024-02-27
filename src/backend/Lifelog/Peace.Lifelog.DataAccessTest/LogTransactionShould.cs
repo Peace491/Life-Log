@@ -91,7 +91,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
         // Act
         var createResponse = await createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
 
-        var readDataSql = $"SELECT * FROM Logs WHERE LogID={createResponse.LogId}";
+        var readDataSql = $"SELECT * FROM Logs WHERE Id={createResponse.LogId}";
 
         var readResponse = await readOnlyDAO.ReadData(readDataSql);
 
@@ -130,7 +130,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         var readDataResponse = await readOnlyDAO.ReadData(readDataSql, DEFAULT_RECORD_COUNT); // Issue might be because create Response is not finished
 
-        var readLogSql = $"SELECT * FROM Logs WHERE LogID={readDataResponse.LogId}";
+        var readLogSql = $"SELECT * FROM Logs WHERE Id={readDataResponse.LogId}";
         var readLogResponse = await readOnlyDAO.ReadData(readLogSql);
         
         // Assert
@@ -171,7 +171,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         var updateResponse = await updateOnlyDAO.UpdateData(updateSql);
 
-        var readSql = $"SELECT * FROM Logs WHERE LogID={updateResponse.LogId}";
+        var readSql = $"SELECT * FROM Logs WHERE Id={updateResponse.LogId}";
 
         var readResponse = await readOnlyDAO.ReadData(readSql);
 
@@ -210,7 +210,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
         
-        var readSql = $"SELECT * FROM Logs WHERE LogID={deleteResponse.LogId}";
+        var readSql = $"SELECT * FROM Logs WHERE Id={deleteResponse.LogId}";
         var readResponse = await readOnlyDAO.ReadData(readSql);
 
         // Assert
