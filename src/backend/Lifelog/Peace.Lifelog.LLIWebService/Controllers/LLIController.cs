@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
 
 [ApiController]
 [Route("lli")]  // Defines the default parent URL path for all action methods to be the name of controller
-public class AccountController : ControllerBase
+public class LLIController : ControllerBase
 {
     [HttpPost]
     [Route("LLI")]
