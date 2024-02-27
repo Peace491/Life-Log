@@ -13,7 +13,7 @@ public class LogTarget : ILogTarget
     }
     public async Task<Response> WriteLog(string table, string userHash, string level, string category, string? message)
     {
-        string createLogSql = $"INSERT INTO {table} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{userHash}', '{level}', '{category}', '{message}')"; // Need to change date format
+        string createLogSql = $"INSERT INTO {table} (Timestamp, UserHash, Level, Category, Message) VALUES (NOW(), '{userHash}', '{level}', '{category}', '{message}')";
 
         var createLogResponse = await createOnlyDAO.CreateData(createLogSql); // insert sql statement to insert into log table.
 
