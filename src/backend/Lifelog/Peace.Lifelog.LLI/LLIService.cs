@@ -155,6 +155,22 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         response = await readDataOnlyDAO.ReadData(sql);
 
+        #region Log
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            response.ErrorMessage = "LLI fields are invalid";
+
+            var errorMessage = response.ErrorMessage;
+            var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{userHash} get all LLI");
+        }
+        #endregion
+
         var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(response);
 
         response.Output = lliOutput;
@@ -246,7 +262,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{lli.UserHash} updated a LLI");
+            var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{lli.UserHash} updated LLI with id {lli.LLIID}");
         }
 
         return response;
@@ -275,6 +291,22 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         response = await deleteDataOnlyDAO.DeleteData(sql);
+
+        #region Log
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging.Logging(logTarget);
+
+        if (response.HasError) {
+            response.ErrorMessage = "LLI fields are invalid";
+
+            var errorMessage = response.ErrorMessage;
+            var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else {
+            var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{userHash} delete LLI with id={lli.LLIID}");
+        }
+        #endregion
 
         return response;
     }

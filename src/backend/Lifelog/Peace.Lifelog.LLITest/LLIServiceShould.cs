@@ -877,7 +877,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var LLIService = new LLIService();
         
         var testLLI = new LLI();
-        testLLI.LLIID = "1";
+        testLLI.LLIID = "-1";
         
         // Act
         var deleteResponse = await LLIService.DeleteLLI(USER_HASH, testLLI);
