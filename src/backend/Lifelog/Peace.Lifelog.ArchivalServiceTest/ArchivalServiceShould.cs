@@ -23,12 +23,12 @@ public class ArchivalServiceShould : IDisposable
         var DDLTransactionDAO = new DDLTransactionDAO();
 
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-            + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
-            + "LogTimestamp TIMESTAMP,"
-            + "LogUserHash VARCHAR(255),"
-            + "LogLevel VARCHAR(255),"
-            + "LogCategory VARCHAR(255),"
-            + "LogMessage TEXT"
+            + "Id INT PRIMARY KEY AUTO_INCREMENT,"
+            + "Timestamp TIMESTAMP,"
+            + "UserHash VARCHAR(255),"
+            + "Level VARCHAR(255),"
+            + "Category VARCHAR(255),"
+            + "Message TEXT"
         + ");";
 
         var createImmutableTriggerSql = "DELIMITER //"
@@ -69,7 +69,7 @@ public class ArchivalServiceShould : IDisposable
         // Act
 
         // Create logs that are valid to be archived
-        var logInsert = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var logInsert = $"INSERT INTO {TABLE} (Timestamp, UserHash, Level, Category, Message) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
         for (int i=0; i < 9; i++)
         {
             var createLogResponse = await createDataOnlyDAO.CreateData(logInsert);
@@ -98,7 +98,7 @@ public class ArchivalServiceShould : IDisposable
         // Act
 
         // Create logs that are valid to be archived
-        var logInsert = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var logInsert = $"INSERT INTO {TABLE} (Timestamp, UserHash, Level, Category, Message) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
         for (int i=0; i < 9; i++)
         {
             var createLogResponse = await createDataOnlyDAO.CreateData(logInsert);
@@ -130,8 +130,8 @@ public class ArchivalServiceShould : IDisposable
         // Act
 
         // Create logs that are valid to be archived
-        var logInsertInvalid = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
-        var logInsertValid = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (NOW(), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var logInsertInvalid = $"INSERT INTO {TABLE} (Timestamp, UserHash, Level, Category, Message) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var logInsertValid = $"INSERT INTO {TABLE} (Timestamp, UserHash, Level, Category, Message) VALUES (NOW(), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
         for (int i=0; i < 9; i++)
         {
             var createLogResponse1 = await createDataOnlyDAO.CreateData(logInsertInvalid);
@@ -173,7 +173,7 @@ public class ArchivalServiceShould : IDisposable
         // Act
 
         // Create logs that are valid to be archived
-        var logInsert = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var logInsert = $"INSERT INTO {TABLE} (Timestamp, UserHash, Level, Category, Message) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
         for (int i=0; i < 9; i++)
         {
             var createLogResponse = await createDataOnlyDAO.CreateData(logInsert);
@@ -208,7 +208,7 @@ public class ArchivalServiceShould : IDisposable
         // Act
 
         // Create logs that are valid to be archived
-        var logInsert = $"INSERT INTO {TABLE} (LogTimestamp, LogUserHash, LogLevel, LogCategory, LogMessage) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
+        var logInsert = $"INSERT INTO {TABLE} (Timestamp, UserHash, Level, Category, Message) VALUES (DATE_SUB(NOW(), INTERVAL 100 DAY), '{TEST_HASH}', '{LEVEL}', '{CATEGORY}', '{MESSAGE}');";
         for (int i=0; i < 9; i++)
         {
             var createLogResponse = await createDataOnlyDAO.CreateData(logInsert);
