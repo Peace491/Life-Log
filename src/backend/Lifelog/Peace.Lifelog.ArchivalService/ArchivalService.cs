@@ -32,7 +32,7 @@ public class ArchivalService : IArchive
         // Init SQL 
         string SELECT = "SELECT *"; 
         string DELETE = "DELETE "; 
-        string validLogs = $"FROM {table} WHERE LogTimestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
+        string validLogs = $"FROM {table} WHERE Timestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY);";
 
         // Init archive filenames from input
         string dt = dateTime.ToLongDateString();
