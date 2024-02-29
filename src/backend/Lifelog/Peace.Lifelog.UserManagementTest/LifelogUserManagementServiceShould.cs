@@ -71,7 +71,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", string.Empty);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -144,7 +143,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -180,7 +178,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("WrongType", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -256,7 +253,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", string.Empty);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -294,7 +290,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", "userdoesntexist");
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -326,7 +321,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
