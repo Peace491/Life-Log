@@ -44,7 +44,6 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
         var lifelogUserManagementService = new LifelogUserManagementService();
 
         LIFELOG_ACCOUNT_REQUEST.UserId = ("UserId", USER_ID);
-        LIFELOG_ACCOUNT_REQUEST.MfaId = ("MfaId", MFA_ID);
         LIFELOG_ACCOUNT_REQUEST.Role = ("Role", ROLE);
 
         LIFELOG_PROFILE_REQUEST.DOB = ("DOB", DOB);
