@@ -10,12 +10,11 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 {
     private const string USER_ID = "TestLLIServiceAccount";
     private string USER_HASH = "";
-    private const string MFA_ID = "TestLLIServiceMFA";
     private const string ROLE = "Normal";
 
     private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
     private string DEADLINE = DateTime.Today.ToString("yyyy-MM-dd");
-    private const string ZIP_CODE = "92612";
+    private const string ZIP_CODE = "90704";
 
     public async Task InitializeAsync()
     {
@@ -25,7 +24,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", USER_ID);
-        testLifelogAccountRequest.MfaId = ("MfaId", MFA_ID);
         testLifelogAccountRequest.Role = ("Role", ROLE);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
