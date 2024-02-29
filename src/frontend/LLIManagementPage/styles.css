@@ -1,0 +1,295 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html, body, #root {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("Assets/lli-management-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    padding: 2% 5%;
+}
+
+.lli-container {
+    height: 100%;
+    width: 100%;
+    min-height: 100px;
+    background-color: rgba(141, 141, 141, 0.3);
+
+    border-radius: 20px;
+
+    padding: 10px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.lli-header-container {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.lli-header-title-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: fit-content;
+    padding: 5px;
+    position: relative;
+    bottom: 25px;
+
+    background-color: #EBA755;
+    border-radius: 10px;
+}
+
+.lli-header-title-container>h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.lli-search-filter-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.lli-search-bar-container {
+    height: 80%;
+}
+
+.lli-search-bar-container>input {
+    background-image:url('./Assets/search.jpg');
+    background-repeat:no-repeat;
+    background-position:left center;  
+    background-size: 20px;
+
+    padding-left: 22px;
+
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.lli-filter-container {
+    height: 25px;
+}
+
+.lli-filter-container>img {
+    height: 100%;
+}
+
+.lli-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+}
+
+.lli {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 15px 15px;
+
+    width: 95%;
+    background-color: white;
+
+    border-radius: 10px;
+}
+
+.lli-default-display-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.lli-title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lli-title-container>h2 {
+    font-weight: 700;
+}
+
+.lli-deadline-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lli-category-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lli-completion-check-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+
+    height: 40px;
+}
+
+.lli-completion-check-container>img {
+    height: 100%;
+}
+
+.add-lli-button-container {
+    height: 70px;
+    position: relative;
+    top: 40px;
+}
+
+.add-lli-button-container>img {
+    height: 100%;
+}
+
+.current-lli-content-container {
+    height: 230px;
+    overflow: scroll;
+    scrollbar-color: #EBA755 white;
+}
