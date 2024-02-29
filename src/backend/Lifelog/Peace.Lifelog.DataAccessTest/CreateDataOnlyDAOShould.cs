@@ -22,7 +22,7 @@ public class CreateDataOnlyDAOShould : IDisposable
             + "PRIMARY KEY (Id, Category)"
         + ");";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        var _ = DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
     }
 
     // Cleanup for all tests
@@ -36,7 +36,7 @@ public class CreateDataOnlyDAOShould : IDisposable
     }
 
     [Fact]
-    public async void CreateDataOnlyDAOShould_ConnectToTheDataStore()
+    public void CreateDataOnlyDAOShould_ConnectToTheDataStore()
     {
         // Arrange
         var timer = new Stopwatch();

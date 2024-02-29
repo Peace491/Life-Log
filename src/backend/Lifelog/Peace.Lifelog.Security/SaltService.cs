@@ -9,7 +9,9 @@ public class SaltService
         var response = new Response();
         try
         {
+#pragma warning disable SYSLIB0023 // Type or member is obsolete
             var rng = new RNGCryptoServiceProvider();
+#pragma warning restore SYSLIB0023 // Type or member is obsolete
             byte[] saltArray = new byte[saltLength];
 
             rng.GetBytes(saltArray);
