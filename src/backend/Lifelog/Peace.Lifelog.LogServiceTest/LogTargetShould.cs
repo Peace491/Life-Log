@@ -19,12 +19,12 @@ public class LogTargetShould : IDisposable
         var DDLTransactionDAO = new DDLTransactionDAO();
 
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-            + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
-            + "LogTimestamp TIMESTAMP,"
-            + "LogUserHash VARCHAR(255),"
-            + "LogLevel VARCHAR(255),"
-            + "LogCategory VARCHAR(255),"
-            + "LogMessage TEXT"
+            + "Id INT PRIMARY KEY AUTO_INCREMENT,"
+            + "Timestamp TIMESTAMP,"
+            + "UserHash VARCHAR(255),"
+            + "Level VARCHAR(255),"
+            + "Category VARCHAR(255),"
+            + "Message TEXT"
         + ");";
 
         var createImmutableTriggerSql = "CREATE TRIGGER prevent_mock_log_updates_trigger "

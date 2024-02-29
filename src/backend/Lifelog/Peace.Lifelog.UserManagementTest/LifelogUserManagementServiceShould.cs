@@ -25,12 +25,11 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -218,7 +217,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();

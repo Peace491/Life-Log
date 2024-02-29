@@ -21,12 +21,12 @@ public class LoggingShould : IDisposable
         var DDLTransactionDAO = new DDLTransactionDAO();
 
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-            + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
-            + "LogTimestamp TIMESTAMP,"
-            + "LogUserHash VARCHAR(255),"
-            + "LogLevel VARCHAR(255),"
-            + "LogCategory VARCHAR(255),"
-            + "LogMessage TEXT"
+            + "Id INT PRIMARY KEY AUTO_INCREMENT,"
+            + "Timestamp TIMESTAMP,"
+            + "UserHash VARCHAR(255),"
+            + "Level VARCHAR(255),"
+            + "Category VARCHAR(255),"
+            + "Message TEXT"
         + ");";
 
         var createImmutableTriggerSql = "DELIMITER //"
@@ -79,10 +79,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH, infoLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -125,10 +125,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  debugLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -172,10 +172,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  warningLogLevel, testLogCategory, testLogMessage);
         timer.Stop();
 
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -220,10 +220,10 @@ public class LoggingShould : IDisposable
         
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -294,10 +294,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, viewLogCategory, testLogMessage);
         timer.Stop();
 
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         
 
         // Assert
@@ -341,10 +341,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, businessLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -388,10 +388,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, serverLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -435,10 +435,10 @@ public class LoggingShould : IDisposable
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, dataLogCategory, testLogMessage);
         timer.Stop();
         
-        var infoLogSql = $"SELECT * FROM {TABLE} WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
+        var infoLogSql = $"SELECT * FROM {TABLE} WHERE Id={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}"; 
         var readLogResponse = await readOnlyDAO.ReadData(infoLogSql, 1);
 
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
@@ -480,10 +480,10 @@ public class LoggingShould : IDisposable
         // Act
         timer.Start();
         var createLogResponse = await logger.CreateLog(TABLE, TEST_HASH,  testLogLevel, persistentDataStoreLogCategory, testLogMessage);
-        var readSql = $"SELECT * from {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var readSql = $"SELECT * from {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
         var readLogResponse = await readOnlyDAO.ReadData(readSql, 1);
         timer.Stop();
-        var cleanupSql = $"DELETE FROM {TABLE} WHERE LogId='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
+        var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
         // Assert
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_SECONDS);
