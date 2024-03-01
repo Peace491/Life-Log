@@ -1,0 +1,4 @@
+# Ignore generated archival files to avoid conflict
+
+*
+!.gitignore

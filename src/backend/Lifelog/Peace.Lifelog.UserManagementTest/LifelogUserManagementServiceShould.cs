@@ -21,16 +21,14 @@ public class LifelogUserManagementServiceShould
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
-        var mockMfaId = "2";
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
@@ -50,6 +48,7 @@ public class LifelogUserManagementServiceShould
         // Assert
         Assert.True(createAccountResponse.HasError == false);
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 1);
 
         //Cleanup
@@ -188,7 +187,6 @@ public class LifelogUserManagementServiceShould
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
-        var mockMfaId = "2";
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
@@ -197,7 +195,6 @@ public class LifelogUserManagementServiceShould
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.MfaId = ("MfaId", mockMfaId);
         testLifelogAccountRequest.Role = ("Role", mockRole);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();

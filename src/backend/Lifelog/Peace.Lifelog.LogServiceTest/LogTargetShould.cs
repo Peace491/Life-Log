@@ -19,12 +19,12 @@ public class LogTargetShould : IDisposable
         var DDLTransactionDAO = new DDLTransactionDAO();
 
         var createMockTableSql = $"CREATE TABLE {TABLE} ("
-            + "LogID INT PRIMARY KEY AUTO_INCREMENT,"
-            + "LogTimestamp TIMESTAMP,"
-            + "LogUserHash VARCHAR(255),"
-            + "LogLevel VARCHAR(255),"
-            + "LogCategory VARCHAR(255),"
-            + "LogMessage TEXT"
+            + "Id INT PRIMARY KEY AUTO_INCREMENT,"
+            + "Timestamp TIMESTAMP,"
+            + "UserHash VARCHAR(255),"
+            + "Level VARCHAR(255),"
+            + "Category VARCHAR(255),"
+            + "Message TEXT"
         + ");";
 
         var createImmutableTriggerSql = "CREATE TRIGGER prevent_mock_log_updates_trigger "
@@ -75,14 +75,20 @@ public class LogTargetShould : IDisposable
         var createSecondLogResponse = await logTarget.WriteLog(TABLE, TEST_HASH, testLogLevel, testLogCategory, testLogMessage);
         var finalReadResponse = await readOnlyDAO.ReadData(logCountSql);
 
-        var deleteFirstSql = $"DELETE FROM {TABLE} Where LogId={createFirstLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
-        var deleteSecondSql = $"DELETE FROM {TABLE} Where LogId={createSecondLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
+        
 
         // Assert
         Assert.True(initialReadResponse.HasError == false);
+        Assert.True(initialReadResponse.Output != null);
         Assert.True(createFirstLogResponse.HasError == false);
+        Assert.True(createFirstLogResponse.Output != null);
         Assert.True(finalReadResponse.HasError == false);
+        Assert.True(finalReadResponse.Output != null);
         Assert.True(createSecondLogResponse.HasError == false);
+        Assert.True(createSecondLogResponse.Output != null);
+
+        var deleteFirstSql = $"DELETE FROM {TABLE} Where LogId={createFirstLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
+        var deleteSecondSql = $"DELETE FROM {TABLE} Where LogId={createSecondLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
 
         foreach (List<Object> readResponseDataOne in initialReadResponse.Output)
         {
@@ -125,6 +131,7 @@ public class LogTargetShould : IDisposable
         // Act
         timer.Start();
         var createLogResponse = await logTarget.WriteLog(TABLE, TEST_HASH, testLogLevel, testLogCategory, testLogMessage);
+        if (createLogResponse.Output == null) {Assert.Fail("Log Creation failed");}
         string updateAttemptSql = $"UPDATE {TABLE} SET LogMessage = 'barn burner' WHERE LogId={createLogResponse.Output.ElementAt(LOG_ID_INDEX)}";
         var updateLogResponse = await updateOnlyDao.UpdateData(updateAttemptSql);
         timer.Stop();

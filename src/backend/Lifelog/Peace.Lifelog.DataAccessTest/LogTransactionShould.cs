@@ -16,8 +16,6 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
     private LifelogAccountRequest LIFELOG_ACCOUNT_REQUEST = new LifelogAccountRequest();
 
     private const string USER_ID = "TestLLIServiceAccount";
-    private string USER_HASH = "";
-    private const string MFA_ID = "TestLLIServiceMFA";
     private const string ROLE = "Normal";
 
     private LifelogProfileRequest LIFELOG_PROFILE_REQUEST = new LifelogProfileRequest();
@@ -44,7 +42,6 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
         var lifelogUserManagementService = new LifelogUserManagementService();
 
         LIFELOG_ACCOUNT_REQUEST.UserId = ("UserId", USER_ID);
-        LIFELOG_ACCOUNT_REQUEST.MfaId = ("MfaId", MFA_ID);
         LIFELOG_ACCOUNT_REQUEST.Role = ("Role", ROLE);
 
         LIFELOG_PROFILE_REQUEST.DOB = ("DOB", DOB);
@@ -52,7 +49,6 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
 
         var createAccountResponse = await lifelogUserManagementService.CreateLifelogUser(LIFELOG_ACCOUNT_REQUEST, LIFELOG_PROFILE_REQUEST);
-        string test = "";
     }
 
     public Task DisposeAsync()
@@ -91,12 +87,13 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
         // Act
         var createResponse = await createOnlyDAO.CreateData(insertSql); // Need to test for all behavior of string
 
-        var readDataSql = $"SELECT * FROM Logs WHERE LogID={createResponse.LogId}";
+        var readDataSql = $"SELECT * FROM Logs WHERE Id={createResponse.LogId}";
 
         var readResponse = await readOnlyDAO.ReadData(readDataSql);
 
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 1);
 
         // Cleanup
@@ -130,11 +127,12 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         var readDataResponse = await readOnlyDAO.ReadData(readDataSql, DEFAULT_RECORD_COUNT); // Issue might be because create Response is not finished
 
-        var readLogSql = $"SELECT * FROM Logs WHERE LogID={readDataResponse.LogId}";
+        var readLogSql = $"SELECT * FROM Logs WHERE Id={readDataResponse.LogId}";
         var readLogResponse = await readOnlyDAO.ReadData(readLogSql);
         
         // Assert
         Assert.True(readLogResponse.HasError == false);
+        Assert.True(readLogResponse.Output != null);
         Assert.True(readLogResponse.Output.Count == DEFAULT_RECORD_COUNT);
 
         // Cleanup
@@ -171,12 +169,13 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         var updateResponse = await updateOnlyDAO.UpdateData(updateSql);
 
-        var readSql = $"SELECT * FROM Logs WHERE LogID={updateResponse.LogId}";
+        var readSql = $"SELECT * FROM Logs WHERE Id={updateResponse.LogId}";
 
         var readResponse = await readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == DEFAULT_RECORD_COUNT);
 
         // Cleanup
@@ -210,11 +209,12 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
         
-        var readSql = $"SELECT * FROM Logs WHERE LogID={deleteResponse.LogId}";
+        var readSql = $"SELECT * FROM Logs WHERE Id={deleteResponse.LogId}";
         var readResponse = await readOnlyDAO.ReadData(readSql);
 
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == DEFAULT_RECORD_COUNT);
 
         // Cleanup

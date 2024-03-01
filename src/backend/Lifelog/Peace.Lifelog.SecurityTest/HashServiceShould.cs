@@ -28,6 +28,7 @@ public class HashServiceShould
 
         // Assert
         Assert.False(hashResponse.HasError);
+        Assert.True(hashResponse.Output != null);
         foreach (String hashOutput in hashResponse.Output)
         {
             Assert.True(hashOutput == expectedHash);
@@ -40,10 +41,10 @@ public class HashServiceShould
         // Arrange
         HashService hashService = new HashService();
 
-        string hasherInput = null;
+        string? hasherInput = null;
 
         // Act
-        var hashResponse = hashService.Hasher(hasherInput);
+        var hashResponse = hashService.Hasher(hasherInput!);
 
         // Assert
         Assert.True(hashResponse.HasError);
