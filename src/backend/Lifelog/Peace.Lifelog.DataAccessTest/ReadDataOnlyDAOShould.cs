@@ -26,7 +26,7 @@ public class ReadDataOnlyDAOShould : IDisposable
             + "PRIMARY KEY (Id, Category)"
         + ");";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        var _ = DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
     }
 
     // Cleanup after all tests
@@ -40,7 +40,7 @@ public class ReadDataOnlyDAOShould : IDisposable
     }
 
     [Fact]
-    public async void ReadDataOnlyDAOShould_ConnectToTheDataStore()
+    public void ReadDataOnlyDAOShould_ConnectToTheDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -85,6 +85,7 @@ public class ReadDataOnlyDAOShould : IDisposable
         
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == DEFAULT_RECORD_COUNT);
         foreach (List<Object> readResponseData in readResponse.Output)
         {
@@ -132,6 +133,7 @@ public class ReadDataOnlyDAOShould : IDisposable
         
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == DEFAULT_NUMBER_OF_RECORDS);
         foreach (List<Object> readResponseData in readResponse.Output)
         {

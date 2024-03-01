@@ -88,7 +88,7 @@ public class LogTransaction : ILogTransaction
                 command.Connection = connection;
 
                 // Define the SQL command
-                string sql = $"DELETE FROM Logs WHERE LogID = {logId}";
+                string sql = $"DELETE FROM Logs WHERE Id = {logId}";
                 command.CommandText = sql;
 
                 // Define the transaction

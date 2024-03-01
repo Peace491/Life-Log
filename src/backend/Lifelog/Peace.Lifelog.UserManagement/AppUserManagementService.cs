@@ -65,10 +65,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
         }
 
         return response;
@@ -128,10 +128,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", userProfileRequest.UserId.Value, "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", userProfileRequest.UserId.Value, "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", userProfileRequest.UserId.Value, "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} profile creation successful");
+            var _ = logging.CreateLog("Logs", userProfileRequest.UserId.Value, "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} profile creation successful");
         }
 
         return response;
@@ -153,10 +153,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", userHashRequest.UserHash.Value, "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", userHashRequest.UserHash.Value, "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", userHashRequest.UserHash.Value, "Info", "Persistent Data Store", $"{userHashRequest.UserHash.Value} user hash creation successful");
+            var _ = logging.CreateLog("Logs", userHashRequest.UserHash.Value, "Info", "Persistent Data Store", $"{userHashRequest.UserHash.Value} user hash creation successful");
         }
 
         return response;
@@ -209,10 +209,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
         return response;
@@ -253,14 +253,18 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         response  = await updateDataOnlyDAO.UpdateData(sql);
 
-        foreach (int rowsAffected in response.Output)
+        if (response.Output != null)
         {
-            if (rowsAffected == 0)
+            foreach (int rowsAffected in response.Output)
             {
-                response.HasError = true;
-                response.ErrorMessage = "Account does not exist";
+                if (rowsAffected == 0)
+                {
+                    response.HasError = true;
+                    response.ErrorMessage = "Account does not exist";
+                }
             }
         }
+        
 
         // Log Account recovery
         var createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -269,10 +273,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
         return response;
@@ -310,27 +314,30 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         {
             if (property.Name == "ModelName" || property.Name == "UserId") { continue; }
 
-            var tupleString = userProfileRequest.GetType().GetProperty(property.Name).GetValue(userProfileRequest, null).ToString();
+            string tupleString = userProfileRequest.GetType().GetProperty(property.Name)!.GetValue(userProfileRequest, null)!.ToString()!;            
 
             // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
+            if (tupleString != null)
             {
-                tupleValues[i] = tupleValues[i].Trim();
+                var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+                // Trim spaces from each value
+                for (int i = 0; i < tupleValues.Length; i++)
+                {
+                    tupleValues[i] = tupleValues[i].Trim();
+                }
+
+                var parameter = tupleValues[0];
+                var value = tupleValues[1];
+
+                if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
+                {
+                    // This property is not being modified
+                    continue;
+                }
+
+                parameters += $"{parameter} = \"{value}\"" + ",";
             }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            if (String.IsNullOrEmpty(parameter) || String.IsNullOrEmpty(value))
-            {
-                // This property is not being modified
-                continue;
-            }
-
-            parameters += $"{parameter} = \"{value}\"" + ",";
         }
 
         if (parameters.Length == 0) // Every argument is null
@@ -350,14 +357,18 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError == false) // Checking if there is any rows affected
         {
-            foreach (int rowsAffected in response.Output)
+            if (response.Output != null)
             {
-                if (rowsAffected == 0)
+                foreach (int rowsAffected in response.Output)
                 {
-                    response.HasError = true;
-                    response.ErrorMessage = "Account does not exist";
+                    if (rowsAffected == 0)
+                    {
+                        response.HasError = true;
+                        response.ErrorMessage = "Account does not exist";
+                    }
                 }
             }
+            
         }
 
         // Log Profile modification
@@ -367,10 +378,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "Info", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
+            var _ = logging.CreateLog("Logs", "Info", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
         }
 
         return response;
@@ -410,13 +421,16 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError == false) // Checking if there is any rows affected
         {
-            foreach (int rowsAffected in response.Output)
+            if (response.Output != null)
+            {
+                foreach (int rowsAffected in response.Output)
             {
                 if (rowsAffected == 0)
                 {
                     response.HasError = true;
                     response.ErrorMessage = "Account does not exist";
                 }
+            }
             }
         }
 
@@ -427,10 +441,10 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         if (response.HasError) {
             var errorMessage = response.ErrorMessage;
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
         }
 
         return response;
@@ -447,21 +461,25 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         foreach (var property in properties)
         {
             if (property.Name == "ModelName") { continue; }
-            var tupleString = userManagementRequest.GetType().GetProperty(property.Name).GetValue(userManagementRequest, null).ToString();
+
+            string tupleString = userManagementRequest.GetType().GetProperty(property.Name)!.GetValue(userManagementRequest, null)!.ToString()!;
 
             // Remove parentheses and split by comma
-            var tupleValues = tupleString.Trim('(', ')').Split(',');
-
-            // Trim spaces from each value
-            for (int i = 0; i < tupleValues.Length; i++)
+            if (tupleString != null)
             {
-                tupleValues[i] = tupleValues[i].Trim();
+                var tupleValues = tupleString.Trim('(', ')').Split(',');
+
+                // Trim spaces from each value
+                for (int i = 0; i < tupleValues.Length; i++)
+                {
+                    tupleValues[i] = tupleValues[i].Trim();
+                }
+
+                var parameter = tupleValues[0];
+                var value = tupleValues[1];
+
+                typeValueList.Add((parameter, value));
             }
-
-            var parameter = tupleValues[0];
-            var value = tupleValues[1];
-
-            typeValueList.Add((parameter, value));
         }
 
         return typeValueList;
