@@ -16,8 +16,6 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
     private LifelogAccountRequest LIFELOG_ACCOUNT_REQUEST = new LifelogAccountRequest();
 
     private const string USER_ID = "TestLLIServiceAccount";
-    private string USER_HASH = "";
-    private const string MFA_ID = "TestLLIServiceMFA";
     private const string ROLE = "Normal";
 
     private LifelogProfileRequest LIFELOG_PROFILE_REQUEST = new LifelogProfileRequest();
@@ -51,7 +49,6 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
 
         var createAccountResponse = await lifelogUserManagementService.CreateLifelogUser(LIFELOG_ACCOUNT_REQUEST, LIFELOG_PROFILE_REQUEST);
-        string test = "";
     }
 
     public Task DisposeAsync()
@@ -96,6 +93,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 1);
 
         // Cleanup
@@ -134,6 +132,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
         
         // Assert
         Assert.True(readLogResponse.HasError == false);
+        Assert.True(readLogResponse.Output != null);
         Assert.True(readLogResponse.Output.Count == DEFAULT_RECORD_COUNT);
 
         // Cleanup
@@ -176,6 +175,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == DEFAULT_RECORD_COUNT);
 
         // Cleanup
@@ -214,6 +214,7 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
 
         // Assert
         Assert.True(readResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == DEFAULT_RECORD_COUNT);
 
         // Cleanup

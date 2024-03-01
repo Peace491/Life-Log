@@ -43,8 +43,8 @@ public class ArchivalServiceShould : IDisposable
             + "//"
             + "DELIMITER ;";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
-        DDLTransactionDAO.ExecuteDDLCommand(createImmutableTriggerSql);
+        var _ = DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        var __ = DDLTransactionDAO.ExecuteDDLCommand(createImmutableTriggerSql);
     }
 
     // Cleanup for all tests
@@ -114,6 +114,7 @@ public class ArchivalServiceShould : IDisposable
         // Assert 
         Assert.True(archivalResponse.HasError == false);
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_MILLISECONDS);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 1); // 1 for archival logging itself
     }
     [Fact]
@@ -151,6 +152,7 @@ public class ArchivalServiceShould : IDisposable
         // Assert 
         Assert.True(archivalResponse.HasError == false);
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_MILLISECONDS);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 10);
     }
     #endregion
@@ -190,6 +192,7 @@ public class ArchivalServiceShould : IDisposable
         // Assert 
         Assert.True(archivalResponse.HasError == true);
         Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_MILLISECONDS);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 9); // Only 9 due to termination early, won't log self
     }
     [Fact]

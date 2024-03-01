@@ -23,7 +23,7 @@ public class UpdateDataOnlyDAOShould : IDisposable
             + "PRIMARY KEY (Id, Category)"
         + ");";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        var _ = DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
     }
 
     // Cleanup for all tests
@@ -37,7 +37,7 @@ public class UpdateDataOnlyDAOShould : IDisposable
     }
     
     [Fact]
-    public async void UpdateDataOnlyDAOShould_ConnectToTheDataStore()
+    public void UpdateDataOnlyDAOShould_ConnectToTheDataStore()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -90,6 +90,7 @@ public class UpdateDataOnlyDAOShould : IDisposable
         // Assert
         Assert.True(updateResponse.HasError == false);
         Assert.True(originalReadResponse.Output != newReadResponse.Output);
+        Assert.True(newReadResponse.Output != null);
         foreach (List<Object> newReadResponseData in newReadResponse.Output)
         {
             Assert.True(newReadResponseData[0].ToString() == newMockData);
@@ -145,6 +146,7 @@ public class UpdateDataOnlyDAOShould : IDisposable
         // Assert
         Assert.True(updateResponse.HasError == false);
         Assert.True(originalReadResponse.Output != newReadResponse.Output);
+        Assert.True(newReadResponse.Output != null);
         foreach (List<Object> newReadResponseData in newReadResponse.Output)
         {
             Assert.True(newReadResponseData[0].ToString() == newMockData);

@@ -1,4 +1,6 @@
 namespace Peace.Lifelog.SecurityTest;
+
+using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using System.Diagnostics;
@@ -16,7 +18,7 @@ public class AppAuthServiceShould : IDisposable
         $"PRIMARY KEY ({TestVariables.USER_ID_TYPE})" +
         ");";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
+        var _ = DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
         
     }
 
@@ -60,10 +62,11 @@ public class AppAuthServiceShould : IDisposable
 
         //Act
         timer.Start();
-        var response = await appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest)!;
         timer.Stop();
 
         //Assert
+        Assert.True(response.Claims != null);
         Assert.True(response.Claims[TestVariables.CLAIM_TYPE] == mockClaim);
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
 
@@ -92,7 +95,7 @@ public class AppAuthServiceShould : IDisposable
         //Act
         try
         {
-            var response = await appAuthService.AuthenticateUser(authRequest);
+            var response = await appAuthService.AuthenticateUser(authRequest)!;
         }
         catch (ArgumentNullException)
         {
@@ -124,7 +127,7 @@ public class AppAuthServiceShould : IDisposable
         //Act
         try
         {
-            var response = await appAuthService.AuthenticateUser(authRequest);
+            var response = await appAuthService.AuthenticateUser(authRequest)!;
         }
         catch (ArgumentNullException)
         {
@@ -156,7 +159,7 @@ public class AppAuthServiceShould : IDisposable
         //Act
         try
         {
-            var response = await appAuthService.AuthenticateUser(authRequest);
+            var response = await appAuthService.AuthenticateUser(authRequest)!;
         }
         catch (ArgumentNullException)
         {
@@ -190,7 +193,7 @@ public class AppAuthServiceShould : IDisposable
 
         //Act
 
-        var response = await appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest)!;
 
         // Assert
         Assert.Null(response);
@@ -227,7 +230,7 @@ public class AppAuthServiceShould : IDisposable
         authRequest.Claims = (TestVariables.CLAIM_TYPE, mockClaim);
 
         //Act
-        var response = await appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest)!;
 
         // Assert
         Assert.Null(response);
@@ -256,7 +259,7 @@ public class AppAuthServiceShould : IDisposable
         authRequest.Claims = (TestVariables.CLAIM_TYPE, mockClaim);
 
         //Act
-        var response = await appAuthService.AuthenticateUser(authRequest);
+        var response = await appAuthService.AuthenticateUser(authRequest)!;
 
         // Assert
         Assert.Null(response);
@@ -265,7 +268,7 @@ public class AppAuthServiceShould : IDisposable
 
     // Authorization Tests
     [Fact]
-    public async void AppAuthServiceAuthZShould_ReturnTrue_IfUserIsAuthorize()
+    public void AppAuthServiceAuthZShould_ReturnTrue_IfUserIsAuthorize()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -295,7 +298,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceAuthZShould_ReturnThrowArgumentNullException_IfCurrentPrincpalIsNull()
+    public void AppAuthServiceAuthZShould_ReturnThrowArgumentNullException_IfCurrentPrincpalIsNull()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -314,7 +317,7 @@ public class AppAuthServiceShould : IDisposable
         // Act
         try
         {
-            bool IsAuthorizeResponse = appAuthService.IsAuthorize(currentPrincipal, requiredClaims); // Need to test for all behavior of string
+            bool IsAuthorizeResponse = appAuthService.IsAuthorize(currentPrincipal!, requiredClaims); // Need to test for all behavior of string
         }
         catch (ArgumentNullException)
         {
@@ -326,7 +329,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceAuthZShould_ReturnThrowArgumentNullException_IfRequiredClaimsIsNull()
+    public void AppAuthServiceAuthZShould_ReturnThrowArgumentNullException_IfRequiredClaimsIsNull()
     {
         // Arrange
         var timer = new Stopwatch();
@@ -346,7 +349,7 @@ public class AppAuthServiceShould : IDisposable
         // Act
         try
         {
-            bool IsAuthorizeResponse = appAuthService.IsAuthorize(currentPrincipal, requiredClaims); // Need to test for all behavior of string
+            bool IsAuthorizeResponse = appAuthService.IsAuthorize(currentPrincipal, requiredClaims!); // Need to test for all behavior of string
         }
         catch (ArgumentNullException)
         {
@@ -358,7 +361,7 @@ public class AppAuthServiceShould : IDisposable
     }
 
     [Fact]
-    public async void AppAuthServiceAuthZShould_ReturnFalse_IfUserIsNotAuthorize()
+    public void AppAuthServiceAuthZShould_ReturnFalse_IfUserIsNotAuthorize()
     {
         // Arrange
         var timer = new Stopwatch();
