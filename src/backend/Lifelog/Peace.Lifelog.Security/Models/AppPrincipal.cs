@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 public class AppPrincipal
 {
-    public string UserId { get; set; }
+    public string UserId { get; set; } = string.Empty;
 
-    public IDictionary<string, string> Claims { get; set; }
+    public IDictionary<string, string>? Claims { get; set; }
 }

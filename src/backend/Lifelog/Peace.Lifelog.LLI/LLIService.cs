@@ -73,7 +73,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                         continue;
                     }
 
-                    var lliCompletionDate = attribute.ToString().Substring(0, 9);
+                    var lliCompletionDate = attribute.ToString()!.Substring(0, 9);
 
                     if (lliCompletionDate == string.Empty)
                     {

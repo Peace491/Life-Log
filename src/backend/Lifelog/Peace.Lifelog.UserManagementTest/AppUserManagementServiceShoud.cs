@@ -34,9 +34,9 @@ public class AppUserManagementServiceShould : IDisposable
         "ON DELETE CASCADE " +
         "ON UPDATE CASCADE;";
 
-        DDLTransactionDAO.ExecuteDDLCommand(createMockAccountTableSql);
-        DDLTransactionDAO.ExecuteDDLCommand(createMockProfileTable);
-        DDLTransactionDAO.ExecuteDDLCommand(foreignKeyConstraint);
+        var _ = DDLTransactionDAO.ExecuteDDLCommand(createMockAccountTableSql);
+        var __ = DDLTransactionDAO.ExecuteDDLCommand(createMockProfileTable);
+        var ___ = DDLTransactionDAO.ExecuteDDLCommand(foreignKeyConstraint);
     }
 
     // Cleanup for all tests
@@ -89,6 +89,7 @@ public class AppUserManagementServiceShould : IDisposable
         // Assert
         Assert.True(createAccountResponse.HasError == false);
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == 1);
 
     }
@@ -98,9 +99,6 @@ public class AppUserManagementServiceShould : IDisposable
     {
         //Arrange
         var appUserManagementService = new AppUserManagementService();
-
-        var mockMfaId = "2";
-        var mockPassword = "password";
 
         var testAccountRequest = new TestAccountRequest();
 
@@ -248,6 +246,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(recoverAccountResponse.HasError == false);
+        Assert.True(recoverAccountResponse.Output != null);
         foreach (List<Object> responseData in recoverAccountResponse.Output)
         {
             Assert.True(responseData[0].ToString() == mockUserId);
@@ -304,6 +303,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(recoverAccountResponse.HasError == false);
+        Assert.True(readAccountStatusResponse.Output != null);
         foreach (List<Object> responseData in readAccountStatusResponse.Output)
         {
             Assert.True(responseData[0].ToString() == enableStatus);
@@ -320,7 +320,7 @@ public class AppUserManagementServiceShould : IDisposable
         var appUserManagementService = new AppUserManagementService();
         var recoverAccountRequest = new TestAccountRequest();
 
-        string mockUserId = null;
+        string mockUserId = "";
         var enableStatus = "Enabled";
 
         recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
@@ -350,7 +350,7 @@ public class AppUserManagementServiceShould : IDisposable
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "phongNeedsBetterVariableNames";
-        string enableStatus = null;
+        string enableStatus = "";
 
         recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
         recoverAccountRequest.AccountStatus = (TestVariables.STATUS_TYPE, enableStatus);
@@ -419,7 +419,7 @@ public class AppUserManagementServiceShould : IDisposable
         var appUserManagementService = new AppUserManagementService();
         var recoverAccountRequest = new TestAccountRequest();
 
-        string mockUserId = null;
+        string mockUserId = "";
         var enableStatus = "Enabled";
 
         recoverAccountRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
@@ -570,6 +570,7 @@ public class AppUserManagementServiceShould : IDisposable
 
         // Assert
         Assert.True(modifyProfileResponse.HasError == false);
+        Assert.True(readResponse.Output != null);
         foreach (List<Object> responseData in readResponse.Output)
         {
             Assert.True(responseData[0].ToString() == newZipCode);

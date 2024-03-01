@@ -19,10 +19,20 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         var saltResponse = saltService.getSalt();
 
-        foreach (string output in saltResponse.Output)
+        if (saltResponse.Output != null)
         {
-            lifelogAccountRequest.Salt = ("Salt", output);
+            foreach (string output in saltResponse.Output)
+            {
+                lifelogAccountRequest.Salt = ("Salt", output);
+            }
         }
+        else
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Failed to generate salt";
+            return response;   
+        }
+        
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));

@@ -421,6 +421,11 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
             }
         }
 
+        if (LLIId == null)
+        {
+            Assert.Fail("LLIId failed to be created");
+        }
+
         var updateLLICompletionDate = new LLI();
         updateLLICompletionDate.LLIID = LLIId;
         updateLLICompletionDate.CompletionDate = DateTime.Today.ToString("yyyy-MM-dd");
