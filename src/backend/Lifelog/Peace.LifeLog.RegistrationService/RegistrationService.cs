@@ -60,7 +60,7 @@ public class RegistrationService()
 
 
 
-        if(email == "" || DOB == "" || zipCode == ""){
+        if(String.IsNullOrEmpty(email) || String.IsNullOrEmpty(DOB) || String.IsNullOrEmpty(zipCode)){
             response.HasError = true;
             response.ErrorMessage = "The non-nullable option is null.";
             return response;
