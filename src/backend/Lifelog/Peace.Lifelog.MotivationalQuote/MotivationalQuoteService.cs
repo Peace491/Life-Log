@@ -4,7 +4,7 @@ using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
-public class MotivationalQuoteServiceShould : IGetQuote
+public class MotivationalQuoteServiceShould : IGetPhrase
 {
     private Phrase previous = new Phrase();
     
@@ -12,7 +12,7 @@ public class MotivationalQuoteServiceShould : IGetQuote
     
     var offset = 1;
     
-    public async Task<Response> GetQuote(Phrase phrase)
+    public async Task<Response> GetPhrase(Phrase phrase)
     {
         var response = new Response();
         
@@ -20,7 +20,7 @@ public class MotivationalQuoteServiceShould : IGetQuote
 
         current = phrase;
 
-        if(offset == 187)
+        if(offset == 186)
         {
             offset = 1;
         }
@@ -46,10 +46,11 @@ public class MotivationalQuoteServiceShould : IGetQuote
         {
             response = SendPhrase(phrase);
             previous = phrase;
+            offset++;
             //return response;
         } 
-        var currentOutput = ConvertDatabaseResponseOutputToPhraseObjectList(response);
-        response.Output = currentOutput;
+        //var currentOutput = ConvertDatabaseResponseOutputToPhraseObjectList(response);
+        //response.Output = currentOutput;
         return response;           
     }
     
@@ -70,7 +71,7 @@ public class MotivationalQuoteServiceShould : IGetQuote
             response.ErrorMessage = "Quote changed after 12:00 AM";
             //return response;
         }
-        /* Need to do
+        
         #region Log
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
@@ -81,10 +82,6 @@ public class MotivationalQuoteServiceShould : IGetQuote
             var errorMessage = response.ErrorMessage;
             var logResponse = logging.CreateLog("Logs", "Debug", "Business", errorMessage);
         }
-        /*else 
-        {
-            var logResponse =  logging.CreateLog();
-        }*/
         #endregion     
 
         return response;           
@@ -127,7 +124,7 @@ public class MotivationalQuoteServiceShould : IGetQuote
     {
         var response = new Response();
 
-        var newQuote = $"SELECT Quote FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset}\"";
+        var newQuote = $"SELECT Quote FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset + 1}\"";
         
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
@@ -137,22 +134,29 @@ public class MotivationalQuoteServiceShould : IGetQuote
         {
             foreach(var attribute in phraseOutput)
             {
+                if (string.IsNullOrEmpty(attribute) || attribute is null)
+                {
+                    response.HasError = true;
+                    response.ErrorMessage = "The quote cannot be empty.";
+                    //return response;
+                }
+
                 if(previous.Quote == newQuote)
                 {
                     response.HasError = true;
                     response.ErrorMessage = "The Quote has been reused.";
-                    return response;
+                    //return response;
                 }
 
                 else if(phrase.Quote != current.Quote)
                 {
                     response.HasError = true;
                     response.ErrorMessage = "The Quote has not been pulled properly.";
-                    return response;
+                    //return response;
                 }
             }
         }
-        /* Need to do
+        
         #region Log
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
@@ -161,13 +165,9 @@ public class MotivationalQuoteServiceShould : IGetQuote
         if (response.HasError) 
         {
             var errorMessage = response.ErrorMessage;
-            var logResponse = logging.CreateLog("Logs", "Debug", "Business", errorMessage);
+            var logResponse = logging.CreateLog("Logs", "ERROR", "Data", errorMessage);
         }
-        /*else 
-        {
-            var logResponse =  logging.CreateLog();
-        }*/
-        #endregion
+        #endregion 
 
         return response;
     }
@@ -176,7 +176,7 @@ public class MotivationalQuoteServiceShould : IGetQuote
     {
         var response = new Response();
 
-        var newAuthor = $"SELECT Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset}\"";
+        var newAuthor = $"SELECT Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset + 1}\"";
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
@@ -186,16 +186,21 @@ public class MotivationalQuoteServiceShould : IGetQuote
         {
             foreach(var attribute in phraseOutput)
             {
+                if (string.IsNullOrEmpty(phrase.Author)) 
+                {
+                    response.HasError = true;
+                    response.ErrorMessage = "The author cannot be empty.";
+                    //return response;
+                }
                 if(phrase.Author != newAuthor)
                 {
                     response.HasError = true;
                     response.ErrorMessage = "The Author has not been pulled properly.";
-                    return response;
+                    //return response;
                 }
             }
         }
 
-        /* Need to do
         #region Log
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
@@ -204,13 +209,9 @@ public class MotivationalQuoteServiceShould : IGetQuote
         if (response.HasError) 
         {
             var errorMessage = response.ErrorMessage;
-            var logResponse = logging.CreateLog("Logs", "Debug", "Business", errorMessage);
+            var logResponse = logging.CreateLog("Logs", "Warning", "Data", errorMessage);
         }
-        /*else 
-        {
-            var logResponse =  logging.CreateLog();
-        }*/
-        #endregion
+        #endregion 
 
         return response;  
     }
@@ -219,15 +220,15 @@ public class MotivationalQuoteServiceShould : IGetQuote
     {
         var response = new Response();
 
-        var newQuote = $"SELECT Quote FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset}\"";
-        var newAuthor = $"SELECT Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset}\"";
-        var newTime = DateTime.Now.ToString("hh:mm:ss tt");
+        var newPhrase = $"SELECT Quote, Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET \"{offset + 1}\"";
+        //var newTime = DateTime.Now.ToString("hh:mm:ss tt");
 
-        var placeHolderQuote = $"SELECT Quote FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET 188";
-        var placeHolderAuthor = $"SELECT Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET 188";
+        var placeHolder = $"SELECT Quote, Author FROM LifelogQuote ORDER BY ID ASC LIMIT 1 OFFSET 188";
 
         current.Quote = newQuote;
         current.Author = newAuthor;
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
 
         if (!CheckQuote(phrase))
         {
@@ -241,16 +242,16 @@ public class MotivationalQuoteServiceShould : IGetQuote
             //return response;
         }
         
-        if(response.HasError == true)
+        if(response.HasError)
         {
             //implement placeholder message in database and here
-            current.Quote = placeHolderQuote;
-            current.Author = placeHolderAuthor;
-            var currentOutput = ConvertDatabaseResponseOutputToPhraseObjectList(response);
-            response.Output = currentOutput;
-            return response;
+            response = await readDataOnlyDAO.ReadData(placeHolder);
         }
-        /* Need to do
+        else
+        {
+            response = await readDataOnlyDAO.ReadData(newPhrase);
+        }
+        
         #region Log
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
@@ -259,22 +260,19 @@ public class MotivationalQuoteServiceShould : IGetQuote
         if (response.HasError) 
         {
             var errorMessage = response.ErrorMessage;
-            var logResponse = logging.CreateLog("Logs", "Debug", "Business", errorMessage);
+            var logResponse = logging.CreateLog("Logs", "Warning", "Business", errorMessage);
         }
-        /*else 
-        {
-            var logResponse =  logging.CreateLog();
-        }*/
         #endregion
 
         var currentOutput = ConvertDatabaseResponseOutputToPhraseObjectList(response);
-        response.output = currentOutput;
+        response.Output = currentOutput;
         return response;
         
     }
 
     private List<Object>? ConvertDatabaseResponseOutputToPhraseObjectList(Response Response)
     {
+
         List<Object> phraseList = new List<Object>();
 
         if(response.Output == null)
