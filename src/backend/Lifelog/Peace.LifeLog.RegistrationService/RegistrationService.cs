@@ -2,12 +2,16 @@ namespace RegistrationService;
 
 using DomainModels;
 using Peace.Lifelog.UserManagement;
+using Peace.Lifelog.UserManagementTest;
+using Peace.Lifelog.DataAccess;
+using System.Diagnostics; 
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using System;
 using System.Text.RegularExpressions;
 using MimeKit;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 
 public class RegistrationService()
 {
@@ -44,7 +48,7 @@ public class RegistrationService()
             return response;
         }
 
-        bool createDateTrue = DateTime.TryParseExact(DOB, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime date)
+        bool createDateTrue = DateTime.TryParseExact(DOB, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime date);
 
         DateTime lowerBound = new DateTime(1970, 1, 1);
         DateTime upperBound = DateTime.Now.Date;
@@ -69,8 +73,9 @@ public class RegistrationService()
         // send a confirmation email to the user using mailkit, after user confirms then create user
         SendOTPEmail(email);
 
-
-
+        // add logging for this 
+        response.HasError = false;
+        return response;
 
     }
 
@@ -83,7 +88,7 @@ public class RegistrationService()
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Lifelog", lifelogEmail));
         message.To.Add(new MailboxAddress("", email));
-        message.Subject = "Your OTP for Lifelog!"
+        message.Subject = "Your OTP for Lifelog!";
 
         // TODO: create OTP generator ??
         string registrationOTP = "";
@@ -94,7 +99,7 @@ public class RegistrationService()
         message.Body = body.ToMessageBody();
 
         using (var emailClient = new SmtpClient()){
-            emailClient.Connect("smtp.gmail.com", 465, SecureSocketOptions.SslOnConnect);
+            emailClient.Connect("smtp.gmail.com", 465, SecureSocketOptions.Auto);
 
             emailClient.Authenticate (lifelogEmail, lifelogPassword);
 
@@ -121,8 +126,9 @@ public class RegistrationService()
         string userID = email;  
         string role = userRole;
         
-        var profileRequest = new LifelogProfileRequest();
+        // uses usermanagementtest
         var accountRequest = new LifelogAccountRequest();
+        var profileRequest = new LifelogProfileRequest();
 
         accountRequest.UserId = ("UserId", userID);
         accountRequest.Role = ("Role", role);

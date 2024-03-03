@@ -26,6 +26,8 @@
   <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.RegistrationService.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.UserManagement.csproj" />
+  <ProjectReference Include="..\Peace.LifeLog.RegistrationService\Peace.LifeLog.RegistrationService.csproj" />
+  <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
 </ItemGroup>
 
 
