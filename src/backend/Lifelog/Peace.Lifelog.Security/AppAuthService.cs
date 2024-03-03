@@ -63,10 +63,18 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             // Step 2: Populate app principal object
             var claims = new Dictionary<string, string>() {};
 
-            foreach (List<Object> readResponseData in readResponse.Output)
+            if (readResponse.Output != null)
             {
-                claims.Add(authRequest.Claims.Type, readResponseData[0].ToString());
+                foreach (List<Object> readResponseData in readResponse.Output)
+                {
+                    claims.Add(authRequest.Claims.Type, readResponseData[0].ToString()!);
+                }
             }
+            else
+            {
+                throw new NullReferenceException();
+            }
+            
 
             appPrincipal = new AppPrincipal()
             {
@@ -85,13 +93,13 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         var logging = new Logging(logTarget);
 
         if (hasError) {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
         }
         
-        return appPrincipal;
+        return appPrincipal!;
 
     }
 
@@ -122,7 +130,7 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
         foreach (var claim in requiredClaims)
         {
-            if (!currentPrincipal.Claims.Contains(claim)) 
+            if (currentPrincipal.Claims != null && !currentPrincipal.Claims.Contains(claim)) 
             {
                 isAuthorize = false;
             }
@@ -134,11 +142,11 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
         if (isAuthorize)
         {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Business", $"{currentPrincipal.UserId} successfully authorized");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Business", $"{currentPrincipal.UserId} successfully authorized");
         }
         else 
         {
-            logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Business", $"{currentPrincipal.UserId} failed to authorized");
+            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Business", $"{currentPrincipal.UserId} failed to authorized");
         }
 
         return isAuthorize;

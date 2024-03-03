@@ -51,7 +51,7 @@ public class ArchivalService : IArchive
         
             for (int i = 0; i < 7; i++)
             {
-                currentDirectory = currentDirectory.Parent;
+                currentDirectory = currentDirectory.Parent!;
             }
 
             DirectoryInfo targetDirectory = new DirectoryInfo(Path.Combine(currentDirectory.FullName, "Project Documents"));
@@ -68,16 +68,20 @@ public class ArchivalService : IArchive
             // Write result of query to .txt file
             using (StreamWriter outputFile = new StreamWriter(Path.Combine(txtLocation.FullName, txtName)))
             {
-                foreach (List<Object> readLogData in readResponse.Output)
+                if (readResponse.Output != null)
                 {
-                    string archiveFLine = ""; 
-                    foreach (object element in readLogData)
+                    foreach (List<Object> readLogData in readResponse.Output)
                     {
-                        archiveFLine += element.ToString() + " ";
-                    } 
-                    archiveFLine += ";";
-                    outputFile.WriteLine(archiveFLine);
+                        string archiveFLine = ""; 
+                        foreach (object element in readLogData)
+                        {
+                            archiveFLine += element.ToString() + " ";
+                        } 
+                        archiveFLine += ";";
+                        outputFile.WriteLine(archiveFLine);
+                    }
                 }
+                
                 outputFile.Close();
             }
 
