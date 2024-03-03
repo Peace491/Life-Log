@@ -13,6 +13,8 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 
+
+
 public class RegistrationService()
 {
 
@@ -25,6 +27,11 @@ public class RegistrationService()
 
         if(!Regex.IsMatch(email, validEmailPattern)){
 
+            /*// log: Log Level: Warning
+            Log Category: Data
+            Log Message: “The email is not in the correct format.”*/
+
+
             response.HasError = true;
             response.ErrorMessage = "The email is not in the correct format.";
             return response;
@@ -34,6 +41,11 @@ public class RegistrationService()
 
         if(!Regex.IsMatch(email, threeCharsPattern)){
 
+            /*Log Level: Warning
+            Log Category: Data
+            Log Message: “The email is not in the correct format.”*/
+
+
             response.HasError = true;
             response.ErrorMessage = "The email is too short.";
             return response;
@@ -42,6 +54,10 @@ public class RegistrationService()
         string alphanumericCharsPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
         if(!Regex.IsMatch(email, alphanumericCharsPattern)){
+
+           /* Log Level: Warning
+            Log Category: Data
+            Log Message: “The email is too short.”*/
 
             response.HasError = true;
             response.ErrorMessage = "The email is not alphanumeric.";
@@ -54,17 +70,48 @@ public class RegistrationService()
         DateTime upperBound = DateTime.Now.Date;
 
         if(date < lowerBound && date > upperBound){
+
+            /*Log Level: Warning
+            Log Category: Data
+            Log Message: “The birth date is invalid.”*/
+
+
             response.HasError = true;
             response.ErrorMessage = "The birth date is invalid.";
             return response;
         }
 
         // TODO: check if any zipcode outside of LA county then return response has error
+        var readOnlyDAO = new ReadDataOnlyDAO();
+        var readAllZipCodeSQL = $"SELECT ZipCode FROM californiazipcode";
+        int RECORD_COUNT = 311; // hard coded value 
+
+        var readZipCodeResponse = await readOnlyDAO.ReadData(readAllZipCodeSQL, RECORD_COUNT, 0);
+
+        foreach (List<Object> readResponseData in readZipCodeResponse.Output)
+        {
+            if (readResponseData[0].ToString() != zipCode)
+            {
+                /*Log Level: Warning
+                Log Category: Data
+                Log Message: “The zip code is invalid.”*/
+
+                response.HasError = true;
+                response.ErrorMessage = "The birth date is invalid.";
+                return response;
+            }
+        }
 
 
 
 
-        if(String.IsNullOrEmpty(email) || String.IsNullOrEmpty(DOB) || String.IsNullOrEmpty(zipCode)){
+        if (String.IsNullOrEmpty(email) || String.IsNullOrEmpty(DOB) || String.IsNullOrEmpty(zipCode)){
+
+            /*Log Level: Warning
+            Log Category: Data
+            Log Message: “The non-nullable option is null.”*/
+
+
             response.HasError = true;
             response.ErrorMessage = "The non-nullable option is null.";
             return response;
@@ -73,17 +120,17 @@ public class RegistrationService()
         // send a confirmation email to the user using mailkit, after user confirms then create user
         SendOTPEmail(email);
 
-        // add logging for this 
+        // return response 
         response.HasError = false;
         return response;
 
     }
 
 
-    public async void SendOTPEmail(string email){ // Should probably be in Security Library
+    public static void SendOTPEmail(string email){ // Should probably be in Security Library
 
-        string lifelogEmail = "peacesuperuser1@gmail.com";   // add lifelog email and pass
-        string lifelogPassword = "Peacesuperuser1$";
+        string lifelogEmail = "";   // add lifelog email and pass
+        string lifelogPassword = "";
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Lifelog", lifelogEmail));
@@ -110,11 +157,11 @@ public class RegistrationService()
 
     }
 
-    public async void RegisterNormalUser(string email, string DOB, string zipCode){
+    public void RegisterNormalUser(string email, string DOB, string zipCode){
         RegisterUser(email, DOB, zipCode, "Normal");
     }
 
-    public async void RegisterAdminUser(string email, string DOB, string zipCode){
+    public void RegisterAdminUser(string email, string DOB, string zipCode){
         RegisterUser(email, DOB, zipCode, "Admin");
     }
 
@@ -138,6 +185,13 @@ public class RegistrationService()
 
         var userManagementService = new LifelogUserManagementService();
         var createLifelogUserResponse = await userManagementService.CreateLifelogUser(accountRequest, profileRequest);
+
+        // add success log 
+        /*Timestamp
+        Log Level: Info
+        Log Category: Persistent Data Store
+        Log Message: “User registration successful.”*/
+
 
     }
 
