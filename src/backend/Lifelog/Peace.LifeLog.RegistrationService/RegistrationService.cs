@@ -1,4 +1,4 @@
-namespace RegistrationService;
+namespace Peace.Lifelog.RegistrationService;
 
 using DomainModels;
 using Peace.Lifelog.UserManagement;
@@ -84,7 +84,7 @@ public class RegistrationService()
         // TODO: check if any zipcode outside of LA county then return response has error
         var readOnlyDAO = new ReadDataOnlyDAO();
         var readAllZipCodeSQL = $"SELECT ZipCode FROM californiazipcode";
-        int RECORD_COUNT = 311; // hard coded value 
+        int RECORD_COUNT = 311; // hard coded value should change this
 
         var readZipCodeResponse = await readOnlyDAO.ReadData(readAllZipCodeSQL, RECORD_COUNT, 0);
 

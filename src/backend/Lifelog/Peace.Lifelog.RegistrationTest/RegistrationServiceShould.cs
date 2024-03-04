@@ -1,9 +1,10 @@
+namespace Peace.Lifelog.RegistrationTest;
 
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.RegistrationService;
 
-namespace Peace.Lifelog.RegistrationTest;
+
 public class RegistrationServiceShould
 {
 
