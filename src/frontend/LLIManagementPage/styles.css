@@ -134,7 +134,7 @@ main {
 }
 
 .lli-container {
-    height: 100%;
+    height: 500px;
     width: 100%;
     min-height: 100px;
     background-color: rgba(141, 141, 141, 0.3);
@@ -216,32 +216,33 @@ main {
 
 .lli-content-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 60px;
 
     width: 100%;
+    height: 100%;
+
+    overflow: scroll;
+    scrollbar-color: #EBA755 white;
 }
 
 .lli {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    gap: 15px;
 
     padding: 15px 15px;
 
-    width: 95%;
+    height: 80%;
+    width: 290px;
+    min-width: 290px;
+
     background-color: white;
 
     border-radius: 10px;
 }
 
-.lli-default-display-container {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-}
 
 .lli-title-container {
     display: flex;
@@ -251,45 +252,65 @@ main {
 
 .lli-title-container>h2 {
     font-weight: 700;
+    font-size: 1.5em;
+}
+
+.lli-main-content-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    
 }
 
 .lli-deadline-container {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    
+    justify-content: left;
+    width: 100%;
 }
 
 .lli-category-container {
     display: flex;
     flex-direction: row;
-    align-items: center;
-}
-
-.lli-completion-check-container {
-    display: flex;
-    flex-direction: row;
+    
     justify-content: right;
-    align-items: center;
-
-    height: 40px;
+    width: 100%;
 }
 
-.lli-completion-check-container>img {
+.lli-deadline-container>h2, .lli-category-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     height: 100%;
+
+    margin-top: 20px;
 }
+
+.lli-description-container>h2 {
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.lli-description-container>p {
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+}
+
 
 .add-lli-button-container {
     height: 70px;
     position: relative;
     top: 40px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
 }
 
 .add-lli-button-container>img {
     height: 100%;
-}
-
-.current-lli-content-container {
-    height: 230px;
-    overflow: scroll;
-    scrollbar-color: #EBA755 white;
 }
