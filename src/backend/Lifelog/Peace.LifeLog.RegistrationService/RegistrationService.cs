@@ -83,7 +83,9 @@ public class RegistrationService()
 
         // TODO: check if any zipcode outside of LA county then return response has error
         var readOnlyDAO = new ReadDataOnlyDAO();
-        var readAllZipCodeSQL = $"SELECT ZipCode FROM californiazipcode";
+        const string ZIPCODECOL = "ZipCode";
+        const string ZIPCODETABLE = "californiazipcode";
+        var readAllZipCodeSQL = $"SELECT \"{ZIPCODECOL}\" FROM \"{ZIPCODETABLE}\"";
         int RECORD_COUNT = 311; // hard coded value should change this
 
         var readZipCodeResponse = await readOnlyDAO.ReadData(readAllZipCodeSQL, RECORD_COUNT, 0);
@@ -157,18 +159,24 @@ public class RegistrationService()
 
     }
 
-    public void RegisterNormalUser(string email, string DOB, string zipCode){
-        RegisterUser(email, DOB, zipCode, "Normal");
+    public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode){
+        var response = await RegisterUser(email, DOB, zipCode, "Normal");
+        return response;
+
     }
 
-    public void RegisterAdminUser(string email, string DOB, string zipCode){
-        RegisterUser(email, DOB, zipCode, "Admin");
+    public async Task<Response> RegisterAdminUser(string email, string DOB, string zipCode){
+        var response  = await RegisterUser(email, DOB, zipCode, "Admin");
+        return response;
+
     }
 
 
-    public async void RegisterUser(string email, string DOB, string zipCode, string userRole){
+    public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole){
 
         // TODO: Check OTP before doing register user
+        // TODO: populate response !!!
+        var response = new Response();
 
         string userID = email;  
         string role = userRole;
@@ -192,7 +200,7 @@ public class RegistrationService()
         Log Category: Persistent Data Store
         Log Message: “User registration successful.”*/
 
-
+        return response;
     }
 
 }
