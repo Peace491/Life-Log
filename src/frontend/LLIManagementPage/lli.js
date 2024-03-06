@@ -68,7 +68,7 @@
 
         getAllLLI().then(function (completedLLIList) {
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = createLLIHTML(lli.title, lli.deadline.substring(0, lli.deadline.indexOf(" ")), lli.category, lli.description);
+                let lliHTML = createLLIHTML(lli);
                 lliContentContainer.append(lliHTML);
             });
         });
@@ -78,10 +78,11 @@
 
 })(window, window.ajaxClient);
 
-function createLLIHTML(title, deadline, category, description) {
+function createLLIHTML(lli) {
     // Create elements
     var lliContainer = document.createElement("div");
     lliContainer.classList.add("lli");
+    lliContainer.id = lli.lliid
 
     var lliNonHiddenContentContainer = document.createElement("div")
     lliNonHiddenContentContainer.classList.add("lli-non-hidden-content")
@@ -90,7 +91,7 @@ function createLLIHTML(title, deadline, category, description) {
     titleContainer.classList.add("lli-title-container");
 
     var titleElement = document.createElement("h2");
-    titleElement.textContent = title;
+    titleElement.textContent = lli.title;
 
     var mainContentContainer = document.createElement("div");
     mainContentContainer.classList.add("lli-main-content-container");
@@ -99,13 +100,13 @@ function createLLIHTML(title, deadline, category, description) {
     deadlineContainer.classList.add("lli-deadline-container");
 
     var deadlineElement = document.createElement("h2");
-    deadlineElement.textContent = "Deadline: " + deadline;
+    deadlineElement.textContent = "Deadline: " + lli.deadline.substring(0, lli.deadline.indexOf(" "));
 
     var categoryContainer = document.createElement("div");
     categoryContainer.classList.add("lli-category-container");
 
     var categoryElement = document.createElement("h2");
-    categoryElement.textContent = category;
+    categoryElement.textContent = lli.category;
 
     var descriptionContainer = document.createElement("div");
     descriptionContainer.classList.add("lli-description-container");
@@ -114,7 +115,7 @@ function createLLIHTML(title, deadline, category, description) {
     descriptionTitle.textContent = "Description";
 
     var descriptionParagraph = document.createElement("p");
-    descriptionParagraph.textContent = description;
+    descriptionParagraph.textContent = lli.description;
 
     // Append elements
     descriptionContainer.appendChild(descriptionTitle);
