@@ -229,18 +229,25 @@ main {
 
 .lli {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;
+    gap: 20px;
+    
 
     padding: 15px 15px;
 
     height: 80%;
-    width: 290px;
-    min-width: 290px;
+    width: 250px;
+    min-width: 250px;
 
     background-color: white;
 
     border-radius: 10px;
+}
+
+.lli-non-hidden-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 
@@ -259,6 +266,7 @@ main {
     display: flex;
     flex-direction: row;
     width: 100%;
+    max-width: 250px;
     
 }
 
@@ -299,6 +307,7 @@ main {
 .lli-description-container>p {
     word-wrap: break-word;
     text-overflow: ellipsis;
+    max-width: 250px;
 }
 
 
@@ -313,4 +322,61 @@ main {
 
 .add-lli-button-container>img {
     height: 100%;
+}
+
+.expanded-lli {
+    width: 500px;
+    min-width: 500px;
+}
+
+.lli-hidden-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.lli-hidden-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+}
+
+.lli-hidden-required-fields-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+}
+
+.lli-hidden-required-fields-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-hidden-non-required-fields-container {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.lli-hidden-non-required-fields-container>h2 {
+    font-size: 0.9em;
+}
+
+.delete-lli-button-container {
+    display: flex;
+    justify-content: right;
+}
+
+#delete-lli-button {
+    position: relative;
+    background-image: url("Assets/delete-lli.svg");
+    background-color: transparent;
+    border: none;
+    height: 18px;
+    width: 18px;
+    bottom: 10px;
+    left: 28px;
+}
+
+.hidden {
+    visibility: hidden;
 }

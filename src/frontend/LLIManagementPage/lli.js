@@ -67,15 +67,10 @@
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
 
         getAllLLI().then(function (completedLLIList) {
-            
-
-            completedLLIList.forEach(lli => {
-                
-                let lliHTML = createLLIHTML(lli.title, lli.deadline.substring(0, lli.deadline.indexOf(" ")), lli.category, lli.description)
-                
-                lliContentContainer.append(lliHTML)
+            completedLLIList.reverse().forEach(lli => {
+                let lliHTML = createLLIHTML(lli.title, lli.deadline.substring(0, lli.deadline.indexOf(" ")), lli.category, lli.description);
+                lliContentContainer.append(lliHTML);
             });
-            
         });
     }
 
@@ -87,6 +82,9 @@ function createLLIHTML(title, deadline, category, description) {
     // Create elements
     var lliContainer = document.createElement("div");
     lliContainer.classList.add("lli");
+
+    var lliNonHiddenContentContainer = document.createElement("div")
+    lliNonHiddenContentContainer.classList.add("lli-non-hidden-content")
 
     var titleContainer = document.createElement("div");
     titleContainer.classList.add("lli-title-container");
@@ -130,9 +128,11 @@ function createLLIHTML(title, deadline, category, description) {
 
     titleContainer.appendChild(titleElement);
 
-    lliContainer.appendChild(titleContainer);
-    lliContainer.appendChild(mainContentContainer);
-    lliContainer.appendChild(descriptionContainer);
+    lliNonHiddenContentContainer.appendChild(titleContainer);
+    lliNonHiddenContentContainer.appendChild(mainContentContainer);
+    lliNonHiddenContentContainer.appendChild(descriptionContainer);
+
+    lliContainer.appendChild(lliNonHiddenContentContainer)
 
     // Return the created element
     return lliContainer;
