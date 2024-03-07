@@ -3,14 +3,15 @@ namespace Peace.Lifelog.RegistrationTest;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.RegistrationService;
+using Peace.Lifelog.UserManagementTest;
 
 
 public class RegistrationServiceShould
 {
 
-    private const string EMAIL = "zarif.shams@gmail.com";
-    private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
-    private const string ZIPCODE = "90716";
+    private const string EMAIL = "zarifshams@gmail.com";
+    private string DOB = "2002-01-01"; //DateTime.Today.ToString("yyyy-MM-dd");
+    private const string ZIPCODE = "90010";
 
 
     #region Input validation Tests
@@ -27,6 +28,7 @@ public class RegistrationServiceShould
 
         // Assert
         Assert.True(validEmailFormatResponse.HasError == false);
+        // Console.WriteLine(validEmailFormatResponse.ErrorMessage);
 
     }
 
@@ -41,7 +43,7 @@ public class RegistrationServiceShould
         var validEmailFormatResponse = await registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
 
         // Assert
-        Assert.True(validEmailFormatResponse.HasError == false);
+        Assert.True(validEmailFormatResponse.HasError == true);
 
     }
 
@@ -56,7 +58,7 @@ public class RegistrationServiceShould
         var threeCharsResponse = await registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
 
         // Assert
-        Assert.True(threeCharsResponse.HasError == false);
+        Assert.True(threeCharsResponse.HasError == true);
     }
 
     [Fact]
@@ -70,7 +72,7 @@ public class RegistrationServiceShould
         var alphanumericResponse = await registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
 
         // Assert
-        Assert.True(alphanumericResponse.HasError == false);
+        Assert.True(alphanumericResponse.HasError == true);
     }
 
     [Fact]
@@ -84,21 +86,22 @@ public class RegistrationServiceShould
         var validDOBResponse = await registrationService.CheckInputValidation(EMAIL, invalidDOB, ZIPCODE);
 
         // Assert
-        Assert.True(validDOBResponse.HasError == false);
+        Assert.True(validDOBResponse.HasError == true);
     }
 
     [Fact]
     public async void RegistrationServiceShould_HaveValidZipCode()
     {
         // Arrange
-        string invalidZipCode = "90623";
+        string invalidZipCode = "90624";
         var registrationService = new RegistrationService();
+        const string USERWITHINVALIDZIPCODE = "EmailWithInvalidZipcode@gmail.com";
 
         // Act
-        var validZipCodeResponse = await registrationService.CheckInputValidation(EMAIL, DOB, invalidZipCode);
+        var validZipCodeResponse = await registrationService.RegisterNormalUser(USERWITHINVALIDZIPCODE, DOB, invalidZipCode);
 
         // Assert
-        Assert.True(validZipCodeResponse.HasError == false);
+        Assert.True(validZipCodeResponse.HasError == true);
     }
 
     [Fact]
@@ -114,7 +117,7 @@ public class RegistrationServiceShould
         var inputNotNullResponse = await registrationService.CheckInputValidation(emptyEmail, emptyDOB, emptyZipCode);
 
         // Assert
-        Assert.True(inputNotNullResponse.HasError == false);
+        Assert.True(inputNotNullResponse.HasError == true);
     }
 
 
@@ -130,31 +133,73 @@ public class RegistrationServiceShould
         // Arrange
         // init view and delete DAO
         var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-        string readSQL = $"";
-        string deleteSQL = $"";
+        var LifelogUserManagementService = new LifelogUserManagementService();
+
+        const string USEREMAIL = "NormalUser@gmail.com";
+        
+        string readSQL = $"SELECT UserID FROM lifelogaccount WHERE UserID = \"{USEREMAIL}\" AND Role = \"Normal\"";
+
+        // create account and profile request
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", USEREMAIL);
+        testLifelogAccountRequest.Role = ("Role", "Normal");
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+        testLifelogProfileRequest.DOB = ("DOB", DOB);
+        testLifelogProfileRequest.ZipCode = ("ZipCode", ZIPCODE);
+
         // create reg object
         var registrationService = new RegistrationService();
         
         // Act
-        var sucessfulRegistrationResponse = await  registrationService.RegisterNormalUser(EMAIL, DOB, ZIPCODE);
+        var sucessfulRegistrationResponse = await registrationService.RegisterNormalUser(USEREMAIL, DOB, ZIPCODE);
+        var readResponse = await readDataOnlyDAO.ReadData(readSQL);
 
         // Assert
         Assert.True(sucessfulRegistrationResponse.HasError == false);
+        Assert.NotNull(readResponse.Output);
+        Assert.True(readResponse.Output.Count == 1);
 
+        // cleanup
+        // delete using usermanagmentservice
+        await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
     }
 
     [Fact]
     public async void RegistrationServiceShould_RegisterAdminUser()
     {
         // Arrange
+        // init view and delete DAO
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var LifelogUserManagementService = new LifelogUserManagementService();
+
+        const string ADMINEMAIL = "AdminUser@gmail.com";
+
+        string readSQL = $"SELECT UserID FROM lifelogaccount WHERE UserID = \"{ADMINEMAIL}\" AND Role = \"Admin\"";
+
+        // create account and profile request
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", ADMINEMAIL);
+        testLifelogAccountRequest.Role = ("Role", "Admin");
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+        testLifelogProfileRequest.DOB = ("DOB", DOB);
+        testLifelogProfileRequest.ZipCode = ("ZipCode", ZIPCODE);
+
         var registrationService = new RegistrationService();
 
         // Act
-        var sucessfulRegistrationResponse = await registrationService.RegisterAdminUser(EMAIL, DOB, ZIPCODE);
+        var sucessfulRegistrationResponse = await registrationService.RegisterAdminUser(ADMINEMAIL, DOB, ZIPCODE);
+        var readResponse = await readDataOnlyDAO.ReadData(readSQL);
 
         // Assert
         Assert.True(sucessfulRegistrationResponse.HasError == false);
+        Assert.NotNull(readResponse.Output);
+        Assert.True(readResponse.Output.Count == 1);
+
+        // Cleanup
+        await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+
 
     }
 

@@ -17,12 +17,77 @@ using MailKit.Security;
 
 public class RegistrationService()
 {
+    // fix the tests 
+
+
 
     public async Task<Response> CheckInputValidation(string email, string DOB, string zipCode)
     {
         var response = new Response();
+
+
+
+        bool createDateTrue = DateTime.TryParseExact(DOB, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime date);
+
+        DateTime lowerBound = new DateTime(1970, 1, 1);
+        DateTime upperBound = DateTime.Now.Date;
+
+        // string upperBoundString = DateTime.Now.ToString("yyyy-MM-dd");
+
+        /*int lowerBoundYear = 1970;
+        int upperBoundYear = Convert.ToInt32(upperBound.ToString().Substring(0, 4)); ;
+        int DOBYear = Convert.ToInt32(DOB.Substring(0, 4));*/
+
+        // if (DOBYear < lowerBoundYear && DOBYear > upperBoundYear)
+        if (date < lowerBound || date > upperBound)
+        {
+
+            /*Log Level: Warning
+            Log Category: Data
+            Log Message: “The birth date is invalid.”*/
+
+
+            response.HasError = true;
+            response.ErrorMessage = "The birth date is invalid.";
+            return response;
+        }
+
+
         
-        // valid email using regex
+
+        // #3
+        string threeCharsPattern = @"^.{1,3}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+        if (Regex.IsMatch(email, threeCharsPattern))
+        {
+
+            /*Log Level: Warning
+            Log Category: Data
+            Log Message: “The email is not in the correct format.”*/
+
+
+            response.HasError = true;
+            response.ErrorMessage = "The email is too short.";
+            return response;
+        }
+
+
+        // #2
+        string alphanumericCharsPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+        if (!Regex.IsMatch(email, alphanumericCharsPattern))
+        {
+
+            /* Log Level: Warning
+             Log Category: Data
+             Log Message: “The email is too short.”*/
+
+            response.HasError = true;
+            response.ErrorMessage = "The email is not alphanumeric.";
+            return response;
+        }
+
+        // valid email using regex #1
         string validEmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
         if(!Regex.IsMatch(email, validEmailPattern)){
@@ -36,92 +101,7 @@ public class RegistrationService()
             response.ErrorMessage = "The email is not in the correct format.";
             return response;
         }
-
-        string threeCharsPattern = @"^.{1,3}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-
-        if(!Regex.IsMatch(email, threeCharsPattern)){
-
-            /*Log Level: Warning
-            Log Category: Data
-            Log Message: “The email is not in the correct format.”*/
-
-
-            response.HasError = true;
-            response.ErrorMessage = "The email is too short.";
-            return response;
-        }
-
-        string alphanumericCharsPattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-
-        if(!Regex.IsMatch(email, alphanumericCharsPattern)){
-
-           /* Log Level: Warning
-            Log Category: Data
-            Log Message: “The email is too short.”*/
-
-            response.HasError = true;
-            response.ErrorMessage = "The email is not alphanumeric.";
-            return response;
-        }
-
-        bool createDateTrue = DateTime.TryParseExact(DOB, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime date);
-
-        DateTime lowerBound = new DateTime(1970, 1, 1);
-        DateTime upperBound = DateTime.Now.Date;
-
-        if(date < lowerBound && date > upperBound){
-
-            /*Log Level: Warning
-            Log Category: Data
-            Log Message: “The birth date is invalid.”*/
-
-
-            response.HasError = true;
-            response.ErrorMessage = "The birth date is invalid.";
-            return response;
-        }
-
-        // TODO: check if any zipcode outside of LA county then return response has error
-        var readOnlyDAO = new ReadDataOnlyDAO();
-        const string ZIPCODECOL = "ZipCode";
-        const string ZIPCODETABLE = "californiazipcode";
-        var readAllZipCodeSQL = $"SELECT \"{ZIPCODECOL}\" FROM \"{ZIPCODETABLE}\"";
-        int RECORD_COUNT = 311; // hard coded value should change this
-
-        var readZipCodeResponse = await readOnlyDAO.ReadData(readAllZipCodeSQL, RECORD_COUNT, 0);
-
-        foreach (List<Object> readResponseData in readZipCodeResponse.Output)
-        {
-            if (readResponseData[0].ToString() != zipCode)
-            {
-                /*Log Level: Warning
-                Log Category: Data
-                Log Message: “The zip code is invalid.”*/
-
-                response.HasError = true;
-                response.ErrorMessage = "The birth date is invalid.";
-                return response;
-            }
-        }
-
-
-
-
-        if (String.IsNullOrEmpty(email) || String.IsNullOrEmpty(DOB) || String.IsNullOrEmpty(zipCode)){
-
-            /*Log Level: Warning
-            Log Category: Data
-            Log Message: “The non-nullable option is null.”*/
-
-
-            response.HasError = true;
-            response.ErrorMessage = "The non-nullable option is null.";
-            return response;
-        }
-
-        // send a confirmation email to the user using mailkit, after user confirms then create user
-        SendOTPEmail(email);
-
+        
         // return response 
         response.HasError = false;
         return response;
@@ -179,14 +159,14 @@ public class RegistrationService()
         var response = new Response();
 
         string userID = email;  
-        string role = userRole;
+        
         
         // uses usermanagementtest
         var accountRequest = new LifelogAccountRequest();
         var profileRequest = new LifelogProfileRequest();
 
         accountRequest.UserId = ("UserId", userID);
-        accountRequest.Role = ("Role", role);
+        accountRequest.Role = ("Role", userRole);
 
         profileRequest.DOB = ("DOB", DOB);
         profileRequest.ZipCode = ("ZipCode", zipCode);
@@ -199,7 +179,8 @@ public class RegistrationService()
         Log Level: Info
         Log Category: Persistent Data Store
         Log Message: “User registration successful.”*/
-
+        response.HasError = createLifelogUserResponse.HasError;
+        response.Output = createLifelogUserResponse.Output;
         return response;
     }
 
