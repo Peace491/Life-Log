@@ -248,6 +248,7 @@ main {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    width: 100%;
 }
 
 
@@ -278,16 +279,32 @@ main {
     width: 100%;
 }
 
+#date-input {
+    font-size: 12px;
+    font-family: "Inter", sans-serif;
+}
+
 .lli-category-container {
     display: flex;
     flex-direction: row;
-    
+    align-items: baseline;
     justify-content: right;
     width: 100%;
 }
 
 .lli-deadline-container>h2, .lli-category-container>h2 {
     font-size: 0.9em;
+}
+
+.lli-category-container>select {
+    border: none;
+    width: 100%;
+    height: 80%;
+    font-size: 0.9em;
+    font-weight: 600;
+    background-color: white;
+    position: relative;
+    bottom: 7px;
 }
 
 .lli-description-container {
@@ -327,17 +344,20 @@ main {
 .expanded-lli {
     width: 500px;
     min-width: 500px;
+    max-width: 500px;
 }
 
 .lli-hidden-content {
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .lli-hidden-fields-container {
     display: flex;
     flex-direction: column;
-    gap: 20px
+    gap: 20px;
+    margin-top: 21px; 
 }
 
 .lli-hidden-required-fields-container {
@@ -361,22 +381,72 @@ main {
     font-size: 0.9em;
 }
 
-.delete-lli-button-container {
+.lli-button-container {
     display: flex;
     justify-content: right;
+    gap: 10px;
+    width: 100%;
 }
 
-#delete-lli-button {
-    position: relative;
-    background-image: url("Assets/delete-lli.svg");
+.lli-button-container>button {
+    position:relative;
     background-color: transparent;
+    background-repeat:no-repeat;
     border: none;
     height: 18px;
     width: 18px;
-    bottom: 10px;
-    left: 28px;
+    bottom: 9px;
+    left: 10px;
+}
+
+#delete-lli-button {
+    background-image: url("Assets/trash.svg");
+}
+
+#edit-lli-button {
+    background-image: url("Assets/pencil.svg");
+}
+
+#close-lli-button {
+    background-image: url("Assets/delete-lli.svg");
+    background-size: 18px;
+    
+}
+
+#status-select, #visibility-select {
+    border: none;
+    width: 100%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    right: 4px;
+    bottom: 2px;
+}
+
+#recurrence-select {
+    border: none;
+    width: 40%;
+    height: 100%;
+    font-size: 1em;
+    background-color: white;
+    position: relative;
+    
+}
+
+.lli-media-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lli-media-container>img {
+    height: 110px;
 }
 
 .hidden {
+    display: none;
     visibility: hidden;
 }
+

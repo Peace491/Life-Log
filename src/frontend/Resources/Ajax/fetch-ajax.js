@@ -32,6 +32,23 @@ function send(url, data) {
     return fetch(url, options);
 }
 
+function del(url) {
+    const options = {
+        method: 'DELETE',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer-when-downgrade',
+    }
+
+    return fetch(url, options)
+}
+
 window.ajaxClient = {
-    get: get
+    get: get,
+    del: del
 }
