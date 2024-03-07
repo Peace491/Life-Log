@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
 public class LLIController : ControllerBase
 {
     [HttpPost]
-    [Route("LLI")]
-    public async Task<IActionResult> PutLLI(string userHash, string title, string category, string description, string status, string visibility, string deadline, int cost, string recurrenceStatus, string recurrenceFrequency)
+    [Route("postLLI")]
+    public async Task<IActionResult> PostLLI(string userHash, string title, string category, string description, string status, string visibility, string deadline, int cost, string recurrenceStatus, string recurrenceFrequency)
     {
         var lliService = new LLIService();
 
@@ -30,7 +30,7 @@ public class LLIController : ControllerBase
     }
 
     [HttpGet] 
-    [Route("allLLI")]
+    [Route("getAllLLI")]
     public async Task<IActionResult> GetAllLLI(string userHash)
     {
         var lliService = new LLIService();
@@ -40,7 +40,7 @@ public class LLIController : ControllerBase
     }
 
     [HttpPut]
-    [Route("LLI")]
+    [Route("putLLI")]
     public async Task<IActionResult> PutLLI(
         string userHash, string lliId, string title = "", string category = "", 
         string description = "", string status = "", string visibility = "", string deadline = "", 
@@ -66,7 +66,7 @@ public class LLIController : ControllerBase
     }
 
 [HttpDelete] 
-    [Route("LLI")]
+    [Route("deleteLLI")]
     public async Task<IActionResult> DeleteLLI(string userHash, string lliId)
     {
         var lliService = new LLIService();
