@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
   </ItemGroup>
 
   <ItemGroup>

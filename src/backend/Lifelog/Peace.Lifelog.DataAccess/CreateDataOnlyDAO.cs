@@ -6,11 +6,11 @@ using MySql.Data.MySqlClient;
 
 public class CreateDataOnlyDAO : ICreateDataOnlyDAO
 {
-    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = CreateUser; Password = password;";
+    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
     public  MySqlConnection ConnectToDb()
     {
-        return new MySqlConnection(connectionString);
+        return new MySqlConnection(lifelogConfig.CreateOnlyConnectionString);
     }
 
     public async Task<Response> CreateData(string sql) 
