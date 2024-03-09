@@ -266,20 +266,21 @@ main {
 .lli-main-content-container {
     display: flex;
     flex-direction: row;
+    gap: 5px;
     width: 100%;
-    max-width: 250px;
+    max-width: 270px;
     
 }
 
 .lli-deadline-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     
     justify-content: left;
     width: 100%;
 }
 
-#date-input {
+.date-input {
     font-size: 12px;
     font-family: "Inter", sans-serif;
 }
@@ -342,9 +343,9 @@ main {
 }
 
 .expanded-lli {
-    width: 500px;
-    min-width: 500px;
-    max-width: 500px;
+    width: 625px;
+    min-width: 625px;
+    max-width: 625px;
 }
 
 .lli-hidden-content {
@@ -364,6 +365,7 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
+    gap: 5px;
 }
 
 .lli-hidden-required-fields-container>h2 {
@@ -413,9 +415,9 @@ main {
     
 }
 
-#status-select, #visibility-select {
+.status-select, .visibility-select {
     border: none;
-    width: 100%;
+    width: 80%;
     height: 100%;
     font-size: 0.9em;
     background-color: white;
@@ -424,14 +426,44 @@ main {
     bottom: 2px;
 }
 
-#recurrence-select {
+.lli-status-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.lli-status-container>h2 {
+    width: 67px;
+    font-size: 0.9em;
+}
+
+.lli-visibility-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.lli-visibility-container>h2 {
+    width: 105px;
+    font-size: 0.9em;
+}
+
+.lli-recurrence-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.lli-recurrence-container>h2 {
+    font-size: 0.9em;
+}
+
+.recurrence-select {
     border: none;
     width: 40%;
     height: 100%;
-    font-size: 1em;
+    font-size: 0.9em;
     background-color: white;
     position: relative;
-    
+    bottom: 2px;
 }
 
 .lli-media-container {
@@ -450,3 +482,16 @@ main {
     visibility: hidden;
 }
 
+.create-lli-button-container {
+    display: flex;
+    justify-content: right;
+}
+
+#create-lli-button {
+    height: 30px;
+    width: 100px;
+    border: none;
+    border-radius: 5px;
+    background-color: aquamarine;
+    font-weight: 600;
+}
