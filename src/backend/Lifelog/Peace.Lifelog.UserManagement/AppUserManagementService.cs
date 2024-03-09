@@ -67,7 +67,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account creation successful");
         }
 
@@ -131,7 +132,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", userProfileRequest.UserId.Value, "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", userProfileRequest.UserId.Value, "Info", "Persistent Data Store", $"{userProfileRequest.UserId.Value} profile creation successful");
         }
 
@@ -157,7 +159,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", userHashRequest.UserHash.Value, "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", userHashRequest.UserHash.Value, "Info", "Persistent Data Store", $"{userHashRequest.UserHash.Value} user hash creation successful");
         }
 
@@ -214,7 +217,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
@@ -267,7 +271,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
                 }
             }
         }
-        
+
 
         // Log Account recovery
         var createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -279,7 +283,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account recovery successful");
         }
 
@@ -318,7 +323,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         {
             if (property.Name == "ModelName" || property.Name == "UserId") { continue; }
 
-            string tupleString = userProfileRequest.GetType().GetProperty(property.Name)!.GetValue(userProfileRequest, null)!.ToString()!;            
+            string tupleString = userProfileRequest.GetType().GetProperty(property.Name)!.GetValue(userProfileRequest, null)!.ToString()!;
 
             // Remove parentheses and split by comma
             if (tupleString != null)
@@ -372,7 +377,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
                     }
                 }
             }
-            
+
         }
 
         // Log Profile modification
@@ -385,7 +390,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", "Info", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Persistent Data Store", $"{userProfileRequest.UserId.Value} account creation successful");
         }
 
@@ -429,13 +435,13 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             if (response.Output != null)
             {
                 foreach (int rowsAffected in response.Output)
-            {
-                if (rowsAffected == 0)
                 {
-                    response.HasError = true;
-                    response.ErrorMessage = "Account does not exist";
+                    if (rowsAffected == 0)
+                    {
+                        response.HasError = true;
+                        response.ErrorMessage = "Account does not exist";
+                    }
                 }
-            }
             }
         }
 
@@ -449,7 +455,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
             var errorMessage = response.ErrorMessage;
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
         }
-        else {
+        else
+        {
             var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{userAccountRequest.UserId.Value} account deletion successful");
         }
 

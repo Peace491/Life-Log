@@ -5,7 +5,7 @@ using Peace.Lifelog.UserManagementTest;
 
 namespace Peace.Lifelog.UserManagement;
 
-public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUser
+public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUser, IModifyLifelogUser
 {
     private readonly AppUserManagementService appUserManagementService = new AppUserManagementService();
     private readonly SaltService saltService = new SaltService();
@@ -30,9 +30,9 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         {
             response.HasError = true;
             response.ErrorMessage = "Failed to generate salt";
-            return response;   
+            return response;
         }
-        
+
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
@@ -108,13 +108,28 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
             return response;
         }
 
-
-        // TODO: handle success outcome
         response.HasError = false;
         response.Output = deleteLifelogAccountResponse.Output;
         return response;
     }
 
+    public async Task<Response> ModifyLifelogUser(LifelogProfileRequest lifelogProfileRequest)
+    {
+        var response = new Response();
+
+        var modifyLifelogProfileResponse = await modifyLifelogProfileInDB(lifelogProfileRequest);
+
+        if (modifyLifelogProfileResponse.HasError == true)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Failed to modify Lifelog user profile.";
+            return response;
+        }
+
+        response.HasError = false;
+        response.Output = modifyLifelogProfileResponse.Output;
+        return response;
+    }
     // Helper functions
     private string createUserHashWithGivenId(string userId)
     {
@@ -170,5 +185,12 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         return deleteAccountResponse;
 
+    }
+
+    private async Task<Response> modifyLifelogProfileInDB(LifelogProfileRequest lifelogProfileRequest)
+    {
+        Response modifyLifelogProfileResponse = await appUserManagementService.ModifyProfile(lifelogProfileRequest);
+
+        return modifyLifelogProfileResponse;
     }
 }

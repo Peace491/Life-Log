@@ -62,7 +62,6 @@ public class LifelogUserManagementServiceShould
         //Arrange
         var lifelogUserManagementService = new LifelogUserManagementService();
 
-        var mockMfaId = "2";
         var mockRole = "Normal";
 
         // Creating User Profile based off User Account
@@ -134,7 +133,6 @@ public class LifelogUserManagementServiceShould
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
-        var mockMfaId = "2";
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
@@ -333,5 +331,73 @@ public class LifelogUserManagementServiceShould
         Assert.True(deleteAccountResponse.HasError == true);
     }
 
+    #endregion
+
+    #region Modify Profile Tests
+    [Fact]
+    public async void LifelogUserManagementServiceModifyLifelogProfileShould_ModifyAProfileInTheDatabase()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var LifelogUserManagementService = new LifelogUserManagementService();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var mockUserId = "TestUserModify";
+        var mockRole = "Normal";
+        var USER_HASH = "";
+        // Creating User Profile based off User Account
+        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
+        var mockZipCode = "90704";
+        var newZipCode = "90007";
+
+
+
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", mockUserId);
+        testLifelogAccountRequest.Role = ("Role", mockRole);
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+        testLifelogProfileRequest.DOB = ("DOB", mockDob);
+        testLifelogProfileRequest.ZipCode = ("ZipCode", mockZipCode);
+
+        var createAccountResponse = await LifelogUserManagementService.CreateLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+
+        if (createAccountResponse.Output is not null)
+        {
+            foreach (string output in createAccountResponse.Output)
+            {
+                USER_HASH = output;
+            }
+        }
+
+        var readAccountSql = $"SELECT * FROM LifelogProfile WHERE UserHash = \"{USER_HASH}\"";
+
+        testLifelogProfileRequest.ZipCode = ("ZipCode", newZipCode);
+
+
+        // Act
+        timer.Start();
+        var modifyProfileResponse = await LifelogUserManagementService.ModifyLifelogUser(testLifelogProfileRequest);
+        timer.Stop();
+
+
+        var readResponse = await readDataOnlyDAO.ReadData(readAccountSql);
+
+
+        // Assert
+        Assert.True(modifyProfileResponse.HasError == false);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+        foreach (List<Object> responseData in readResponse.Output)
+        {
+
+            Assert.True(responseData[2].ToString() == newZipCode);
+        }
+
+        //Cleanup
+        var deleteAccountResponse = await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+
+    }
     #endregion
 }
