@@ -167,7 +167,6 @@ public class LifelogUserManagementServiceShould
 
         var mockUserId = "TestInvalidSQLCreation";
         var mockRole = "Normal";
-        var mockMfaId = "2";
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
@@ -241,7 +240,6 @@ public class LifelogUserManagementServiceShould
         //Arrange
         var lifelogUserManagementService = new LifelogUserManagementService();
 
-        var mockMfaId = "2";
         var mockRole = "Normal";
 
         // Creating User Profile based off User Account
@@ -278,7 +276,6 @@ public class LifelogUserManagementServiceShould
         //Arrange
         var lifelogUserManagementService = new LifelogUserManagementService();
 
-        var mockMfaId = "2";
         var mockRole = "Normal";
 
         // Creating User Profile based off User Account
@@ -309,7 +306,6 @@ public class LifelogUserManagementServiceShould
         var lifelogUserManagementService = new LifelogUserManagementService();
 
         var mockUserId = "TestUserCreation";
-        var mockMfaId = "2";
         var mockRole = "Normal";
 
         // Creating User Profile based off User Account
@@ -389,6 +385,7 @@ public class LifelogUserManagementServiceShould
         // Assert
         Assert.True(modifyProfileResponse.HasError == false);
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(readResponse.Output != null);
         foreach (List<Object> responseData in readResponse.Output)
         {
 
