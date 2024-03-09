@@ -396,5 +396,89 @@ public class LifelogUserManagementServiceShould
         var deleteAccountResponse = await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
 
     }
+
+    [Fact]
+    public async void LifelogUserManagementServiceModifyLifelogProfileShould_ThrowArgumentNullExceptionIfUserIdIsNull()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var LifelogUserManagementService = new LifelogUserManagementService();
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+
+        testLifelogProfileRequest.UserId = (TestVariables.USER_ID_TYPE, string.Empty);
+
+        var errorIsThrown = false;
+
+        //Act
+        try
+        {
+            var createProfileResponse = await LifelogUserManagementService.ModifyLifelogUser(testLifelogProfileRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        //Assert
+        timer.Start();
+        Assert.True(errorIsThrown);
+        timer.Stop();
+    }
+
+    [Fact]
+    public async void LifelogUserManagementServiceModifyLifelogUserShould_ThrowArgumentNullErrorIfUserDetailsIsNull()
+    {
+        //Arrange
+        var lifelogUserManagementService = new LifelogUserManagementService();
+
+        // Creating User Profile with null user details
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+        testLifelogProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, string.Empty);
+        testLifelogProfileRequest.DOB = (TestVariables.DOB_TYPE, string.Empty);
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var modifyProfileResponse = await lifelogUserManagementService.ModifyLifelogUser(testLifelogProfileRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+    }
+
+    [Fact]
+    public async void LifelogUserManagementServiceModifyLifelogUserShould_ReturnAnErrorResponseIfUserAttemptToModifyNonexistingAccount()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var lifelogUserManagementService = new LifelogUserManagementService();
+
+        var mockUserId = "7";
+        var newZipCode = "54321-9876";
+
+        var testProfileRequest = new LifelogProfileRequest();
+
+        testProfileRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
+        testProfileRequest.ZipCode = (TestVariables.ZIP_CODE_TYPE, newZipCode);
+
+        // Act
+        timer.Start();
+        var modifyProfileResponse = await lifelogUserManagementService.ModifyLifelogUser(testProfileRequest);
+        timer.Stop();
+
+        // Assert
+        Assert.True(modifyProfileResponse.HasError == true);
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+    }
     #endregion
 }
