@@ -12,10 +12,7 @@ public class LifelogConfig
 
     public static LifelogConfig LoadConfiguration()
     {
-        var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "Peace.Lifelog.Config");
-
         IConfigurationRoot configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
             .AddJsonFile("lifelog-config.Development.json")
             .Build();
 
