@@ -1,38 +1,52 @@
-using Peace.Lifelog.UserManagement;
-using Peace.Lifelog.UserManagementTest;
+using System.Net.Http; // For HttpMethod
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-app.MapGet("/getProfile", () =>
+// CORS implementation
+app.Use((httpContext, next) =>
 {
-    var testLifelogProfile = new LifelogProfile();
 
-    testLifelogProfile.UserId = "TestUserHash";
-    testLifelogProfile.DOB = DateTime.Now.ToString("yyyy-MM-dd");
-    testLifelogProfile.ZipCode = "92612";
+    // Address Browser's Preflight OPTIONS request
+    if (httpContext.Request.Method == nameof(HttpMethod.Options).ToUpperInvariant())
+    {
+        httpContext.Response.StatusCode = 204;
+        httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/";
+        httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
+        httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+        httpContext.Response.Headers.AccessControlAllowCredentials = "true";
 
-    var list = new List<LifelogProfile>(){testLifelogProfile};
 
-    
-    return list;
-})
-.WithName("GetProfile")
-.WithOpenApi();
+        return Task.CompletedTask; // Terminate the HTTP Request
+    }
+
+    return next();
+});
+
+app.Use((httpContext, next) =>
+{
+    httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/";
+    httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
+    httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+    httpContext.Response.Headers.AccessControlAllowCredentials = "true";
+
+    return next();
+});
+
+
+
+app.MapControllers();
 
 app.Run();

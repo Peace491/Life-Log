@@ -28,7 +28,6 @@ public class RegistrationServiceShould
 
         // Assert
         Assert.True(validEmailFormatResponse.HasError == false);
-        // Console.WriteLine(validEmailFormatResponse.ErrorMessage);
 
     }
 

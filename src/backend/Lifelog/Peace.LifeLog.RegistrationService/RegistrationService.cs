@@ -25,18 +25,17 @@ public class RegistrationService()
     {
         var response = new Response();
 
-
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging(logTarget);
+        /*var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var userHashResponse = await readDataOnlyDAO.ReadData($"SELECT UserHash FROM lifelogaccount WHERE UserID = \"System\"");*/
+        string logHash = "System";
 
         bool createDateTrue = DateTime.TryParseExact(DOB, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime date);
 
         DateTime lowerBound = new DateTime(1970, 1, 1);
         DateTime upperBound = DateTime.Now.Date;
-
-        // string upperBoundString = DateTime.Now.ToString("yyyy-MM-dd");
-
-        /*int lowerBoundYear = 1970;
-        int upperBoundYear = Convert.ToInt32(upperBound.ToString().Substring(0, 4)); ;
-        int DOBYear = Convert.ToInt32(DOB.Substring(0, 4));*/
 
         // if (DOBYear < lowerBoundYear && DOBYear > upperBoundYear)
         if (date < lowerBound || date > upperBound)
@@ -45,10 +44,11 @@ public class RegistrationService()
             /*Log Level: Warning
             Log Category: Data
             Log Message: “The birth date is invalid.”*/
-
-
             response.HasError = true;
             response.ErrorMessage = "The birth date is invalid.";
+
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+
             return response;
         }
 
@@ -64,10 +64,11 @@ public class RegistrationService()
             /*Log Level: Warning
             Log Category: Data
             Log Message: “The email is not in the correct format.”*/
-
-
             response.HasError = true;
             response.ErrorMessage = "The email is too short.";
+
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+
             return response;
         }
 
@@ -81,9 +82,11 @@ public class RegistrationService()
             /* Log Level: Warning
              Log Category: Data
              Log Message: “The email is too short.”*/
-
             response.HasError = true;
             response.ErrorMessage = "The email is not alphanumeric.";
+
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+
             return response;
         }
 
@@ -95,10 +98,11 @@ public class RegistrationService()
             /*// log: Log Level: Warning
             Log Category: Data
             Log Message: “The email is not in the correct format.”*/
-
-
             response.HasError = true;
             response.ErrorMessage = "The email is not in the correct format.";
+
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+
             return response;
         }
         
@@ -109,7 +113,7 @@ public class RegistrationService()
     }
 
 
-    public static void SendOTPEmail(string email){ // Should probably be in Security Library
+    /*public static void SendOTPEmail(string email){ // Should probably be in Security Library
 
         string lifelogEmail = "";   // add lifelog email and pass
         string lifelogPassword = "";
@@ -137,7 +141,9 @@ public class RegistrationService()
             emailClient.Disconnect (true);
         }
 
-    }
+    }*/
+
+    
 
     public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode){
         var response = await RegisterUser(email, DOB, zipCode, "Normal");
@@ -155,8 +161,8 @@ public class RegistrationService()
     public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole){
 
         // TODO: Check OTP before doing register user
-        // TODO: populate response !!!
         var response = new Response();
+        
 
         string userID = email;  
         
@@ -181,7 +187,27 @@ public class RegistrationService()
         Log Message: “User registration successful.”*/
         response.HasError = createLifelogUserResponse.HasError;
         response.Output = createLifelogUserResponse.Output;
+       
+
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logging = new Logging(logTarget);
+
+        string userHash = "";
+        if (createLifelogUserResponse.Output is not null)
+        {
+            foreach (string output in createLifelogUserResponse.Output)
+            {
+                userHash = output;
+            }
+        }
+
+
+        await logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful.");
+
         return response;
+
+        
     }
 
 }
