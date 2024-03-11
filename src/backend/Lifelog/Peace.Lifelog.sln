@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.ArchivalServi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Config", "Peace.Lifelog.Config\Peace.Lifelog.Config.csproj", "{7FBD3FB9-A1F7-4186-AB70-0AE5B0C9ABE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Email", "Peace.Lifelog.Email\Peace.Lifelog.Email.csproj", "{8F88F2D9-F076-414C-89A5-D27883E43615}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.EmailTest", "Peace.Lifelog.EmailTest\Peace.Lifelog.EmailTest.csproj", "{BADA9B06-8F76-4BAF-90E7-C700F062E937}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +109,14 @@ Global
 		{7FBD3FB9-A1F7-4186-AB70-0AE5B0C9ABE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FBD3FB9-A1F7-4186-AB70-0AE5B0C9ABE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FBD3FB9-A1F7-4186-AB70-0AE5B0C9ABE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F88F2D9-F076-414C-89A5-D27883E43615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F88F2D9-F076-414C-89A5-D27883E43615}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F88F2D9-F076-414C-89A5-D27883E43615}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F88F2D9-F076-414C-89A5-D27883E43615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BADA9B06-8F76-4BAF-90E7-C700F062E937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BADA9B06-8F76-4BAF-90E7-C700F062E937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BADA9B06-8F76-4BAF-90E7-C700F062E937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BADA9B06-8F76-4BAF-90E7-C700F062E937}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

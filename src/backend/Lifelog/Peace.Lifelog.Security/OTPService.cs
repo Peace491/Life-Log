@@ -1,15 +1,17 @@
 ﻿namespace Peace.Lifelog.Security;
 
 using DomainModels;
+using Peace.Lifelog.DataAccess;
 
-public class OneTimePassword: IOneTimePassword
+public class OTPService: IOTPService
 {
-
-    public Response generateOneTimePassword(string userHash)
+    private Random random = new Random();
+    public async Task<Response> generateOneTimePassword(string userHash)
     {
         var response = new Response();
-        var random = new Random();
-
+        var updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        // Hashed otp or not?
+        
         response.HasError = false;
         try
         {
@@ -22,10 +24,15 @@ public class OneTimePassword: IOneTimePassword
                 oneTimePassword[i] = validChars[random.Next(0, validChars.Length)];
             }
 
-            // TODO: Write to LifelogUserOTP table, using an insert on dupe key update, with passed userHash, otp, and sql date now.
+            string str = new string(oneTimePassword);
             
-            response.Output = [oneTimePassword.ToString()];
+            string updateSQL = $"UPDATE LifelogUserOTP " +
+                                $"SET OTPHash = \"{str}\", Timestamp = NOW() " +
+                                $"WHERE UserHash = \"{userHash}\"";
             
+            var temp = await updateDataOnlyDAO.UpdateData(updateSQL);
+            
+            response.Output = [str];
             return response;
         }
         catch (Exception)
