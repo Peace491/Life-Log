@@ -6,11 +6,11 @@ using MySql.Data.MySqlClient;
 
 public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO 
 {
-    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = UpdateUser; Password = password;";
+    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
     public MySqlConnection ConnectToDb()
     {
-        return new MySqlConnection(connectionString);
+        return new MySqlConnection(lifelogConfig.UpdateOnlyConnectionString);
     }
 
     public async Task<Response> UpdateData(string sql) 

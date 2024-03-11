@@ -6,11 +6,11 @@ using MySql.Data.MySqlClient;
 
 public class ReadDataOnlyDAO : IReadDataOnlyDAO 
 {
-    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = ReadUser; Password = password;";
+    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
     public MySqlConnection ConnectToDb()
     {
-        return new MySqlConnection(connectionString);
+        return new MySqlConnection(lifelogConfig.ReadOnlyConnectionString);
     }
 
     public async Task<Response> ReadData(string sql, int count = 10, int currentPage = 0) 

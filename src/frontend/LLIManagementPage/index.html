@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLI Management</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src = "Assets/logo.svg" alt="Lifelog Logo" class="logo"/>
+        </div>
+        <div class="header-contents-container">
+            <div class="page-link-container">
+                <div class="calendar-link-container">
+                    <h2>Calendar</h2>
+                </div>
+                <div class="map-link-container">
+                    <h2>Map</h2>
+                </div>
+                <div class="note-link-container">
+                    <h2>Notes</h2>
+                </div>
+                <div class="life-tree-link-container">
+                    <h2>Life Tree</h2>
+                </div>
+            </div>
+            <div class="user-management-container">
+                <div class="setting-container">
+                    <img src="./Assets/setting.svg" alt="">
+                </div>
+                <div class="user-setting-container">
+                    <img src="./Assets/user-setting.svg" alt="">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="current-lli-container lli-container">
+            <div class="current-lli-header-container lli-header-container">
+                
+                <div class="current-lli-header-title-container lli-header-title-container">
+                    <h2>Life Log Items</h2>
+                </div>
+                
+                
+                <div class="current-lli-search-filter-container lli-search-filter-container">
+                    <div class="current-lli-search-bar-container lli-search-bar-container">
+                    <input type="text" class="current-lli-search-bar" placeholder="Search LLI">
+                    </div>
+                    <div class="current-lli-filter-container lli-filter-container">
+                        <img src="./Assets/filter.svg" alt="">
+                    </div>
+                </div>
+                
+                
+            </div>
+            <div class="current-lli-content-container lli-content-container">
+                <!-- <div class="lli expanded-lli">
+                    <div class="lli-non-hidden-content">
+                        <div class="lli-title-container">
+                            <h2 id="title" contenteditable>Enter Title</h2>
+                        </div>
+                        <div class="lli-main-content-container">
+                            <div class="lli-deadline-container">
+                                <h2><span style="font-weight: 600;">Deadline:</span> <input type="date" id="date-input"></input></h2>
+                            </div>
+                            <div class="lli-category-container">
+                                <select name="" id="category-select">
+                                    <option value="Mental Health">Mental Health</option>
+                                    <option value="Physical Health">Physical Health</option>
+                                    <option value="Outdoor">Outdoor</option>
+                                    <option value="Sport">Sport</option>
+                                    <option value="Art">Art</option>
+                                    <option value="Hobby">Hobby</option>
+                                    <option value="Thrill">Thrill</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Volunteering">Volunteering</option>
+                                    <option value="Food">Food</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="lli-description-container">
+                            <h2>Description</h2>
+                            <p contenteditable>Edit</p>
+                        </div>
+                    </div>
+
+                    <div class="lli-hidden-content">
+                        <div class="lli-button-container">
+                            <button id="delete-lli-button"></button>
+                            <button id="edit-lli-button"></button>
+                            <button id="close-lli-button"></button>
+                        
+                        </div>
+                        <div class="lli-hidden-fields-container">
+                            <div class="lli-hidden-required-fields-container">          
+                                <select id="status-select">
+                                    <option value="Active">Active</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Postponed">Postponed</option>
+                                </select>
+                                <select name="" id="visibility-select">
+                                    <option value="Public">Public</option>
+                                    <option value="Private">Private</option>
+                                </select>
+                            </div>
+                            <div class="lli-hidden-non-required-fields-container">
+                                <h2><span style="font-weight: 600;">Cost:</span> $<span id="cost-input" contenteditable="">100</span></h2>
+                                <h2><span style="font-weight: 600;">Recurring:</span> 
+                                    <select id="recurrence-select">
+                                        <option value="Off">Off</option>
+                                        <option value="Weekly">Weekly</option>
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Yearly">Yearly</option>
+                                    </select>
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="lli-media-container">
+                            <img src="./Assets/default-pic.svg" alt="">
+                        </div>
+                    </div>
+                    
+                </div> -->
+                
+                
+                
+            </div>
+            <div class="add-lli-button-container">
+                <img src="./Assets/add.svg" alt="" id="get">
+                <img src="./Assets/new-lli.svg" alt="">
+            </div>
+
+        </div>
+
+        <div class="finished-lli-container lli-container">
+            <div class="finished-lli-header-container lli-header-container">
+                
+                <div class="finished-lli-header-title-container lli-header-title-container">
+                    <h2>Completed Life Log Items</h2>
+                </div>
+                
+                
+                <div class="finished-lli-search-filter-container lli-search-filter-container">
+                    <div class="finished-lli-search-bar-container lli-search-bar-container">
+                        <input type="text" class="finished-lli-search-bar" placeholder="Search LLI">
+                    </div>
+                    <div class="finished-lli-filter-container lli-filter-container">
+                        <img src="./Assets/filter.svg" alt="">
+                    </div>
+                </div>
+                
+            </div>
+            <div class="finished-lli-content-container lli-content-container">
+                
+            </div>
+        </div>
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../Resources/Ajax/fetch-ajax.js"></script>
+
+    <!-- Page Specific -->
+    <script src="lli.js"></script>
+    
+    
+</body>
+</html>
