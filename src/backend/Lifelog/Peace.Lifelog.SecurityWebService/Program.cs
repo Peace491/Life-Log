@@ -1,24 +1,50 @@
+using System.Net.Http; // For HttpMethod
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// CORS implementation
+app.Use((httpContext, next) => 
+{
+    // Address Browser's Preflight OPTIONS request
+    if(httpContext.Request.Method == nameof(HttpMethod.Options).ToUpperInvariant())
+    {
+        httpContext.Response.StatusCode = 204; 
+        httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/";
+        httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
+        httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+        httpContext.Response.Headers.AccessControlAllowCredentials = "true";
+        
 
-app.UseAuthorization();
+        return Task.CompletedTask; // Terminate the HTTP Request
+    }
+
+    return next();
+});
+
+app.Use((httpContext, next) => 
+{
+    httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/"; 
+    httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
+    httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+    httpContext.Response.Headers.AccessControlAllowCredentials = "true";
+
+    return next();
+});
+
+
 
 app.MapControllers();
 
