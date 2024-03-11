@@ -89,7 +89,7 @@ public class LoggingShould : IDisposable
 
         var cleanupSql = $"DELETE FROM {TABLE} WHERE Id='{createLogResponse.Output.ElementAt(LOG_ID_INDEX)}'";
 
-
+ 
         Assert.True(readLogResponse.HasError == false);
         Assert.True(readLogResponse.Output != null);
         foreach (List<Object> readLogResponseData in readLogResponse.Output)
