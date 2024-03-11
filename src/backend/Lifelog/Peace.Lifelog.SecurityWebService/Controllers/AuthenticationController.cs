@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Peace.Lifelog.Security;
 
@@ -23,7 +24,7 @@ public class AuthenticationController : ControllerBase
         }
         
 
-        return Ok(OTP);
+        return Ok(JsonSerializer.Serialize<string>(OTP));
     }
 
 }

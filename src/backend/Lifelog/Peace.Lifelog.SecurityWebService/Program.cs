@@ -22,7 +22,7 @@ app.Use((httpContext, next) =>
     if(httpContext.Request.Method == nameof(HttpMethod.Options).ToUpperInvariant())
     {
         httpContext.Response.StatusCode = 204; 
-        httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/";
+        httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000";
         httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
         httpContext.Response.Headers.AccessControlAllowCredentials = "true";
@@ -36,7 +36,7 @@ app.Use((httpContext, next) =>
 
 app.Use((httpContext, next) => 
 {
-    httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/"; 
+    httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000"; 
     httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
     httpContext.Response.Headers.AccessControlAllowHeaders = "*";
     httpContext.Response.Headers.AccessControlAllowCredentials = "true";
