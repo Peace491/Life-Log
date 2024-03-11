@@ -32,6 +32,7 @@ app.Use((httpContext, next) =>
         {
             HttpMethods.Get,
             HttpMethods.Post,
+            HttpMethods.Put,
             HttpMethods.Options,
             HttpMethods.Head,
             HttpMethods.Delete
@@ -57,6 +58,7 @@ app.Use((httpContext, next) => {
     {
         HttpMethods.Get,
         HttpMethods.Post,
+        HttpMethods.Put,
         HttpMethods.Options,
         HttpMethods.Head,
         HttpMethods.Delete

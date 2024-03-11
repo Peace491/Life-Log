@@ -9,63 +9,60 @@ public class LLIController : ControllerBase
 {
     [HttpPost]
     [Route("postLLI")]
-    public async Task<IActionResult> PostLLI(string userHash, string title, string category, string description, string status, string visibility, string deadline, int cost, string recurrenceStatus, string recurrenceFrequency)
+    public async Task<IActionResult> PostLLI([FromBody] PostLLIRequest createLLIRequest)
     {
         var lliService = new LLIService();
 
         var lli = new LLI();
-        lli.Title = title;
-        lli.Category = category;
-        lli.Description = description;
-        lli.Status = status;
-        lli.Visibility = visibility;
-        lli.Deadline = deadline;
-        lli.Cost = cost;
-        lli.Recurrence.Status = recurrenceStatus;
-        lli.Recurrence.Frequency = recurrenceFrequency;
+        lli.Title = createLLIRequest.Title;
+        lli.Category = createLLIRequest.Category;
+        lli.Description = createLLIRequest.Description;
+        lli.Status = createLLIRequest.Status;
+        lli.Visibility = createLLIRequest.Visibility;
+        lli.Deadline = createLLIRequest.Deadline;
+        lli.Cost = createLLIRequest.Cost;
+        lli.Recurrence.Status = createLLIRequest.RecurrenceStatus;
+        lli.Recurrence.Frequency = createLLIRequest.RecurrenceFrequency;
 
-        var response = await lliService.CreateLLI(userHash, lli);
-  
+        var response = await lliService.CreateLLI(createLLIRequest.UserHash, lli);
+
         return Ok(response);
     }
 
-    [HttpGet] 
+    [HttpGet]
     [Route("getAllLLI")]
     public async Task<IActionResult> GetAllLLI(string userHash)
     {
         var lliService = new LLIService();
         var response = await lliService.GetAllLLIFromUser(userHash);
-  
+
         return Ok(response);
     }
 
     [HttpPut]
     [Route("putLLI")]
-    public async Task<IActionResult> PutLLI(
-        string userHash, string lliId, string title = "", string category = "", 
-        string description = "", string status = "", string visibility = "", string deadline = "", 
-        int? cost = null, string recurrenceStatus = "", string recurrenceFrequency = "")
+    public async Task<IActionResult> PutLLI(PutLLIRequest updateLLIRequest)
     {
         var lliService = new LLIService();
 
-        var newLLI = new LLI();
-        newLLI.LLIID = lliId;
-        newLLI.Title = title;
-        newLLI.Category = category;
-        newLLI.Description = description;
-        newLLI.Status = status;
-        newLLI.Visibility = visibility;
-        newLLI.Deadline = deadline;
-        newLLI.Cost = cost;
-        newLLI.Recurrence.Status = recurrenceStatus;
-        newLLI.Recurrence.Frequency = recurrenceFrequency;
+        var lli = new LLI();
+        lli.LLIID = updateLLIRequest.LLIID;
+        lli.Title = updateLLIRequest.Title;
+        lli.Category = updateLLIRequest.Category;
+        lli.Description = updateLLIRequest.Description;
+        lli.Status = updateLLIRequest.Status;
+        lli.Visibility = updateLLIRequest.Visibility;
+        lli.Deadline = updateLLIRequest.Deadline;
+        lli.Cost = updateLLIRequest.Cost;
+        lli.Recurrence.Status = updateLLIRequest.RecurrenceStatus;
+        lli.Recurrence.Frequency = updateLLIRequest.RecurrenceFrequency;
 
-        var response = await lliService.UpdateLLI(userHash, newLLI);
+        var response = await lliService.UpdateLLI(updateLLIRequest.UserHash, lli);
 
         return Ok(response);
     }
 
-[HttpDelete] 
+    [HttpDelete]
     [Route("deleteLLI")]
     public async Task<IActionResult> DeleteLLI(string userHash, string lliId)
     {
@@ -74,7 +71,7 @@ public class LLIController : ControllerBase
         lli.LLIID = lliId;
 
         var response = await lliService.DeleteLLI(userHash, lli);
-  
+
         return Ok(response);
     }
 
