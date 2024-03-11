@@ -17,7 +17,6 @@ public class LifelogUserManagementServiceShould
         var LifelogUserManagementService = new LifelogUserManagementService();
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
@@ -414,7 +413,7 @@ public class LifelogUserManagementServiceShould
         //Act
         try
         {
-            var createProfileResponse = await LifelogUserManagementService.ModifyLifelogUser(testLifelogProfileRequest);
+            var modifyProfileResponse = await LifelogUserManagementService.ModifyLifelogUser(testLifelogProfileRequest);
         }
         catch (ArgumentNullException)
         {
@@ -481,4 +480,151 @@ public class LifelogUserManagementServiceShould
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
     }
     #endregion
+
+    #region Recover User Test
+    [Fact]
+    public async void LifelogUserManagementServiceRecoverAccountShould_RecoverDisabledAccount()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var lifelogUserManagementService = new LifelogUserManagementService();
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var mockUserId = "TestUserRecovery";
+        var mockRole = "Normal";
+
+        // Creating User Profile based off User Account
+        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
+        var mockZipCode = "90704";
+
+
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", mockUserId);
+        testLifelogAccountRequest.Role = ("Role", mockRole);
+        testLifelogAccountRequest.AccountStatus = ("AccountStatus", "Disabled");
+
+        var testLifelogProfileRequest = new LifelogProfileRequest();
+        testLifelogProfileRequest.DOB = ("DOB", mockDob);
+        testLifelogProfileRequest.ZipCode = ("ZipCode", mockZipCode);
+
+        var createAccountResponse = await lifelogUserManagementService.CreateLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+
+        var enableStatus = "Enabled";
+
+        var recoverAccountRequest = new LifelogAccountRequest();
+
+        recoverAccountRequest.UserId = ("UserId", mockUserId);
+        recoverAccountRequest.AccountStatus = ("AccountStatus", enableStatus);
+
+        var readAccountStatusSql = $"SELECT AccountStatus FROM LifelogAccount WHERE UserId = \"{mockUserId}\"";
+
+        // Act
+        timer.Start();
+        var recoverAccountResponse = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest);
+        timer.Stop();
+
+        var readAccountStatusResponse = await readDataOnlyDAO.ReadData(readAccountStatusSql);
+
+
+        // Assert
+        Assert.True(recoverAccountResponse.HasError == false);
+        Assert.True(readAccountStatusResponse.Output != null);
+        foreach (List<Object> responseData in readAccountStatusResponse.Output)
+        {
+            Assert.True(responseData[0].ToString() == enableStatus);
+        }
+
+        Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
+
+        //Cleanup
+        var deleteAccountResponse = await lifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+
+    }
+
+    [Fact]
+    public async void LifelogUserManagementServiceRecoverAccountShould_ReturnArgumentNullExceptionWithNullUserId()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+
+        var lifelogUserManagementService = new LifelogUserManagementService();
+
+        var mockUserId = "";
+        var mockRole = "Normal";
+
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", mockUserId);
+        testLifelogAccountRequest.Role = ("Role", mockRole);
+        testLifelogAccountRequest.AccountStatus = ("AccountStatus", "Disabled");
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var recoverAccountResponse = await lifelogUserManagementService.RecoverLifelogUser(testLifelogAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+
+    }
+
+    [Fact]
+    public async void LifelogUserManagementServiceRecoverAccountShould_ReturnArgumentNullExceptionWithNullAccountStatus()
+    {
+        // Arrange
+        var lifelogUserManagementService = new LifelogUserManagementService();
+        var recoverAccountRequest = new LifelogAccountRequest();
+
+        string mockUserId = "phongNeedsBetterVariableNames";
+        string enableStatus = "";
+
+        recoverAccountRequest.UserId = ("UserId", mockUserId);
+        recoverAccountRequest.AccountStatus = ("AccountStatus", enableStatus);
+
+        var errorIsThrown = false;
+
+        // Act
+        try
+        {
+            var recoverProfileResponse = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest);
+        }
+        catch (ArgumentNullException)
+        {
+            errorIsThrown = true;
+        }
+
+        // Assert
+        Assert.True(errorIsThrown);
+    }
+
+    [Fact]
+    public async void LifelogUserManagementServiceRecoverAccountShould_ReturnAnErrorResponseIfAccountDoesNotExist()
+    {
+        // Arrange
+        var lifelogUserManagementService = new LifelogUserManagementService();
+        var recoverAccountRequest = new LifelogAccountRequest();
+
+        string mockUserId = "jackDoesNotExist";
+        var enableStatus = "Enabled";
+
+        recoverAccountRequest.UserId = ("UserId", mockUserId);
+        recoverAccountRequest.AccountStatus = ("AccountStatus", enableStatus);
+
+        // Act
+        var recoverProfileResponse = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest);
+
+        // Assert
+        Assert.True(recoverProfileResponse.HasError);
+    }
+    #endregion
+
 }
