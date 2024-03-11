@@ -1,3 +1,20 @@
+function post(url, data) {
+    const options = {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer-when-downgrade',
+        body: JSON.stringify(data)
+    };
+
+    return fetch(url, options);
+}
+
 function get(url) {
 
     const options = {
@@ -15,9 +32,9 @@ function get(url) {
     return fetch(url, options);
 }
 
-function send(url, data) {
+function put(url, data) {
     const options = {
-        method: 'POST',
+        method: 'PUT',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
@@ -26,7 +43,7 @@ function send(url, data) {
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
-        body: ''
+        body: JSON.stringify(data)
     };
 
     return fetch(url, options);
@@ -49,6 +66,8 @@ function del(url) {
 }
 
 window.ajaxClient = {
+    post: post,
     get: get,
+    put: put,
     del: del
 }

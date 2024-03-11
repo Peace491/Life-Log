@@ -365,7 +365,7 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
-    gap: 5px;
+    gap: 15px;
 }
 
 .lli-hidden-required-fields-container>h2 {
@@ -495,3 +495,8 @@ main {
     background-color: aquamarine;
     font-weight: 600;
 }
+
+button:hover, .add-lli-button-container>img:hover {
+    cursor: pointer;
+}
+

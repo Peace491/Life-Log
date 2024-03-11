@@ -1,6 +1,4 @@
-function createLLIHTML(lli) {
-    console.log(lli)
-
+function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -188,24 +186,17 @@ function createLLIHTML(lli) {
     }
 
     editButton.addEventListener('click', function () {
-        convertLLIToEditMode(lli.lliid)
+        convertLLIToEditMode(lli.lliid, updateLLI)
     })
 
     deleteButton.addEventListener('click', function () {
-        let response = deleteLLI(lli.lliid).then(function (output) {
-            if (output.hasError == false) {
-                lliDiv.parentNode.removeChild(lliDiv)
-            }
-
-        })
-        // Need to check if the previous call succeed before calling this
-
+        deleteLLI(lli.lliid)
     })
 
     return lliDiv;
 }
 
-function convertLLIToEditMode(id) {
+function convertLLIToEditMode(id, updateLLI) {
     const lliDiv = document.getElementById(id);
     if (!lliDiv) {
         console.error('LLI div with specified id not found.');
@@ -213,9 +204,10 @@ function convertLLIToEditMode(id) {
     }
 
     // Change title to contenteditable
-    const title = lliDiv.querySelector('#title');
+    const title = lliDiv.querySelector('#title' + id);
     if (title) {
         title.contentEditable = true;
+        title.id = 'update-title-input' + id
     }
 
     // Change deadline to input type date
@@ -223,7 +215,7 @@ function convertLLIToEditMode(id) {
     if (deadline) {
         const dateInput = document.createElement('input');
         dateInput.classList.add('date-input')
-        dateInput.id = 'date-input' + id
+        dateInput.id = 'update-date-input' + id
         dateInput.type = 'date';
         deadline.innerHTML = '<span style="font-weight: 600;">Deadline:</span> ';
         deadline.appendChild(dateInput);
@@ -233,7 +225,7 @@ function convertLLIToEditMode(id) {
     const category = lliDiv.querySelector('.lli-category-container');
     if (category) {
         const categorySelect = document.createElement('select');
-        categorySelect.id = 'category-select' + id;
+        categorySelect.id = 'update-category-input' + id;
         const categories = ['Mental Health', 'Physical Health', 'Outdoor', 'Sport', 'Art', 'Hobby', 'Thrill', 'Travel', 'Volunteering', 'Food'];
         categories.forEach(cat => {
             const option = document.createElement('option');
@@ -249,6 +241,7 @@ function convertLLIToEditMode(id) {
     const description = lliDiv.querySelector('.lli-description-container p');
     if (description) {
         description.contentEditable = true;
+        description.id = 'update-paragraph-input' + id
     }
 
     // Change status to select options
@@ -256,7 +249,7 @@ function convertLLIToEditMode(id) {
     if (status) {
         const statusSelect = document.createElement('select');
         statusSelect.classList.add('status-select')
-        statusSelect.id = 'status-select' + id;
+        statusSelect.id = 'update-status-input' + id;
         const statusOptions = ['Active', 'Completed', 'Postponed'];
         statusOptions.forEach(opt => {
             const option = document.createElement('option');
@@ -273,7 +266,7 @@ function convertLLIToEditMode(id) {
     if (visibility) {
         const visibilitySelect = document.createElement('select');
         visibilitySelect.classList.add('visibility-select')
-        visibilitySelect.id = 'visibility-select' + id;
+        visibilitySelect.id = 'update-visibility-input' + id;
         const visibilityOptions = ['Public', 'Private'];
         visibilityOptions.forEach(opt => {
             const option = document.createElement('option');
@@ -286,9 +279,10 @@ function convertLLIToEditMode(id) {
     }
 
     // Change cost to contenteditable
-    const cost = lliDiv.querySelector('#cost-input');
+    const cost = lliDiv.querySelector('#cost-input' + id);
     if (cost) {
         cost.contentEditable = true;
+        cost.id = 'update-cost-input' + id
     }
 
     // Change recurrence to select options
@@ -296,7 +290,7 @@ function convertLLIToEditMode(id) {
     if (recurrence) {
         const recurrenceSelect = document.createElement('select');
         recurrenceSelect.classList.add('recurrence-select')
-        recurrenceSelect.id = 'recurrence-select' + id;
+        recurrenceSelect.id = 'update-recurrence-input' + id;
         const recurrenceOptions = ['Off', 'Weekly', 'Monthly', 'Yearly'];
         recurrenceOptions.forEach(opt => {
             const option = document.createElement('option');
@@ -306,13 +300,71 @@ function convertLLIToEditMode(id) {
         });
         recurrence.parentNode.appendChild(recurrenceSelect);
         recurrence.parentNode.removeChild(recurrence)
-        
+
     }
+
+    const lliHiddenContentContainer = lliDiv.querySelector('.lli-hidden-content')
+
+    // Create a div element with class "create-lli-button-container"
+    const editLLIButtonContainer = document.createElement('div');
+    editLLIButtonContainer.classList.add('create-lli-button-container');
+
+    // Create a button element with id "create-lli-button" and text "Create LLI"
+    const editLLIButton = document.createElement('button');
+    editLLIButton.id = 'create-lli-button';
+    editLLIButton.textContent = 'Edit LLI';
+
+    // Append the button to the button container
+    editLLIButtonContainer.appendChild(editLLIButton);
+
+    // Add event listener to edit button
+    editLLIButton.addEventListener('click', function () {
+        let title = document.getElementById('update-title-input' + id).textContent
+        let deadline = document.getElementById('update-date-input' + id).value
+        let category = document.getElementById('update-category-input' + id).value
+        let description = document.getElementById('update-paragraph-input' + id).textContent
+        let status = document.getElementById('update-status-input' + id).value
+        let visibility = document.getElementById('update-visibility-input' + id).value
+        let cost = document.getElementById('update-cost-input' + id).textContent
+        let recurrence = document.getElementById('update-recurrence-input' + id).value
+
+        let recurrenceStatus;
+        let recurrenceFrequency;
+        if (recurrence === "Off") {
+            recurrenceStatus = "Off"
+            recurrenceFrequency = "None"
+        }
+        else {
+            recurrenceStatus = "On"
+            recurrenceFrequency = recurrence
+        }
+
+        let options = {
+            userHash: "System",
+            lliid: id,
+            title: title,
+            deadline: deadline,
+            category: category,
+            description: description,
+            status: status,
+            visibility: visibility,
+            deadline: deadline,
+            cost: cost,
+            recurrenceStatus: recurrenceStatus,
+            recurrenceFrequency: recurrenceFrequency
+        }
+
+        updateLLI(options)
+
+    })
+
+    lliHiddenContentContainer.appendChild(editLLIButtonContainer)
+
 
     return lliDiv.outerHTML;
 }
 
 export {
-    createLLIHTML,
+    createLLIComponents,
     convertLLIToEditMode
 }
