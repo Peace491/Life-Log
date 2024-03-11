@@ -2,12 +2,11 @@ namespace Peace.Lifelog.EmailTest;
 
 using Peace.Lifelog.Email;
 
-using System.Threading.Tasks;
 
 public class EmailServiceShould
 {
     [Fact]
-    public async void sendEmailShould_SendEmail()
+    public async void SendOTPEmailShould_SendEmail()
     {
         // Arrange
 

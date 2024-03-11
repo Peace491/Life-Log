@@ -39,9 +39,9 @@ public class EmailService : IEmailService
         var body = new BodyBuilder();
         if (otpResponse.Output != null)
         {
-            foreach (List<Object> otpOutput in otpResponse.Output)
+            foreach (string otpOutput in otpResponse.Output)
             {
-            body.HtmlBody = "<h1>Your Lifelog OTP is: " + otpOutput[0] + "</h1>";
+            body.HtmlBody = "<h1>Your Lifelog OTP is: " + otpOutput + "</h1>";
             }
         }
         

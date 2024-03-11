@@ -1,15 +1,14 @@
 ﻿namespace Peace.Lifelog.SecurityTest;
 
-using Org.BouncyCastle.Crypto;
 using Peace.Lifelog.Security;
 using System.Diagnostics;
 
 public class OTPServiceShould
 {
-    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
+    // LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
     
     [Fact]
-    public async void generateOneTimePasswordShould_ProduceOTP_LengthEight()
+    public async void GenerateOneTimePasswordShould_ProduceOTPLengthEight()
     {
         // Arrange
         OTPService oTPService = new OTPService();
@@ -23,12 +22,9 @@ public class OTPServiceShould
         // Assert
         if (otpResponse.Output != null)
         {
-            foreach (List<Object> otpOutput in otpResponse.Output)
+            foreach (string otpOutput in otpResponse.Output.Cast<string>())
             {
-                if (otpOutput[0] != null)
-                {
-                    Assert.True(otpOutput[0]?.ToString()?.Length == 8);
-                }
+                Assert.True(otpOutput.Length == 8);
             }
         }
         Assert.True(timer.ElapsedMilliseconds < 3001);
