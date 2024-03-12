@@ -12,7 +12,6 @@ public class LifelogConfig
 
     public static LifelogConfig LoadConfiguration()
     {
-
         IConfigurationRoot configuration = new ConfigurationBuilder()
             .AddJsonFile("lifelog-config.Development.json")
             .Build();
