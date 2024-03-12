@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Email\Peace.Lifelog.Email.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
   </ItemGroup>
 
 </Project>

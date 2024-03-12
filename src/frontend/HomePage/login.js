@@ -14,8 +14,8 @@
     const webServiceUrl = 'http://localhost:8082/authentication';
 
     // NOT exposed to the global object ("Private" functions)
-    function getOTP(email) {
-        const getUrl = webServiceUrl + `/getOTP?UserId=${email}`
+    function getOTPEmail(email) {
+        const getUrl = webServiceUrl + `/getOTPEmail?UserId=${email}`
 
         let request = ajaxClient.get(getUrl)
 
@@ -85,7 +85,7 @@
 
         // Make API queries
         var email = usernameInput.value
-        getOTP(email)
+        getOTPEmail(email)
     }
 
     root.myApp = root.myApp || {};

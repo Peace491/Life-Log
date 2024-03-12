@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Peace.Lifelog.Security;
+using Peace.Lifelog.Email;
+using Peace.Lifelog.UserManagement;
+using DomainModels;
 
 namespace Peace.Lifelog.SecurityWebService;
 
@@ -10,21 +13,18 @@ namespace Peace.Lifelog.SecurityWebService;
 public class AuthenticationController : ControllerBase
 {
     [HttpGet]
-    [Route("getOTP")]
-    public async Task<IActionResult> GetOTP(string UserId) {
-        var otpService = new OTPService();
-        var response = await otpService.generateOneTimePassword(UserId);
+    [Route("getOTPEmail")]
+    public async Task<IActionResult> GetOTPEmail(string userId) {
+        var lifelogUserManagementService = new LifelogUserManagementService();
 
-        string OTP = "";
-        if (response.Output != null)
-        {
-            foreach (string output in response.Output) {
-                OTP = output;
-            }
-        }
+        var userHash = await lifelogUserManagementService.getUserHashFromUserId(userId);
+
+        var emailService = new EmailService();
+
+        // Act
+        var emailResponse = await emailService.SendOTPEmail(userHash);
         
-
-        return Ok(JsonSerializer.Serialize<string>(OTP));
+        return Ok(JsonSerializer.Serialize<Response>(emailResponse));
     }
 
 }

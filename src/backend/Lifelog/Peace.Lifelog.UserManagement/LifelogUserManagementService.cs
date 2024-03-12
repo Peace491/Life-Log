@@ -17,28 +17,13 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
     {
         var response = new Response();
 
-        var saltResponse = saltService.getSalt();
-
-        if (saltResponse.Output != null)
-        {
-            foreach (string output in saltResponse.Output)
-            {
-                lifelogAccountRequest.Salt = ("Salt", output);
-            }
-        }
-        else
-        {
-            response.HasError = true;
-            response.ErrorMessage = "Failed to generate salt";
-            return response;
-        }
-
+        var salt = createSalt();
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
 
         // Create the user hash string from the user id
-        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value + lifelogAccountRequest.Salt.Value);
+        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value, salt);
 
         // Create UserHashRequest object
         var lifelogUserHashRequest = new LifelogUserHashRequest();
@@ -51,7 +36,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
-        lifelogAccountRequest.Salt = ("Salt", "Bad Salt"); // TODO: Implement Salt function
+        lifelogAccountRequest.Salt = ("Salt", salt);
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
@@ -148,18 +133,13 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
     }
     // Helper functions
     #region Helper Functions
-    private string createUserHashWithGivenId(string userId)
+    private string createUserHashWithGivenId(string userId, string salt)
     {
         // Create Lifelog User Hash
         var userHash = "";
         var hashService = new HashService();
 
-        // TODO: POPULATE 'accountRequest' salt
-
-        // TODO: IMPLEMENT SALT FUNC
-
-
-        var hashResponse = hashService.Hasher(userId + /*accountRequest.Salt*/ "badsalt");
+        var hashResponse = hashService.Hasher(userId + salt);
 
         if (hashResponse.Output is not null)
         {
@@ -172,6 +152,22 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         return userHash;
 
+    }
+
+    private string createSalt() {
+        
+        var salt = "";
+        var saltResponse = saltService.getSalt();
+
+        if (saltResponse.Output != null)
+        {
+            foreach (string output in saltResponse.Output)
+            {
+                salt = output;
+            }
+        }
+
+        return salt;
     }
 
     private async Task<Response> createLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
@@ -217,5 +213,28 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         return recoverLifelogAccountResponse;
     }
+
+    public async Task<string> getUserHashFromUserId(string userId) {
+        if (userId == string.Empty) return "";
+
+        string userHash = "";
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        string sql = $"SELECT UserHash FROM LifelogAccount WHERE UserId=\"{userId}\"";
+
+        var response = await readDataOnlyDAO.ReadData(sql);
+
+        if (response.Output != null) {
+            foreach (List<Object> output in response.Output) {
+                foreach (string userHashOutput in output) {
+                    userHash = userHashOutput;
+                }
+            }
+        }
+
+        return userHash;
+    }
+
     #endregion
 }
