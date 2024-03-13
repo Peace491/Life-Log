@@ -1,4 +1,5 @@
 ﻿using DomainModels;
+using Org.BouncyCastle.Asn1;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagementTest;
@@ -49,6 +50,17 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
             return response;
         }
 
+        // Populate user role table
+        var createLifelogUserRoleResponse = await createLifelogUserRoleInDB(lifelogAccountRequest);
+
+        if (createLifelogUserRoleResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create LifelogUserRole table entry";
+            return response;
+        }
+
         // Populate user hash table
         var createUserHashResponse = await createUserHashInDB(lifelogUserHashRequest);
 
@@ -71,6 +83,27 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
             return response;
         }
 
+        // Populate OTP table
+        var createLifelogUserOTPResponse = await createLifelogUserOTPInDB(lifelogProfileRequest);
+
+        if (createLifelogUserOTPResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create LifelogUserOTP";
+            return response;
+        }
+
+         // Populate Authentication table
+        var createLifelogAuthenticationResponse = await createLifelogAuthenticationInDB(lifelogAccountRequest ,lifelogProfileRequest);
+
+        if (createLifelogAuthenticationResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create LifelogUserOTP";
+            return response;
+        }
 
         // TODO: handle success outcome
         response.HasError = false;
@@ -178,6 +211,14 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
     }
 
+    private async Task<Response> createLifelogUserRoleInDB(LifelogAccountRequest lifelogAccountRequest) {
+        string sql = $"INSERT INTO LifelogUserRole ({lifelogAccountRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})" 
+         + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
+        var createLifelogUserRoleInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createLifelogUserRoleInDBResponse;
+    }
+
     private async Task<Response> createUserHashInDB(LifelogUserHashRequest lifelogUserHashRequest)
     {
         Response createUserHashResponse = await appUserManagementService.CreateUserHash(lifelogUserHashRequest);
@@ -190,6 +231,22 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         Response createLifelogProfileResponse = await appUserManagementService.CreateProfile(lifelogProfileRequest);
 
         return createLifelogProfileResponse;
+    }
+
+    private async Task<Response> createLifelogUserOTPInDB(LifelogProfileRequest lifelogProfileRequest) {
+        string sql = $"INSERT INTO LifelogUserOTP ({lifelogProfileRequest.UserId.Type}) VALUES (\"{lifelogProfileRequest.UserId.Value}\")";
+        var createLifelogUserOTPInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createLifelogUserOTPInDBResponse;
+    }
+
+    private async Task<Response> createLifelogAuthenticationInDB(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
+    {
+        string sql = $"INSERT INTO LifelogAuthentication ({lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})" 
+         + $"VALUES (\"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
+        var createLifelogAuthenticationInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createLifelogAuthenticationInDBResponse;
     }
 
     private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
