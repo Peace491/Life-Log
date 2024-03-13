@@ -29,8 +29,13 @@ public class OTPService: IOTPService
             string updateSQL = $"UPDATE LifelogUserOTP " +
                                 $"SET OTPHash = \"{str}\", Timestamp = NOW() " +
                                 $"WHERE UserHash = \"{userHash}\"";
+
+            string updateAuthenticationSQL = $"UPDATE LifelogAuthentication " +
+                                $"SET OTPHash = \"{str}\" " +
+                                $"WHERE UserHash = \"{userHash}\"";
             
             var temp = await updateDataOnlyDAO.UpdateData(updateSQL);
+            var updateAuthenticationResponse = await updateDataOnlyDAO.UpdateData(updateAuthenticationSQL);
             
             response.Output = [str];
             return response;

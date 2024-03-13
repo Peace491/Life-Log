@@ -2,7 +2,7 @@
 
 public class LifelogAuthenticationRequest : IAuthenticationRequest
 {
-    public string ModelName { get; } = "LifelogUserOTP";
+    public string ModelName { get; } = "LifelogAuthentication";
 
     public (string Type, string Value) UserId { get; set; }
     public (string Type, string Value) Proof { get; set; }
