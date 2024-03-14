@@ -24,7 +24,17 @@ public class AuthenticationController : ControllerBase
         // Act
         var emailResponse = await emailService.SendOTPEmail(userHash);
         
-        return Ok(JsonSerializer.Serialize<Response>(emailResponse));
+        return Ok(JsonSerializer.Serialize<string>(userHash));
+    }
+
+    [HttpPost]
+    [Route("authenticateOTP")]
+    public async Task<IActionResult> AuthenticateOTP([FromBody]AuthenticationRequest authenticationRequest){
+        var lifelogAuthService = new LifelogAuthService();
+
+        var appPrincipal = await lifelogAuthService.AuthenticateLifelogUser(authenticationRequest.UserHash, authenticationRequest.OTP)!;
+
+        return Ok(JsonSerializer.Serialize<AppPrincipal>(appPrincipal));
     }
 
 }

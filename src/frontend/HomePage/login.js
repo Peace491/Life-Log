@@ -21,7 +21,27 @@
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
-                console.log(response)
+                return response.json();
+            }).then(function (data) {
+                resolve(data);
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    function authenticateOTP(userHash, otp) {
+        const postUrl = webServiceUrl + `/authenticateOTP`
+
+        let data = {
+            userHash: userHash,
+            otp: otp
+        }
+
+        let request = ajaxClient.post(postUrl, data)
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
                 return response.json();
             }).then(function (data) {
                 console.log(data)
@@ -30,8 +50,6 @@
                 reject(error);
             });
         });
-
-
     }
 
     let otpStatus = false;
@@ -81,11 +99,22 @@
         usernameInput.setAttribute("readonly", "")
 
         submitCredentialButton.innerText = "Log In!"
-        submitCredentialButton.disabled = true;
+        // submitCredentialButton.disabled = true;
 
         // Make API queries
         var email = usernameInput.value
         getOTPEmail(email)
+        .then(function(userHash) {
+            // Change event listener of button
+            const submitButton = document.getElementById('submit-credential-button')
+            submitButton.removeEventListener('click', onSubmitRegistrationCredentials)
+
+            submitButton.addEventListener('click', () => {
+                authenticateOTP(userHash, otpInput.value)
+            });
+        })
+
+        
     }
 
     root.myApp = root.myApp || {};

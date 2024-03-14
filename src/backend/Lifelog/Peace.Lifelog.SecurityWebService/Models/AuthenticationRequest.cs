@@ -2,7 +2,7 @@
 
 public class AuthenticationRequest
 {
-    public string UserId { get; set; } = string.Empty;
+    public string UserHash { get; set; } = string.Empty;
     public string OTP { get; set; } = string.Empty;
 
 }
