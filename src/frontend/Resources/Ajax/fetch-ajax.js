@@ -50,5 +50,6 @@ function del(url) {
 
 window.ajaxClient = {
     get: get,
+    post: post,
     del: del
 }

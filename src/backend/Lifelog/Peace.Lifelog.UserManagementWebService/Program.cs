@@ -1,13 +1,16 @@
-using System.Net.Http; // For HttpMethod
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+/* Registration of objects for .NET's DI Container */
+
+builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
+
+// Creation of the WebApplication host object
+var app = builder.Build(); // Only part needed to execute Web API project
 
 if (app.Environment.IsDevelopment())
 {
@@ -15,30 +18,54 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// CORS implementation
+/* Setup of Middleware Pipeline */
+
+// app.UseHttpsRedirection();
+
+
+// Defining a custom middleware AND adding it to Kestral's request pipeline
 app.Use((httpContext, next) =>
 {
-
-    // Address Browser's Preflight OPTIONS request
     if (httpContext.Request.Method == nameof(HttpMethod.Options).ToUpperInvariant())
     {
+        var allowedMethods = new List<string>()
+        {
+            HttpMethods.Get,
+            HttpMethods.Post,
+            HttpMethods.Put,
+            HttpMethods.Options,
+            HttpMethods.Head,
+            HttpMethods.Delete
+        };
+
         httpContext.Response.StatusCode = 204;
-        httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/";
-        httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
+
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
         httpContext.Response.Headers.AccessControlAllowCredentials = "true";
 
+        return Task.CompletedTask; // Terminate Request right away
 
-        return Task.CompletedTask; // Terminate the HTTP Request
     }
 
     return next();
 });
 
-app.Use((httpContext, next) =>
-{
-    httpContext.Response.Headers.AccessControlAllowOrigin = "http://localhost:3000/";
-    httpContext.Response.Headers.AccessControlAllowMethods = "GET,POST,OPTIONS,PUT,DELETE";
+app.Use((httpContext, next) => {
+
+    var allowedMethods = new List<string>()
+    {
+        HttpMethods.Get,
+        HttpMethods.Post,
+        HttpMethods.Put,
+        HttpMethods.Options,
+        HttpMethods.Head,
+        HttpMethods.Delete
+    };
+
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
     httpContext.Response.Headers.AccessControlAllowHeaders = "*";
     httpContext.Response.Headers.AccessControlAllowCredentials = "true";
 
@@ -46,7 +73,7 @@ app.Use((httpContext, next) =>
 });
 
 
+app.MapControllers(); // Needed for mapping the routes defined in Controllers
 
-app.MapControllers();
 
-app.Run();
+app.Run(); // Only part needed to execute Web API project

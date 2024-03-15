@@ -17,8 +17,26 @@
     
 
     // NOT exposed to the global object ("Private" functions)
-    function postDataHandler() {
-        let postDataUrl = webServiceUrl + "/registration/postUserData"
+    function registerUser(userId, dob, zipCode) {
+        let postDataUrl = webServiceUrl + "/registration/registerNormalUser"
+
+        let data = {
+            userId: userId,
+            dob: dob,
+            zipCode: zipCode
+        }
+
+        let request = ajaxClient.post(postDataUrl, data)
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                resolve(data);
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
         
     }
 
@@ -73,7 +91,13 @@
     
         submitCredentialButton.innerText = "Sign Up!"
     
-        // TODO: Make API queries
+        let userId = usernameInput.value
+        let dob = dobInput.value
+        let zipCode = zipcodeInput.value
+
+        registerUser(userId, dob, zipCode)
+
+        submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
 
 
     }

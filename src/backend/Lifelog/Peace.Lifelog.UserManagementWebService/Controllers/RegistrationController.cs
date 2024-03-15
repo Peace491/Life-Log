@@ -1,33 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Peace.Lifelog.UserManagementWebService.Models;
+using DomainModels;
 
 namespace Peace.Lifelog.UserManagementWebService.Controllers;
+
+using System.Text.Json;
+using DomainModels;
 using Peace.Lifelog.RegistrationService;
+using Peace.Lifelog.Security;
+using Peace.Lifelog.Email;
 
-
-
-    [ApiController]
-    [Route("registration")]
-    public class RegistrationController : ControllerBase
+[ApiController]
+[Route("registration")]
+public class RegistrationController : ControllerBase
+{
+    [HttpPost]
+    [Route("registerNormalUser")]
+    public async Task<IActionResult> RegisterNormalUser([FromBody] RegisterNormalUserRequest registerNormalUserRequest)
     {
-        [HttpPost]
-        [Route("postUserData")]
-        public async Task<IActionResult> PostUserData([FromBody]PostUserDataRequest postUserDataRequest)
+        var registrationService = new RegistrationService();
+        var emailService = new EmailService();
+
+        var checkInputResponse = await registrationService.CheckInputValidation(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
+
+        var registerUserResponse = new Response();
+        var userHash = "";
+
+        if (checkInputResponse.HasError == false)
         {
-            var registrationService = new RegistrationService();
-            var checkInputResponse = await registrationService.CheckInputValidation(postUserDataRequest.UserId, postUserDataRequest.DOB, postUserDataRequest.ZipCode);
-            
-            
-        
-            return Ok();
+            registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
         }
 
-        [HttpPost]
-        [Route("postOTP")]
-        public IActionResult PostOTP([FromBody]PostOTPRequest postOTPRequest)
+        if (registerUserResponse.HasError == false)
         {
+            if (registerUserResponse.Output is not null)
+            {
+                foreach (string output in registerUserResponse.Output)
+                {
+                    userHash = output;
+                }
+            }
+            var emailResponse = emailService.SendOTPEmail(userHash);
 
-            return Ok();
         }
+
+        return Ok(JsonSerializer.Serialize<Response>(registerUserResponse));
+
     }
 
+    [HttpPost]
+    [Route("postOTP")]
+    public IActionResult PostOTP([FromBody] PostOTPRequest postOTPRequest)
+    {
+
+        return Ok();
+    }
+}

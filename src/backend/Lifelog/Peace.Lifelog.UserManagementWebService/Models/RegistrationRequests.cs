@@ -1,6 +1,6 @@
 ﻿namespace Peace.Lifelog.UserManagementWebService.Models
 {
-    public class PostUserDataRequest
+    public class RegisterNormalUserRequest
     {
         public string UserId { get; set; } = string.Empty;
 
