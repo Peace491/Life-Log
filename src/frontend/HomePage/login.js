@@ -43,9 +43,9 @@
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
-            }).then(function (data) {
-                console.log(data)
-                resolve(data);
+            }).then(function (jwtToken) {
+                localStorage.setItem("token-local", JSON.stringify(jwtToken));
+                resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
                 reject(error);
             });

@@ -5,6 +5,7 @@ using Peace.Lifelog.Security;
 using Peace.Lifelog.Email;
 using Peace.Lifelog.UserManagement;
 using DomainModels;
+using back_end;
 
 namespace Peace.Lifelog.SecurityWebService;
 
@@ -31,10 +32,13 @@ public class AuthenticationController : ControllerBase
     [Route("authenticateOTP")]
     public async Task<IActionResult> AuthenticateOTP([FromBody]AuthenticationRequest authenticationRequest){
         var lifelogAuthService = new LifelogAuthService();
-
         var appPrincipal = await lifelogAuthService.AuthenticateLifelogUser(authenticationRequest.UserHash, authenticationRequest.OTP)!;
 
-        return Ok(JsonSerializer.Serialize<AppPrincipal>(appPrincipal));
+        var jwtService = new JWTService();
+
+        var jwt = jwtService.createJWT(Request, appPrincipal);
+
+        return Ok(JsonSerializer.Serialize<Jwt>(jwt));
     }
 
 }

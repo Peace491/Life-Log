@@ -17,6 +17,7 @@ public class LifelogAuthService
         lifelogAuthenticationRequest.Claims = ("Role", "");
 
         var appAuthService = new AppAuthService();
+
         var principal = appAuthService.AuthenticateUser(lifelogAuthenticationRequest);
 
         return principal;
