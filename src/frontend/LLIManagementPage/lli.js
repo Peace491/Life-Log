@@ -21,7 +21,16 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
 
         let title = document.getElementById('create-title-input').textContent
         let deadline = document.getElementById('create-date-input').value
-        let category = document.getElementById('create-category-input').value
+        let categories = document.getElementById('create-category-input')
+
+        var selectedCategories = [];
+        for (var i = 0; i < categories.options.length; i++) {
+            var option = categories.options[i];
+            if (option.selected) {
+                selectedCategories.push(option.value);
+            }
+        }
+
         let description = document.getElementById('create-paragraph-input').textContent
         let status = document.getElementById('create-status-input').value
         let visibility = document.getElementById('create-visibility-input').value
@@ -43,7 +52,7 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
             userHash: "System",
             title: title,
             deadline: deadline,
-            category: category,
+            categories: selectedCategories,
             description: description,
             status: status,
             visibility: visibility,
@@ -52,7 +61,6 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
             recurrenceStatus: recurrenceStatus,
             recurrenceFrequency: recurrenceFrequency
         }
-
 
         let request = ajaxClient.post(createLLIUrl, options)
 
@@ -167,11 +175,6 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
     init();
 
 })(window, window.ajaxClient);
-
-function expandLLIHTML(container, hiddenContent) {
-
-
-}
 
 
 

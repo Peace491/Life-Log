@@ -7,51 +7,63 @@ using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.UserManagementTest;
 using System.Diagnostics;
 
-public class LifelogAuthServiceShould
+public class LifelogAuthServiceShould : IAsyncLifetime, IDisposable
 {
-    [Fact]
+    private const string USER_ID = "TestAuthServiceAccount";
+    private string USER_HASH = "";
+    private const string ROLE = "Normal";
 
-    public async void LifelogAuthServiceAuthNShould_ReturnTheRole_ForTheUser()
-    {
-        //Arrange
-        var timer = new Stopwatch();
+    private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
+    private string DEADLINE = DateTime.Today.ToString("yyyy-MM-dd");
+    private const string ZIP_CODE = "90704";
 
-        var lifelogAuthService = new LifelogAuthService();
-
-        // Create Lifelog User
-        var LifelogUserManagementService = new LifelogUserManagementService();
-
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-        var mockUserId = "TestAuthUser";
-        var mockRole = "Normal";
-
-        var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "90704";
+    public async Task InitializeAsync()
+    {   
+        var lifelogUserManagementService = new LifelogUserManagementService();
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
-        testLifelogAccountRequest.UserId = ("UserId", mockUserId);
-        testLifelogAccountRequest.Role = ("Role", mockRole);
+        testLifelogAccountRequest.UserId = ("UserId", USER_ID);
+        testLifelogAccountRequest.Role = ("Role", ROLE);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
-        testLifelogProfileRequest.DOB = ("DOB", mockDob);
-        testLifelogProfileRequest.ZipCode = ("ZipCode", mockZipCode);
+        testLifelogProfileRequest.DOB = ("DOB", DOB);
+        testLifelogProfileRequest.ZipCode = ("ZipCode", ZIP_CODE);
 
-        var createAccountResponse = await LifelogUserManagementService.CreateLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
 
-        string userHash = "";
+        var createAccountResponse = await lifelogUserManagementService.CreateLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
 
         if (createAccountResponse.Output is not null)
         {
             foreach (string output in createAccountResponse.Output)
             {
-                userHash = output;
+                USER_HASH = output;
             }
         }
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        var appUserManagementService = new AppUserManagementService();
+        var testLifelogAccountRequest = new LifelogAccountRequest();
+        testLifelogAccountRequest.UserId = ("UserId", USER_ID);
+        var deleteAccountResponse = appUserManagementService.DeleteAccount(testLifelogAccountRequest);
+    }
+
+    [Fact]
+    public async void LifelogAuthServiceAuthNShould_ReturnTheRole_ForTheUser()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var lifelogAuthService = new LifelogAuthService();
 
         // Generate OTP
         OTPService oTPService = new OTPService();
-        var otpResponse = await oTPService.generateOneTimePassword(userHash);
+        var otpResponse = await oTPService.generateOneTimePassword(USER_HASH);
 
         string OTP = "";
         if (otpResponse.Output != null)
@@ -64,17 +76,13 @@ public class LifelogAuthServiceShould
 
         //Act
         timer.Start();
-        var response = await lifelogAuthService.AuthenticateLifelogUser(userHash, OTP)!;
+        var response = await lifelogAuthService.AuthenticateLifelogUser(USER_HASH, OTP)!;
         timer.Stop();
 
         //Assert
         Assert.True(response.Claims != null);
         Assert.True(response.Claims["Role"] == "Normal");
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
-
-        //Cleanup
-        var deleteAccountResponse = await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
-
     }
 
 

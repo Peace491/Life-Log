@@ -13,7 +13,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO
         return new MySqlConnection(lifelogConfig.ReadOnlyConnectionString);
     }
 
-    public async Task<Response> ReadData(string sql, int count = 10, int currentPage = 0) 
+    public async Task<Response> ReadData(string sql, int? count = 10, int currentPage = 0) 
     {
         var response = new Response();
 
@@ -68,7 +68,15 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO
                 command.Connection = connection;
 
                 // Define the SQL command
-                command.CommandText = sql + $" LIMIT {count} OFFSET {count * currentPage}";
+                if (count == null) 
+                {
+                    command.CommandText = sql;
+                }
+                else 
+                {
+                    command.CommandText = sql + $" LIMIT {count} OFFSET {count * currentPage}";
+                }
+                
 
                 // Execute the SQL command
                 var dbResponse = command.ExecuteReader();

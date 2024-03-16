@@ -1,4 +1,6 @@
 function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
+    console.log(lli)
+
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -32,7 +34,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     categoryContainer.classList.add('lli-category-container');
     const categoryHeading = document.createElement('h2');
     categoryHeading.id = 'category' + lli.lliid;
-    categoryHeading.innerHTML = `<span style="font-weight: 600;"> ${lli.category || 'Mental Health'}`
+    categoryHeading.innerHTML = `<span style="font-weight: 600;"> ${lli.categories[0] || 'Mental Health'}`
     categoryContainer.appendChild(categoryHeading);
 
     // Append deadline and category containers to main content container
@@ -226,6 +228,7 @@ function convertLLIToEditMode(id, updateLLI) {
     if (category) {
         const categorySelect = document.createElement('select');
         categorySelect.id = 'update-category-input' + id;
+        categorySelect.setAttribute("multiple", "multiple");
         const categories = ['Mental Health', 'Physical Health', 'Outdoor', 'Sport', 'Art', 'Hobby', 'Thrill', 'Travel', 'Volunteering', 'Food'];
         categories.forEach(cat => {
             const option = document.createElement('option');
@@ -321,7 +324,23 @@ function convertLLIToEditMode(id, updateLLI) {
     editLLIButton.addEventListener('click', function () {
         let title = document.getElementById('update-title-input' + id).textContent
         let deadline = document.getElementById('update-date-input' + id).value
-        let category = document.getElementById('update-category-input' + id).value
+        let categories = document.getElementById('update-category-input' + id)
+
+        var selectedCategories = [];
+        if (categories)
+        {
+            for (var i = 0; i < categories.options.length; i++) {
+                var option = categories.options[i];
+                if (option.selected) {
+                    selectedCategories.push(option.value);
+                }
+            }
+        }
+        else {
+            selectedCategories = null;
+        }
+        
+
         let description = document.getElementById('update-paragraph-input' + id).textContent
         let status = document.getElementById('update-status-input' + id).value
         let visibility = document.getElementById('update-visibility-input' + id).value
@@ -344,7 +363,7 @@ function convertLLIToEditMode(id, updateLLI) {
             lliid: id,
             title: title,
             deadline: deadline,
-            category: category,
+            categories: selectedCategories,
             description: description,
             status: status,
             visibility: visibility,

@@ -15,7 +15,7 @@ public class LLIController : ControllerBase
 
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
-        lli.Category = createLLIRequest.Category;
+        lli.Categories = createLLIRequest.Categories;
         lli.Description = createLLIRequest.Description;
         lli.Status = createLLIRequest.Status;
         lli.Visibility = createLLIRequest.Visibility;
@@ -41,14 +41,14 @@ public class LLIController : ControllerBase
 
     [HttpPut]
     [Route("putLLI")]
-    public async Task<IActionResult> PutLLI(PutLLIRequest updateLLIRequest)
+    public async Task<IActionResult> PutLLI([FromBody]PutLLIRequest updateLLIRequest)
     {
         var lliService = new LLIService();
 
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
         lli.Title = updateLLIRequest.Title;
-        lli.Category = updateLLIRequest.Category;
+        lli.Categories = updateLLIRequest.Categories;
         lli.Description = updateLLIRequest.Description;
         lli.Status = updateLLIRequest.Status;
         lli.Visibility = updateLLIRequest.Visibility;

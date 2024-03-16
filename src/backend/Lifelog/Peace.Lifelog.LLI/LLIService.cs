@@ -1,6 +1,5 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Runtime.Serialization;
-using DomainModels;
+﻿using DomainModels;
+using Org.BouncyCastle.Crypto.Prng;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 
@@ -10,28 +9,28 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 {
     public async Task<Response> CreateLLI(string userHash, LLI lli)
     {
-        var response = new Response();
+        var createLLIResponse = new Response();
 
         #region Input Validation
         if (userHash == string.Empty)
         {
-            response.HasError = true;
-            response.ErrorMessage = "User Hash must not be empty";
-            return response;
+            createLLIResponse.HasError = true;
+            createLLIResponse.ErrorMessage = "User Hash must not be empty";
+            return createLLIResponse;
         }
 
         if (lli.Title.Length > 50)
         {
-            response.HasError = true;
-            response.ErrorMessage = "LLI Title is too long";
-            return response;
+            createLLIResponse.HasError = true;
+            createLLIResponse.ErrorMessage = "LLI Title is too long";
+            return createLLIResponse;
         }
 
         if (lli.Description is not null && lli.Description.Length > 200)
         {
-            response.HasError = true;
-            response.ErrorMessage = "LLI Description is too long";
-            return response;
+            createLLIResponse.HasError = true;
+            createLLIResponse.ErrorMessage = "LLI Description is too long";
+            return createLLIResponse;
         }
 
         if (lli.Deadline != string.Empty)
@@ -40,17 +39,17 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
             if (deadlineYear < 1960 || deadlineYear > 2100) 
             {
-                response.HasError = true;
-                response.ErrorMessage = "LLI Deadline is out of range";
-                return response;
+                createLLIResponse.HasError = true;
+                createLLIResponse.ErrorMessage = "LLI Deadline is out of range";
+                return createLLIResponse;
             }
         }
         
         if (lli.Cost is not null && lli.Cost < 0)
         {
-            response.HasError = true;
-            response.ErrorMessage = "LLI Cost must not be negative";
-            return response;
+            createLLIResponse.HasError = true;
+            createLLIResponse.ErrorMessage = "LLI Cost must not be negative";
+            return createLLIResponse;
         }
         #endregion
 
@@ -86,9 +85,9 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
                     if (completionDate > oneYearAgo) // LLI can not be created if it has been completed in the last year
                     {
-                        response.HasError = true;
-                        response.ErrorMessage = "LLI has been completed within the last year";
-                        return response;
+                        createLLIResponse.HasError = true;
+                        createLLIResponse.ErrorMessage = "LLI has been completed within the last year";
+                        return createLLIResponse;
                     }
                     
                 }
@@ -98,10 +97,9 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         #endregion
 
         #region Create LLI in DB
-        var sql = "INSERT INTO LLI (UserHash, Title, Category, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency, CreationDate, CompletionDate) VALUES ("
+        var sql = "INSERT INTO LLI (UserHash, Title, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency, CreationDate, CompletionDate) VALUES ("
         + $"\"{userHash}\", "
         + $"\"{lli.Title}\", "
-        + $"\"{lli.Category}\", "
         + $"\"{lli.Description}\", "
         + $"\"{lli.Status}\", "
         + $"\"{lli.Visibility}\", "
@@ -115,17 +113,41 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var createDataOnlyDAO = new CreateDataOnlyDAO();
 
-        response = await createDataOnlyDAO.CreateData(sql);
+        createLLIResponse = await createDataOnlyDAO.CreateData(sql);
+
+        // Get LLI Id
+        var lliid = "";
+        
+        if (createLLIResponse.Output != null) {
+            int i = 0;
+            foreach(Int64 id in createLLIResponse.Output) {
+                if (i == 0) lliid = id.ToString();
+                break;
+            }
+        }
+        
+        // Insert Category
+        var insertCategorySQL = "INSERT INTO LLICategories VALUES ";
+
+        foreach(string category in lli.Categories!) {
+            insertCategorySQL += $"({lliid}, \"{category}\"),";
+        }
+
+        // Remove trailing comma from sql
+        insertCategorySQL = insertCategorySQL.Remove(insertCategorySQL.Length - 1, 1);
+
+        var createCategoryResponse = createDataOnlyDAO.CreateData(insertCategorySQL);
+
         #endregion
 
         #region Log
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
-            response.ErrorMessage = "LLI fields are invalid";
+        if (createLLIResponse.HasError) {
+            createLLIResponse.ErrorMessage = "LLI fields are invalid";
 
-            var errorMessage = response.ErrorMessage;
+            var errorMessage = createLLIResponse.ErrorMessage;
             var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
@@ -133,37 +155,44 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
         #endregion
 
-        return response;
+        return createLLIResponse;
 
     }
 
     public async Task<Response> GetAllLLIFromUser(string userHash)
     {
-        var response = new Response();
+        var readLLIResponse = new Response();
 
         #region Input Validation
         if (userHash == string.Empty) {
-            response.HasError = true;
-            response.ErrorMessage = "UserHash can not be empty";
-            return response;
+            readLLIResponse.HasError = true;
+            readLLIResponse.ErrorMessage = "UserHash can not be empty";
+            return readLLIResponse;
         }
         #endregion
 
-        var sql = $"SELECT * FROM LLI WHERE userHash = \"{userHash}\"";
+        // Read LLI Object
+        var readLLISql = $"SELECT * FROM LLI WHERE userHash = \"{userHash}\"";
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
 
-        response = await readDataOnlyDAO.ReadData(sql);
+        readLLIResponse = await readDataOnlyDAO.ReadData(readLLISql, count:null);
 
+        // Read LLI Categories
+        var readLLICategoriesSql = "SELECT lc.lliid, lc.category "
+        + "FROM LLICategories lc INNER JOIN LLI l ON lc.lliid = l.lliid "
+        + $"WHERE l.UserHash = \"{userHash}\"";
+
+        var readLLICategoriesResponse = await readDataOnlyDAO.ReadData(readLLICategoriesSql, count:null);
         #region Log
         var createDataOnlyDAO = new CreateDataOnlyDAO();
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
-            response.ErrorMessage = "LLI fields are invalid";
+        if (readLLIResponse.HasError) {
+            readLLIResponse.ErrorMessage = "LLI fields are invalid";
 
-            var errorMessage = response.ErrorMessage;
+            var errorMessage = readLLIResponse.ErrorMessage;
             var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
@@ -171,13 +200,11 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
         #endregion
 
-        var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(response);
-
-        response.Output = lliOutput;
-
-        return response;
-
+        var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(readLLIResponse, readLLICategoriesResponse);
         
+        readLLIResponse.Output = lliOutput;
+
+        return readLLIResponse;
     }
 
     public Task<Response> GetSingleLLIFromUser(string userHash, LLI lli)
@@ -187,28 +214,28 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
     public async Task<Response> UpdateLLI(string userHash, LLI lli)
     {
-        var response = new Response();
+        var updateLLIResponse = new Response();
 
         #region Input Validation
         if (userHash == string.Empty)
         {
-            response.HasError = true;
-            response.ErrorMessage = "User Hash must not be empty";
-            return response;
+            updateLLIResponse.HasError = true;
+            updateLLIResponse.ErrorMessage = "User Hash must not be empty";
+            return updateLLIResponse;
         }
 
         if (lli.Title.Length > 50)
         {
-            response.HasError = true;
-            response.ErrorMessage = "LLI Title is too long";
-            return response;
+            updateLLIResponse.HasError = true;
+            updateLLIResponse.ErrorMessage = "LLI Title is too long";
+            return updateLLIResponse;
         }
 
         if (lli.Description is not null && lli.Description.Length > 200)
         {
-            response.HasError = true;
-            response.ErrorMessage = "LLI Description is too long";
-            return response;
+            updateLLIResponse.HasError = true;
+            updateLLIResponse.ErrorMessage = "LLI Description is too long";
+            return updateLLIResponse;
         }
 
         if (lli.Deadline != string.Empty)
@@ -217,23 +244,23 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
             if (deadlineYear < 1960 || deadlineYear > 2100) 
             {
-                response.HasError = true;
-                response.ErrorMessage = "LLI Deadline is out of range";
-                return response;
+                updateLLIResponse.HasError = true;
+                updateLLIResponse.ErrorMessage = "LLI Deadline is out of range";
+                return updateLLIResponse;
             }
         }
 
         if (lli.Cost is not null && lli.Cost < 0)
         {
-            response.HasError = true;
-            response.ErrorMessage = "LLI Cost must not be negative";
-            return response;
+            updateLLIResponse.HasError = true;
+            updateLLIResponse.ErrorMessage = "LLI Cost must not be negative";
+            return updateLLIResponse;
         }
         #endregion
 
-        string sql = "UPDATE LLI SET "
+        // Update LLI
+        string updateLLISql = "UPDATE LLI SET "
         + (lli.Title != string.Empty && lli.Title != string.Empty ? $"Title = \"{lli.Title}\"," : "")
-        + (lli.Category != null && lli.Category != string.Empty ? $"Category = \"{lli.Category}\"," : "")
         + (lli.Description != null && lli.Description != string.Empty? $"Description = \"{lli.Description}\"," : "")
         + (lli.Status != null && lli.Status != string.Empty ? $"Status = \"{lli.Status}\"," : "")
         + (lli.Visibility != null && lli.Visibility != string.Empty ? $"Visibility = \"{lli.Visibility}\"," : "")
@@ -243,29 +270,53 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + (lli.Recurrence.Frequency != null && lli.Recurrence.Frequency != string.Empty ? $"RecurrenceFrequency = \"{lli.Recurrence.Frequency}\"," : "")
         + (lli.CompletionDate != null && lli.CompletionDate != string.Empty ? $"CompletionDate = \"{lli.CompletionDate}\"," : "");
 
-        sql = sql.Remove(sql.Length - 1);
+        updateLLISql = updateLLISql.Remove(updateLLISql.Length - 1);
 
-        sql += $" WHERE LLIId = \"{lli.LLIID}\";";
+        updateLLISql += $" WHERE LLIId = \"{lli.LLIID}\";";
 
         var updateDataOnlyDAO = new UpdateDataOnlyDAO();
-        response = await updateDataOnlyDAO.UpdateData(sql);
+        updateLLIResponse = await updateDataOnlyDAO.UpdateData(updateLLISql);
 
-        // Log LLI Creation
+        // DAO for log and update category
         var createDataOnlyDAO = new CreateDataOnlyDAO();
+
+        // Update Category
+
+        if (lli.Categories != null && lli.Categories.Count != 0)
+        {
+            // Delete all existing lli categories of that lli
+            var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+            var deleteOldCategoriesSql = $"DELETE FROM LLICategories WHERE lliid=\"{lli.LLIID}\"";
+
+            var insertNewCategoriesSql = "INSERT INTO LLICategories VALUES ";
+
+            foreach (string category in lli.Categories) {
+                insertNewCategoriesSql += $"(\"{lli.LLIID}\", \"{category}\"),";
+            }
+
+            // Remove trailing comma from sql
+            insertNewCategoriesSql = insertNewCategoriesSql.Remove(insertNewCategoriesSql.Length - 1, 1);
+
+            var deleteOldCategoriesResponse = await deleteDataOnlyDAO.DeleteData(deleteOldCategoriesSql);
+            var insertNewCategoriesResponse = await createDataOnlyDAO.CreateData(insertNewCategoriesSql);
+            
+        }
+        
+        // Log LLI Creation
         var logTarget = new LogTarget(createDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
-        if (response.HasError) {
-            response.ErrorMessage = "LLI fields are invalid";
+        if (updateLLIResponse.HasError) {
+            updateLLIResponse.ErrorMessage = "LLI fields are invalid";
 
-            var errorMessage = response.ErrorMessage;
+            var errorMessage = updateLLIResponse.ErrorMessage;
             var logResponse = logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
             var logResponse =  logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{lli.UserHash} updated LLI with id {lli.LLIID}");
         }
 
-        return response;
+        return updateLLIResponse;
     }
 
     public async Task<Response> DeleteLLI(string userHash, LLI lli)
@@ -312,15 +363,38 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     }
 
     // Helper
-    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response response)
+    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse, Response readLLICategoriesResponse)
     {
         List<Object> lliList = new List<Object>();
 
-        if (response.Output == null){
+        if (readLLIResponse.Output == null){
             return null;
         }
 
-        foreach (List<Object> LLI in response.Output)
+        var lliCategoriesForLLI = new Dictionary<string, List<string>>();
+
+        if (readLLICategoriesResponse.Output != null) {
+            foreach (List<Object> lliCategories in readLLICategoriesResponse.Output) {
+                string lliid = lliCategories[0].ToString()!;
+                string lliCategory = lliCategories[1].ToString()!;
+
+                if (!lliCategoriesForLLI.ContainsKey(lliid))
+                {
+                    // Key doesn't exist, create a new list and add the item to it
+                    var newList = new List<string>();
+                    newList.Add(lliCategory);
+                    lliCategoriesForLLI.Add(lliid, newList);
+                }
+                else
+                {
+                    // Key exists, retrieve the list associated with that key and add the item to it
+                    lliCategoriesForLLI[lliid].Add(lliCategory);
+                }
+
+            }
+        }        
+
+        foreach (List<Object> LLI in readLLIResponse.Output)
         {
             
             var lli = new LLI();
@@ -341,33 +415,30 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                         lli.Title = attribute.ToString() ?? "";
                         break;
                     case 3:
-                        lli.Category = attribute.ToString() ?? "";
-                        break;
-                    case 4:
                         lli.Description = attribute.ToString() ?? "";
                         break;
-                    case 5:
+                    case 4:
                         lli.Status = attribute.ToString() ?? "";
                         break;
-                    case 6:
+                    case 5:
                         lli.Visibility = attribute.ToString() ?? "";
                         break;
-                    case 7:
+                    case 6:
                         lli.Deadline = attribute.ToString() ?? "";
                         break;
-                    case 8:
+                    case 7:
                         lli.Cost = Convert.ToInt32(attribute);
                         break;
-                    case 9:
+                    case 8:
                         lli.Recurrence.Status = attribute.ToString() ?? "";
                         break;
-                    case 10:
+                    case 9:
                         lli.Recurrence.Frequency = attribute.ToString() ?? "";
                         break;
-                    case 11:
+                    case 10:
                         lli.CreationDate = attribute.ToString() ?? "";
                         break;
-                    case 12:
+                    case 11:
                         lli.CompletionDate = attribute.ToString() ?? "";
                         break;
                     default:
@@ -376,6 +447,12 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                 index++;
 
             }
+
+            // Set Title
+            if(lliCategoriesForLLI.ContainsKey(lli.LLIID)) {
+                lli.Categories = lliCategoriesForLLI[lli.LLIID];
+            }
+
 
             lliList.Add(lli);
             
