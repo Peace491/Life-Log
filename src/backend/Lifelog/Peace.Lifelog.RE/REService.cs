@@ -34,7 +34,13 @@ public class ReService : IGetNumRecs
 
             var commonCategoryResponse = await readDataOnlyDAO.ReadData(sqlCommonPublic);
 
-            
+            // temp
+            var topTwoKeys = userScoresLLI.OrderByDescending(kvp => kvp.Value)
+                                .Take(2)
+                                .Select(kvp => kvp.Key)
+                                .ToList();
+                                
+
             response.Output = (ICollection<object>?)userScores;
             return response;
         }
