@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Account</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="registration.js"></script> 
+
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src = "../Assets/logo.svg" alt="Lifelog Logo" class="logo"/>
+        </div>
+        <div class="header-contents-container">
+
+        </div>
+    </header>
+
+    <main>
+        <div class="registration-form-container" id="registration-form-container">
+            
+            <div class="registration-title">
+                <h1>Sign Up</h1>
+            </div>
+
+            <div class="registration-prompt-container">
+                <h3 id="registration-prompt">Create Your Lifelog Account</h3>
+            </div>
+
+            <div class="registration-input-container" id="registration-input-container">
+                <input class="username-input" id="username-input" placeholder="Email" autocomplete="off">
+                <input class="dob-input" id="dob-input" placeholder="Birth Date" onpointerenter="(this.type='date')" autocomplete="off">
+                <input class="zipcode-input" id="zipcode-input" placeholder="Zip Code" autocomplete="off">
+            </div>
+            
+            <div class="registration-submit-container">
+                <button id="submit-credential-button" onclick="onSubmitRegistrationCredentials()">Continue</button>
+            </div>
+            
+        </div>
+    </main>
+    
+</body>
+</html>

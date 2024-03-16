@@ -1,0 +1,228 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html, body, #root {
+    height: 100%;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("../Assets/lifelog-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr ;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+@keyframes height-change {
+    from {height: 70%}
+    to {height: 85%}
+}
+
+.registration-form-container {
+    height: 70%;
+    min-height: 400px;
+    width: 25%;
+    min-width: 300px;
+    background-color: #FFE9CD;
+    border-radius: 7%;
+    box-shadow: 10px 10px 10px #9A9A9A;
+
+    display: grid;
+    grid-template-rows: 1fr 1fr 3fr 2fr;
+    gap: 10px;
+
+    padding: 40px 20px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.registration-title {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    max-height: 100%;
+
+    padding: 0;
+}
+
+.registration-title>h1 {
+    font-size: 2.5em;
+    font-weight: 650;
+}
+
+.registration-prompt-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.registration-prompt-container>h3 {
+    font-size: 1em;
+    color: #626262;
+    font-weight: 300;
+    text-align: center;
+}
+
+.registration-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+@keyframes input-color-change {
+    from {background-color: #FFFFFF;}
+    to {background-color: #F5C992;}
+}
+
+.registration-input-container>input {
+    width: 72%;
+    height: 80%;
+    border-radius: 15px;
+    border: none;
+    padding-left: 45px;
+    padding-right: 20px;
+
+    font-size: 20px;
+    font-weight: 300;
+
+    background-repeat:no-repeat;
+    background-position:left center;  
+    background-size: 40px;
+}
+
+input.username-input {
+    background-image:url('../Assets/email.svg');
+}
+
+input.dob-input {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+
+    background-image:url('../Assets/calendar.svg');
+}
+
+input.zipcode-input {
+    background-image:url('../Assets/pin.svg');
+}
+
+@keyframes otp-input-appear {
+    from {opacity: 0;}
+    to {opacity: 100;}
+}
+
+input.otp-input {
+    background-image:url('../Assets/lock.svg');
+    opacity: 0;
+}
+
+.registration-submit-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.registration-submit-container>button {
+    width: 50%;
+    height: 40%;
+    border-radius: 10px;
+    border: none;
+    
+    background-color: #B67B42;
+    color: #FFFFFF;
+    font-size: 1.3em;
+    font-weight: 300;       
+}
+
+.registration-submit-container>button:hover
+{
+    background-color: #906033;
+}
