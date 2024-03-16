@@ -409,7 +409,7 @@ main {
     background-image: url("Assets/pencil.svg");
 }
 
-#close-lli-button {
+#close-lli-button, #close-create-lli-button {
     background-image: url("Assets/delete-lli.svg");
     background-size: 18px;
     

@@ -51,6 +51,12 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             createLLIResponse.ErrorMessage = "LLI Cost must not be negative";
             return createLLIResponse;
         }
+
+        if (lli.Categories is null || lli.Categories.Count == 0) {
+            createLLIResponse.HasError = true;
+            createLLIResponse.ErrorMessage = "LLI must have a category";
+            return createLLIResponse;
+        }
         #endregion
 
         #region Check for completion within the last year

@@ -49,7 +49,6 @@
                     <h2>Life Log Items</h2>
                 </div>
                 
-                
                 <div class="current-lli-search-filter-container lli-search-filter-container">
                     <div class="current-lli-search-bar-container lli-search-bar-container">
                     <input type="text" class="current-lli-search-bar" placeholder="Search LLI">
@@ -70,11 +69,11 @@
                         <div class="lli-main-content-container">
                             <div class="lli-deadline-container">
                                 <h2><span style="font-weight: 600;">Deadline:</span></h2>
-                                <input type="date" id="create-date-input" class="date-input"></input>
+                                <input type="date" id="create-date-input" class="date-input" value="2024-11-11"></input>
                             </div>
                             <div class="lli-category-container">
                                 <select name="" id="create-category-input" class="category-select" multiple>
-                                    <option value="Mental Health">Mental Health</option>
+                                    <option value="Mental Health" selected="selected">Mental Health</option>
                                     <option value="Physical Health">Physical Health</option>
                                     <option value="Outdoor">Outdoor</option>
                                     <option value="Sport">Sport</option>
@@ -95,7 +94,7 @@
 
                     <div class="lli-hidden-content">
                         <div class="lli-button-container">
-                            <button id="close-lli-button"></button>
+                            <button id="close-create-lli-button"></button>
                         
                         </div>
                         <div class="lli-hidden-fields-container">
@@ -103,7 +102,7 @@
                                 <div class="lli-status-container">
                                     <h2><span style="font-weight: 600;">Status: </span></h2> 
                                     <select id="create-status-input" class="status-select">                           
-                                            <option value="Active">Active</option>
+                                            <option value="Active" selected="selected">Active</option>
                                             <option value="Completed">Completed</option>
                                             <option value="Postponed">Postponed</option>
                                     </select>
@@ -111,7 +110,7 @@
                                 <div class="lli-visibility-container">
                                     <h2><span style="font-weight: 600;">Visibility: </span></h2>
                                     <select name="" id="create-visibility-input" class="visibility-select">
-                                        <option value="Public">Public</option>
+                                        <option value="Public" selected="selected">Public</option>
                                         <option value="Private">Private</option>
                                     </select>
                                 </div>
@@ -122,7 +121,7 @@
                                 <div class="lli-recurrence-container">
                                     <h2><span style="font-weight: 600;">Recurring: </span></h2>
                                     <select id="create-recurrence-input" class="recurrence-select">
-                                        <option value="Off">Off</option>
+                                        <option value="Off" selected="selected">Off</option>
                                         <option value="Weekly">Weekly</option>
                                         <option value="Monthly">Monthly</option>
                                         <option value="Yearly">Yearly</option>

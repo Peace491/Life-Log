@@ -1,6 +1,4 @@
 function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
-    console.log(lli)
-
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -34,7 +32,14 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     categoryContainer.classList.add('lli-category-container');
     const categoryHeading = document.createElement('h2');
     categoryHeading.id = 'category' + lli.lliid;
-    categoryHeading.innerHTML = `<span style="font-weight: 600;"> ${lli.categories[0] || 'Mental Health'}`
+
+    let categories = ''
+    for (const category of lli.categories) {
+        categories += `${category}, `
+    }
+    categories = categories.substring(0, categories.length - 2);
+
+    categoryHeading.innerHTML = `<span style="font-weight: 600;"> ${categories|| 'Mental Health'}`
     categoryContainer.appendChild(categoryHeading);
 
     // Append deadline and category containers to main content container

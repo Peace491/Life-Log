@@ -128,11 +128,17 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
         })
     }
 
-    function setupAddButton() {
+    function setupCreateLLITemplate() {
         let addButton = document.getElementById('add-lli-button')
+        var addLLITemplate = document.getElementById('create-lli-template')
+
         addButton.addEventListener('click', function () {
-            var addLLITemplate = document.getElementById('create-lli-template')
             addLLITemplate.classList.remove('hidden')
+        })
+
+        let closeButton = document.getElementById('close-create-lli-button')
+        closeButton.addEventListener('click', function() {
+            addLLITemplate.classList.add('hidden')
         })
     }
 
@@ -164,7 +170,7 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
     // Initialize the current view by setting up data and attaching event handlers 
     function init() {
         // Set up event handlers
-        setupAddButton();
+        setupCreateLLITemplate();
         setupCreateLLISubmit();
 
         // Get data
