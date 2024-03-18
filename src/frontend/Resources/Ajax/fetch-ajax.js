@@ -15,7 +15,7 @@ function get(url) {
     return fetch(url, options);
 }
 
-function send(url, data) {
+function post(url, data) {
     const options = {
         method: 'POST',
         mode: 'cors',
@@ -26,7 +26,7 @@ function send(url, data) {
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
-        body: ''
+        body: JSON.stringify(data)
     };
 
     return fetch(url, options);
@@ -50,5 +50,6 @@ function del(url) {
 
 window.ajaxClient = {
     get: get,
+    post: post,
     del: del
 }

@@ -9,7 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <script src="registration.js"></script> 
+    <!-- Dependencies -->
+    <script src="../Resources/Ajax/fetch-ajax.js"></script>
+
+    <!-- Page Specific -->
+    <script src="registration.js" type="module"></script>
 
 </head>
 <body>
@@ -40,11 +44,13 @@
             </div>
             
             <div class="registration-submit-container">
-                <button id="submit-credential-button" onclick="onSubmitRegistrationCredentials()">Continue</button>
+                <button id="submit-credential-button">Continue</button>
             </div>
             
         </div>
     </main>
+
+
     
 </body>
 </html>
