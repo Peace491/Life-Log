@@ -388,7 +388,179 @@ function convertLLIToEditMode(id, updateLLI) {
     return lliDiv.outerHTML;
 }
 
+function filterLLI(filterOption, filterContainer) {
+    const categoriesList = new Set([
+        "Mental Health",
+        "Physical Health",
+        "Outdoor",
+        "Sport",
+        "Art",
+        "Hobby",
+        "Thrill",
+        "Travel",
+        "Volunteering",
+        "Food"
+    ]);
+
+    const statusList = new Set([
+        "Active",
+        "Completed",
+        "Postponed"
+    ])
+
+    const visibilityList = new Set([
+        "Public",
+        "Private"
+    ])
+
+    const timeOutConstantSecond = 5;
+
+    // Validate filter options
+    if (filterOption.label == "Filter" && filterOption.values != "None") {
+        for (const val of filterOption.values) {
+            if (!categoriesList.has(val) && !statusList.has(val) && !visibilityList.has(val)) {
+                window.alert("The filter selections are invalid, please try again.")
+                return
+            }
+        }
+    }
+
+    // Validate search query
+    if (filterOption.label == "Search") {
+        if (filterOption.values == null || filterOption.values == "" || !filterOption.values.toLowerCase().match(/^[0-9a-z]+$/) || filterOption.values.length > 50) {
+            window.alert('The search query is invalid, please try again.')
+            return
+        }
+    }
+
+    let containerDiv
+    let lliDivList
+
+    let numberOfHiddenLLI = 0
+    
+    let numberOfDisplayedLLI
+
+    let context
+
+    if (filterContainer.id.includes('current')) {
+        context = 'current'
+        containerDiv = document.getElementsByClassName('current-lli-content-container')[0]
+        lliDivList = containerDiv.getElementsByClassName('lli')
+        numberOfDisplayedLLI = lliDivList.length - 1
+    } else {
+        context = 'finished'
+        containerDiv = document.getElementsByClassName('finished-lli-content-container')[0]
+        lliDivList = containerDiv.getElementsByClassName('lli')
+        numberOfDisplayedLLI = lliDivList.length
+    }
+
+    const timeAtStart = performance.now()
+
+    for (let lliDiv of lliDivList) {
+        // Check for timeout
+        let timeNow = performance.now()
+        if ((timeNow - timeAtStart) / 1000 > timeOutConstantSecond) {
+            if (filterOption.label == "Filter") alert('The operation took too long. Please try again later.')
+            else if(filterOption.label == "Search") alert('The LLI search operation took too long.')
+            return
+        }
+
+        if (lliDiv.id.includes('create')) continue // Skip the create template lli
+
+        let isValid = true // Keep track of if the lli is valid
+
+        if (filterOption.label == 'Search') {
+            let lliDivTitle = document.getElementById('title' + lliDiv.id).textContent
+            let lliDivDescription = document.getElementById('description' + lliDiv.id).textContent
+
+            if (!lliDivTitle.includes(filterOption.values) && !lliDivDescription.includes(filterOption.values)) {
+                lliDiv.classList.add('hidden')
+                numberOfHiddenLLI += 1
+                numberOfDisplayedLLI -= 1
+            }
+            else {
+                if (lliDiv.classList.contains('hidden')) {
+                    lliDiv.classList.remove('hidden')
+                    numberOfHiddenLLI -= 1
+                    numberOfDisplayedLLI += 1
+                }
+            }
+            continue
+        }
+
+        if (filterOption.values == 'None') {
+            if (lliDiv.classList.contains('hidden')) {
+                lliDiv.classList.remove('hidden')
+                numberOfHiddenLLI -= 1
+                numberOfDisplayedLLI += 1
+            }
+            continue
+        }
+
+        if (isValid && filterOption.values.some(val => categoriesList.has(val))) {
+            let lliDivCategories = document.getElementById('category' + lliDiv.id).textContent
+
+            for (const val of filterOption.values) {
+                if (!categoriesList.has(val)) continue
+                if (!lliDivCategories.includes(val)) {
+                    isValid = false
+                }
+            }
+        } if (isValid && filterOption.values.some(val => statusList.has(val))) {
+            let lliDivStatus = document.getElementById('status' + lliDiv.id).textContent
+
+            for (const val of filterOption.values) {
+                if (!statusList.has(val)) continue
+                if (!lliDivStatus.includes(val)) {
+                    isValid = false
+                }
+            }
+
+        } if (isValid && filterOption.values.some(val => visibilityList.has(val))) {
+            let lliDivVisibility = document.getElementById('visibility' + lliDiv.id).textContent
+
+            for (const val of filterOption.values) {
+                if (!visibilityList.has(val)) continue
+                if (!lliDivVisibility.includes(val)) {
+                    isValid = false
+                }
+            }
+        }
+
+        if (!isValid) {
+            lliDiv.classList.add('hidden')
+            numberOfHiddenLLI += 1
+            numberOfDisplayedLLI -= 1
+        }
+        else {
+            if (lliDiv.classList.contains('hidden')) {
+                lliDiv.classList.remove('hidden')
+                numberOfHiddenLLI -= 1
+                numberOfDisplayedLLI += 1
+            }
+        }
+
+    }
+
+
+    if (context == 'current' && numberOfHiddenLLI == lliDivList.length - 1/*Not accounting for the create template*/) {
+        alert('No LLI found. Please try again.')
+    } else if(context == 'finished' && numberOfHiddenLLI == lliDivList.length) {
+        alert('No LLI found. Please try again.')
+    }
+
+    if (context == 'current' && numberOfDisplayedLLI + numberOfHiddenLLI != lliDivList.length - 1) {
+        if (filterOption.label == "Filter") alert('Failed to get all LLIs from the filter. Please try again.')
+        else if (filterOption.label == "Search") alert('Failed to get all LLIs from the search. Please try again.')
+    } else if (context == 'hidden' && numberOfDisplayedLLI + numberOfHiddenLLI != lliDivList.length) {
+        if (filterOption.label == "Filter") alert('Failed to get all LLIs from the filter. Please try again.')
+        else if (filterOption.label == "Search") alert('Failed to get all LLIs from the search. Please try again.')
+    }
+
+}
+
 export {
     createLLIComponents,
-    convertLLIToEditMode
+    convertLLIToEditMode,
+    filterLLI
 }

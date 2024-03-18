@@ -208,11 +208,44 @@ main {
 
 .lli-filter-container {
     height: 25px;
+
+    Z-Index: 101;
 }
 
-.lli-filter-container>img {
-    height: 100%;
+.lli-filter-container:hover {
+    cursor: pointer;
 }
+
+#current-lli-filter-options, #finished-lli-filter-options {
+    border: none;
+    background-color: white;
+    border-radius: 5px;
+    
+
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+}
+
+#current-lli-filter-options > h2, #finished-lli-filter-options > h2 {
+    font-weight: 500;
+}
+
+.checkboxes {
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    gap: 3px;
+    background-color: #BCC2C1;
+}
+
+.filter-title {
+    font-weight: 500;
+}
+
 
 .lli-content-container {
     display: flex;
@@ -499,4 +532,5 @@ main {
 button:hover, .add-lli-button-container>img:hover {
     cursor: pointer;
 }
+
 

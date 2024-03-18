@@ -1,6 +1,6 @@
 'use strict';
 
-import { createLLIComponents } from './lli-dom-manipulation.js'
+import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -137,7 +137,7 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
         })
 
         let closeButton = document.getElementById('close-create-lli-button')
-        closeButton.addEventListener('click', function() {
+        closeButton.addEventListener('click', function () {
             addLLITemplate.classList.add('hidden')
         })
     }
@@ -145,6 +145,123 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
     function setupCreateLLISubmit() {
         let createButton = document.getElementById('create-lli-button')
         createButton.addEventListener('click', createLLI)
+    }
+
+    function setupFilter() {
+        let currentFilter = document.getElementById('current-lli-filter-options')
+
+        let showCurrent = true;
+
+        currentFilter.addEventListener('click', function () {
+            setupCheckBox('current', currentFilter, showCurrent)
+
+            if (showCurrent == true) {
+                showCurrent = false
+            } else {
+                showCurrent = true
+            }
+        })
+
+        let finishedFilter = document.getElementById('finished-lli-filter-options')
+
+        let showFinished = true;
+
+        finishedFilter.addEventListener('click', function () {
+            setupCheckBox('finished', finishedFilter, showFinished)
+
+            if (showFinished == true) {
+                showFinished = false
+            } else {
+                showFinished = true
+            }
+        })
+
+    }
+
+    function setupSearch() {
+        let currentSearchBar = document.getElementById('current-lli-search-bar')
+        currentSearchBar.addEventListener('keydown', function (e) {
+            if (e.key == 'Enter') {
+                let searchQuery = currentSearchBar.value
+
+                let searchOption = {
+                    label: 'Search',
+                    values: searchQuery
+                }
+                filterLLI(searchOption, currentSearchBar)
+            }
+        })
+
+        let finishedSearchBar = document.getElementById('finished-lli-search-bar')
+        finishedSearchBar.addEventListener('keydown', function (e) {
+            if (e.key == 'Enter') {
+                let searchQuery = finishedSearchBar.value
+
+                let searchOption = {
+                    label: 'Search',
+                    values: searchQuery
+                }
+                filterLLI(searchOption, finishedSearchBar)
+            }
+        })
+    }
+
+    function setupCheckBox(containerType, currentFilter, show) {
+        let checkboxesContainer = document.getElementById(containerType + "-lli-filter-checkboxes");
+
+        // Uncheck all checkboxes
+        
+        let checkboxesDiv = checkboxesContainer.querySelectorAll('.filter-input');
+          
+        const checkedValues = []
+
+        if (show) {
+            checkboxesContainer.classList.remove('hidden')
+
+            
+
+            // Iterate through each checkbox
+            checkboxesDiv.forEach(checkbox => {
+                checkbox.addEventListener('click', function (event) {
+                    const checkbox = event.target;
+                    const value = checkbox.value;
+
+                    if (checkbox.checked) {
+                        // If checkbox is checked, add its value to the checkedValues array
+                        checkedValues.push(value);
+                    } else {
+                        // If checkbox is unchecked, remove its value from the checkedValues array
+                        const index = checkedValues.indexOf(value);
+                        if (index !== -1) {
+                            checkedValues.splice(index, 1);
+                        }
+                    }
+
+                    let currentFilterOption = {}
+
+                    // Log the array of checked values
+                    if (checkedValues.length == 0) {
+                        currentFilterOption = {
+                            label: "Filter",
+                            values: "None"
+                        }
+                    } else {
+                        currentFilterOption = {
+                            label: "Filter",
+                            values: checkedValues
+                        }
+                    }
+
+                    filterLLI(currentFilterOption, currentFilter)
+
+                });
+            });
+            show = false;
+        } else {
+            checkboxesContainer.classList.add('hidden')
+
+            show = true;
+        }
     }
 
     function showLLI() {
@@ -172,6 +289,9 @@ import { createLLIComponents } from './lli-dom-manipulation.js'
         // Set up event handlers
         setupCreateLLITemplate();
         setupCreateLLISubmit();
+        // setupFilterSelect();
+        setupFilter();
+        setupSearch();
 
         // Get data
         showLLI();
