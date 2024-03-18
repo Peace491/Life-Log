@@ -12,5 +12,22 @@ public class LLICategory
     public static string Travel = "Travel";
     public static string Volunteering = "Volunteering";
     public static string Food = "Food";
+    private static HashSet<string> categorySet = new HashSet<string>()
+        {
+            MentalHealth,
+            PhysicalHealth,
+            Outdoor,
+            Sport,
+            Art,
+            Hobby,
+            Thrill,
+            Travel,
+            Volunteering
+        };
+
+    public static bool IsValidCategory(string category)
+    {
+        return categorySet.Contains(category);
+    }
 
 }

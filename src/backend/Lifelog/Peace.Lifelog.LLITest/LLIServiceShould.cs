@@ -1,13 +1,23 @@
 namespace Peace.Lifelog.LLITest;
 
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
+using Peace.Lifelog.Logging;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.UserManagementTest;
 
 public class LLIServiceShould : IAsyncLifetime, IDisposable
 {
+    private static CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+    private static ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+    private static UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+    private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    private static LogTarget logTarget = new LogTarget(createDataOnlyDAO);
+    private static Logging logging = new Logging(logTarget);
+    
+    private LLIService LLIService = new LLIService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
     private const string USER_ID = "TestLLIServiceAccount";
     private string USER_HASH = "";
     private const string ROLE = "Normal";
@@ -15,6 +25,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
     private string DEADLINE = DateTime.Today.ToString("yyyy-MM-dd");
     private const string ZIP_CODE = "90704";
+    private Stopwatch timer = new Stopwatch();
+    private const int MAX_TIME_IN_SECOND = 3;
 
     public async Task InitializeAsync()
     {   
@@ -53,14 +65,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var deleteAccountResponse = appUserManagementService.DeleteAccount(testLifelogAccountRequest);
     }
     
-
+    #region Create LLI Tests
     [Fact]
     public async void LLIServiceCreateLLIShould_CreateAnLLIInTheDatabase()
     {
         // Arrange
         string testLLITitle = "Test Create LLI Title";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
@@ -79,7 +91,9 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.Recurrence = LLIRecurrence;
 
         // Act
+        timer.Start();
         var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+        timer.Stop();
 
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readLLISql = $"SELECT LLIId FROM LLI WHERE Title=\"{testLLITitle}\"";
@@ -89,6 +103,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         Assert.True(createLLIResponse.HasError == false);
         Assert.NotNull(readResponse.Output);
         Assert.True(readResponse.Output.Count == 1);
+        Assert.True(timer.Elapsed.TotalSeconds < MAX_TIME_IN_SECOND);
         
         
         // Cleanup
@@ -121,7 +136,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         string testLLITitle = "Test LLI Title";
         string invalidUserHash = "";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = invalidUserHash;
@@ -153,12 +168,32 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     }
 
     [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfANonNullableFieldIsNull()
+    {
+        // Arrange
+        string? testLLITitle = null;
+        
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle!;
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "The non-nullable LLI input is null");
+    }
+
+    [Fact]
     public async void LLIServiceCreateLLIShould_ThrowAnErrorIfTheTitleIsTooLong()
     {
         // Arrange
         string testLLITitle = "Test Create LLI Title";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
@@ -185,8 +220,50 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         // Assert
         Assert.True(createLLIResponse.HasError == true);
-        Assert.True(createLLIResponse.ErrorMessage == "LLI Title is too long");
+        Assert.True(createLLIResponse.ErrorMessage == "The LLI title is invalid");
         Assert.Null(readResponse.Output);
+    }
+
+    [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfTheCategoriesListIsEmpty()
+    {
+        // Arrange
+        string testLLITitle = "TestLLITitle";
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle;
+        testLLI.Categories = [];
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "LLI categories must not be null or empty");
+    }
+
+    [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfACategoryIsInvalid()
+    {
+        // Arrange
+        string testLLITitle = "TestLLITitle";
+        string testInvalidCategory = "Invalid Category";
+        
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle;
+        testLLI.Categories = [testInvalidCategory];
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "A LLI category is invalid");
     }
 
     [Fact]
@@ -195,7 +272,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         // Arrange
         string testLLITitle = "Test Create LLI Title";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";
@@ -227,12 +304,59 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     }
 
     [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfTheStatusIsInvalid()
+    {
+        // Arrange
+        string testLLITitle = "TestLLITitle";
+        string testInvalidStatus = "Invalid Status";
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle;
+        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Description = "";
+        testLLI.Status = testInvalidStatus;
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "LLI status is invalid");
+    }
+
+    [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfTheVisibilityIsInvalid()
+    {
+        // Arrange
+        string testLLITitle = "TestLLITitle";
+        string testInvalidVisibility = "Invalid Visibility";
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle;
+        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Description = "";
+        testLLI.Status = LLIStatus.Completed;
+        testLLI.Visibility = testInvalidVisibility;
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "LLI visibility is invalid");
+    }
+
+    [Fact]
     public async void LLIServiceCreateLLIShould_ThrowAnErrorIfDeadlineIsOutOfRange()
     {
         // Arrange
         string testLLITitle = "Test LLI Title";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";
@@ -264,12 +388,63 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     }
 
     [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfTheRecurrenceStatusIsInvalid()
+    {
+        // Arrange
+        string testLLITitle = "TestLLITitle";
+        string testInvalidRecurrenceStatus = "Invalid Recurrence Status";
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle;
+        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Description = "";
+        testLLI.Status = LLIStatus.Completed;
+        testLLI.Visibility = LLIVisibility.Public;
+        testLLI.Recurrence.Status = testInvalidRecurrenceStatus;
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "LLI recurrence status is invalid");
+    }
+
+    [Fact]
+    public async void LLIServiceCreateLLIShould_ThrowAnErrorIfTheRecurrenceFrequencyIsInvalid()
+    {
+        // Arrange
+        string testLLITitle = "TestLLITitle";
+        string testInvalidRecurrenceFrequency = "Invalid Recurrence Frequency";
+
+        
+
+        var testLLI = new LLI();
+        testLLI.Title = testLLITitle;
+        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Description = "";
+        testLLI.Status = LLIStatus.Completed;
+        testLLI.Visibility = LLIVisibility.Public;
+        testLLI.Recurrence.Status = LLIRecurrenceStatus.On;
+        testLLI.Recurrence.Frequency = testInvalidRecurrenceFrequency;
+
+        // Act
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
+
+        // Assert
+        Assert.True(createLLIResponse.HasError == true);
+        Assert.True(createLLIResponse.ErrorMessage == "LLI recurrence frequency is invalid");
+    }
+
+    [Fact]
     public async void LLIServiceCreateLLIShould_ThrowAnErrorIfCostIsLessThanZero()
     {
         // Arrange
         string testLLITitle = "Test LLI Title";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";
@@ -306,7 +481,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         // Arrange
         string testLLITitle = "Test LLI Create With Empty User Hash";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";
@@ -341,7 +516,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         // Arrange
         string testLLITitle = "Test LLI Create With Empty User Hash";
 
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
@@ -377,7 +552,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     {
         // Arrange
         var testLLITitle = "Test Create LLI Within A Year";
-        var LLIService = new LLIService();
+        
 
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
@@ -450,14 +625,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         await deleteDataOnlyDAO.DeleteData(deleteLLISql);   
     }
+    #endregion
 
+    #region Read LLI Tests
     [Fact]
     public async void LLIServiceGetAllLLIFromUserShould_GetAllLLIForAUser()
     {
         // Arrange
         string testLLITitle = "Test Get LLI Title";
-
-        var LLIService = new LLIService();
 
         // Create 10 LLI
         int numberOfLLI = 10;
@@ -483,12 +658,15 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         }
         
         // Act
+        timer.Start();
         var readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
+        timer.Stop();
 
         // Assert
         Assert.True(readResponse.HasError == false);
         Assert.True(readResponse.Output != null);
         Assert.True(readResponse.Output.Count == numberOfLLI);
+        Assert.True(timer.Elapsed.TotalSeconds < MAX_TIME_IN_SECOND);
 
         // Cleanup
         var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
@@ -502,7 +680,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceGetAllLLIFromUserShould_ThrowAnErrorIfUserHashIsEmpty()
     {
         // Arrange
-        var LLIService = new LLIService();
         
         // Act
         var readResponse = await LLIService.GetAllLLIFromUser("");
@@ -517,7 +694,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceGetAllLLIFromUserShould_ReturnNullIfUserDoesntExist()
     {
         // Arrange
-        var LLIService = new LLIService();
         
         // Act
         var readResponse = await LLIService.GetAllLLIFromUser("NonExistentUser");
@@ -525,8 +701,9 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         // Assert
         Assert.True(readResponse.Output == null);
     }
+    #endregion
 
-
+    #region Update LLI Tests
     [Fact]
     public async void LLIServiceUpdateLLIShould_UpdateALLIInTheDatabase()
     {
@@ -537,8 +714,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         string testNewLLIDescription = "Test New Update LLI"; 
         int testOldLLICost = 0;
         int testNewLLICost = 1;
-
-        var LLIService = new LLIService();
 
         // Old LLI        
         var testOldLLI = new LLI();
@@ -572,12 +747,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testNewLLI.Title = testNewLLITitle;
         testNewLLI.Description = testNewLLIDescription;
         testNewLLI.Categories = [LLICategory.Outdoor, LLICategory.Art];
-        testNewLLI.Status = LLIStatus.Postponed;
+        testNewLLI.Status = LLIStatus.Completed;
         testNewLLI.Visibility = LLIVisibility.Private;
         testNewLLI.Cost = testNewLLICost;
         
         // Act
+        timer.Start();
         var updateResponse = await LLIService.UpdateLLI(USER_HASH, testNewLLI);
+        timer.Stop();
 
         readResponse = await LLIService.GetAllLLIFromUser(USER_HASH);
 
@@ -596,6 +773,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
             Assert.True(lli.Visibility == testNewLLI.Visibility);
             Assert.True(lli.Cost == testNewLLICost);
         }
+        Assert.True(timer.Elapsed.TotalSeconds < MAX_TIME_IN_SECOND);
         
         // Cleanup
         var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
@@ -613,7 +791,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfUserIsEmpty()
     {
         // Arrange
-        var LLIService = new LLIService();
 
         // New LLI
         var testNewLLI = new LLI();
@@ -631,7 +808,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfTitleIsTooLong()
     {
         // Arrange
-        var LLIService = new LLIService();
 
         // New LLI
         var testNewLLI = new LLI();
@@ -642,7 +818,25 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         // Assert
         Assert.True(updateResponse.HasError == true);
-        Assert.True(updateResponse.ErrorMessage == "LLI Title is too long");
+        Assert.True(updateResponse.ErrorMessage == "The LLI title is invalid");
+        Assert.Null(updateResponse.Output);
+    }
+
+    [Fact]
+    public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfACategoryIsInvalid()
+    {
+        // Arrange
+
+        // New LLI
+        var testNewLLI = new LLI();
+        testNewLLI.Categories = ["Invalid Category"];
+        
+        // Act
+        var updateResponse = await LLIService.UpdateLLI("UserHash", testNewLLI);
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "A LLI Category is invalid");
         Assert.Null(updateResponse.Output);
     }
 
@@ -650,7 +844,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfDescriptionIsTooLong()
     {
         // Arrange
-        var LLIService = new LLIService();
 
         // New LLI
         var testNewLLI = new LLI();
@@ -666,10 +859,45 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     }
 
     [Fact]
+    public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfTheLLIStatusIsInvalid()
+    {
+        // Arrange
+
+        // New LLI
+        var testNewLLI = new LLI();
+        testNewLLI.Status = "Invalid Status";
+        
+        // Act
+        var updateResponse = await LLIService.UpdateLLI("UserHash", testNewLLI);
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "LLI status is invalid");
+        Assert.Null(updateResponse.Output);
+    }
+
+    [Fact]
+    public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfTheLLIVisibilityIsInvalid()
+    {
+        // Arrange
+
+        // New LLI
+        var testNewLLI = new LLI();
+        testNewLLI.Visibility = "Invalid Visibility";
+        
+        // Act
+        var updateResponse = await LLIService.UpdateLLI("UserHash", testNewLLI);
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "LLI visibility is invalid");
+        Assert.Null(updateResponse.Output);
+    }
+
+    [Fact]
     public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfDeadlineIsOutOfRange()
     {
         // Arrange
-        var LLIService = new LLIService();
 
         // New LLI
         var testNewLLI = new LLI();
@@ -688,7 +916,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfCostIsLessThanZero()
     {
         // Arrange
-        var LLIService = new LLIService();
 
         // New LLI
         var testNewLLI = new LLI();
@@ -704,10 +931,46 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     }
 
     [Fact]
+    public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfTheLLIRecurrenceStatusIsInvalid()
+    {
+        // Arrange
+
+        // New LLI
+        var testNewLLI = new LLI();
+        testNewLLI.Recurrence.Status = "Invalid Recurrenc Status";
+        
+        // Act
+        var updateResponse = await LLIService.UpdateLLI("UserHash", testNewLLI);
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "LLI recurrence status is invalid");
+        Assert.Null(updateResponse.Output);
+    }
+
+    [Fact]
+    public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfTheLLIRecurrenceFrequencyIsInvalid()
+    {
+        // Arrange
+
+        // New LLI
+        var testNewLLI = new LLI();
+        testNewLLI.Recurrence.Status = LLIRecurrenceStatus.On;
+        testNewLLI.Recurrence.Frequency = "Invalid Recurrence Frequency";
+        
+        // Act
+        var updateResponse = await LLIService.UpdateLLI("UserHash", testNewLLI);
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "LLI recurrence frequency is invalid");
+        Assert.Null(updateResponse.Output);
+    }
+
+    [Fact]
     public async void LLIServiceUpdateLLIShould_ReturnNoRowsAffectedlIfTheUserDoesNotExist()
     {
         // Arrange
-        var LLIService = new LLIService();
 
         // New LLI
         var testNewLLI = new LLI();
@@ -731,8 +994,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         string testOldLLITitle = "Test LLI Title";
         string testOldLLIDescription = "Test Update LLI";
         int testOldLLICost = 0;
-
-        var LLIService = new LLIService();
 
         // Old LLI        
         var testOldLLI = new LLI();
@@ -774,14 +1035,13 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         Assert.Null(updateResponse.Output);
         
     }
+    #endregion
 
     [Fact]
     public async void LLIServiceDeleteLLIShould_DeleteALLInTheDatabase()
     {
         // Arrange
-        string testLLITitle = "Test LLI Title";
-
-        var LLIService = new LLIService();
+        string testLLITitle = "Test LLI Title";  
         
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
@@ -821,10 +1081,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     [Fact]
     public async void LLIServiceDeleteLLIShould_ThrowAnErrorIfUserHashIsEmpty()
     {
-        // Arrange
-
-        var LLIService = new LLIService();
-        
+        // Arrange    
         var testLLI = new LLI();
         
         // Act
@@ -838,10 +1095,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     [Fact]
     public async void LLIServiceDeleteLLIShould_ThrowAnErrorIfLLIIdIsEmpty()
     {
-        // Arrange
-
-        var LLIService = new LLIService();
-        
+        // Arrange  
         var testLLI = new LLI();
         
         // Act
@@ -855,10 +1109,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     [Fact]
     public async void LLIServiceDeleteLLIShould_ReturnNoRowsAffectedlIfTheUserDoesNotExistt()
     {
-        // Arrange
-
-        var LLIService = new LLIService();
-        
+        // Arrange  
         var testLLI = new LLI();
         testLLI.LLIID = "1";
         
@@ -877,9 +1128,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     public async void LLIServiceDeleteLLIShould_ReturnNoRowsAffectedlIfLLIDoesNotExistt()
     {
         // Arrange
-
-        var LLIService = new LLIService();
-        
         var testLLI = new LLI();
         testLLI.LLIID = "-1";
         
