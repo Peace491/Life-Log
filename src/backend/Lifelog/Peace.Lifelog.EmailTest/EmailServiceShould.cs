@@ -13,7 +13,7 @@ public class EmailServiceShould
         var emailService = new EmailService();
 
         // Act
-        var emailResponse = await emailService.SendOTPEmail("System");
+        var emailResponse = await emailService.SendOTPEmail("0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=");
 
         // Assert
         Assert.True(emailResponse.HasError == false);

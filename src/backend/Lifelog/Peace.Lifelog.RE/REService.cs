@@ -1,14 +1,8 @@
-﻿
-
-using System.Collections.ObjectModel;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Policy;
-using DomainModels;
+﻿using DomainModels;
 using Org.BouncyCastle.Asn1.Cmp;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
-using ZstdSharp.Unsafe;
 
 // should this be like this ?? im not understanding
 namespace Peace.Lifelog.RE
@@ -17,41 +11,51 @@ namespace Peace.Lifelog.RE
     {
         public async Task<Response> getNumRecs(string userhash, int numRecs)
         {
-
             var response = new Response();
             // var logger = new Logger();
             var readDataOnlyDAO = new ReadDataOnlyDAO();
-            string hash = "System";
-            string sqlGetUserFormData = $"SELECT Category, Rating FROM LifelogDB.UserForm WHERE UserHash=\"{hash}\" ORDER BY Rating ASC;";
-            string sqlGetUserLLI = "SELECT Category, Status FROM LLI JOIN LLICategories ON LLI.LLIId = LLICategories.LLIId WHERE LLI.UserHash = 'System';"; // get lli where userhash = userhash, only get category and status
-            string sqlCommonPublic = "SELECT LLICategories.Category, COUNT(*) as Count FROM LLI JOIN LLICategories ON LLI.LLIId = LLICategories.LLIId WHERE LLI.Visibility = 'public' GROUP BY LLICategories.Category ORDER BY Count DESC LIMIT 1;";
+
+            // string sqlGetUserFormData = $"SELECT Category, Rating FROM LifelogDB.UserForm WHERE UserHash=\"{hash}\" ORDER BY Rating ASC;";
+            // string sqlGetUserLLI = $"SELECT Category, Status FROM LLI JOIN LLICategories ON LLI.LLIId = LLICategories.LLIId WHERE LLI.UserHash = \"{hash}\";"; // get lli where userhash = userhash, only get category and status
+            // string sqlCommonPublic = "SELECT LLICategories.Category, COUNT(*) as Count FROM LLI JOIN LLICategories ON LLI.LLIId = LLICategories.LLIId WHERE LLI.Visibility = 'public' GROUP BY LLICategories.Category ORDER BY Count DESC LIMIT 1;";
+            // string queryDataMart = $"SELECT UserHash, MostCommonUserCategory, MostCommonUserSubCategory FROM REDataMart WHERE UserHash = \"{hash}\";";
+            // string queryDataMartSystem = $"SELECT UserHash, MostCommonUserCategory, MostCommonUserSubCategory FROM REDataMart WHERE UserHash = 'System';";
+
+            string query = $"SELECT r.userhash, r.CategoryOne, r.CategoryTwo, (SELECT CategoryOne FROM RecomendationDataMart WHERE userhash = 'system') AS systemCategoryOne FROM RecomendationDataMart r WHERE r.userhash = \"{userhash}\";";
 
             Dictionary<string, int> userScores = new Dictionary<string, int>();
             Dictionary<string, int> userScoresLLI = new Dictionary<string, int>();
+
+            REDataMart systemDataMart = new REDataMart();
+            REDataMart userDataMart = new REDataMart();
             try
             {
-                // Get user's user form info
-                var formResponse = await readDataOnlyDAO.ReadData(sqlGetUserFormData);
-                userScores = scoreInit(formResponse);
+                // query datamart for user's personal data
+                var dataMartResponse = await readDataOnlyDAO.ReadData(query);
+                userDataMart = convertDataMartResponseToREDataMart(dataMartResponse, userDataMart);
 
-                // Get user's LLI info
-                var userLLIResponse = await readDataOnlyDAO.ReadData(sqlGetUserLLI);
-                userScoresLLI = scoreLLI(userScores, userLLIResponse);
+                // // Get user's user form info
+                // var formResponse = await readDataOnlyDAO.ReadData(sqlGetUserFormData);
+                // userScores = scoreInit(formResponse);
+
+                // // Get user's LLI info
+                // var userLLIResponse = await readDataOnlyDAO.ReadData(sqlGetUserLLI);
+                // userScoresLLI = scoreLLI(userScores, userLLIResponse);
                 
-                // Get users top two categories from LLI info
-                var usersTopTwoCategories = getTopTwoCategories(userScoresLLI);
+                // // Get users top two categories from LLI info
+                // var usersTopTwoCategories = getTopTwoCategories(userScoresLLI);
 
-                // Get the most common public category
-                var commonCategoryResponse = await readDataOnlyDAO.ReadData(sqlCommonPublic);
+                // // Get the most common public category
+                // var commonCategoryResponse = await readDataOnlyDAO.ReadData(sqlCommonPublic);
 
                 // Construct the sql, based on the user's scores, the most common public category, and the number of recomendations requested byuser
-                var recomendtaionQuery = constructRecSql(numRecs);
+                var recomendationQuery = constructRecSql(numRecs, userDataMart);
 
                 // Get the recomendations
-                var recomendationResponse = await readDataOnlyDAO.ReadData(recomendtaionQuery);
+                var recomendationResponse = await readDataOnlyDAO.ReadData(recomendationQuery);
 
                 // Clean the recomendations, removing info that could be used to identify users
-                var cleanedRecomendations = cleanRecs(recomendationResponse);
+                var cleanedRecomendations = cleanRecs(recomendationResponse, userhash);
                 
                 // Populate response
                 response.Output = cleanedRecomendations;
@@ -80,7 +84,7 @@ namespace Peace.Lifelog.RE
                 {
                     return userScores;
                 }
-
+                
                 string category = pair[0].ToString();
                 int rank = Convert.ToInt32(pair[1]);
                 switch (rank)
@@ -122,6 +126,18 @@ namespace Peace.Lifelog.RE
                 }
             }
             return userScores;
+        }
+
+        private REDataMart convertDataMartResponseToREDataMart(Response dataMartResponse, REDataMart dataMart)
+        {
+            foreach (List<Object> row in dataMartResponse.Output)
+            {
+                dataMart.UserHash = row[0].ToString();
+                dataMart.MostCommonUserCategory = row[1].ToString();
+                dataMart.MostCommonUserSubCategory = row[2].ToString();
+                dataMart.MostCommonPublicCategory = row[3].ToString();
+            }
+            return dataMart;
         }
 
         private Dictionary<string, int> scoreLLI(Dictionary<string, int> scoreDict, Response lliResponse)
@@ -167,8 +183,11 @@ namespace Peace.Lifelog.RE
         }
             
         // Responsible for dynamically constructing the SQL query to pull the records from the database
-        private string constructRecSql(int numberRecomendations) // Params for helper need discussion
+        private string constructRecSql(int numberRecomendations, REDataMart rEDataMart) // Params for helper need discussion
         {
+            string firstPart = $"-- define stuff SET @UsersMostCommon = \"{rEDataMart.MostCommonUserCategory}\"; SET @UserSubCategory = \"{rEDataMart.MostCommonUserSubCategory}\"; SET @MostCommonPublic = \"{rEDataMart.MostCommonUserCategory}\"; SET @ExcludedUserHash = \"{rEDataMart.UserHash}\";";
+            if(numberRecomendations < 1) throw new ArgumentException("Number of recomendations must be greater than 0");
+            if(numberRecomendations == 1) return "SELECT * FROM LLI WHERE Visibility = 'Public' LIMIT 1;"; // return a single record
             int recsLeft = numberRecomendations;
             while (recsLeft > 0)
             {
@@ -195,7 +214,7 @@ namespace Peace.Lifelog.RE
                 }
             }
             // TODO : Add logic to pull records from the database
-            string query = @"
+            string query1 = @"
                 -- define stuff
                 SET @Category1 = 'CategoryName1';
                 SET @Category2 = 'CategoryName2';
@@ -238,13 +257,15 @@ namespace Peace.Lifelog.RE
                 AND LLI.UserHash != @ExcludedUserHash
                 LIMIT 1);
             ";
+
+            string query = "SELECT * FROM LLI WHERE Visibility = 'Public';";
             
             return query;
         }
 
         // Parse the records and clean them up
         // TODO : idetifiy personally identifiable info and "clean" it
-        private List<Object> cleanRecs(Response recomendationResponse)
+        private List<Object> cleanRecs(Response recomendationResponse, string userHash)
         {
             List<object> cleanedRecs = new List<Object>();
             if (recomendationResponse.Output != null)
@@ -257,55 +278,114 @@ namespace Peace.Lifelog.RE
                     foreach (var attribute in LLI) {
                         if (attribute is null) continue;
                         
-                        switch(index){
+                        switch (index)
+                        {
                             case 0:
-                                lli.LLIID = attribute.ToString() ?? "";
+                                lli.LLIID = "";
                                 break;
                             case 1:
-                                lli.UserHash = attribute.ToString() ?? "";
+                                lli.UserHash = userHash ?? "";
                                 break;
                             case 2:
                                 lli.Title = attribute.ToString() ?? "";
                                 break;
                             case 3:
-                                lli.Category = attribute.ToString() ?? "";
+                                lli.Description = "";
                                 break;
                             case 4:
-                                lli.Description = attribute.ToString() ?? "";
+                                lli.Status = "";
                                 break;
                             case 5:
-                                lli.Status = attribute.ToString() ?? "";
+                                lli.Visibility = "Public";
                                 break;
                             case 6:
-                                lli.Visibility = attribute.ToString() ?? "";
+                                lli.Deadline = "";
                                 break;
                             case 7:
-                                lli.Deadline = attribute.ToString() ?? "";
-                                break;
-                            case 8:
                                 lli.Cost = Convert.ToInt32(attribute);
                                 break;
-                            case 9:
+                            case 8:
                                 lli.Recurrence.Status = attribute.ToString() ?? "";
                                 break;
-                            case 10:
+                            case 9:
                                 lli.Recurrence.Frequency = attribute.ToString() ?? "";
                                 break;
-                            case 11:
-                                lli.CreationDate = attribute.ToString() ?? "";
+                            case 10:
+                                lli.CreationDate = "";
                                 break;
-                            case 12:
-                                lli.CompletionDate = attribute.ToString() ?? "";
+                            case 11:
+                                lli.CompletionDate = "";
                                 break;
                             default:
                                 break;
                         }
                         index++;
                     }
-                
+                    cleanedRecs.Add(lli);
                 }
             }
-        return cleanedRecs;
+            return cleanedRecs;
         }
     }
 }
+
+
+// -- First, define the category names 
+// SET @Category1 = 'Mental Health';
+// SET @Category2 = 'Art';
+// SET @Category3 = 'Food';
+// -- Define the UserHash of the user to exclude
+// SET @ExcludedUserHash = 'System';
+
+// -- Create a table to hold the LLI records with their categories, so we only join once
+// WITH LLIWithCategory AS (SELECT
+// 	LLI.LLIId,
+// 	LLI.Title,
+//     LLI.Description,
+//     LLI.RecurrenceStatus,
+//     LLI.RecurrenceFrequency,
+// 	LC.Category
+// FROM LLI
+// JOIN LLICategories LC ON LLI.LLIId = LC.LLIId
+// WHERE LLI.UserHash != 'System' -- expand this condition to match brd soon
+// )
+
+// -- Subquery for most popular category
+// SELECT * FROM (
+//     SELECT *
+//     FROM LLIWithCategory
+//     WHERE Category = @Category1
+//     ORDER BY RAND() 
+//     LIMIT 2
+// ) AS Cat1
+
+// UNION ALL
+// -- Subquery for second most popular category
+// SELECT * FROM (
+//     SELECT *
+//     FROM LLIWithCategory
+//     WHERE Category = @Category2
+//     ORDER BY RAND()
+//     LIMIT 1
+// ) AS Cat2
+
+// UNION ALL
+// Subquery for systems most popular category
+// SELECT * FROM (
+//     SELECT *
+//     FROM LLIWithCategory
+//     WHERE Category = @Category3
+//     ORDER BY RAND()
+//     LIMIT 1
+// ) AS Cat3
+
+// UNION ALL
+// -- Subquery for an item of another category
+// SELECT * FROM (
+//     SELECT *
+//     FROM LLIWithCategory
+//     WHERE Category NOT IN (@Category1, @Category2, @Category3)
+//     ORDER BY RAND()
+//     LIMIT 1
+// ) AS OtherCats;
+

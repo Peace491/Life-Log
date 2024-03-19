@@ -6,7 +6,7 @@ public class ReServiceShould
     public void Test_Test()
     {
         var reService = new ReService();
-        var response = reService.getNumRecs("System", 1);
+        var response = reService.getNumRecs("0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=", 1);
         Assert.NotNull(response);
     }
 }
