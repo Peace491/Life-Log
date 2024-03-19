@@ -17,28 +17,13 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
     {
         var response = new Response();
 
-        var saltResponse = saltService.getSalt();
-
-        if (saltResponse.Output != null)
-        {
-            foreach (string output in saltResponse.Output)
-            {
-                lifelogAccountRequest.Salt = ("Salt", output);
-            }
-        }
-        else
-        {
-            response.HasError = true;
-            response.ErrorMessage = "Failed to generate salt";
-            return response;
-        }
-
+        var salt = createSalt();
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
 
         // Create the user hash string from the user id
-        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value + lifelogAccountRequest.Salt.Value);
+        var userHash = createUserHashWithGivenId(lifelogAccountRequest.UserId.Value, salt);
 
         // Create UserHashRequest object
         var lifelogUserHashRequest = new LifelogUserHashRequest();
@@ -51,7 +36,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         // Populate the creation date for user account
         lifelogAccountRequest.CreationDate = ("CreationDate", DateTime.Today.ToString("yyyy-MM-dd"));
-        lifelogAccountRequest.Salt = ("Salt", "Bad Salt"); // TODO: Implement Salt function
+        lifelogAccountRequest.Salt = ("Salt", salt);
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
@@ -61,6 +46,17 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
             // TODO: HANDLE ERROR
             response.HasError = true;
             response.ErrorMessage = "Failed to create Account table entry";
+            return response;
+        }
+
+        // Populate user role table
+        var createLifelogUserRoleResponse = await createLifelogUserRoleInDB(lifelogAccountRequest);
+
+        if (createLifelogUserRoleResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create LifelogUserRole table entry";
             return response;
         }
 
@@ -86,6 +82,27 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
             return response;
         }
 
+        // Populate OTP table
+        var createLifelogUserOTPResponse = await createLifelogUserOTPInDB(lifelogProfileRequest);
+
+        if (createLifelogUserOTPResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create LifelogUserOTP";
+            return response;
+        }
+
+         // Populate Authentication table
+        var createLifelogAuthenticationResponse = await createLifelogAuthenticationInDB(lifelogAccountRequest ,lifelogProfileRequest);
+
+        if (createLifelogAuthenticationResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create LifelogUserOTP";
+            return response;
+        }
 
         // TODO: handle success outcome
         response.HasError = false;
@@ -148,18 +165,13 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
     }
     // Helper functions
     #region Helper Functions
-    private string createUserHashWithGivenId(string userId)
+    private string createUserHashWithGivenId(string userId, string salt)
     {
         // Create Lifelog User Hash
         var userHash = "";
         var hashService = new HashService();
 
-        // TODO: POPULATE 'accountRequest' salt
-
-        // TODO: IMPLEMENT SALT FUNC
-
-
-        var hashResponse = hashService.Hasher(userId + /*accountRequest.Salt*/ "badsalt");
+        var hashResponse = hashService.Hasher(userId + salt);
 
         if (hashResponse.Output is not null)
         {
@@ -174,12 +186,36 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
     }
 
+    private string createSalt() {
+        
+        var salt = "";
+        var saltResponse = saltService.getSalt();
+
+        if (saltResponse.Output != null)
+        {
+            foreach (string output in saltResponse.Output)
+            {
+                salt = output;
+            }
+        }
+
+        return salt;
+    }
+
     private async Task<Response> createLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
     {
         Response createAccountResponse = await appUserManagementService.CreateAccount(lifelogAccountRequest);
 
         return createAccountResponse;
 
+    }
+
+    private async Task<Response> createLifelogUserRoleInDB(LifelogAccountRequest lifelogAccountRequest) {
+        string sql = $"INSERT INTO LifelogUserRole ({lifelogAccountRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})" 
+         + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
+        var createLifelogUserRoleInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createLifelogUserRoleInDBResponse;
     }
 
     private async Task<Response> createUserHashInDB(LifelogUserHashRequest lifelogUserHashRequest)
@@ -194,6 +230,22 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         Response createLifelogProfileResponse = await appUserManagementService.CreateProfile(lifelogProfileRequest);
 
         return createLifelogProfileResponse;
+    }
+
+    private async Task<Response> createLifelogUserOTPInDB(LifelogProfileRequest lifelogProfileRequest) {
+        string sql = $"INSERT INTO LifelogUserOTP ({lifelogProfileRequest.UserId.Type}) VALUES (\"{lifelogProfileRequest.UserId.Value}\")";
+        var createLifelogUserOTPInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createLifelogUserOTPInDBResponse;
+    }
+
+    private async Task<Response> createLifelogAuthenticationInDB(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
+    {
+        string sql = $"INSERT INTO LifelogAuthentication ({lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})" 
+         + $"VALUES (\"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
+        var createLifelogAuthenticationInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createLifelogAuthenticationInDBResponse;
     }
 
     private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
@@ -217,5 +269,28 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
         return recoverLifelogAccountResponse;
     }
+
+    public async Task<string> getUserHashFromUserId(string userId) {
+        if (userId == string.Empty) return "";
+
+        string userHash = "";
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        string sql = $"SELECT UserHash FROM LifelogAccount WHERE UserId=\"{userId}\"";
+
+        var response = await readDataOnlyDAO.ReadData(sql);
+
+        if (response.Output != null) {
+            foreach (List<Object> output in response.Output) {
+                foreach (string userHashOutput in output) {
+                    userHash = userHashOutput;
+                }
+            }
+        }
+
+        return userHash;
+    }
+
     #endregion
 }
