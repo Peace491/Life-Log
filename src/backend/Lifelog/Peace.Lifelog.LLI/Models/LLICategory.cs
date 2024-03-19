@@ -22,7 +22,8 @@ public class LLICategory
             Hobby,
             Thrill,
             Travel,
-            Volunteering
+            Volunteering,
+            Food
         };
 
     public static bool IsValidCategory(string category)

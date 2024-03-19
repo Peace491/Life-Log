@@ -33,8 +33,21 @@ public class LLIController : ControllerBase
     [Route("postLLI")]
     public async Task<IActionResult> PostLLI([FromBody] PostLLIRequest createLLIRequest)
     {
-        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        if (Request.Headers == null) {
+            return StatusCode(401);
+        }
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) {
+            return StatusCode(401);
+        }
+
         var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null) {
+            return StatusCode(401);
+        }
 
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
@@ -49,28 +62,76 @@ public class LLIController : ControllerBase
 
         var response = await this.lliService.CreateLLI(userHash, lli);
 
-        return Ok(response);
+        if (response.HasError == false) 
+        {
+            return Ok(response);
+        }
+        else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within one year prior")) 
+        {
+            return StatusCode(400, response.ErrorMessage);
+        } 
+        else 
+        {
+            return StatusCode(500);
+        }
+        
     }
 
     [HttpGet]
     [Route("getAllLLI")]
     public async Task<IActionResult> GetAllLLI()
     {
-        
-        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        if (Request.Headers == null) {
+            return StatusCode(401);
+        }
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) {
+            return StatusCode(401);
+        }
+
         var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null) {
+            return StatusCode(401);
+        }
 
         var response = await this.lliService.GetAllLLIFromUser(userHash);
 
-        return Ok(response);
+        if (response.HasError == false) 
+        {
+            return Ok(response);
+        }
+        else if (response.ErrorMessage!.Contains("UserHash can not be empty")) 
+        {
+            return StatusCode(400, response.ErrorMessage);
+        } 
+        else 
+        {
+            return StatusCode(500);
+        }
     }
 
     [HttpPut]
     [Route("putLLI")]
     public async Task<IActionResult> PutLLI([FromBody]PutLLIRequest updateLLIRequest)
     {
-        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        if (Request.Headers == null) {
+            return StatusCode(401);
+        }
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) {
+            return StatusCode(401);
+        }
+
         var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null) {
+            return StatusCode(401);
+        }
 
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
@@ -86,28 +147,62 @@ public class LLIController : ControllerBase
 
         var response = await this.lliService.UpdateLLI(userHash, lli);
 
-        Console.WriteLine(response.ErrorMessage);
-
-        return Ok(response);
+        if (response.HasError == false) 
+        {
+            return Ok(response);
+        }
+        else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within one year prior")) 
+        {
+            return StatusCode(400, response.ErrorMessage);
+        } 
+        else 
+        {
+            return StatusCode(500);
+        }
     }
 
     [HttpDelete]
     [Route("deleteLLI")]
     public async Task<IActionResult> DeleteLLI(string lliId)
     {
-        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        if (Request.Headers == null) {
+            return StatusCode(401);
+        }
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) {
+            return StatusCode(401);
+        }
+
         var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null) {
+            return StatusCode(401);
+        }
 
         var lli = new LLI();
         lli.LLIID = lliId;
 
         var response = await this.lliService.DeleteLLI(userHash, lli);
 
-        return Ok(response);
+        if (response.HasError == false) 
+        {
+            return Ok(response);
+        }
+        else if (response.ErrorMessage!.Contains("invalid")) 
+        {
+            return StatusCode(400, response.ErrorMessage);
+        } 
+        else 
+        {
+            return StatusCode(500);
+        }
     }
 
 
 }
+
 
 public class RequestHeader() {
     public string ContentType { get; set; } = string.Empty;
