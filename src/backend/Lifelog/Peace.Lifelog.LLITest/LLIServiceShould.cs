@@ -50,6 +50,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
                 USER_HASH = output;
             }
         }
+
     }
 
     public Task DisposeAsync()
@@ -355,8 +356,6 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     {
         // Arrange
         string testLLITitle = "Test LLI Title";
-
-        
 
         var testLLI = new LLI();
         testLLI.UserHash = "Test Invalid User Hash";

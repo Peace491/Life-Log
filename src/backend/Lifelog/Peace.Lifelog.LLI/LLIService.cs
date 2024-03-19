@@ -196,7 +196,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
 
         // Insert Category
-        var insertCategorySQL = "INSERT INTO LLICategories VALUES ";
+        var insertCategorySQL = "INSERT INTO LLICategories (LLIId, Category) VALUES ";
 
         foreach (string category in lli.Categories!)
         {
@@ -480,7 +480,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             // Delete all existing lli categories of that lli
             var deleteOldCategoriesSql = $"DELETE FROM LLICategories WHERE lliid=\"{lli.LLIID}\"";
 
-            var insertNewCategoriesSql = "INSERT INTO LLICategories VALUES ";
+            var insertNewCategoriesSql = "INSERT INTO LLICategories (LLIId, Category) VALUES ";
 
             foreach (string category in lli.Categories)
             {
@@ -592,8 +592,16 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
-        var completionDateCheckSql = "SELECT CompletionDate "
-        + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\"";
+        var completionDateCheckSql = "";
+
+        if (lli.LLIID != string.Empty) {
+            completionDateCheckSql = "SELECT CompletionDate "
+            + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\" AND LLIId != {lli.LLIID}";
+        } else {
+            completionDateCheckSql = "SELECT CompletionDate "
+            + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\"";
+        }
+        
 
         var completionDateCheckResponse = await this.readDataOnlyDAO.ReadData(completionDateCheckSql);
 

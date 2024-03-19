@@ -10,7 +10,7 @@ using System.Text;
 
 public class JWTService
 {
-    public Jwt createJWT(HttpRequest request, AppPrincipal appPrincipal) {
+    public Jwt createJWT(HttpRequest request, AppPrincipal appPrincipal, string userHash) {
         var header = new JwtHeader();
         var payload = new JwtPayload()
         {
@@ -19,6 +19,7 @@ public class JWTService
             Aud = "myApp",
             Iat = DateTime.UtcNow.Ticks,
             Exp = DateTime.UtcNow.AddMinutes(20).Ticks,
+            UserHash = userHash,
             Claims = appPrincipal.Claims
         };
 

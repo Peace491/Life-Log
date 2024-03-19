@@ -1,6 +1,6 @@
 'use strict';
 
-import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
+
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -12,6 +12,8 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
         // Handle missing dependencies
         alert("Missing dependencies");
     }
+
+    let jwtToken = ""
 
     const webServiceUrl = 'http://localhost:8080/lli';
 
@@ -49,7 +51,6 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
         }
 
         let options = {
-            userHash: "System",
             title: title,
             deadline: deadline,
             categories: selectedCategories,
@@ -62,13 +63,12 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
             recurrenceFrequency: recurrenceFrequency
         }
 
-        let request = ajaxClient.post(createLLIUrl, options)
+        let request = ajaxClient.post(createLLIUrl, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
                 return response.json()
             }).then(function (response) {
-                console.log(response)
                 location.reload()
                 resolve(response)
             }).catch(function (error) {
@@ -80,8 +80,8 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
     // NOT exposed to the global object ("Private" functions)
     function getAllLLI() {
 
-        let getUrl = webServiceUrl + '/getAllLLI?userHash=System';
-        let request = ajaxClient.get(getUrl);
+        let getUrl = webServiceUrl + '/getAllLLI';
+        let request = ajaxClient.get(getUrl, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
@@ -98,13 +98,13 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
     function updateLLI(options) {
         let updateLLIUrl = webServiceUrl + '/putLLI'
 
-        let request = ajaxClient.put(updateLLIUrl, options)
+        let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
                 return response.json()
             }).then(function (response) {
-                location.reload()
+                //location.reload()
                 resolve(response)
             }).catch(function (error) {
                 reject(error)
@@ -113,8 +113,8 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
     }
 
     function deleteLLI(lliid) {
-        let deleteUrl = webServiceUrl + '/deleteLLI?userHash=System&lliID=' + lliid;
-        let request = ajaxClient.del(deleteUrl);
+        let deleteUrl = webServiceUrl + '/deleteLLI?lliid=' + lliid;
+        let request = ajaxClient.del(deleteUrl, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
@@ -264,12 +264,22 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
         }
     }
 
+    function setupLogout() {
+        let logoutInput = document.getElementById('logout')
+
+        logoutInput.addEventListener('click', function() {
+            window.localStorage.clear()
+            location.reload()
+        })
+    }
+
     function showLLI() {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
 
         // Get initial lli
         getAllLLI().then(function (completedLLIList) {
+            if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
                 let lliHTML = createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
                 if (lli.status != "Completed") {
@@ -286,12 +296,15 @@ import { createLLIComponents, filterLLI } from './lli-dom-manipulation.js'
 
     // Initialize the current view by setting up data and attaching event handlers 
     function init() {
+        jwtToken = localStorage["token-local"]
+
         // Set up event handlers
         setupCreateLLITemplate();
         setupCreateLLISubmit();
         // setupFilterSelect();
         setupFilter();
         setupSearch();
+        setupLogout();
 
         // Get data
         showLLI();

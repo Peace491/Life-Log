@@ -1,11 +1,12 @@
-function post(url, data) {
+function post(url, data, jwtToken) {
     const options = {
         method: 'POST',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -15,7 +16,7 @@ function post(url, data) {
     return fetch(url, options);
 }
 
-function get(url) {
+function get(url, jwtToken) {
 
     const options = {
         method: 'GET',
@@ -23,7 +24,8 @@ function get(url) {
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -32,14 +34,15 @@ function get(url) {
     return fetch(url, options);
 }
 
-function put(url, data) {
+function put(url, data, jwtToken) {
     const options = {
         method: 'PUT',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -49,14 +52,15 @@ function put(url, data) {
     return fetch(url, options);
 }
 
-function del(url) {
+function del(url, jwtToken) {
     const options = {
         method: 'DELETE',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
