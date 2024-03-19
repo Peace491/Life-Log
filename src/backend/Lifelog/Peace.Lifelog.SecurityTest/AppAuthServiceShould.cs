@@ -152,7 +152,7 @@ public class AppAuthServiceShould : IDisposable
 
         authRequest.UserId = (TestVariables.USER_ID_TYPE, mockUserId);
         authRequest.Proof = (TestVariables.PROOF_TYPE ,mockProof);
-        authRequest.Claims = (TestVariables.CLAIM_TYPE, "");
+        authRequest.Claims = ("", "");
 
         var nullExceptionIsReturn = false;
 
