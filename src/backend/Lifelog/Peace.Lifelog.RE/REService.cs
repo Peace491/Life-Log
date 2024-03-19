@@ -70,14 +70,13 @@ namespace Peace.Lifelog.RE
         }
 
         // Helper Functions
-
         private Dictionary<string, int> scoreInit(Response formResponse)
         {
             Dictionary<string, int> userScores = new Dictionary<string, int>();
             if (formResponse.Output == null) return userScores;
             foreach (List<Object> pair in formResponse.Output)
             {
-                if (pair[0] == null || pair[1] == null)
+                if (pair[0] == null || pair[1] == null || pair == null)
                 {
                     return userScores;
                 }
@@ -159,6 +158,7 @@ namespace Peace.Lifelog.RE
 
         private List<string> getTopTwoCategories(Dictionary<string, int> scoreDict)
         {
+            // https://stackoverflow.com/questions/22957537/dictionary-getting-top-most-elements
             var topTwoKeys = scoreDict.OrderByDescending(kvp => kvp.Value)
                                       .Take(2)
                                       .Select(kvp => kvp.Key)
@@ -169,7 +169,31 @@ namespace Peace.Lifelog.RE
         // Responsible for dynamically constructing the SQL query to pull the records from the database
         private string constructRecSql(int numberRecomendations) // Params for helper need discussion
         {
-
+            int recsLeft = numberRecomendations;
+            while (recsLeft > 0)
+            {
+                // TODO : Add logic to construct the SQL query based on the number of recomendations requested
+                if (recsLeft % 5 == 0)
+                {
+                    // Add logic to pull 5 recomendations
+                    recsLeft -= 5;
+                }
+                if (recsLeft % 3 == 0)
+                {
+                    // Add logic to pull 3 recomendations
+                    recsLeft -= 3;
+                }
+                if (recsLeft % 2 == 0)
+                {
+                    // Add logic to pull 2 recomendations
+                    recsLeft -= 2;
+                }
+                if (recsLeft == 1)
+                {
+                    // Add logic to pull 1 recomendation
+                    recsLeft--;
+                }
+            }
             // TODO : Add logic to pull records from the database
             string query = @"
                 -- define stuff
