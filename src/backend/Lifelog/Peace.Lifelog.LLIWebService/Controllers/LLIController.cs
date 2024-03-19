@@ -3,7 +3,10 @@
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
+using System.Text.Json;
+using back_end;
 
 [ApiController]
 [Route("lli")]  // Defines the default parent URL path for all action methods to be the name of controller
@@ -30,6 +33,9 @@ public class LLIController : ControllerBase
     [Route("postLLI")]
     public async Task<IActionResult> PostLLI([FromBody] PostLLIRequest createLLIRequest)
     {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        var userHash = jwtToken.Payload.UserHash;
+
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
         lli.Categories = createLLIRequest.Categories;
@@ -41,15 +47,19 @@ public class LLIController : ControllerBase
         lli.Recurrence.Status = createLLIRequest.RecurrenceStatus;
         lli.Recurrence.Frequency = createLLIRequest.RecurrenceFrequency;
 
-        var response = await this.lliService.CreateLLI(createLLIRequest.UserHash, lli);
+        var response = await this.lliService.CreateLLI(userHash, lli);
 
         return Ok(response);
     }
 
     [HttpGet]
     [Route("getAllLLI")]
-    public async Task<IActionResult> GetAllLLI(string userHash)
+    public async Task<IActionResult> GetAllLLI()
     {
+        
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        var userHash = jwtToken.Payload.UserHash;
+
         var response = await this.lliService.GetAllLLIFromUser(userHash);
 
         return Ok(response);
@@ -59,6 +69,9 @@ public class LLIController : ControllerBase
     [Route("putLLI")]
     public async Task<IActionResult> PutLLI([FromBody]PutLLIRequest updateLLIRequest)
     {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        var userHash = jwtToken.Payload.UserHash;
+
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
         lli.Title = updateLLIRequest.Title;
@@ -71,15 +84,20 @@ public class LLIController : ControllerBase
         lli.Recurrence.Status = updateLLIRequest.RecurrenceStatus;
         lli.Recurrence.Frequency = updateLLIRequest.RecurrenceFrequency;
 
-        var response = await this.lliService.UpdateLLI(updateLLIRequest.UserHash, lli);
+        var response = await this.lliService.UpdateLLI(userHash, lli);
+
+        Console.WriteLine(response.ErrorMessage);
 
         return Ok(response);
     }
 
     [HttpDelete]
     [Route("deleteLLI")]
-    public async Task<IActionResult> DeleteLLI(string userHash, string lliId)
+    public async Task<IActionResult> DeleteLLI(string lliId)
     {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]);
+        var userHash = jwtToken.Payload.UserHash;
+
         var lli = new LLI();
         lli.LLIID = lliId;
 
@@ -89,4 +107,9 @@ public class LLIController : ControllerBase
     }
 
 
+}
+
+public class RequestHeader() {
+    public string ContentType { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
 }

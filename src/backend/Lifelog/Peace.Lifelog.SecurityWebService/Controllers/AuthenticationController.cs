@@ -36,7 +36,7 @@ public class AuthenticationController : ControllerBase
 
         var jwtService = new JWTService();
 
-        var jwt = jwtService.createJWT(Request, appPrincipal);
+        var jwt = jwtService.createJWT(Request, appPrincipal, authenticationRequest.UserHash);
 
         return Ok(JsonSerializer.Serialize<Jwt>(jwt));
     }

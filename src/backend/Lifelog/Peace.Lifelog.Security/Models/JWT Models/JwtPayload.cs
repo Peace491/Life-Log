@@ -15,6 +15,7 @@ namespace back_end
         public long? Nbf {get; set;}
 
         public string? Scope {get; set;} = String.Empty;
+        public string? UserHash {get; set;} = string.Empty;
 
         public IDictionary<string, string>? Claims {get; set;}
 

@@ -45,6 +45,7 @@
                 return response.json();
             }).then(function (jwtToken) {
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
+                location.reload()
                 resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
                 reject(error);
