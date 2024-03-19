@@ -364,7 +364,6 @@ function convertLLIToEditMode(id, updateLLI) {
         }
 
         let options = {
-            userHash: "System",
             lliid: id,
             title: title,
             deadline: deadline,
@@ -559,8 +558,12 @@ function filterLLI(filterOption, filterContainer) {
 
 }
 
-export {
-    createLLIComponents,
-    convertLLIToEditMode,
-    filterLLI
+window.lliDomManip ={
+    createLLIComponents: createLLIComponents,
+    convertLLIToEditMode: convertLLIToEditMode,
+    filterLLI: filterLLI
 }
+
+// export {
+    
+// }

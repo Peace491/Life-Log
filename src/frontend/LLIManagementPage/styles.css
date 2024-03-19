@@ -122,6 +122,21 @@ header {
     width: 60%;
 }
 
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
+}
+
 main {
     height: 100%;
     display: flex;
