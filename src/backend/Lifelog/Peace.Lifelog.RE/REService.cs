@@ -185,81 +185,42 @@ namespace Peace.Lifelog.RE
         // Responsible for dynamically constructing the SQL query to pull the records from the database
         private string constructRecSql(int numberRecomendations, REDataMart rEDataMart) // Params for helper need discussion
         {
-            string firstPart = $"-- define stuff SET @UsersMostCommon = \"{rEDataMart.MostCommonUserCategory}\"; SET @UserSubCategory = \"{rEDataMart.MostCommonUserSubCategory}\"; SET @MostCommonPublic = \"{rEDataMart.MostCommonUserCategory}\"; SET @ExcludedUserHash = \"{rEDataMart.UserHash}\";";
+            // string firstPart = $"SET @UsersMostCommon = \"{rEDataMart.MostCommonUserCategory}\"; SET @UserSubCategory = \"{rEDataMart.MostCommonUserSubCategory}\"; SET @MostCommonPublic = \"{rEDataMart.MostCommonUserCategory}\"; SET @ExcludedUserHash = \"{rEDataMart.UserHash}\";";
+            string firstPart = $"SET @UsersMostCommon = 'Mental Health'; SET @UserSubCategory = 'Art'; SET @MostCommonPublic = 'Mental Health'; SET @ExcludedUserHash = 'System';";
+            string secondPart = "WITH LLIWithCategory AS (SELECT LLI.LLIId, LLI.Title, LLI.Description, LLI.RecurrenceStatus, LLI.RecurrenceFrequency, LC.Category FROM LLI JOIN LLICategories LC ON LLI.LLIId = LC.LLIId WHERE LLI.UserHash != @ExcludedUserHash)";
+
             if(numberRecomendations < 1) throw new ArgumentException("Number of recomendations must be greater than 0");
-            if(numberRecomendations == 1) return "SELECT * FROM LLI WHERE Visibility = 'Public' LIMIT 1;"; // return a single record
+            
+            string query = firstPart + secondPart;
             int recsLeft = numberRecomendations;
+            int current;
+
             while (recsLeft > 0)
             {
+                current = recsLeft % 5;
                 // TODO : Add logic to construct the SQL query based on the number of recomendations requested
-                if (recsLeft % 5 == 0)
+                if (current == 0)
                 {
                     // Add logic to pull 5 recomendations
+                    query += "SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category = @UsersMostCommon ORDER BY RAND() LIMIT 2 ) AS Cat1 UNION ALL SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category = @UserSubCategory ORDER BY RAND() LIMIT 1 ) AS Cat2 UNION ALL SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category = @MostCommonPublic ORDER BY RAND() LIMIT 1 ) AS Cat3 UNION ALL SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category NOT IN (@UsersMostCommon, @UserSubCategory, @MostCommonPublic) ORDER BY RAND() LIMIT 1 ) AS OtherCats;";
                     recsLeft -= 5;
                 }
-                if (recsLeft % 3 == 0)
+                if (current == 3)
                 {
                     // Add logic to pull 3 recomendations
                     recsLeft -= 3;
                 }
-                if (recsLeft % 2 == 0)
+                if (current == 2)
                 {
                     // Add logic to pull 2 recomendations
                     recsLeft -= 2;
                 }
-                if (recsLeft == 1)
+                if (current == 1)
                 {
                     // Add logic to pull 1 recomendation
                     recsLeft--;
                 }
-            }
-            // TODO : Add logic to pull records from the database
-            string query1 = @"
-                -- define stuff
-                SET @Category1 = 'CategoryName1';
-                SET @Category2 = 'CategoryName2';
-                SET @Category3 = 'CategoryName3';
-                SET @ExcludedUserHash = 'specificUserHash';
-
-                -- get stuff
-                -- ideally, this part is dynamic. so we concat subqueries based on num recs
-                (SELECT LLI.LLIId, LLI.Title, LC.Category
-                FROM LLI
-                JOIN LLICategories LC ON LLI.LLIId = LC.LLIId
-                WHERE LC.Category = @Category1
-                AND LLI.UserHash != @ExcludedUserHash
-                LIMIT 2)
-
-                UNION ALL
-
-                (SELECT LLI.LLIId, LLI.Title, LC.Category
-                FROM LLI
-                JOIN LLICategories LC ON LLI.LLIId = LC.LLIId
-                WHERE LC.Category = @Category2
-                AND LLI.UserHash != @ExcludedUserHash
-                LIMIT 1)
-
-                UNION ALL
-
-                (SELECT LLI.LLIId, LLI.Title, LC.Category
-                FROM LLI
-                JOIN LLICategories LC ON LLI.LLIId = LC.LLIId
-                WHERE LC.Category = @Category3
-                AND LLI.UserHash != @ExcludedUserHash
-                LIMIT 1)
-
-                UNION ALL
-
-                (SELECT LLI.LLIId, LLI.Title, LC.Category
-                FROM LLI
-                JOIN LLICategories LC ON LLI.LLIId = LC.LLIId
-                WHERE LC.Category NOT IN (@Category1, @Category2, @Category3)
-                AND LLI.UserHash != @ExcludedUserHash
-                LIMIT 1);
-            ";
-
-            string query = "SELECT * FROM LLI WHERE Visibility = 'Public';";
-            
+            }           
             return query;
         }
 
