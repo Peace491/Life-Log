@@ -15,7 +15,7 @@
 <body>
     <header>
         <div class="logo-container">
-            <img src="Assets/logo.svg" alt="Lifelog Logo" class="logo" />
+            <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" />
         </div>
         <div class="header-contents-container">
             <div class="page-link-container">
@@ -151,10 +151,10 @@
                         <div class="lli-main-content-container">
                             <div class="lli-deadline-container">
                                 <h2><span style="font-weight: 600;">Deadline:</span></h2>
-                                <input type="date" id="create-date-input" class="date-input" value="2024-11-11"></input>
+                                <input type="date" id="create-date-input" class="date-input" value="2024-11-11" autocomplete="off"></input>
                             </div>
                             <div class="lli-category-container">
-                                <select name="" id="create-category-input" class="category-select" multiple>
+                                <select name="" id="create-category-input" class="category-select" multiple autocomplete="off">
                                     <option value="Mental Health" selected="selected">Mental Health</option>
                                     <option value="Physical Health">Physical Health</option>
                                     <option value="Outdoor">Outdoor</option>
@@ -183,7 +183,7 @@
                             <div class="lli-hidden-required-fields-container">
                                 <div class="lli-status-container">
                                     <h2><span style="font-weight: 600;">Status: </span></h2>
-                                    <select id="create-status-input" class="status-select">
+                                    <select id="create-status-input" class="status-select" autocomplete="off">
                                         <option value="Active" selected="selected">Active</option>
                                         <option value="Completed">Completed</option>
                                         <option value="Postponed">Postponed</option>
@@ -191,7 +191,7 @@
                                 </div>
                                 <div class="lli-visibility-container">
                                     <h2><span style="font-weight: 600;">Visibility: </span></h2>
-                                    <select name="" id="create-visibility-input" class="visibility-select">
+                                    <select name="" id="create-visibility-input" class="visibility-select" autocomplete="off">
                                         <option value="Public" selected="selected">Public</option>
                                         <option value="Private">Private</option>
                                     </select>
@@ -203,7 +203,7 @@
                                         contenteditable="">100</span></h2>
                                 <div class="lli-recurrence-container">
                                     <h2><span style="font-weight: 600;">Recurring: </span></h2>
-                                    <select id="create-recurrence-input" class="recurrence-select">
+                                    <select id="create-recurrence-input" class="recurrence-select" autocomplete="off">
                                         <option value="Off" selected="selected">Off</option>
                                         <option value="Weekly">Weekly</option>
                                         <option value="Monthly">Monthly</option>
@@ -213,7 +213,7 @@
                             </div>
                         </div>
                         <div class="lli-media-container">
-                            <img src="./Assets/default-pic.svg" alt="">
+                            <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
                         </div>
                         <div class="create-lli-button-container">
                             <button id="create-lli-button">Create LLI</button>
@@ -248,30 +248,6 @@
                             placeholder="Search LLI">
                     </div>
                     <div class="finished-lli-filter-container lli-filter-container">
-                        <!-- <select id="finished-lli-filter-options">
-                            <option value="None" selected="selected">None</option>
-                            <optgroup label="Categories">
-                                <option value="Mental Health">Mental Health</option>
-                                <option value="Physical Health">Physical Health</option>
-                                <option value="Outdoor">Outdoor</option>
-                                <option value="Sport">Sport</option>
-                                <option value="Art">Art</option>
-                                <option value="Hobby">Hobby</option>
-                                <option value="Thrill">Thrill</option>
-                                <option value="Travel">Travel</option>
-                                <option value="Volunteering">Volunteering</option>
-                                <option value="Food">Food</option>
-                            </optgroup>
-                            <optgroup label="Status">
-                                <option value="Active" selected="selected">Active</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Postponed">Postponed</option>
-                            </optgroup>
-                            <optgroup label="Visibility">
-                                <option value="Public" selected="selected">Public</option>
-                                <option value="Private">Private</option>
-                            </optgroup>
-                        </select> -->
 
                         <div id="finished-lli-filter-options">
                             <h2>Filter LLI</h2>
@@ -359,6 +335,7 @@
 
     <!-- Dependencies -->
     <script src="../Resources/Ajax/fetch-ajax.js"></script>
+    <script src="lli-dom-manipulation.js"></script>
 
     <!-- Page Specific -->
     <script src="lli.js" type="module"></script>

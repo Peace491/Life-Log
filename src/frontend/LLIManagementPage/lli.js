@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
 (function (root, ajaxClient) {
@@ -13,65 +11,70 @@
         alert("Missing dependencies");
     }
 
+    const MAX_TITLE_LENGTH = 50
+    const EARLIEST_DEADLINE = 1960
+    const LATEST_DEADLINE = 2100
+    const CATEGORIES_LIST = new Set([
+        "Mental Health",
+        "Physical Health",
+        "Outdoor",
+        "Sport",
+        "Art",
+        "Hobby",
+        "Thrill",
+        "Travel",
+        "Volunteering",
+        "Food"
+    ]);
+    const MAX_DESC_LENGTH = 200
+    const STATUS_LIST = new Set([
+        "Active",
+        "Completed",
+        "Postponed"
+    ])
+    const VISIBILITY_LIST = new Set([
+        "Public",
+        "Private"
+    ])
+    const MIN_COST = 0
+    const RECCURENCE_STATUS_LIST = new Set([
+        "On",
+        "Off"
+    ])
+    const RECCURENCE_FREQUENCY_LIST = new Set([
+        "Weekly",
+        "Monthly",
+        "Yearly"
+    ])
+
     let jwtToken = ""
 
     const webServiceUrl = 'http://localhost:8080/lli';
 
     // NOT exposed to the global object ("Private" functions)
-    function createLLI() {
+    function createLLI(options) {
         let createLLIUrl = webServiceUrl + '/postLLI'
 
-        let title = document.getElementById('create-title-input').textContent
-        let deadline = document.getElementById('create-date-input').value
-        let categories = document.getElementById('create-category-input')
-
-        var selectedCategories = [];
-        for (var i = 0; i < categories.options.length; i++) {
-            var option = categories.options[i];
-            if (option.selected) {
-                selectedCategories.push(option.value);
-            }
-        }
-
-        let description = document.getElementById('create-paragraph-input').textContent
-        let status = document.getElementById('create-status-input').value
-        let visibility = document.getElementById('create-visibility-input').value
-        let cost = document.getElementById('create-cost-input').textContent
-        let recurrence = document.getElementById('create-recurrence-input').value
-
-        let recurrenceStatus;
-        let recurrenceFrequency;
-        if (recurrence === "Off") {
-            recurrenceStatus = "Off"
-            recurrenceFrequency = "None"
-        }
-        else {
-            recurrenceStatus = "On"
-            recurrenceFrequency = recurrence
-        }
-
-        let options = {
-            title: title,
-            deadline: deadline,
-            categories: selectedCategories,
-            description: description,
-            status: status,
-            visibility: visibility,
-            deadline: deadline,
-            cost: cost,
-            recurrenceStatus: recurrenceStatus,
-            recurrenceFrequency: recurrenceFrequency
+        let isValidOption = validateLLIOptions(options)
+        if (!isValidOption) {
+            return
         }
 
         let request = ajaxClient.post(createLLIUrl, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
                 return response.json()
             }).then(function (response) {
+                alert('The LLI is successfully created.')
                 location.reload()
                 resolve(response)
             }).catch(function (error) {
+                alert(error)
                 reject(error)
             })
         })
@@ -79,17 +82,21 @@
 
     // NOT exposed to the global object ("Private" functions)
     function getAllLLI() {
-
         let getUrl = webServiceUrl + '/getAllLLI';
         let request = ajaxClient.get(getUrl, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
                 return response.json();
             }).then(function (data) {
                 let output = data.output;
                 resolve(output);
             }).catch(function (error) {
+                alert(error)
                 reject(error);
             });
         });
@@ -98,15 +105,26 @@
     function updateLLI(options) {
         let updateLLIUrl = webServiceUrl + '/putLLI'
 
+        let isValidOption = validateLLIOptions(options)
+        if (!isValidOption) {
+            return
+        }
+
         let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
                 return response.json()
             }).then(function (response) {
-                //location.reload()
+                alert('The LLI is successfully updated.')
+                location.reload()
                 resolve(response)
             }).catch(function (error) {
+                alert(error)
                 reject(error)
             })
         })
@@ -118,14 +136,78 @@
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
                 return response.json();
             }).then(function (data) {
+                alert('The LLI is successfully deleted.')
                 location.reload()
                 resolve(data);
             }).catch(function (error) {
+                alert(error)
                 reject(error)
             })
         })
+    }
+
+    function validateLLIOptions(option) {
+        // Input Validation
+        if (option.title == "" || option.title.length > MAX_TITLE_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.title.replaceAll(' ', ''))) {
+            alert('The LLI title must only contain  alphanumeric values between 1-50 characters long, please try again.')
+            return false
+        }
+
+        if (option.categories == null) {
+            alert('The category must not be empty')
+            return false
+        }
+
+        for (const category of option.categories) {
+            if (!CATEGORIES_LIST.has(category)) {
+                alert('The LLI category must be valid, please try again.')
+                return false
+            }
+        }
+
+        if (option.description == "" || option.description.length > MAX_DESC_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.description.replaceAll(' ', ''))) {
+            alert('The LLI description must only contain  alphanumeric values between 1-200 characters long, please try again.')
+            return false
+        }
+
+        if (!STATUS_LIST.has(option.status)) {
+            alert('The LLI status must be either “Active”, “Completed”, or “Postponed”, please try again.')
+            return false
+        }
+
+        if (!VISIBILITY_LIST.has(option.visibility)) {
+            alert('The LLI visibility must be either “Public” or “Private”, please try again.')
+            return false
+        }
+
+        let year = parseInt(option.deadline.substring(0, 4))
+        if (year < EARLIEST_DEADLINE || year > LATEST_DEADLINE) {
+            alert(`The LLI deadline must be between 01/01/${EARLIEST_DEADLINE} and 12/31/${LATEST_DEADLINE}, please try again.`)
+            return false
+        }
+
+        if (option.cost < MIN_COST) {
+            alert("The LLI cost must be a numerical value greater or equal to $0 USD, please try again.")
+            return false
+        }
+
+        if (!RECCURENCE_STATUS_LIST.has(option.recurrenceStatus)) {
+            alert('The LLI reccurrence must be either “On” or “Off”, please try again.')
+            return false
+        }
+
+        if (option.recurrenceStatus == "On" && !RECCURENCE_FREQUENCY_LIST.has(option.recurrenceFrequency)) {
+            alert('The LLI occurrence frequency must be “Weekly”, “Monthly”, or “Yearly”, please try again.')
+            return false
+        }
+
+        return true
     }
 
     function setupCreateLLITemplate() {
@@ -144,7 +226,51 @@
 
     function setupCreateLLISubmit() {
         let createButton = document.getElementById('create-lli-button')
-        createButton.addEventListener('click', createLLI)
+        createButton.addEventListener('click', function () {
+            let title = document.getElementById('create-title-input').textContent
+            let deadline = document.getElementById('create-date-input').value
+            let categories = document.getElementById('create-category-input')
+
+            var selectedCategories = [];
+            for (var i = 0; i < categories.options.length; i++) {
+                var option = categories.options[i];
+                if (option.selected) {
+                    selectedCategories.push(option.value);
+                }
+            }
+
+            let description = document.getElementById('create-paragraph-input').textContent
+            let status = document.getElementById('create-status-input').value
+            let visibility = document.getElementById('create-visibility-input').value
+            let cost = document.getElementById('create-cost-input').textContent
+            let recurrence = document.getElementById('create-recurrence-input').value
+
+            let recurrenceStatus;
+            let recurrenceFrequency;
+            if (recurrence === "Off") {
+                recurrenceStatus = "Off"
+                recurrenceFrequency = "None"
+            }
+            else {
+                recurrenceStatus = "On"
+                recurrenceFrequency = recurrence
+            }
+
+            let options = {
+                title: title,
+                deadline: deadline,
+                categories: selectedCategories,
+                description: description,
+                status: status,
+                visibility: visibility,
+                deadline: deadline,
+                cost: cost,
+                recurrenceStatus: recurrenceStatus,
+                recurrenceFrequency: recurrenceFrequency
+            }
+
+            createLLI(options)
+        })
     }
 
     function setupFilter() {
@@ -210,15 +336,15 @@
         let checkboxesContainer = document.getElementById(containerType + "-lli-filter-checkboxes");
 
         // Uncheck all checkboxes
-        
+
         let checkboxesDiv = checkboxesContainer.querySelectorAll('.filter-input');
-          
+
         const checkedValues = []
 
         if (show) {
             checkboxesContainer.classList.remove('hidden')
 
-            
+
 
             // Iterate through each checkbox
             checkboxesDiv.forEach(checkbox => {
@@ -267,7 +393,7 @@
     function setupLogout() {
         let logoutInput = document.getElementById('logout')
 
-        logoutInput.addEventListener('click', function() {
+        logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
             location.reload()
         })
@@ -298,17 +424,20 @@
     function init() {
         jwtToken = localStorage["token-local"]
 
-        // Set up event handlers
-        setupCreateLLITemplate();
-        setupCreateLLISubmit();
-        // setupFilterSelect();
-        setupFilter();
-        setupSearch();
-        setupLogout();
+        if (jwtToken == null) {
+            window.location = '../HomePage/index.html'
+        } else {
+            // Set up event handlers
+            setupCreateLLITemplate();
+            setupCreateLLISubmit();
+            // setupFilterSelect();
+            setupFilter();
+            setupSearch();
+            setupLogout();
 
-        // Get data
-        showLLI();
-
+            // Get data
+            showLLI();
+        }
     }
 
     init();
