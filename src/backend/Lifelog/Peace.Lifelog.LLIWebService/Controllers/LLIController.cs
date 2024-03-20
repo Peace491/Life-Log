@@ -66,13 +66,13 @@ public class LLIController : ControllerBase
         {
             return Ok(response);
         }
-        else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within one year prior")) 
+        else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within the last year")) 
         {
             return StatusCode(400, response.ErrorMessage);
         } 
         else 
         {
-            return StatusCode(500);
+            return StatusCode(500, response.ErrorMessage);
         }
         
     }
@@ -151,7 +151,7 @@ public class LLIController : ControllerBase
         {
             return Ok(response);
         }
-        else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within one year prior")) 
+        else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within the last year")) 
         {
             return StatusCode(400, response.ErrorMessage);
         } 

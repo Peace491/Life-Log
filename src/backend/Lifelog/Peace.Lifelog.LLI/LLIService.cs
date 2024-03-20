@@ -163,6 +163,11 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         #endregion
 
         #region Create LLI in DB
+        lli.CompletionDate = "";
+        if (lli.Status == LLIStatus.Completed) {
+            lli.CompletionDate = DateTime.Today.ToString("yyyy-MM-dd");
+        }
+
         var timer = new Stopwatch();
         timer.Start();
 
@@ -176,9 +181,16 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + $"{lli.Cost}, "
         + $"\"{lli.Recurrence.Status}\", "
         + $"\"{lli.Recurrence.Frequency}\", "
-        + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", "
-        + $"null"
-        + ");";
+        + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", ";
+
+        if (lli.CompletionDate != "") {
+            sql += $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\"";
+        }
+        else {
+            sql += "null";
+        }
+        
+        sql += ");";
 
         createLLIResponse = await this.createDataOnlyDAO.CreateData(sql);
 
@@ -193,6 +205,17 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                 if (i == 0) lliid = id.ToString();
                 break;
             }
+        } else if (createLLIResponse.Output == null && createLLIResponse.HasError == false) {
+            createLLIResponse.HasError = true;
+            createLLIResponse.ErrorMessage = "The user does not exist";
+            var errorMessage = "The was an error with LLI creation";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            return createLLIResponse;
+        } else {
+            createLLIResponse.ErrorMessage = "LLI fields are invalid";
+            var errorMessage = "LLI fields are invalid";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+            return createLLIResponse;
         }
 
         // Insert Category
@@ -214,25 +237,16 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         #region Log
 
-
-        if (createLLIResponse.HasError)
-        {
-            createLLIResponse.ErrorMessage = "LLI fields are invalid";
-
-            var errorMessage = "LLI’s failed to save into the persistent data store.";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
-        }
-        else
-        {
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The LLI is successfully created");
-        }
+        
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The LLI is successfully created");
+        
 
         if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
         {
             var errorMessage = "Operation exceeded time frame";
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
         }
-        else if (timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
         {
             var errorMessage = "Operation took too long";
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
@@ -274,6 +288,12 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         readLLIResponse = await this.readDataOnlyDAO.ReadData(readLLISql, count: null);
 
+        if (readLLIResponse.Output == null) {
+            var message = "There is no lli associated with the account";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", message);
+            return readLLIResponse;
+        }
+
         // Read LLI Categories
         var readLLICategoriesSql = "SELECT lc.lliid, lc.category "
         + "FROM LLICategories lc INNER JOIN LLI l ON lc.lliid = l.lliid "
@@ -303,7 +323,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             var errorMessage = "Operation exceeded time frame";
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
         }
-        else if (timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
         {
             var errorMessage = "Operation took too long";
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
@@ -473,6 +493,14 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         updateLLIResponse = await this.updateDataOnlyDAO.UpdateData(updateLLISql);
 
+        if (updateLLIResponse.HasError)
+        {
+            updateLLIResponse.ErrorMessage = "LLI fields are invalid";
+
+            var errorMessage = updateLLIResponse.ErrorMessage;
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
         // Update Category
 
         if (lli.Categories != null && lli.Categories.Count != 0)
@@ -500,25 +528,16 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         #region Log
         // Log LLI Creation
-
-        if (updateLLIResponse.HasError)
-        {
-            updateLLIResponse.ErrorMessage = "LLI fields are invalid";
-
-            var errorMessage = updateLLIResponse.ErrorMessage;
-            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
-        }
-        else
-        {
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The LLI is successfully edited");
-        }
+        
+        var successlogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The LLI is successfully edited");
+        
 
         if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
         {
             var errorMessage = "Operation exceeded time frame";
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
         }
-        else if (timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
         {
             var errorMessage = "Operation took too long";
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
@@ -554,8 +573,22 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\" AND LLIId = \"{lli.LLIID}\";";
 
-        response = await this.deleteDataOnlyDAO.DeleteData(sql);
+        
+        var deleteResponse = await this.deleteDataOnlyDAO.DeleteData(sql);
         timer.Stop();
+
+        if (deleteResponse.Output != null) {
+            foreach (int rowsAffected in deleteResponse.Output)
+            {
+                if (rowsAffected == 0) {
+                    response.HasError = true;
+                    response.ErrorMessage = "Failed to delete LLI";
+                    return response;
+                }
+            }
+        }
+
+        response = deleteResponse;
         #endregion
 
         #region Log
@@ -577,7 +610,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             var errorMessage = "Operation exceeded time frame";
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
         }
-        else if (timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
         {
             var errorMessage = "Operation took too long";
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
@@ -604,6 +637,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         
 
         var completionDateCheckResponse = await this.readDataOnlyDAO.ReadData(completionDateCheckSql);
+
 
         if (completionDateCheckResponse.Output != null)
         {

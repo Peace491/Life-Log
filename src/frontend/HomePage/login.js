@@ -11,6 +11,8 @@
         alert("Missing dependencies");
     }
 
+    let jwtToken;
+
     const webServiceUrl = 'http://localhost:8082/authentication';
 
     // NOT exposed to the global object ("Private" functions)
@@ -45,6 +47,7 @@
                 return response.json();
             }).then(function (jwtToken) {
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
+                window.location = "../LLIManagementPage/index.html"
                 location.reload()
                 resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
@@ -102,28 +105,43 @@
         submitCredentialButton.innerText = "Log In!"
         // submitCredentialButton.disabled = true;
 
+        const submitButton = document.getElementById('submit-credential-button')
+
+        submitButton.removeEventListener('click', onSubmitRegistrationCredentials)
+
         // Make API queries
         var email = usernameInput.value
         getOTPEmail(email)
-        .then(function(userHash) {
-            // Change event listener of button
-            const submitButton = document.getElementById('submit-credential-button')
-            submitButton.removeEventListener('click', onSubmitRegistrationCredentials)
-
-            submitButton.addEventListener('click', () => {
-                authenticateOTP(userHash, otpInput.value)
-            });
-        })
-
-        
+            .then(function (userHash) {
+                // Change event listener of button
+                submitButton.addEventListener('click', () => {
+                    authenticateOTP(userHash, otpInput.value)
+                });
+            })
     }
 
     root.myApp = root.myApp || {};
 
     // Initialize the current view by setting up data and attaching event handlers 
     function init() {
-        const submitButton = document.getElementById('submit-credential-button')
-        submitButton.addEventListener('click', onSubmitRegistrationCredentials)
+        if (localStorage.length != 0) {
+            jwtToken = localStorage["token-local"]
+        }
+
+        if (jwtToken) {
+            window.location = "../LLIManagementPage/index.html"
+        }
+        else {
+            const submitButton = document.getElementById('submit-credential-button')
+            submitButton.addEventListener('click', onSubmitRegistrationCredentials)
+
+            const registerUserButton = document.getElementById('sign-up-text')
+            registerUserButton.addEventListener('click', function () {
+                window.location = '../RegistrationPage/index.html'
+            })
+        }
+
+
     }
 
     init();
