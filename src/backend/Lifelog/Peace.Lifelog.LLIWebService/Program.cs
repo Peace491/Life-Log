@@ -1,5 +1,4 @@
 using Microsoft.Net.Http.Headers;
-using Peace.Lifelog.LLI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,52 +20,60 @@ if (app.Environment.IsDevelopment())
 
 /* Setup of Middleware Pipeline */
 
-app.UseHttpsRedirection();
-
-// Defining a custom middleware AND adding it to Kestral's request pipeline
-// Custom middleware to improve security by stopping web server from advertising itself 
-app.Use(async (httpContext, next) =>
-{
-
-    // No inbound code to be executed
-    //
-    //
-    httpContext.Response.Headers.Server = "";
-
-    // Go to next middleware
-    await next(httpContext);
-
-    // Explicitly only wanting code to execite on the way out of pipeline (Response/outbound direction)
-    if (httpContext.Response.Headers.ContainsKey(HeaderNames.XPoweredBy))
-    {
-        httpContext.Response.Headers.Remove(HeaderNames.XPoweredBy);
-    }
-});
+// app.UseHttpsRedirection();
 
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline
 app.Use((httpContext, next) =>
 {
-    if (httpContext.Request.Method.ToUpper() == nameof(HttpMethod.Options).ToUpper() &&
-        httpContext.Request.Headers.XRequestedWith == "XMLHttpRequest")
+    if(httpContext.Request.Method == nameof(HttpMethod.Options).ToUpperInvariant())
     {
         var allowedMethods = new List<string>()
         {
             HttpMethods.Get,
             HttpMethods.Post,
+            HttpMethods.Put,
             HttpMethods.Options,
-            HttpMethods.Head
+            HttpMethods.Head,
+            HttpMethods.Delete
         };
 
-        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "*");
-        httpContext.Response.Headers.AccessControlAllowMethods = string.Join(",", allowedMethods); // "GET, POST, OPTIONS, HEAD"
+        httpContext.Response.StatusCode = 204;
+    
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
-        httpContext.Response.Headers.AccessControlMaxAge = TimeSpan.FromHours(2).Seconds.ToString();
+        httpContext.Response.Headers.AccessControlAllowCredentials = "true";
+
+        return Task.CompletedTask; // Terminate Request right away
+
     }
 
-    return next(httpContext);
+    return next();
 });
 
+app.Use((httpContext, next) => {
+    
+    var allowedMethods = new List<string>()
+    {
+        HttpMethods.Get,
+        HttpMethods.Post,
+        HttpMethods.Put,
+        HttpMethods.Options,
+        HttpMethods.Head,
+        HttpMethods.Delete
+    };
+
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
+    httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+    httpContext.Response.Headers.AccessControlAllowCredentials = "true";
+
+    return next();
+});
+
+
 app.MapControllers(); // Needed for mapping the routes defined in Controllers
+
 
 app.Run(); // Only part needed to execute Web API project

@@ -1,0 +1,4 @@
+{
+    "ConnectionString": "Server=.\\;Initial Catalog=db;UserID=Alice;Password=StrongPassword;",
+    "Timeout": 100
+}

@@ -1,8 +1,8 @@
 namespace Peace.Lifelog.UserManagementTest;
 
-using System.Diagnostics;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.UserManagement;
+using System.Diagnostics;
 
 public class AppUserManagementServiceShould : IDisposable
 {
@@ -765,7 +765,7 @@ public class AppUserManagementServiceShould : IDisposable
         // Act
         try
         {
-            var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+            var deleteAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
         }
         catch (ArgumentNullException)
         {
@@ -793,12 +793,12 @@ public class AppUserManagementServiceShould : IDisposable
         testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         // Act
-        var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
-        
-        
+        var deleteAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+
+
 
         // Assert
-        Assert.True(createAccountResponse.HasError == true);
+        Assert.True(deleteAccountResponse.HasError == true);
     }
 
     [Fact]
@@ -819,12 +819,12 @@ public class AppUserManagementServiceShould : IDisposable
         testAccountRequest.Password = (TestVariables.PASSWORD_TYPE, mockPassword);
 
         // Act
-        var createAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
-        
-        
+        var deleteAccountResponse = await appUserManagementService.DeleteAccount(testAccountRequest);
+
+
 
         // Assert
-        Assert.True(createAccountResponse.HasError == true);
+        Assert.True(deleteAccountResponse.HasError == true);
     }
     #endregion
 }

@@ -60,7 +60,7 @@ html, body, #root {
 body {
     display: flex;
     flex-direction: column;
-    background-image: url("Assets/lifelog-background.jpg");
+    background-image: url("../Assets/lifelog-background.jpg");
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -178,7 +178,7 @@ main {
 }
 
 input.username-input {
-    background-image:url('./Assets/email.svg');
+    background-image:url('../Assets/email.svg');
 }
 
 input.dob-input {
@@ -187,11 +187,11 @@ input.dob-input {
     font-style: normal;
     font-variation-settings: "slnt" 0;
 
-    background-image:url('./Assets/calendar.svg');
+    background-image:url('../Assets/calendar.svg');
 }
 
 input.zipcode-input {
-    background-image:url('./Assets/pin.svg');
+    background-image:url('../Assets/pin.svg');
 }
 
 @keyframes otp-input-appear {
@@ -200,7 +200,7 @@ input.zipcode-input {
 }
 
 input.otp-input {
-    background-image:url('./Assets/lock.svg');
+    background-image:url('../Assets/lock.svg');
     opacity: 0;
 }
 

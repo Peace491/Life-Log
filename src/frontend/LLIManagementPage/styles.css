@@ -1,0 +1,551 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html, body, #root {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("Assets/lli-management-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
+}
+
+main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    padding: 2% 5%;
+}
+
+.lli-container {
+    height: 500px;
+    width: 100%;
+    min-height: 100px;
+    background-color: rgba(141, 141, 141, 0.3);
+
+    border-radius: 20px;
+
+    padding: 10px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.lli-header-container {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.lli-header-title-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: fit-content;
+    padding: 5px;
+    position: relative;
+    bottom: 25px;
+
+    background-color: #EBA755;
+    border-radius: 10px;
+}
+
+.lli-header-title-container>h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.lli-search-filter-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.lli-search-bar-container {
+    height: 80%;
+}
+
+.lli-search-bar-container>input {
+    background-image:url('./Assets/search.jpg');
+    background-repeat:no-repeat;
+    background-position:left center;  
+    background-size: 20px;
+
+    padding-left: 22px;
+
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.lli-filter-container {
+    height: 25px;
+
+    Z-Index: 101;
+}
+
+.lli-filter-container:hover {
+    cursor: pointer;
+}
+
+#current-lli-filter-options, #finished-lli-filter-options {
+    border: none;
+    background-color: white;
+    border-radius: 5px;
+    
+
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+}
+
+#current-lli-filter-options > h2, #finished-lli-filter-options > h2 {
+    font-weight: 500;
+}
+
+.checkboxes {
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    gap: 3px;
+    background-color: #BCC2C1;
+}
+
+.filter-title {
+    font-weight: 500;
+}
+
+
+.lli-content-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 60px;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: scroll;
+    scrollbar-color: #EBA755 white;
+}
+
+.lli {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    
+
+    padding: 15px 15px;
+
+    height: 80%;
+    width: 250px;
+    min-width: 250px;
+
+    background-color: white;
+
+    border-radius: 10px;
+}
+
+.lli-non-hidden-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+
+.lli-title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lli-title-container>h2 {
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+.lli-main-content-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    width: 100%;
+    max-width: 270px;
+    
+}
+
+.lli-deadline-container {
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: left;
+    width: 100%;
+}
+
+.date-input {
+    font-size: 12px;
+    font-family: "Inter", sans-serif;
+}
+
+.lli-category-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: right;
+    width: 100%;
+}
+
+.lli-deadline-container>h2, .lli-category-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-category-container>select {
+    border: none;
+    width: 100%;
+    height: 80%;
+    font-size: 0.9em;
+    font-weight: 600;
+    background-color: white;
+    position: relative;
+    bottom: 7px;
+}
+
+.lli-description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+
+    margin-top: 20px;
+}
+
+.lli-description-container>h2 {
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.lli-description-container>p {
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+
+.add-lli-button-container {
+    height: 70px;
+    position: relative;
+    top: 40px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.add-lli-button-container>img {
+    height: 100%;
+}
+
+.expanded-lli {
+    width: 625px;
+    min-width: 625px;
+    max-width: 625px;
+}
+
+.lli-hidden-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.lli-hidden-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 21px; 
+}
+
+.lli-hidden-required-fields-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 15px;
+}
+
+.lli-hidden-required-fields-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-hidden-non-required-fields-container {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.lli-hidden-non-required-fields-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-button-container {
+    display: flex;
+    justify-content: right;
+    gap: 10px;
+    width: 100%;
+}
+
+.lli-button-container>button {
+    position:relative;
+    background-color: transparent;
+    background-repeat:no-repeat;
+    border: none;
+    height: 18px;
+    width: 18px;
+    bottom: 9px;
+    left: 10px;
+}
+
+#delete-lli-button {
+    background-image: url("Assets/trash.svg");
+}
+
+#edit-lli-button {
+    background-image: url("Assets/pencil.svg");
+}
+
+#close-lli-button, #close-create-lli-button {
+    background-image: url("Assets/delete-lli.svg");
+    background-size: 18px;
+    
+}
+
+.status-select, .visibility-select {
+    border: none;
+    width: 80%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    right: 4px;
+    bottom: 2px;
+}
+
+.lli-status-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.lli-status-container>h2 {
+    width: 67px;
+    font-size: 0.9em;
+}
+
+.lli-visibility-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.lli-visibility-container>h2 {
+    width: 105px;
+    font-size: 0.9em;
+}
+
+.lli-recurrence-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.lli-recurrence-container>h2 {
+    font-size: 0.9em;
+}
+
+.recurrence-select {
+    border: none;
+    width: 40%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    bottom: 2px;
+}
+
+.lli-media-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lli-media-container>img {
+    height: 110px;
+}
+
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+.create-lli-button-container {
+    display: flex;
+    justify-content: right;
+}
+
+#create-lli-button {
+    height: 30px;
+    width: 100px;
+    border: none;
+    border-radius: 5px;
+    background-color: aquamarine;
+    font-weight: 600;
+}
+
+button:hover, .add-lli-button-container>img:hover {
+    cursor: pointer;
+}
+
+

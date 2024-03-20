@@ -35,7 +35,7 @@ public class AppAuthService : IAuthenticator, IAuthorizor
             throw new ArgumentNullException($"{nameof(authRequest.Proof)} must not be null");
         }
 
-        if (String.IsNullOrEmpty(authRequest.Claims.Type) || String.IsNullOrEmpty(authRequest.Claims.Value))
+        if (String.IsNullOrEmpty(authRequest.Claims.Type))
         {
             throw new ArgumentNullException($"{nameof(authRequest.Claims)} must not be null");
         }
