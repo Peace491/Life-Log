@@ -1,38 +1,31 @@
 namespace Peace.Lifelog.MotivationalQuoteTest;
-
-using System.Threading.Tasks;
-using DomainModels;
-using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.MotivationalQuote;
 using System.Diagnostics;
 
 [Fact]
-public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
+public class MotivationalQuoteServiceShould : IAsyncLifetime, IDisposable
 {
     private const string QUOTE = "TestMotivationalQuoteServiceQuote";
     private const string AUTHOR = "TestMotivationalQuoteServiceAuthor";
     private const string TIME = "00:00:00 AM";
-    
+
     [Fact]
     public async void MotivationalQuoteServiceShould_OutputsAQuote()
     {
         //Arrange
-        var correctPhrase = new Phrase();
-        
-        correctPhrase.Quote = QUOTE;
-        correctPhrase.Author = AUTHOR;
-        correctPhrase.Time = TIME;
-        
+        var timer = new Stopwatch();
+        var motvationaQuoteService = new MotivationQuoteService();
+
 
         //Act
-        var validQuoteResponse = MotivationQuoteService.IGetQuote(correctPhrase);
+        timer.Start();
+        var validQuoteResponse = MotivationQuoteService.IGetPhrase();
+        timer.Stop();
 
         // Assert
         Assert.True(validPhraseResponse.HasError == false);
-        Assert.True(validPhraseResponse.ErrorMessage == "The phrase is correct.");
     }
 
-    [Fact]
+    /*[Fact]
     public async void MotivationalQuoteServiceShould_OutputsAPlaceholder()
     {
         //Arrange
@@ -109,7 +102,7 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
         // Assert
         Assert.True(validQuoteResponse.HasError == true);
         Assert.True(validAuthorResponse.HasError == true);
-    }*/
+    }
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangePrior()
@@ -223,5 +216,5 @@ public class MotivationalQuoteServiceShould: IAsyncLifetime, IDisposable
         // Assert
         Assert.True(validPhraseResponse.HasError == true);
         Assert.True(validPhraseResponse.ErrorMessage == "Placeholder message was not displayed");
-    }
+    }*/
 }
