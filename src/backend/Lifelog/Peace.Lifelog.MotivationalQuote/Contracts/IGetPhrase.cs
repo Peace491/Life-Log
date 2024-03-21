@@ -4,5 +4,5 @@ using DomainModels;
 
 public interface IGetPhrase
 {
-    Task<Response> GetPhrase(Phrase phrase);
+    Task<Response> GetPhrase();
 }

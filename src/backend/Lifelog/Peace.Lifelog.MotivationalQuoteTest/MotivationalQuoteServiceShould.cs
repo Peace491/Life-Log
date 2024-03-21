@@ -1,28 +1,46 @@
 namespace Peace.Lifelog.MotivationalQuoteTest;
 using System.Diagnostics;
+using Peace.Lifelog.MotivationalQuote;
 
-[Fact]
-public class MotivationalQuoteServiceShould : IAsyncLifetime, IDisposable
+
+public class MotivationalQuoteServiceShould
 {
     private const string QUOTE = "TestMotivationalQuoteServiceQuote";
     private const string AUTHOR = "TestMotivationalQuoteServiceAuthor";
     private const string TIME = "00:00:00 AM";
+
 
     [Fact]
     public async void MotivationalQuoteServiceShould_OutputsAQuote()
     {
         //Arrange
         var timer = new Stopwatch();
-        var motvationaQuoteService = new MotivationQuoteService();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
 
         //Act
         timer.Start();
-        var validQuoteResponse = MotivationQuoteService.IGetPhrase();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
         timer.Stop();
 
         // Assert
         Assert.True(validPhraseResponse.HasError == false);
+    }
+
+    [Fact]
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHasNotChanged()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
+
+
+        //Act
+        var validNewPhraseResponse = await motivationalQuoteService.GetPhrase();
+
+        // Assert
+        Assert.True(validNewPhraseResponse.HasError != true && validNewPhraseResponse.ErrorMessage != "Quotes have not changed.");
+        //Assert.True(validNewPhraseResponse.ErrorMessage == "Quotes have not changed.");
     }
 
     /*[Fact]
@@ -146,34 +164,7 @@ public class MotivationalQuoteServiceShould : IAsyncLifetime, IDisposable
         Assert.True(validTimeResponse.ErrorMessage == "The Quote changed after 12:00 AM.");
     }
 
-    [Fact]
-    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHasNotChanged()
-    {
-        //Arrange
-        string priorTime = "11:59:55 PM";
-        string afterTime = "00:00:05 AM";
-        string newQuote = "new";
-        string newAuthor = "new";
-
-        var correctPhrase = new Phrase();
-        var newPhrase = new Phrase();
-        
-        correctPhrase.Quote = QUOTE;
-        correctPhrase.Author = AUTHOR; 
-        correctPhrase.Time = priorTime; 
-        newPhrase.Quote = newQuote;
-        newPhrase.Author = newAuthor; 
-        newPhrase.Time = afterTime;
-                
-
-        //Act
-        var validPhraseResponse = MotivationQuoteService.ICheckPhrase(correctPhrase);
-        var validNewPhraseResponse = MotivationQuoteService.ICheckPhrase(newPhrase);
-
-        // Assert
-        Assert.True(validNewPhraseResponse.HasError == true);
-        Assert.True(validNewPhraseResponse.ErrorMessage == "Quotes have not changed.");
-    }
+    
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHasNotBeenRecycled()

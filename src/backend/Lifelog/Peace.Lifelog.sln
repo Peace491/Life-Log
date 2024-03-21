@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.ArchivalServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.ArchivalServiceTest", "Peace.Lifelog.ArchivalServiceTest\Peace.Lifelog.ArchivalServiceTest.csproj", "{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuote", "Peace.Lifelog.MotivationalQuote\Peace.Lifelog.MotivationQuote.csproj", "{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuote", "Peace.Lifelog.MotivationalQuote\Peace.Lifelog.MotivationalQuote.csproj", "{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuoteTest", "Peace.Lifelog.MotivationalQuoteTest\Peace.Lifelog.MotivationalQuoteTest.csproj", "{D29409A3-47BC-440D-8322-93C550177A2B}"
 EndProject

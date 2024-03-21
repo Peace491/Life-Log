@@ -108,6 +108,25 @@ public class MotivationalQuoteService : IGetPhrase
             }
         }
 
+        var quoteChecker = $"SELECT ID FROM LifelogQuote WHERE Quote = '{phrase.Quote}'";
+        var quoteCheckerResponse = await readDataOnlyDAO.ReadData(quoteChecker);
+
+        if (quoteCheckerResponse.Output == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Impartial Quote Was Pulled";
+            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+        }
+
+        var authorChecker = $"SELECT ID FROM LifelogQuote WHERE Quote = '{phrase.Author}'";
+        var authorCheckerResponse = await readDataOnlyDAO.ReadData(authorChecker);
+
+        if (authorCheckerResponse.Output == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Impartial Author Was Pulled";
+            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+        }
 
         if (lastQuote == newQuote)
         {
@@ -118,6 +137,26 @@ public class MotivationalQuoteService : IGetPhrase
             /////////////////return response;
         }
 
+        if (response.HasError == true)
+        {
+            var placeholderRetrieve = $"SELECT Quote, Author FROM LifelogQuote WHERE ID = 1954";
+            var placeholderRetrieveResponse = await readDataOnlyDAO.ReadData(placeholderRetrieve);
+            if (placeholderRetrieveResponse.Output != null)
+            {
+                foreach (List<object> output in placeholderRetrieveResponse.Output)
+                {
+                    newQuote = output[0].ToString();
+                    phrase.Quote = output[0].ToString();
+                    newAuthor = output[1].ToString();
+                    phrase.Author = output[1].ToString();
+                }
+            }
+
+            response.HasError = true;
+            response.ErrorMessage = "Critical Error, Placeholder Was Used";
+            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+        }
+
         if (DateTime.Parse(phrase.Time) > DateTime.Parse("11:59:59 PM") || DateTime.Parse(phrase.Time) < DateTime.Parse("00:00:03 AM"))
         {
             response.HasError = true;
@@ -126,9 +165,11 @@ public class MotivationalQuoteService : IGetPhrase
             //return response;
         }
 
+
+
         // We have a new quote, let's insert it into QuoteOfTheDay
 
-        var insertQuote = $"INSERT INTO lifelogquoteoftheday(Date, LifelogQuote_ID) VALUES(CURRENT_DATE, '{newID}')";
+        /*var insertQuote = $"INSERT INTO lifelogquoteoftheday(Date, LifelogQuote_ID) VALUES(CURRENT_DATE, '{newID}')";
         var insertResponse = await createDataOnlyDAO.CreateData(insertQuote);
 
         if (insertResponse.HasError)
@@ -138,7 +179,7 @@ public class MotivationalQuoteService : IGetPhrase
             response.ErrorMessage = "Error inserting new quote of the day.";
             //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
             ///////return response;
-        }
+        }*/
 
         // Set the new quote as the output of the response  new List<Object> {  }
         response.Output = newQuoteResponse.Output;

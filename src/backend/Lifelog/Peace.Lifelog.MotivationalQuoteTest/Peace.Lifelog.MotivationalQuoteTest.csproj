@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.MotivationalQuote\Peace.Lifelog.MotivationalQuote.csproj" />
   </ItemGroup>
 
 </Project>
