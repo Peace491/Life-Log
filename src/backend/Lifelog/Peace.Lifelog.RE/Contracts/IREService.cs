@@ -1,7 +1,7 @@
 ﻿namespace Peace.Lifelog.RE;
 
 using DomainModels;
-public interface IGetNumRecs
+public interface IReService
 {
     Task<Response> getNumRecs(string userhash, int numRecs);
 }

@@ -7,7 +7,7 @@ using Peace.Lifelog.Security;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
 using System.Text.Json;
 using back_end;
-
+ 
 [ApiController]
 [Route("lli")]  // Defines the default parent URL path for all action methods to be the name of controller
 public class LLIController : ControllerBase

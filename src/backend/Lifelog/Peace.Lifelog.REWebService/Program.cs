@@ -1,7 +1,11 @@
 using Microsoft.Net.Http.Headers;
+using Peace.Lifelog.RE;
+using Peace.Lifelog.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddTransient<RecomendationEngineRepository>(); 
+builder.Services.AddTransient<IReService, REService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

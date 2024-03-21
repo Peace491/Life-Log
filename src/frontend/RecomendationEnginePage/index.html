@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>getrecsbutton</title>
+</head>
+<body>
+    <button id="getRecommendation" type="button">Get Recommendation</button>
+    <ul id="recoveryRequestsList"></ul>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#getRecommendation').click(function() {
+            $.ajax({
+                url: 'http://localhost:8086/re/getRecommendation',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#recoveryRequestsList').empty(); 
+                    data.forEach(function(request) {
+                        var listItem = '<li>Name : ' + request.firstname + ', Last Name : ' + request.lastname;
+                        if(request.resolveDate) {
+                            listItem += ', Resolve Date: ' + request.resolveDate;
+                        }
+                      
+                        listItem += '</li>';
+                        $('#recoveryRequestsList').append(listItem);
+                    });
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>
+</html>
+
