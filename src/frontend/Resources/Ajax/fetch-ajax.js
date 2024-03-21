@@ -1,4 +1,22 @@
-function get(url) {
+function post(url, data, jwtToken) {
+    const options = {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': jwtToken
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer-when-downgrade',
+        body: JSON.stringify(data)
+    };
+
+    return fetch(url, options);
+}
+
+function get(url, jwtToken) {
 
     const options = {
         method: 'GET',
@@ -6,7 +24,8 @@ function get(url) {
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -15,31 +34,33 @@ function get(url) {
     return fetch(url, options);
 }
 
-function send(url, data) {
+function put(url, data, jwtToken) {
     const options = {
-        method: 'POST',
+        method: 'PUT',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
-        body: ''
+        body: JSON.stringify(data)
     };
 
     return fetch(url, options);
 }
 
-function del(url) {
+function del(url, jwtToken) {
     const options = {
         method: 'DELETE',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -49,6 +70,9 @@ function del(url) {
 }
 
 window.ajaxClient = {
+    post: post,
     get: get,
+    post: post,
+    put: put,
     del: del
 }

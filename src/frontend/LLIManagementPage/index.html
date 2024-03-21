@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,10 +11,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header>
         <div class="logo-container">
-            <img src = "Assets/logo.svg" alt="Lifelog Logo" class="logo"/>
+            <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" />
         </div>
         <div class="header-contents-container">
             <div class="page-link-container">
@@ -37,6 +39,9 @@
                 <div class="user-setting-container">
                     <img src="./Assets/user-setting.svg" alt="">
                 </div>
+                <div class="logout-container" id="logout">
+                    <h2>Log Out</h2>
+                </div>
             </div>
         </div>
     </header>
@@ -44,36 +49,113 @@
     <main>
         <div class="current-lli-container lli-container">
             <div class="current-lli-header-container lli-header-container">
-                
+
                 <div class="current-lli-header-title-container lli-header-title-container">
                     <h2>Life Log Items</h2>
                 </div>
-                
-                
+
                 <div class="current-lli-search-filter-container lli-search-filter-container">
                     <div class="current-lli-search-bar-container lli-search-bar-container">
-                    <input type="text" class="current-lli-search-bar" placeholder="Search LLI">
+                        <input autocomplete="off" type="text" class="current-lli-search-bar" id="current-lli-search-bar"
+                            placeholder="Search LLI">
                     </div>
                     <div class="current-lli-filter-container lli-filter-container">
-                        <img src="./Assets/filter.svg" alt="">
+
+                        <div id="current-lli-filter-options">
+                            <h2>Filter LLI</h2>
+                        </div>
+
+
+                        <div id="current-lli-filter-checkboxes" class="checkboxes hidden">
+                            <div class="filter-title">Categories</div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="mental-health" value="Mental Health" />
+                                <label for="mental-health">Mental Health</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="physical-health"
+                                    value="Physical Health" />
+                                <label for="physical-health">Physical Health</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="outdoor" value="Outdoor" />
+                                <label for="outdoor">Outdoor</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="sport" value="Sport" />
+                                <label for="sport">Sport</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="art" value="Art" />
+                                <label for="art">Art</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="hobby" value="Hobby" />
+                                <label for="hobby">Hobby</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="thrill" value="Thrill" />
+                                <label for="thrill">Thrill</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="travel" value="Travel" />
+                                <label for="travel">Travel</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="volunteering" value="Volunteering" />
+                                <label for="volunteering">Volunteering</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="food" value="Food" />
+                                <label for="food">Food</label>
+                            </div>
+
+                            <div class="filter-title">Status</div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="active" value="Active" />
+                                <label for="active">Active</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="completed" value="Completed" />
+                                <label for="completed">Completed</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="postponed" value="Postponed" />
+                                <label for="postponed">Postponed</label>
+                            </div>
+
+                            <div class="filter-title">Visibility</div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="public" value="Public" />
+                                <label for="public">Public</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="private" value="Private" />
+                                <label for="private">Private</label>
+                            </div>
+
+
+
+                        </div>
                     </div>
                 </div>
-                
-                
+
+
             </div>
             <div class="current-lli-content-container lli-content-container">
-                <!-- <div class="lli expanded-lli">
+                <div class="lli expanded-lli hidden" id="create-lli-template">
                     <div class="lli-non-hidden-content">
                         <div class="lli-title-container">
-                            <h2 id="title" contenteditable>Enter Title</h2>
+                            <h2 id="create-title-input" contenteditable>Enter Title</h2>
                         </div>
                         <div class="lli-main-content-container">
                             <div class="lli-deadline-container">
-                                <h2><span style="font-weight: 600;">Deadline:</span> <input type="date" id="date-input"></input></h2>
+                                <h2><span style="font-weight: 600;">Deadline:</span></h2>
+                                <input type="date" id="create-date-input" class="date-input" value="2024-11-11" autocomplete="off"></input>
                             </div>
                             <div class="lli-category-container">
-                                <select name="" id="category-select">
-                                    <option value="Mental Health">Mental Health</option>
+                                <select name="" id="create-category-input" class="category-select" multiple autocomplete="off">
+                                    <option value="Mental Health" selected="selected">Mental Health</option>
                                     <option value="Physical Health">Physical Health</option>
                                     <option value="Outdoor">Outdoor</option>
                                     <option value="Sport">Sport</option>
@@ -88,88 +170,177 @@
                         </div>
                         <div class="lli-description-container">
                             <h2>Description</h2>
-                            <p contenteditable>Edit</p>
+                            <p contenteditable id="create-paragraph-input">Edit</p>
                         </div>
                     </div>
 
                     <div class="lli-hidden-content">
                         <div class="lli-button-container">
-                            <button id="delete-lli-button"></button>
-                            <button id="edit-lli-button"></button>
-                            <button id="close-lli-button"></button>
-                        
+                            <button id="close-create-lli-button"></button>
+
                         </div>
                         <div class="lli-hidden-fields-container">
-                            <div class="lli-hidden-required-fields-container">          
-                                <select id="status-select">
-                                    <option value="Active">Active</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Postponed">Postponed</option>
-                                </select>
-                                <select name="" id="visibility-select">
-                                    <option value="Public">Public</option>
-                                    <option value="Private">Private</option>
-                                </select>
+                            <div class="lli-hidden-required-fields-container">
+                                <div class="lli-status-container">
+                                    <h2><span style="font-weight: 600;">Status: </span></h2>
+                                    <select id="create-status-input" class="status-select" autocomplete="off">
+                                        <option value="Active" selected="selected">Active</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Postponed">Postponed</option>
+                                    </select>
+                                </div>
+                                <div class="lli-visibility-container">
+                                    <h2><span style="font-weight: 600;">Visibility: </span></h2>
+                                    <select name="" id="create-visibility-input" class="visibility-select" autocomplete="off">
+                                        <option value="Public" selected="selected">Public</option>
+                                        <option value="Private">Private</option>
+                                    </select>
+                                </div>
+
                             </div>
                             <div class="lli-hidden-non-required-fields-container">
-                                <h2><span style="font-weight: 600;">Cost:</span> $<span id="cost-input" contenteditable="">100</span></h2>
-                                <h2><span style="font-weight: 600;">Recurring:</span> 
-                                    <select id="recurrence-select">
-                                        <option value="Off">Off</option>
+                                <h2><span style="font-weight: 600;">Cost:</span> $<span id="create-cost-input"
+                                        contenteditable="">100</span></h2>
+                                <div class="lli-recurrence-container">
+                                    <h2><span style="font-weight: 600;">Recurring: </span></h2>
+                                    <select id="create-recurrence-input" class="recurrence-select" autocomplete="off">
+                                        <option value="Off" selected="selected">Off</option>
                                         <option value="Weekly">Weekly</option>
                                         <option value="Monthly">Monthly</option>
                                         <option value="Yearly">Yearly</option>
                                     </select>
-                                </h2>
+                                </div>
                             </div>
                         </div>
                         <div class="lli-media-container">
-                            <img src="./Assets/default-pic.svg" alt="">
+                            <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
                         </div>
+                        <div class="create-lli-button-container">
+                            <button id="create-lli-button">Create LLI</button>
+                        </div>
+
                     </div>
-                    
-                </div> -->
-                
-                
-                
+
+
+
+                </div>
             </div>
             <div class="add-lli-button-container">
-                <img src="./Assets/add.svg" alt="" id="get">
+                <img src="./Assets/add.svg" alt="" id="add-lli-button">
                 <img src="./Assets/new-lli.svg" alt="">
             </div>
+
+
 
         </div>
 
         <div class="finished-lli-container lli-container">
             <div class="finished-lli-header-container lli-header-container">
-                
+
                 <div class="finished-lli-header-title-container lli-header-title-container">
                     <h2>Completed Life Log Items</h2>
                 </div>
-                
-                
+
+
                 <div class="finished-lli-search-filter-container lli-search-filter-container">
                     <div class="finished-lli-search-bar-container lli-search-bar-container">
-                        <input type="text" class="finished-lli-search-bar" placeholder="Search LLI">
+                        <input autocomplete="off" type="text" class="finished-lli-search-bar" id="finished-lli-search-bar"
+                            placeholder="Search LLI">
                     </div>
                     <div class="finished-lli-filter-container lli-filter-container">
-                        <img src="./Assets/filter.svg" alt="">
+
+                        <div id="finished-lli-filter-options">
+                            <h2>Filter LLI</h2>
+                        </div>
+
+
+                        <div id="finished-lli-filter-checkboxes" class="checkboxes hidden">
+                            <div class="filter-title">Categories</div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="mental-health" value="Mental Health" />
+                                <label for="mental-health">Mental Health</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="physical-health"
+                                    value="Physical Health" />
+                                <label for="physical-health">Physical Health</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="outdoor" value="Outdoor" />
+                                <label for="outdoor">Outdoor</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="sport" value="Sport" />
+                                <label for="sport">Sport</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="art" value="Art" />
+                                <label for="art">Art</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="hobby" value="Hobby" />
+                                <label for="hobby">Hobby</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="thrill" value="Thrill" />
+                                <label for="thrill">Thrill</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="travel" value="Travel" />
+                                <label for="travel">Travel</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="volunteering" value="Volunteering" />
+                                <label for="volunteering">Volunteering</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="food" value="Food" />
+                                <label for="food">Food</label>
+                            </div>
+
+                            <div class="filter-title">Status</div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="active" value="Active" />
+                                <label for="active">Active</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="completed" value="Completed" />
+                                <label for="completed">Completed</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="postponed" value="Postponed" />
+                                <label for="postponed">Postponed</label>
+                            </div>
+
+                            <div class="filter-title">Visibility</div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="public" value="Public" />
+                                <label for="public">Public</label>
+                            </div>
+                            <div class="checkbox-container">
+                                <input autocomplete="off" type="checkbox" class="filter-input" id="private" value="Private" />
+                                <label for="private">Private</label>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                
+
             </div>
             <div class="finished-lli-content-container lli-content-container">
-                
+
             </div>
         </div>
     </main>
 
     <!-- Dependencies -->
     <script src="../Resources/Ajax/fetch-ajax.js"></script>
+    <script src="lli-dom-manipulation.js"></script>
 
     <!-- Page Specific -->
-    <script src="lli.js"></script>
-    
-    
+    <script src="lli.js" type="module"></script>
+
+
 </body>
+
 </html>

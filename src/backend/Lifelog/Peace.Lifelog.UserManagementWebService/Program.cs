@@ -1,38 +1,79 @@
-using Peace.Lifelog.UserManagement;
-using Peace.Lifelog.UserManagementTest;
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+/* Registration of objects for .NET's DI Container */
 
-// Configure the HTTP request pipeline.
+builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
+
+// Creation of the WebApplication host object
+var app = builder.Build(); // Only part needed to execute Web API project
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+/* Setup of Middleware Pipeline */
 
-app.MapGet("/getProfile", () =>
+// app.UseHttpsRedirection();
+
+
+// Defining a custom middleware AND adding it to Kestral's request pipeline
+app.Use((httpContext, next) =>
 {
-    var testLifelogProfile = new LifelogProfile();
+    if (httpContext.Request.Method == nameof(HttpMethod.Options).ToUpperInvariant())
+    {
+        var allowedMethods = new List<string>()
+        {
+            HttpMethods.Get,
+            HttpMethods.Post,
+            HttpMethods.Put,
+            HttpMethods.Options,
+            HttpMethods.Head,
+            HttpMethods.Delete
+        };
 
-    testLifelogProfile.UserId = "TestUserHash";
-    testLifelogProfile.DOB = DateTime.Now.ToString("yyyy-MM-dd");
-    testLifelogProfile.ZipCode = "92612";
+        httpContext.Response.StatusCode = 204;
 
-    var list = new List<LifelogProfile>(){testLifelogProfile};
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
+        httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+        httpContext.Response.Headers.AccessControlAllowCredentials = "true";
 
-    
-    return list;
-})
-.WithName("GetProfile")
-.WithOpenApi();
+        return Task.CompletedTask; // Terminate Request right away
 
-app.Run();
+    }
+
+    return next();
+});
+
+app.Use((httpContext, next) => {
+
+    var allowedMethods = new List<string>()
+    {
+        HttpMethods.Get,
+        HttpMethods.Post,
+        HttpMethods.Put,
+        HttpMethods.Options,
+        HttpMethods.Head,
+        HttpMethods.Delete
+    };
+
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
+    httpContext.Response.Headers.AccessControlAllowHeaders = "*";
+    httpContext.Response.Headers.AccessControlAllowCredentials = "true";
+
+    return next();
+});
+
+
+app.MapControllers(); // Needed for mapping the routes defined in Controllers
+
+
+app.Run(); // Only part needed to execute Web API project

@@ -1,0 +1,31 @@
+IOS is swift UI framework
+
+JavaScript > Behavior of UI
+HTML > Structure
+CSS > Presentation
+WebAssembly: ability to execute low level abilities in the browser i.e. ability to run C/C++ code in the browser
+
+UI Framework
+Javascript UI
+CSS framework
+
+Angular has javascript UI and css framework pieces
+Bootstrap has the above as well
+There are some frameworks that only utilize CSS
+
+Important packages
+Lite server
+
+Instead of lite server you can use HTTP server
+
+Hot reloading: everything we save gets automatically updated (lite-server)
+
+MEAN -> MongoDB, Expresses.js, Angular, Node.js
+MERN -> MongoDB, Expresses.js, React, Node.js
+
+Recommended read
+Quirks Mode
+
+Recommended to first work on retrieving and sending data from the front end
+
+

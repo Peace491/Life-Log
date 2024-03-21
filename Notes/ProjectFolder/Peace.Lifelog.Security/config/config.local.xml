@@ -1,7 +1,0 @@
-<xml>
-    <ConnectionString>
-        Server=.\;Initial Catalog=db;UserID=Alice;Password=StrongPassword;
-    </ConnectionString>
-    <MaxRetryAttempt value="110"/>
-    <Timeout inSeconds=100 inMinutes=1></Timeout>
-</xml>
