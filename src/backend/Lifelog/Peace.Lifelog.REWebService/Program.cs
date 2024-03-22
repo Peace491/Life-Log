@@ -4,6 +4,7 @@ using Peace.Lifelog.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// should i inject specifc daos? or just the repository?
 builder.Services.AddTransient<RecomendationEngineRepository>(); 
 builder.Services.AddTransient<IReService, REService>();
 builder.Services.AddEndpointsApiExplorer();

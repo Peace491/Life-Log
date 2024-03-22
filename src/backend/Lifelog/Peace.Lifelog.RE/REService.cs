@@ -12,15 +12,19 @@ public class REService : IReService
     {
         this.recomendationEngineRepository = recomendationEngineRepository;
     }
+    
     public async Task<Response> getNumRecs(string userhash, int numRecs)
     {
         if(!validateNumRecs(numRecs)) throw new ArgumentException("Number of recomendations must be between 1 and 10");
 
-        var recomendationEngineRepository = new RecomendationEngineRepository();
+        // var recomendationEngineRepository = new RecomendationEngineRepository();
         var recomendations = await recomendationEngineRepository.GetNumRecs(userhash, numRecs);
 
-        var response = new Response();
-        response.Output = recomendations.Output;
+        var response = new Response
+        {
+            HasError = false,
+            Output = recomendations.Output
+        };
 
         return response;
     }
@@ -305,66 +309,6 @@ public class REService : IReService
 //         }
 //     }
 // }
-
-
-// -- First, define the category names 
-// SET @Category1 = 'Mental Health';
-// SET @Category2 = 'Art';
-// SET @Category3 = 'Food';
-// -- Define the UserHash of the user to exclude
-// SET @ExcludedUserHash = 'System';
-
-// -- Create a table to hold the LLI records with their categories, so we only join once
-// WITH LLIWithCategory AS (SELECT
-// 	LLI.LLIId,
-// 	LLI.Title,
-//     LLI.Description,
-//     LLI.RecurrenceStatus,
-//     LLI.RecurrenceFrequency,
-// 	LC.Category
-// FROM LLI
-// JOIN LLICategories LC ON LLI.LLIId = LC.LLIId
-// WHERE LLI.UserHash != 'System' -- expand this condition to match brd soon
-// )
-
-// -- Subquery for most popular category
-// SELECT * FROM (
-//     SELECT *
-//     FROM LLIWithCategory
-//     WHERE Category = @Category1
-//     ORDER BY RAND() 
-//     LIMIT 2
-// ) AS Cat1
-
-// UNION ALL
-// -- Subquery for second most popular category
-// SELECT * FROM (
-//     SELECT *
-//     FROM LLIWithCategory
-//     WHERE Category = @Category2
-//     ORDER BY RAND()
-//     LIMIT 1
-// ) AS Cat2
-
-// UNION ALL
-// Subquery for systems most popular category
-// SELECT * FROM (
-//     SELECT *
-//     FROM LLIWithCategory
-//     WHERE Category = @Category3
-//     ORDER BY RAND()
-//     LIMIT 1
-// ) AS Cat3
-
-// UNION ALL
-// -- Subquery for an item of another category
-// SELECT * FROM (
-//     SELECT *
-//     FROM LLIWithCategory
-//     WHERE Category NOT IN (@Category1, @Category2, @Category3)
-//     ORDER BY RAND()
-//     LIMIT 1
-// ) AS OtherCats;
 
 
 // string sqlGetUserFormData = $"SELECT Category, Rating FROM LifelogDB.UserForm WHERE UserHash=\"{hash}\" ORDER BY Rating ASC;";

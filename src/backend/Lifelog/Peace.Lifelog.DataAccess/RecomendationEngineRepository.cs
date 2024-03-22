@@ -8,6 +8,7 @@ using Peace.Lifelog.RE;
 
 public class RecomendationEngineRepository
 {
+    private string test = "";
     public Task<Response> GetNumRecs(string userHash, int numRecs, CancellationToken cancellationToken = default)
     {
         try
@@ -18,16 +19,19 @@ public class RecomendationEngineRepository
 
             REDataMart userDatamart = new REDataMart
             {
-                UserHash = "System",
+                UserHash = "0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=",
                 MostCommonUserCategory = "Outdoor",
                 MostCommonUserSubCategory = "Art",
                 MostCommonPublicCategory = "Mental Health"
             };
 
+            string whereNotUserHash = WhereNotUserHash(userDatamart.UserHash);
+
             // SELECT * FROM LLI WHERE userHash != '0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=' ORDER BY RAND() LIMIT 5;
             string query = DynamicallyConstructQuery(userDatamart, numRecs);
+            query += EndQuery();
             query = $"SELECT * FROM LLI WHERE userHash != '{userHash}' ORDER BY RAND() LIMIT {numRecs};";
-            var getRecsResponse = readDataOnlyDAO.ReadData(query); 
+            var getRecsResponse = readDataOnlyDAO.ReadData(query, null); 
 
             return getRecsResponse;
         }
@@ -50,7 +54,9 @@ public class RecomendationEngineRepository
                 if (current == 0)
                 {
                     // Add logic to pull 5 recomendations
-                    query += "SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category = @UsersMostCommon ORDER BY RAND() LIMIT 2 ) AS Cat1 UNION ALL SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category = @UserSubCategory ORDER BY RAND() LIMIT 1 ) AS Cat2 UNION ALL SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category = @MostCommonPublic ORDER BY RAND() LIMIT 1 ) AS Cat3 UNION ALL SELECT * FROM ( SELECT * FROM LLIWithCategory WHERE Category NOT IN (@UsersMostCommon, @UserSubCategory, @MostCommonPublic) ORDER BY RAND() LIMIT 1 ) AS OtherCats;";
+                    query += SelectNewLLIWithCategory(WhereNotUserHash(userDatamart.UserHash), userDatamart.MostCommonUserCategory, 2);
+                    query += SelectNewLLIWithCategory(WhereNotUserHash(userDatamart.UserHash), userDatamart.MostCommonUserSubCategory, 2);
+                    query += SelectNewLLIWithCategory(WhereNotUserHash(userDatamart.UserHash), userDatamart.MostCommonPublicCategory, 1);
                     numRecs -= 5;
                 }
                 if (current == 3)
@@ -70,33 +76,49 @@ public class RecomendationEngineRepository
                 }
             }     
             query += EndQuery(); 
-            string actual = $"SELECT * FROM LLI WHERE userHash != '{userDatamart.UserHash}' ORDER BY RAND() LIMIT {numRecs};";      
-            return actual;
+            
+            return query;
     }
 
     private string StartQuery()
     {
         // establish temp table, and clear it
-        return "SELECT * FROM Recomendations WHERE userHash = ";
-    }
-
-    private string SelectLLIWithCategory(string cateogry, int num)
-    {
-        // select items from LLIWithCategory
-        return "SELECT * FROM LLIWithCategory WHERE Category = ";
-    }
-
-    private string SelectLLIWithoutCategories(string[] categories, int num)
-    {
-        // select items from LLIWithCategory
-        return "SELECT * FROM LLIWithCategory WHERE Category NOT IN (";
+        // should be priv string
+        return 
+        "CREATE TEMPORARY TABLE IF NOT EXISTS SelectedLLIIds (LLIId INT); " +
+        "TRUNCATE TABLE SelectedLLIIds;";
     }
 
     private string EndQuery()
-    {
-        // select resulting items from temp table and drop temp table
-        return " ORDER BY RAND() LIMIT 1;";
+    {   
+        // Select items from temp table, and drop it
+        // should be priv string
+        return 
+        "SELECT LLI.* " +
+        "FROM LLI " +
+        "JOIN SelectedLLIIds ON LLI.LLIId = SelectedLLIIds.LLIId; " +
+        "DROP TEMPORARY TABLE IF EXISTS SelectedLLIIds; ";
     }
 
+
+    private string SelectNewLLIWithCategory(string whereUserHash, string category, int num)
+    {
+        // randomly select a variable number  from LLIWithCategory
+        return 
+        "INSERT INTO SelectedLLIIds (LLIId) " +
+        "SELECT LLIId FROM LLI " +
+        whereUserHash +
+        $"AND (Category1 = '{category}' OR Category2 = '{category}' OR Category3 = '{category}') " +
+        "AND LLIId NOT IN (SELECT LLIId FROM SelectedLLIIds) " +
+        "ORDER BY RAND() " +
+        $"LIMIT {num};";
+    }
+
+
+
+    private string WhereNotUserHash(string userHash)
+    {
+        return $"WHERE UserHash != '{userHash}' ";
+    }
 }
 

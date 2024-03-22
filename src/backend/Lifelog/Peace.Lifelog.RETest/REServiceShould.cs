@@ -4,11 +4,16 @@ using Peace.Lifelog.DataAccess;
 public class ReServiceShould
 {
     [Fact]
-    public void Test_Test()
+    public async void Test_Test()
     {
+        // Arrange
         var recomendationEngineRepository = new RecomendationEngineRepository();
         var reService = new REService(recomendationEngineRepository);
-        var response = reService.getNumRecs("0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=", 5);
-        Assert.NotNull(response);
+
+        // Act
+        var response = await reService.getNumRecs("0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=", 5);
+
+        // Assert
+        Assert.False(response.HasError);
     }
 }

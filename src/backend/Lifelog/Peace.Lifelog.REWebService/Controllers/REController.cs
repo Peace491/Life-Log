@@ -16,14 +16,15 @@ public class REController : ControllerBase
     }
 
 
-    [HttpGet] 
+    [HttpPost] 
     [Route("getNumRecs")]
-    public async Task<IActionResult> GetNumRecs()
+    public async Task<IActionResult> GetNumRecs([FromBody] PostNumRecsRequest request)
     {
-        string userHash = "System";
-        int numRecs = 1;
+        string userHash = "0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=";
+        int numRecs = request.NumRecs;
         var response = await reService.getNumRecs(userHash, numRecs);
 
         return Ok(response);
     }
+
 }
