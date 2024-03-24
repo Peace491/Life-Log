@@ -30,11 +30,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
     public async Task InitializeAsync()
     {   
+        var appUserManagementService = new AppUserManagementService();
         var lifelogUserManagementService = new LifelogUserManagementService();
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", USER_ID);
         testLifelogAccountRequest.Role = ("Role", ROLE);
+
+        var deleteAccountResponse = await appUserManagementService.DeleteAccount(testLifelogAccountRequest); // Make sure no test account with the same name exist
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
         testLifelogProfileRequest.DOB = ("DOB", DOB);
@@ -506,6 +509,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var readResponse = await readDataOnlyDAO.ReadData(readLLISql);
 
         //Assert
+        Assert.True(createLLIResponse.HasError);
         Assert.Null(readResponse.Output);
     }
 
@@ -1034,6 +1038,48 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         Assert.Null(updateResponse.Output);
         
     }
+
+    [Fact]
+    public async void LLIServiceUpdateLLIShould_ThrowAnErrorIfTheAnLLIWithTheSameNameHasBeenCompletedInTheLastYear()
+    {
+        // Arrange
+        string testOldLLITitle = "Test LLI Title";
+        string testOldLLIDescription = "Test Update LLI";
+        int testOldLLICost = 0;
+
+        // Old LLI        
+        var testOldLLI = new LLI();
+        testOldLLI.UserHash = USER_HASH;
+        testOldLLI.Title = testOldLLITitle;
+        testOldLLI.Description = testOldLLIDescription;
+        testOldLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
+        testOldLLI.Status = LLIStatus.Completed;
+        testOldLLI.Visibility = LLIVisibility.Public;
+        testOldLLI.Deadline = DEADLINE;
+        testOldLLI.Cost = testOldLLICost;
+        
+        var LLIRecurrence = new LLIRecurrence();
+        LLIRecurrence.Status = LLIRecurrenceStatus.On;
+        LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
+
+        testOldLLI.Recurrence = LLIRecurrence;
+        var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testOldLLI);
+
+        // Act
+        timer.Start();
+        var updateResponse = await LLIService.UpdateLLI(USER_HASH, testOldLLI);
+        timer.Stop();
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        
+        // Cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        
+        var deleteLLISql = $"DELETE FROM LLI WHERE Title=\"{testOldLLITitle}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deleteLLISql);
+    }
     #endregion
 
     [Fact]
@@ -1116,11 +1162,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var deleteResponse = await LLIService.DeleteLLI("Nonexistant UserHash", testLLI);
 
         // Assert
-        Assert.True(deleteResponse.Output is not null);
-        foreach (int rowsAffected in deleteResponse.Output)
-        {
-            Assert.True(rowsAffected == 0);
-        }
+        Assert.True(deleteResponse.HasError);
+        Assert.True(deleteResponse.ErrorMessage == "Failed to delete LLI");
     }
 
     [Fact]
@@ -1134,11 +1177,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var deleteResponse = await LLIService.DeleteLLI(USER_HASH, testLLI);
 
         // Assert
-        Assert.True(deleteResponse.Output is not null);
-        foreach (int rowsAffected in deleteResponse.Output)
-        {
-            Assert.True(rowsAffected == 0);
-        }
+        Assert.True(deleteResponse.HasError);
+        Assert.True(deleteResponse.ErrorMessage == "Failed to delete LLI");
     }
 
 

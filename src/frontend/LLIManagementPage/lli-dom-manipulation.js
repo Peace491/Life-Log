@@ -24,7 +24,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     const deadlineContainer = document.createElement('div');
     deadlineContainer.classList.add('lli-deadline-container');
     const deadlineHeading = document.createElement('h2');
-    deadlineHeading.innerHTML = `<span style="font-weight: 600;">Deadline:</span> ${lli.deadline.substring(0, lli.deadline.indexOf(" "))}`;
+    deadlineHeading.innerHTML = `<span style="font-weight: 600;">Deadline:</span> <span id="deadline${lli.lliid}"}>${lli.deadline.substring(0, lli.deadline.indexOf(" "))}</span>`;
     deadlineContainer.appendChild(deadlineHeading);
 
     // Category container
@@ -131,7 +131,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
 
     // Cost container
     const costHeading = document.createElement('h2');
-    costHeading.innerHTML = `<span style="font-weight: 600;">Cost:</span> $<span id="cost-input${lli.lliid}">${lli.cost || '100'}</span>`;
+    costHeading.innerHTML = `<span style="font-weight: 600;">Cost:</span> $<span id="cost-input${lli.lliid}">${lli.cost}</span>`;
 
     // Recurrence container
     const recurrenceContainer = document.createElement('div')
@@ -140,7 +140,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     const recurrenceHeading = document.createElement('h2');
     recurrenceHeading.innerHTML = '<span style="font-weight: 600;">Recurring:</span>';
     const recurrenceValue = document.createElement('h2')
-    recurrenceValue.innerHTML = `<span id="recurrence-option">${lli.recurrence.frequency || 'None'}</span>`
+    recurrenceValue.innerHTML = `<span id="recurrence-option${lli.lliid}">${lli.recurrence.frequency || 'None'}</span>`
     recurrenceValue.id = 'lli-recurrence-value' + lli.lliid
 
     recurrenceContainer.appendChild(recurrenceHeading)
@@ -204,6 +204,16 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
 }
 
 function convertLLIToEditMode(id, updateLLI) {
+    // Current value
+    let currentDeadline = document.getElementById('deadline' + id).textContent
+    var parts = currentDeadline.split('/');
+    currentDeadline = parts[2] + '-' + parts[0].padStart(2, '0') + '-' + parts[1].padStart(2, '0')
+
+    let currentCategories = document.getElementById('category' + id).textContent.split(",").map(item => item.trim());
+    let currentStatus = document.getElementById('status' + id).textContent
+    let currentVisibility = document.getElementById('visibility' + id).textContent
+    let currentRecurrence = document.getElementById('recurrence-option' + id).textContent
+
     const lliDiv = document.getElementById(id);
     if (!lliDiv) {
         console.error('LLI div with specified id not found.');
@@ -224,6 +234,7 @@ function convertLLIToEditMode(id, updateLLI) {
         dateInput.classList.add('date-input')
         dateInput.id = 'update-date-input' + id
         dateInput.type = 'date';
+        dateInput.value = currentDeadline
         deadline.innerHTML = '<span style="font-weight: 600;">Deadline:</span> ';
         deadline.appendChild(dateInput);
     }
@@ -239,6 +250,9 @@ function convertLLIToEditMode(id, updateLLI) {
             const option = document.createElement('option');
             option.value = cat;
             option.textContent = cat;
+            if (currentCategories.includes(cat)) {
+                option.selected = 'selected'
+            }
             categorySelect.appendChild(option);
         });
         category.innerHTML = '';
@@ -263,6 +277,9 @@ function convertLLIToEditMode(id, updateLLI) {
             const option = document.createElement('option');
             option.value = opt;
             option.textContent = opt;
+            if (opt == currentStatus) {
+                option.selected = 'selected'
+            }
             statusSelect.appendChild(option);
         });
         status.innerHTML = '<h2><span style="font-weight: 600;">Status: </span></h2>';
@@ -280,6 +297,9 @@ function convertLLIToEditMode(id, updateLLI) {
             const option = document.createElement('option');
             option.value = opt;
             option.textContent = opt;
+            if (opt == currentVisibility) {
+                option.selected = 'selected'
+            }
             visibilitySelect.appendChild(option);
         });
         visibility.innerHTML = '<h2><span style="font-weight: 600;">Visibility: </span></h2>';
@@ -304,6 +324,9 @@ function convertLLIToEditMode(id, updateLLI) {
             const option = document.createElement('option');
             option.value = opt;
             option.textContent = opt;
+            if (opt == currentRecurrence || (opt == "Off" && currentRecurrence == "None")) {
+                option.selected = 'selected'
+            }
             recurrenceSelect.appendChild(option);
         });
         recurrence.parentNode.appendChild(recurrenceSelect);
@@ -565,5 +588,7 @@ window.lliDomManip ={
 }
 
 // export {
-    
+//     createLLIComponents,
+//     convertLLIToEditMode,
+//     filterLLI   
 // }

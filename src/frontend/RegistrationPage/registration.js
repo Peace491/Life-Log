@@ -11,14 +11,14 @@
         alert("Missing dependencies");
     }
 
-    const webServiceUrl = 'http://localhost:8081';
+    let jwtToken
 
-  
-    
+    const registrationServiceUrl = 'http://localhost:8081';
+    const authenticationServiceUrl = 'http://localhost:8082/authentication';
 
     // NOT exposed to the global object ("Private" functions)
     function registerUser(userId, dob, zipCode) {
-        let postDataUrl = webServiceUrl + "/registration/registerNormalUser"
+        let postDataUrl = registrationServiceUrl + "/registration/registerNormalUser"
 
         let data = {
             userId: userId,
@@ -38,6 +38,30 @@
             })
         })
         
+    }
+
+    function authenticateOTP(userHash, otp) {
+        const postUrl = authenticationServiceUrl + `/authenticateOTP`
+
+        let data = {
+            userHash: userHash,
+            otp: otp
+        }
+
+        let request = ajaxClient.post(postUrl, data)
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                return response.json();
+            }).then(function (jwtToken) {
+                localStorage.setItem("token-local", JSON.stringify(jwtToken));
+                window.location = "../LLIManagementPage/index.html"
+                location.reload()
+                resolve(JSON.stringify(jwtToken));
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
     }
 
     function onSubmitRegistrationCredentials(){
@@ -95,11 +119,17 @@
         let dob = dobInput.value
         let zipCode = zipcodeInput.value
 
-        registerUser(userId, dob, zipCode)
-
         submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
 
+        registerUser(userId, dob, zipCode).then(function(data) {
+            let userHash = data.Output[0]
 
+            submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
+
+            submitCredentialButton.addEventListener('click', function() {
+                authenticateOTP(userHash, otpInput.value)
+            });
+        })
     }
 
     root.myApp = root.myApp || {};
@@ -110,9 +140,16 @@
 
     // Initialize the current view by attaching event handlers 
     function init() {
-        let submitButton = document.getElementById("submit-credential-button")
-        submitButton.addEventListener("click", onSubmitRegistrationCredentials)
-        
+        if (localStorage.length != 0) {
+            jwtToken = localStorage["token-local"]
+        }
+
+        if (jwtToken) {
+            window.location = "../LLIManagementPage/index.html"
+        } else {
+            let submitButton = document.getElementById("submit-credential-button")
+            submitButton.addEventListener("click", onSubmitRegistrationCredentials)
+        }
     }
 
     init();

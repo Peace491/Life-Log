@@ -283,6 +283,14 @@ input.otp-input {
     color: 
 } */
 
+#sign-up-text {
+    text-decoration: underline;
+}
+
+#sign-up-text:hover {
+    cursor: pointer;
+}
+
 a:link {
     color: rgb(39, 155, 239);
 }
