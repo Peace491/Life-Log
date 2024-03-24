@@ -13,35 +13,39 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.LogService", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.LogServiceTest", "Peace.Lifelog.LogServiceTest\Peace.Lifelog.LogServiceTest.csproj", "{FEE51A60-E2FB-45F8-9DEE-3989121A8706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Security", "Peace.Lifelog.Security\Peace.Lifelog.Security.csproj", "{8C670B3F-AE28-44EC-BBAB-F84C30B08135}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.Security", "Peace.Lifelog.Security\Peace.Lifelog.Security.csproj", "{8C670B3F-AE28-44EC-BBAB-F84C30B08135}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.SecurityTest", "Peace.Lifelog.SecurityTest\Peace.Lifelog.SecurityTest.csproj", "{22803D1E-58E8-448E-874E-5000097F47C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.SecurityTest", "Peace.Lifelog.SecurityTest\Peace.Lifelog.SecurityTest.csproj", "{22803D1E-58E8-448E-874E-5000097F47C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagement", "Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj", "{E991225D-1E40-4D92-9F08-CEB424EC7B66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.UserManagement", "Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj", "{E991225D-1E40-4D92-9F08-CEB424EC7B66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagementTest", "Peace.Lifelog.UserManagementTest\Peace.Lifelog.UserManagementTest.csproj", "{C02E0BFB-01AF-4852-926C-06B4694586FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.UserManagementTest", "Peace.Lifelog.UserManagementTest\Peace.Lifelog.UserManagementTest.csproj", "{C02E0BFB-01AF-4852-926C-06B4694586FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LLI", "Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj", "{B4BF5E99-A333-429B-8F8D-91C39EBD07BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.LLI", "Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj", "{B4BF5E99-A333-429B-8F8D-91C39EBD07BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LLITest", "Peace.Lifelog.LLITest\Peace.Lifelog.LLITest.csproj", "{8F687E1F-A815-4E10-8E12-81460B30490B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.LLITest", "Peace.Lifelog.LLITest\Peace.Lifelog.LLITest.csproj", "{8F687E1F-A815-4E10-8E12-81460B30490B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.UserManagementWebService", "Peace.Lifelog.UserManagementWebService\Peace.Lifelog.UserManagementWebService.csproj", "{5A2F5078-ED9E-4A7F-956B-1F924AE4626D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.UserManagementWebService", "Peace.Lifelog.UserManagementWebService\Peace.Lifelog.UserManagementWebService.csproj", "{5A2F5078-ED9E-4A7F-956B-1F924AE4626D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.LLIWebService", "Peace.Lifelog.LLIWebService\Peace.Lifelog.LLIWebService.csproj", "{94210E3C-2FBD-4707-9284-6972FDA1CD14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.LLIWebService", "Peace.Lifelog.LLIWebService\Peace.Lifelog.LLIWebService.csproj", "{94210E3C-2FBD-4707-9284-6972FDA1CD14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.ArchivalService", "Peace.Lifelog.ArchivalService\Peace.Lifelog.ArchivalService.csproj", "{1F57B892-C1D0-499C-87AC-67640E0FACCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.ArchivalService", "Peace.Lifelog.ArchivalService\Peace.Lifelog.ArchivalService.csproj", "{1F57B892-C1D0-499C-87AC-67640E0FACCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.ArchivalServiceTest", "Peace.Lifelog.ArchivalServiceTest\Peace.Lifelog.ArchivalServiceTest.csproj", "{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.ArchivalServiceTest", "Peace.Lifelog.ArchivalServiceTest\Peace.Lifelog.ArchivalServiceTest.csproj", "{CB03228B-BC34-40EA-9A9F-EEDB78717EE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Config", "Peace.Lifelog.Config\Peace.Lifelog.Config.csproj", "{7FBD3FB9-A1F7-4186-AB70-0AE5B0C9ABE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.Config", "Peace.Lifelog.Config\Peace.Lifelog.Config.csproj", "{7FBD3FB9-A1F7-4186-AB70-0AE5B0C9ABE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.Email", "Peace.Lifelog.Email\Peace.Lifelog.Email.csproj", "{8F88F2D9-F076-414C-89A5-D27883E43615}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.Email", "Peace.Lifelog.Email\Peace.Lifelog.Email.csproj", "{8F88F2D9-F076-414C-89A5-D27883E43615}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.EmailTest", "Peace.Lifelog.EmailTest\Peace.Lifelog.EmailTest.csproj", "{BADA9B06-8F76-4BAF-90E7-C700F062E937}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.EmailTest", "Peace.Lifelog.EmailTest\Peace.Lifelog.EmailTest.csproj", "{BADA9B06-8F76-4BAF-90E7-C700F062E937}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.LifeLog.RegistrationService", "Peace.LifeLog.RegistrationService\Peace.LifeLog.RegistrationService.csproj", "{3F14320C-29D8-4B4F-8BBC-7710CFFF389E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.LifeLog.RegistrationService", "Peace.LifeLog.RegistrationService\Peace.LifeLog.RegistrationService.csproj", "{3F14320C-29D8-4B4F-8BBC-7710CFFF389E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RegistrationTest", "Peace.Lifelog.RegistrationTest\Peace.Lifelog.RegistrationTest.csproj", "{98394CCE-4429-48F8-98B8-26E6903E3D75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.RegistrationTest", "Peace.Lifelog.RegistrationTest\Peace.Lifelog.RegistrationTest.csproj", "{98394CCE-4429-48F8-98B8-26E6903E3D75}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.CalendarService", "Peace.Lifelog.CalendarService\Peace.Lifelog.CalendarService.csproj", "{1F447DE5-DBEB-482B-BEC2-3A7EDA502D08}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.CalendarServiceTest", "Peace.Lifelog.CalendarServiceTest\Peace.Lifelog.CalendarServiceTest.csproj", "{A52B8E06-0E87-4339-8E30-D57A1C150DA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +133,14 @@ Global
 		{98394CCE-4429-48F8-98B8-26E6903E3D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98394CCE-4429-48F8-98B8-26E6903E3D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98394CCE-4429-48F8-98B8-26E6903E3D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F447DE5-DBEB-482B-BEC2-3A7EDA502D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F447DE5-DBEB-482B-BEC2-3A7EDA502D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F447DE5-DBEB-482B-BEC2-3A7EDA502D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F447DE5-DBEB-482B-BEC2-3A7EDA502D08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A52B8E06-0E87-4339-8E30-D57A1C150DA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52B8E06-0E87-4339-8E30-D57A1C150DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A52B8E06-0E87-4339-8E30-D57A1C150DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A52B8E06-0E87-4339-8E30-D57A1C150DA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
