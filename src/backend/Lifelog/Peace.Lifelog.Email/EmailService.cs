@@ -25,17 +25,17 @@ public class EmailService : IEmailService
         {
             foreach (List<Object> output in toResponse.Output)
             {
+                
                 to = output[0].ToString()!;
             }
-        }
-        
+        }        
 
         // to is in lifelog accout or lifelog user hash table, get the email from there
         otpEmail.To.Add(new MailboxAddress("", to));
         otpEmail.Subject = "Your Lifelog OTP!";
 
         OTPService oTPService = new OTPService();
-        var otpResponse = await oTPService.generateOneTimePassword(to);
+        var otpResponse = await oTPService.generateOneTimePassword(userHash);
         var body = new BodyBuilder();
         if (otpResponse.Output != null)
         {
@@ -51,6 +51,7 @@ public class EmailService : IEmailService
         try
         {
             var emailResponse = SendEmail(otpEmail);
+            
         }
         catch
         {

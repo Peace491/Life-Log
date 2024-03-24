@@ -6,219 +6,408 @@
     // Dependency check
     const isValid = root && ajaxClient;
 
-    if(!isValid){
+    if (!isValid) {
         // Handle missing dependencies
         alert("Missing dependencies");
     }
 
+    const MAX_TITLE_LENGTH = 50
+    const EARLIEST_DEADLINE = 1960
+    const LATEST_DEADLINE = 2100
+    const CATEGORIES_LIST = new Set([
+        "Mental Health",
+        "Physical Health",
+        "Outdoor",
+        "Sport",
+        "Art",
+        "Hobby",
+        "Thrill",
+        "Travel",
+        "Volunteering",
+        "Food"
+    ]);
+    const MAX_DESC_LENGTH = 200
+    const STATUS_LIST = new Set([
+        "Active",
+        "Completed",
+        "Postponed"
+    ])
+    const VISIBILITY_LIST = new Set([
+        "Public",
+        "Private"
+    ])
+    const MIN_COST = 0
+    const RECCURENCE_STATUS_LIST = new Set([
+        "On",
+        "Off"
+    ])
+    const RECCURENCE_FREQUENCY_LIST = new Set([
+        "Weekly",
+        "Monthly",
+        "Yearly"
+    ])
+
+    let jwtToken = ""
+
     const webServiceUrl = 'http://localhost:8080/lli';
 
     // NOT exposed to the global object ("Private" functions)
-    function getAllLLI() {
-        
-        let getUrl = webServiceUrl + '/getAllLLI?userHash=System';
-        let request = ajaxClient.get(getUrl);
-        
-        return new Promise((resolve, reject) => {
+    function createLLI(options) {
+        let createLLIUrl = webServiceUrl + '/postLLI'
+
+        let isValidOption = validateLLIOptions(options)
+        if (!isValidOption) {
+            return
+        }
+
+        let request = ajaxClient.post(createLLIUrl, options, jwtToken)
+
+        return new Promise(function (resolve, reject) {
             request.then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                let output = data.output;
-                resolve(output);
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json()
+            }).then(function (response) {
+                alert('The LLI is successfully created.')
+                location.reload()
+                resolve(response)
             }).catch(function (error) {
-                reject(error);
-            });
-        });
-    }
-
-    // NOT exposed to the global object ("Private" functions)
-    function sendDataHandler(url) {
-        var request = ajaxClient.send(url, {
-                data: ['Alice', 'Bob', 'John'] // Hard-coding data
-            });
-
-        const contentElement = document.getElementsByClassName('dynamic-content')[0];
-
-        request
-            .then(function (response) {
-                
-                const timestamp = new Date();
-
-                contentElement.innerHTML = response.data + " " + timestamp.toString(); 
-            })
-            .catch(function (error) {
-                console.log("Send", url, error.response.data); // Payload error message
-
-                contentElement.innerHTML = error; // Only showing top level error message
-            });
-    }
-    
-    function deleteLLI(lliid) {
-        let deleteUrl = webServiceUrl + '/deleteLLI?userHash=System&lliID=' + lliid;
-        console.log(deleteUrl)
-        let request = ajaxClient.del(deleteUrl);
-        
-        return new Promise((resolve, reject) => {
-            request.then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                resolve(data);
-            }).catch(function (error) {
+                alert(error)
                 reject(error)
             })
         })
     }
 
-    function createLLIHTML(lli) {
-        const container = document.createElement('div');
-        container.className = 'lli';
-    
-        const nonHiddenContent = document.createElement('div');
-        nonHiddenContent.className = 'lli-non-hidden-content';
-    
-        const titleContainer = document.createElement('div');
-        titleContainer.className = 'lli-title-container';
-        const title = document.createElement('h2');
-        title.textContent = lli.title;
-        titleContainer.appendChild(title);
-        nonHiddenContent.appendChild(titleContainer);
-    
-        const mainContentContainer = document.createElement('div');
-        mainContentContainer.className = 'lli-main-content-container';
-    
-        const deadlineContainer = document.createElement('div');
-        deadlineContainer.className = 'lli-deadline-container';
-        const deadline = document.createElement('h2');
-        deadline.innerHTML = '<span style="font-weight: 600;">Deadline:</span> ' + lli.deadline.substring(0, lli.deadline.indexOf(" "));
-        deadlineContainer.appendChild(deadline);
-        mainContentContainer.appendChild(deadlineContainer);
-    
-        const categoryContainer = document.createElement('div');
-        categoryContainer.className = 'lli-category-container';
-        const category = document.createElement('h2');
-        category.innerHTML = '<span style="font-weight: 600;">' + lli.category + '</span>';
-        categoryContainer.appendChild(category);
-        mainContentContainer.appendChild(categoryContainer);
-    
-        nonHiddenContent.appendChild(mainContentContainer);
-    
-        const descriptionContainer = document.createElement('div');
-        descriptionContainer.className = 'lli-description-container';
-        const descriptionTitle = document.createElement('h2');
-        descriptionTitle.textContent = 'Description';
-        const description = document.createElement('p');
-        description.textContent = lli.description;
-        descriptionContainer.appendChild(descriptionTitle);
-        descriptionContainer.appendChild(description);
-        nonHiddenContent.appendChild(descriptionContainer);
-    
-        container.appendChild(nonHiddenContent);
-    
-        const hiddenContent = document.createElement('div');
-        hiddenContent.className = 'lli-hidden-content hidden';
-    
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'lli-button-container';
-        const deleteButton = document.createElement('button');
-        deleteButton.id = 'delete-lli-button';
-        const editButton = document.createElement('button');
-        editButton.id = 'edit-lli-button';
-        const closeButton = document.createElement('button');
-        closeButton.id = 'close-lli-button';
-        buttonContainer.appendChild(deleteButton);
-        buttonContainer.appendChild(editButton);
-        buttonContainer.appendChild(closeButton);
-        hiddenContent.appendChild(buttonContainer);
-    
-        const hiddenFieldsContainer = document.createElement('div');
-        hiddenFieldsContainer.className = 'lli-hidden-fields-container';
-    
-        const hiddenRequiredFieldsContainer = document.createElement('div');
-        hiddenRequiredFieldsContainer.className = 'lli-hidden-required-fields-container';
-        const status = document.createElement('h2');
-        status.innerHTML = '<span style="font-weight: 600;">Status:</span> ' + lli.status;
-        const visibility = document.createElement('h2');
-        visibility.innerHTML = '<span style="font-weight: 600;">Visibility:</span> ' + lli.visibility;
-        hiddenRequiredFieldsContainer.appendChild(status);
-        hiddenRequiredFieldsContainer.appendChild(visibility);
-        hiddenFieldsContainer.appendChild(hiddenRequiredFieldsContainer);
-    
-        const hiddenNonRequiredFieldsContainer = document.createElement('div');
-        hiddenNonRequiredFieldsContainer.className = 'lli-hidden-non-required-fields-container';
-        const cost = document.createElement('h2');
-        cost.innerHTML = '<span style="font-weight: 600;">Cost:</span> $' + lli.cost;
-        const recurrencyFrequency = document.createElement('h2');
-        recurrencyFrequency.innerHTML = '<span style="font-weight: 600;">Recurrency Frequency:</span> ' + lli.recurrencyFrequency;
-        hiddenNonRequiredFieldsContainer.appendChild(cost);
-        hiddenNonRequiredFieldsContainer.appendChild(recurrencyFrequency);
-        hiddenFieldsContainer.appendChild(hiddenNonRequiredFieldsContainer);
-    
-        hiddenContent.appendChild(hiddenFieldsContainer);
-    
-        const mediaContainer = document.createElement('div');
-        mediaContainer.className = 'lli-media-container';
-        const image = document.createElement('img');
-        image.src = './Assets/default-pic.svg';
-        image.alt = '';
-        mediaContainer.appendChild(image);
-        hiddenContent.appendChild(mediaContainer);
-    
-        container.appendChild(hiddenContent);
-    
-        // Add event listeners
-        // Expand the lli
-        container.addEventListener('click', expandDiv)
-    
-        // Close the lli
-        closeButton.addEventListener('click', async function() {
-            encloseDiv()
-            
-            await new Promise(r => setTimeout(r, 100)) // Sleep for 1 ms so the function doesnt get call right away
-            container.addEventListener('click', expandDiv)
-        })
-    
-        function expandDiv() {
-            container.className = 'lli expanded-lli'
-            hiddenContent.className = 'lli-hidden-content'
-            container.removeEventListener('click',expandDiv)
-        }
-    
-        function encloseDiv() {
-            container.className = 'lli'
-            hiddenContent.className = 'lli-hidden-content hidden'
-        }
+    // NOT exposed to the global object ("Private" functions)
+    function getAllLLI() {
+        let getUrl = webServiceUrl + '/getAllLLI';
+        let request = ajaxClient.get(getUrl, jwtToken);
 
-        deleteButton.addEventListener('click', function() {
-            let response = deleteLLI(lli.lliid).then(function(output) {
-                if (output.hasError == false) {
-                    container.parentNode.removeChild(container)
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
                 }
-                
-            })
-            // Need to check if the previous call succeed before calling this
-            
-            
-            
-        })
-        
-        return container;
+
+                return response.json();
+            }).then(function (data) {
+                let output = data.output;
+                resolve(output);
+            }).catch(function (error) {
+                alert(error)
+                reject(error);
+            });
+        });
     }
 
+    function updateLLI(options) {
+        let updateLLIUrl = webServiceUrl + '/putLLI'
 
-    root.myApp = root.myApp || {};
+        let isValidOption = validateLLIOptions(options)
+        if (!isValidOption) {
+            return
+        }
 
-    // Show or Hide private functions
-    //root.myApp.getData = getDataHandler;
-    //root.myApp.sendData = sendDataHandler;
+        let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
 
-    // Initialize the current view by attaching event handlers 
-    function init() {
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json()
+            }).then(function (response) {
+                alert('The LLI is successfully updated.')
+                location.reload()
+                resolve(response)
+            }).catch(function (error) {
+                alert(error)
+                reject(error)
+            })
+        })
+    }
+
+    function deleteLLI(lliid) {
+        let deleteUrl = webServiceUrl + '/deleteLLI?lliid=' + lliid;
+        let request = ajaxClient.del(deleteUrl, jwtToken);
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json();
+            }).then(function (data) {
+                alert('The LLI is successfully deleted.')
+                location.reload()
+                resolve(data);
+            }).catch(function (error) {
+                alert(error)
+                reject(error)
+            })
+        })
+    }
+
+    function validateLLIOptions(option) {
+        // Input Validation
+        if (option.title == "" || option.title.length > MAX_TITLE_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.title.replaceAll(' ', ''))) {
+            alert('The LLI title must only contain  alphanumeric values between 1-50 characters long, please try again.')
+            return false
+        }
+
+        if (option.categories == null) {
+            alert('The category must not be empty')
+            return false
+        }
+
+        for (const category of option.categories) {
+            if (!CATEGORIES_LIST.has(category)) {
+                alert('The LLI category must be valid, please try again.')
+                return false
+            }
+        }
+
+        if (option.description == "" || option.description.length > MAX_DESC_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.description.replaceAll(' ', ''))) {
+            alert('The LLI description must only contain  alphanumeric values between 1-200 characters long, please try again.')
+            return false
+        }
+
+        if (!STATUS_LIST.has(option.status)) {
+            alert('The LLI status must be either “Active”, “Completed”, or “Postponed”, please try again.')
+            return false
+        }
+
+        if (!VISIBILITY_LIST.has(option.visibility)) {
+            alert('The LLI visibility must be either “Public” or “Private”, please try again.')
+            return false
+        }
+
+        let year = parseInt(option.deadline.substring(0, 4))
+        if (year < EARLIEST_DEADLINE || year > LATEST_DEADLINE) {
+            alert(`The LLI deadline must be between 01/01/${EARLIEST_DEADLINE} and 12/31/${LATEST_DEADLINE}, please try again.`)
+            return false
+        }
+
+        if (option.cost < MIN_COST || isNaN(option.cost)) {
+            alert("The LLI cost must be a numerical value greater or equal to $0 USD, please try again.")
+            return false
+        }
+
+        if (!RECCURENCE_STATUS_LIST.has(option.recurrenceStatus)) {
+            alert('The LLI reccurrence must be either “On” or “Off”, please try again.')
+            return false
+        }
+
+        if (option.recurrenceStatus == "On" && !RECCURENCE_FREQUENCY_LIST.has(option.recurrenceFrequency)) {
+            alert('The LLI occurrence frequency must be “Weekly”, “Monthly”, or “Yearly”, please try again.')
+            return false
+        }
+
+        return true
+    }
+
+    function setupCreateLLITemplate() {
+        let addButton = document.getElementById('add-lli-button')
+        var addLLITemplate = document.getElementById('create-lli-template')
+
+        addButton.addEventListener('click', function () {
+            addLLITemplate.classList.remove('hidden')
+        })
+
+        let closeButton = document.getElementById('close-create-lli-button')
+        closeButton.addEventListener('click', function () {
+            addLLITemplate.classList.add('hidden')
+        })
+    }
+
+    function setupCreateLLISubmit() {
+        let createButton = document.getElementById('create-lli-button')
+        createButton.addEventListener('click', function () {
+            let title = document.getElementById('create-title-input').textContent
+            let deadline = document.getElementById('create-date-input').value
+            let categories = document.getElementById('create-category-input')
+
+            var selectedCategories = [];
+            for (var i = 0; i < categories.options.length; i++) {
+                var option = categories.options[i];
+                if (option.selected) {
+                    selectedCategories.push(option.value);
+                }
+            }
+
+            let description = document.getElementById('create-paragraph-input').textContent
+            let status = document.getElementById('create-status-input').value
+            let visibility = document.getElementById('create-visibility-input').value
+            let cost = document.getElementById('create-cost-input').textContent
+            let recurrence = document.getElementById('create-recurrence-input').value
+
+            let recurrenceStatus;
+            let recurrenceFrequency;
+            if (recurrence === "Off") {
+                recurrenceStatus = "Off"
+                recurrenceFrequency = "None"
+            }
+            else {
+                recurrenceStatus = "On"
+                recurrenceFrequency = recurrence
+            }
+
+            let options = {
+                title: title,
+                deadline: deadline,
+                categories: selectedCategories,
+                description: description,
+                status: status,
+                visibility: visibility,
+                deadline: deadline,
+                cost: cost,
+                recurrenceStatus: recurrenceStatus,
+                recurrenceFrequency: recurrenceFrequency
+            }
+
+            createLLI(options)
+        })
+    }
+
+    function setupFilter() {
+        let currentFilter = document.getElementById('current-lli-filter-options')
+
+        let showCurrent = true;
+
+        currentFilter.addEventListener('click', function () {
+            setupCheckBox('current', currentFilter, showCurrent)
+
+            if (showCurrent == true) {
+                showCurrent = false
+            } else {
+                showCurrent = true
+            }
+        })
+
+        let finishedFilter = document.getElementById('finished-lli-filter-options')
+
+        let showFinished = true;
+
+        finishedFilter.addEventListener('click', function () {
+            setupCheckBox('finished', finishedFilter, showFinished)
+
+            if (showFinished == true) {
+                showFinished = false
+            } else {
+                showFinished = true
+            }
+        })
+
+    }
+
+    function setupSearch() {
+        let currentSearchBar = document.getElementById('current-lli-search-bar')
+        currentSearchBar.addEventListener('keydown', function (e) {
+            if (e.key == 'Enter') {
+                let searchQuery = currentSearchBar.value
+
+                let searchOption = {
+                    label: 'Search',
+                    values: searchQuery
+                }
+                filterLLI(searchOption, currentSearchBar)
+            }
+        })
+
+        let finishedSearchBar = document.getElementById('finished-lli-search-bar')
+        finishedSearchBar.addEventListener('keydown', function (e) {
+            if (e.key == 'Enter') {
+                let searchQuery = finishedSearchBar.value
+
+                let searchOption = {
+                    label: 'Search',
+                    values: searchQuery
+                }
+                filterLLI(searchOption, finishedSearchBar)
+            }
+        })
+    }
+
+    function setupCheckBox(containerType, currentFilter, show) {
+        let checkboxesContainer = document.getElementById(containerType + "-lli-filter-checkboxes");
+
+        // Uncheck all checkboxes
+
+        let checkboxesDiv = checkboxesContainer.querySelectorAll('.filter-input');
+
+        const checkedValues = []
+
+        if (show) {
+            checkboxesContainer.classList.remove('hidden')
+
+
+
+            // Iterate through each checkbox
+            checkboxesDiv.forEach(checkbox => {
+                checkbox.addEventListener('click', function (event) {
+                    const checkbox = event.target;
+                    const value = checkbox.value;
+
+                    if (checkbox.checked) {
+                        // If checkbox is checked, add its value to the checkedValues array
+                        checkedValues.push(value);
+                    } else {
+                        // If checkbox is unchecked, remove its value from the checkedValues array
+                        const index = checkedValues.indexOf(value);
+                        if (index !== -1) {
+                            checkedValues.splice(index, 1);
+                        }
+                    }
+
+                    let currentFilterOption = {}
+
+                    // Log the array of checked values
+                    if (checkedValues.length == 0) {
+                        currentFilterOption = {
+                            label: "Filter",
+                            values: "None"
+                        }
+                    } else {
+                        currentFilterOption = {
+                            label: "Filter",
+                            values: checkedValues
+                        }
+                    }
+
+                    filterLLI(currentFilterOption, currentFilter)
+
+                });
+            });
+            show = false;
+        } else {
+            checkboxesContainer.classList.add('hidden')
+
+            show = true;
+        }
+    }
+
+    function setupLogout() {
+        let logoutInput = document.getElementById('logout')
+
+        logoutInput.addEventListener('click', function () {
+            window.localStorage.clear()
+            location.reload()
+        })
+    }
+
+    function showLLI() {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
 
+        // Get initial lli
         getAllLLI().then(function (completedLLIList) {
+            if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = createLLIHTML(lli);
+                let lliHTML = createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -229,14 +418,31 @@
         });
     }
 
+    root.myApp = root.myApp || {};
+
+    // Initialize the current view by setting up data and attaching event handlers 
+    function init() {
+        jwtToken = localStorage["token-local"]
+
+        if (jwtToken == null) {
+            window.location = '../HomePage/index.html'
+        } else {
+            // Set up event handlers
+            setupCreateLLITemplate();
+            setupCreateLLISubmit();
+            // setupFilterSelect();
+            setupFilter();
+            setupSearch();
+            setupLogout();
+
+            // Get data
+            showLLI();
+        }
+    }
+
     init();
 
 })(window, window.ajaxClient);
-
-function expandLLIHTML(container, hiddenContent) {
-    
-
-}
 
 
 

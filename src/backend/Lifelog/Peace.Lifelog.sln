@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.CalendarServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.CalendarServiceTest", "Peace.Lifelog.CalendarServiceTest\Peace.Lifelog.CalendarServiceTest.csproj", "{A52B8E06-0E87-4339-8E30-D57A1C150DA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.SecurityWebService", "Peace.Lifelog.SecurityWebService\Peace.Lifelog.SecurityWebService.csproj", "{08371E04-86AC-4407-AEBB-EC06B8992329}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

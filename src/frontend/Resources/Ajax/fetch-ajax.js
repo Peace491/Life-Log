@@ -1,28 +1,12 @@
-function get(url) {
-
-    const options = {
-        method: 'GET',
-        mode: 'cors',
-        cache: 'default',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer-when-downgrade',
-    };
-
-    return fetch(url, options);
-}
-
-function post(url, data) {
+function post(url, data, jwtToken) {
     const options = {
         method: 'POST',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -32,14 +16,51 @@ function post(url, data) {
     return fetch(url, options);
 }
 
-function del(url) {
+function get(url, jwtToken) {
+
+    const options = {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': jwtToken
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer-when-downgrade',
+    };
+
+    return fetch(url, options);
+}
+
+function put(url, data, jwtToken) {
+    const options = {
+        method: 'PUT',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'Token': jwtToken
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer-when-downgrade',
+        body: JSON.stringify(data)
+    };
+
+    return fetch(url, options);
+}
+
+function del(url, jwtToken) {
     const options = {
         method: 'DELETE',
         mode: 'cors',
         cache: 'default',
         credentials: 'same-origin',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Token': jwtToken
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer-when-downgrade',
@@ -49,7 +70,9 @@ function del(url) {
 }
 
 window.ajaxClient = {
+    post: post,
     get: get,
     post: post,
+    put: put,
     del: del
 }
