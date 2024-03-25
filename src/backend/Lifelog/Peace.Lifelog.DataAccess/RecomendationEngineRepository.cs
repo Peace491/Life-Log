@@ -9,29 +9,22 @@ using Peace.Lifelog.RE;
 
 public class RecomendationEngineRepository
 {
-    private string test = "";
     public async Task<Response> GetNumRecs(string userHash, int numRecs, CancellationToken cancellationToken = default)
     {
         try
         {
             ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
 
-            // if we cant get the users datamart, use the system datamart to get their recomendations
+            var userDataMartQuery = GetUserDataMartQuery(userHash);
 
-            var dataMartResponse = await readDataOnlyDAO.ReadData(GetUserDataMartQuery(userHash), null);
+            var dataMartResponse = await readDataOnlyDAO.ReadData(userDataMartQuery, null);
 
-            REDataMart userDatamart = new REDataMart
-            {
-                UserHash = userHash,
-                Categories = new List<string> {"Food", "Art", "Mental Health"}
-            };
+            var userDatamart = PopulateUserDataMart(userHash, dataMartResponse);
 
+            string recommendationQuery = DynamicallyConstructQuery(userDatamart, numRecs);
 
-            // SELECT * FROM LLI WHERE userHash != '0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=' ORDER BY RAND() LIMIT 5;
-            string query = DynamicallyConstructQuery(userDatamart, numRecs);
+            var getRecsResponse = await readDataOnlyDAO.ReadData(recommendationQuery, null); 
 
-            var getRecsResponse = await readDataOnlyDAO.ReadData(query, null); 
-            string s = "a";
             return getRecsResponse;
         }
         catch (Exception ex)
@@ -45,10 +38,33 @@ public class RecomendationEngineRepository
 
     private string GetUserDataMartQuery(string userHash)
     {
-        // TODO: Implement this method
         return
-            $"SELECT * FROM RecommendationDataMart WHERE UserHash = '{userHash}';";
+            $"SELECT " + 
+            $"(SELECT CategoryOne FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategoryOne, " +
+            $"(SELECT CategoryTwo FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategoryTwo, " +
+            $"(SELECT CategoryOne FROM RecommendationDataMart WHERE UserHash = 'System') AS MostPopularSystemCategory ";
     }
+
+    private REDataMart PopulateUserDataMart(string userHash, Response dataMartResponse)
+    {
+        List<string> categories = new List<string>();
+        if (dataMartResponse.Output == null) return null;
+        foreach (List<object> row in dataMartResponse.Output)
+        {
+            foreach (var key in row)
+            {
+                categories.Add(key.ToString());
+            }
+        }
+        
+        REDataMart userDatamart = new REDataMart
+        {
+            UserHash = userHash,
+            Categories = categories
+        };
+        return userDatamart;
+    }
+
     private string DynamicallyConstructQuery(REDataMart userDatamart, int numRecs)
     {
         string tableName = $"{userDatamart.UserHash}Recs";

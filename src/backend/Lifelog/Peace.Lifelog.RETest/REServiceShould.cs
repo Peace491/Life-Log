@@ -15,7 +15,8 @@ public class ReServiceShould
         var response = await reService.getNumRecs("3KWmzw9cIdwcPD9k8V9MV3yFtLdcEjw2gtPtcruKW6Y=", numRecs);
 
         // Assert
-        Assert.True(response.Output.Count == numRecs);
+        Assert.NotNull(response.Output);
+        Assert.True(response.Output!.Count == numRecs);
         Assert.False(response.HasError);
     }
     [Fact]
