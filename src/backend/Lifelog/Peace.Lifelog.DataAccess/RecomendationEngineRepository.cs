@@ -1,6 +1,7 @@
 ﻿namespace Peace.Lifelog.DataAccess;
 
 using System.Diagnostics;
+using System.Linq.Expressions;
 using DomainModels;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
 using Org.BouncyCastle.Asn1.Cmp;
@@ -9,7 +10,7 @@ using Peace.Lifelog.RE;
 public class RecomendationEngineRepository
 {
     private string test = "";
-    public Task<Response> GetNumRecs(string userHash, int numRecs, CancellationToken cancellationToken = default)
+    public async Task<Response> GetNumRecs(string userHash, int numRecs, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -17,22 +18,20 @@ public class RecomendationEngineRepository
 
             // if we cant get the users datamart, use the system datamart to get their recomendations
 
+            var dataMartResponse = await readDataOnlyDAO.ReadData(GetUserDataMartQuery(userHash), null);
+
             REDataMart userDatamart = new REDataMart
             {
-                UserHash = "0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=",
-                MostCommonUserCategory = "Outdoor",
-                MostCommonUserSubCategory = "Art",
-                MostCommonPublicCategory = "Mental Health"
+                UserHash = userHash,
+                Categories = new List<string> {"Food", "Art", "Mental Health"}
             };
 
-            string whereNotUserHash = WhereNotUserHash(userDatamart.UserHash);
 
             // SELECT * FROM LLI WHERE userHash != '0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=' ORDER BY RAND() LIMIT 5;
             string query = DynamicallyConstructQuery(userDatamart, numRecs);
-            query += EndQuery();
-            query = $"SELECT * FROM LLI WHERE userHash != '{userHash}' ORDER BY RAND() LIMIT {numRecs};";
-            var getRecsResponse = readDataOnlyDAO.ReadData(query, null); 
 
+            var getRecsResponse = await readDataOnlyDAO.ReadData(query, null); 
+            string s = "a";
             return getRecsResponse;
         }
         catch (Exception ex)
@@ -43,9 +42,17 @@ public class RecomendationEngineRepository
     }
 
     // Helper methods
+
+    private string GetUserDataMartQuery(string userHash)
+    {
+        // TODO: Implement this method
+        return
+            $"SELECT * FROM RecommendationDataMart WHERE UserHash = '{userHash}';";
+    }
     private string DynamicallyConstructQuery(REDataMart userDatamart, int numRecs)
     {
-        string query = StartQuery();
+        string tableName = $"{userDatamart.UserHash}Recs";
+        string query = StartQuery(tableName);
 
         int current;
         while (numRecs > 0)
@@ -53,72 +60,96 @@ public class RecomendationEngineRepository
                 current = numRecs % 5;
                 if (current == 0)
                 {
-                    // Add logic to pull 5 recomendations
-                    query += SelectNewLLIWithCategory(WhereNotUserHash(userDatamart.UserHash), userDatamart.MostCommonUserCategory, 2);
-                    query += SelectNewLLIWithCategory(WhereNotUserHash(userDatamart.UserHash), userDatamart.MostCommonUserSubCategory, 2);
-                    query += SelectNewLLIWithCategory(WhereNotUserHash(userDatamart.UserHash), userDatamart.MostCommonPublicCategory, 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[0], 2);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[1], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[2], 1);
+                    query += SelectNewLLINotOfCategories(tableName, userDatamart.UserHash, userDatamart.Categories, 1);
                     numRecs -= 5;
+                }
+                if (current == 4)
+                {
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[0], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[1], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[2], 1);
+                    query += SelectNewLLINotOfCategories(tableName, userDatamart.UserHash, userDatamart.Categories, 1);
+                    numRecs -= 4;
                 }
                 if (current == 3)
                 {
-                    // Add logic to pull 3 recomendations
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[0], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[1], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[2], 1);
                     numRecs -= 3;
                 }
                 if (current == 2)
                 {
-                    // Add logic to pull 2 recomendations
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[0], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[1], 1);
                     numRecs -= 2;
                 }
                 if (current == 1)
                 {
-                    
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[2], 1);
                     numRecs--;
                 }
             }     
-            query += EndQuery(); 
-            
+            query += EndQuery(tableName); 
             return query;
     }
 
-    private string StartQuery()
+
+ 
+    private string StartQuery(string tableName)
     {
-        // establish temp table, and clear it
-        // should be priv string
         return 
-        "CREATE TEMPORARY TABLE IF NOT EXISTS SelectedLLIIds (LLIId INT); " +
-        "TRUNCATE TABLE SelectedLLIIds;";
+        $"CREATE TABLE IF NOT EXISTS `{tableName}` (" +
+        "LLIId INT," +
+        "UNIQUE KEY (LLIId)" +
+        ");" +
+        $"DELETE FROM `{tableName}`;";
     }
 
-    private string EndQuery()
-    {   
-        // Select items from temp table, and drop it
-        // should be priv string
+    private string EndQuery(string tableName)
+    {
         return 
-        "SELECT LLI.* " +
-        "FROM LLI " +
-        "JOIN SelectedLLIIds ON LLI.LLIId = SelectedLLIIds.LLIId; " +
-        "DROP TEMPORARY TABLE IF EXISTS SelectedLLIIds; ";
+        $"SELECT LLI.* " +
+        $"FROM LLI " +
+        $"INNER JOIN `{tableName}` ON LLI.LLIId = `{tableName}`.LLIId " +
+        "ORDER BY RAND();";
     }
 
 
-    private string SelectNewLLIWithCategory(string whereUserHash, string category, int num)
+    private string SelectNewLLIWithCategory(string tableName, string userHash, string category, int limit)
     {
         // randomly select a variable number  from LLIWithCategory
         return 
-        "INSERT INTO SelectedLLIIds (LLIId) " +
+        $"INSERT INTO `{tableName}` (LLIId) " +
         "SELECT LLIId FROM LLI " +
-        whereUserHash +
+        $"WHERE ((UserHash != '{userHash}' " +
+        "AND Visibility = 'Public') " +
+        $"OR (LLI.UserHash = '{userHash}' " +
+        $"AND LLI.Status = 'complete' AND LLI.CompletionDate < DATE_SUB(CURDATE(), INTERVAL 1 YEAR))) " +
+        $"AND LLIId NOT IN (SELECT LLIId FROM `{tableName}`) " +
         $"AND (Category1 = '{category}' OR Category2 = '{category}' OR Category3 = '{category}') " +
-        "AND LLIId NOT IN (SELECT LLIId FROM SelectedLLIIds) " +
         "ORDER BY RAND() " +
-        $"LIMIT {num};";
+        $"LIMIT {limit};";
     }
 
-
-
-    private string WhereNotUserHash(string userHash)
+    private string SelectNewLLINotOfCategories(string tableName, string userHash, List<string> categories, int limit)
     {
-        return $"WHERE UserHash != '{userHash}' ";
+        // do this way to handle the case where datamart takes more information in
+        string categoriesString = string.Join("', '", categories);
+        return 
+            $"INSERT INTO `{tableName}` (LLIId) " +
+            "SELECT LLIId FROM LLI " +
+            $"WHERE UserHash != '{userHash}' " +
+            "AND Visibility = 'public' " +
+            $"AND LLIId NOT IN (SELECT LLIId FROM `{tableName}`) " +
+            $"AND Category1 NOT IN ('{categoriesString}') " +
+            $"AND Category2 NOT IN ('{categoriesString}') " +
+            $"AND Category3 NOT IN ('{categoriesString}') " +
+            "ORDER BY RAND() " +
+            $"LIMIT {limit};";
     }
 }
 
