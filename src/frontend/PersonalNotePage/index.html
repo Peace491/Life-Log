@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Notes</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view" />
+        </div>
+        <div class="header-contents-container">
+            <div class="page-link-container">
+                <div class="calendar-link-container">
+                    <h2>Calendar</h2>
+                </div>
+                <div class="map-link-container">
+                    <h2>Map</h2>
+                </div>
+                <div class="note-link-container" id="notes-view">
+                    <h2>Notes</h2>
+                </div>
+                <div class="life-tree-link-container">
+                    <h2>Life Tree</h2>
+                </div>
+            </div>
+            <div class="user-management-container">
+                <div class="setting-container">
+                    <img src="./Assets/setting.svg" alt="">
+                </div>
+                <div class="user-setting-container">
+                    <img src="./Assets/user-setting.svg" alt="">
+                </div>
+                <div class="logout-container" id="logout">
+                    <h2>Log Out</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="current-note-container note-container">
+            <div class="current-note-header-container note-header-container">
+
+                <div class="current-note-header-title-container note-header-title-container">
+                    <h2>Personal Note</h2>
+                </div>
+
+            </div>
+
+            <div class="note">
+                <div class="note-options">
+                    <div class="note-date-container">
+                        <h2 class="date-aligned-header">
+                            <span class="date-bold-span">Date:</span>
+                        </h2>                    
+                        <input type="date" id="create-date-input" class="date-input" value="" autocomplete="off"></input>
+                    </div>
+                    <div class="note-manager-container">
+                        <img src="./Assets/note-manager.svg" alt="" id="note-manager-button">
+                        <div id="note-options-dropdown" class="dropdown-menu">
+                            <a href="#" id="delete-note">Delete Note</a>
+                            <a href="#" id="edit-note">Edit Note</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note-input-container">
+                    <p contenteditable id="create-paragraph-input" data-placeholder="What are you thinking?......"></p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../Resources/Ajax/fetch-ajax.js"></script>
+    <script src="personalnote-dom-manipulation.js"></script>
+
+    <!-- Page Specific -->
+    <script src="personalnote.js" type="module"></script>
+
+
+</body>
+
+</html>
