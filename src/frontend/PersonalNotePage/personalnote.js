@@ -22,7 +22,7 @@ import Router from '../routes.js';
 
     // NOT exposed to the global object ("Private" functions)
     function createNote(options) {
-        let createPersonalNoteUrl = webServiceUrl + '/postPersonalNote'
+        let createPersonalNoteUrl = webServiceUrl + '/postPN'
 
         let isValidOption = validatePersonalNoteOptions(options)
         if (!isValidOption) {
@@ -40,6 +40,60 @@ import Router from '../routes.js';
                 return response.json()
             }).then(function (response) {
                 alert('The Personal Note is successfully created.')
+                resolve(response)
+            }).catch(function (error) {
+                alert(error)
+                reject(error)
+            })
+        })
+    }
+
+    // NOT exposed to the global object ("Private" functions)
+    function getNote(options) {
+        let getUrl = webServiceUrl + '/getPN';
+
+        let isValidOption = validatePersonalNoteOptions(options)
+        if (!isValidOption) {
+            return
+        }
+        let request = ajaxClient.get(getUrl, options, jwtToken);
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json();
+            }).then(function (data) {
+                let output = data.output;
+                resolve(output);
+            }).catch(function (error) {
+                alert(error)
+                reject(error);
+            });
+        });
+    }
+
+    function updateNote(options) {
+        let updateLLIUrl = webServiceUrl + '/putPN'
+
+        let isValidOption = validateLLIOptions(options)
+        if (!isValidOption) {
+            return
+        }
+
+        let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json()
+            }).then(function (response) {
+                alert('The Note was successfully updated.')
                 location.reload()
                 resolve(response)
             }).catch(function (error) {
@@ -49,77 +103,27 @@ import Router from '../routes.js';
         })
     }
 
-    // // NOT exposed to the global object ("Private" functions)
-    // function getAllLLI() {
-    //     let getUrl = webServiceUrl + '/getAllLLI';
-    //     let request = ajaxClient.get(getUrl, jwtToken);
+    function deleteNote(lliid) {
+        let deleteUrl = webServiceUrl + '/deleteLLI?lliid=' + lliid;
+        let request = ajaxClient.del(deleteUrl, jwtToken);
 
-    //     return new Promise((resolve, reject) => {
-    //         request.then(function (response) {
-    //             if (response.status != 200) {
-    //                 throw new Error(response.statusText)
-    //             }
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
 
-    //             return response.json();
-    //         }).then(function (data) {
-    //             let output = data.output;
-    //             resolve(output);
-    //         }).catch(function (error) {
-    //             alert(error)
-    //             reject(error);
-    //         });
-    //     });
-    // }
-
-    // function updateLLI(options) {
-    //     let updateLLIUrl = webServiceUrl + '/putLLI'
-
-    //     let isValidOption = validateLLIOptions(options)
-    //     if (!isValidOption) {
-    //         return
-    //     }
-
-    //     let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
-
-    //     return new Promise(function (resolve, reject) {
-    //         request.then(function (response) {
-    //             if (response.status != 200) {
-    //                 throw new Error(response.statusText)
-    //             }
-
-    //             return response.json()
-    //         }).then(function (response) {
-    //             alert('The LLI is successfully updated.')
-    //             location.reload()
-    //             resolve(response)
-    //         }).catch(function (error) {
-    //             alert(error)
-    //             reject(error)
-    //         })
-    //     })
-    // }
-
-    // function deleteLLI(lliid) {
-    //     let deleteUrl = webServiceUrl + '/deleteLLI?lliid=' + lliid;
-    //     let request = ajaxClient.del(deleteUrl, jwtToken);
-
-    //     return new Promise((resolve, reject) => {
-    //         request.then(function (response) {
-    //             if (response.status != 200) {
-    //                 throw new Error(response.statusText)
-    //             }
-
-    //             return response.json();
-    //         }).then(function (data) {
-    //             alert('The LLI is successfully deleted.')
-    //             location.reload()
-    //             resolve(data);
-    //         }).catch(function (error) {
-    //             alert(error)
-    //             reject(error)
-    //         })
-    //     })
-    // }
+                return response.json();
+            }).then(function (data) {
+                alert('The Note was successfully deleted.')
+                location.reload()
+                resolve(data);
+            }).catch(function (error) {
+                alert(error)
+                reject(error)
+            })
+        })
+    }
 
     function validatePersonalNoteOptions(option) {
         // Input Validation
@@ -128,7 +132,7 @@ import Router from '../routes.js';
             return false
         }
 
-        let year = parseInt(option.date.substring(0, 4))
+        let year = parseInt(option.notedate.substring(0, 4))
         if (year < EARLIEST_NOTE_YEAR || year > LATEST_NOTE_YEAR) {
             alert(`The LLI deadline must be between 01/01/${EARLIEST_NOTE_YEAR} and 12/31/${LATEST_NOTE_YEAR}, please try again.`)
             return false
@@ -139,68 +143,20 @@ import Router from '../routes.js';
         return true
     }
 
-    // function setupCreatePerTemplate() {
-    //     let addButton = document.getElementById('add-lli-button')
-    //     var addLLITemplate = document.getElementById('create-lli-template')
+    function setupCreateNoteSubmit() {
+        let createButton = document.getElementById('submit-note-button')
+        createButton.addEventListener('click', function () {
+            let content = document.getElementById('create-paragraph-input').textContent
+            let date = document.getElementById('create-date-input').value
 
-    //     addButton.addEventListener('click', function () {
-    //         addLLITemplate.classList.remove('hidden')
-    //     })
+            let options = {
+                notedate: date,
+                notecontent: content
+            }
 
-    //     let closeButton = document.getElementById('close-create-lli-button')
-    //     closeButton.addEventListener('click', function () {
-    //         addLLITemplate.classList.add('hidden')
-    //     })
-    // }
-
-    // function setupCreateLLISubmit() {
-    //     let createButton = document.getElementById('create-lli-button')
-    //     createButton.addEventListener('click', function () {
-    //         let title = document.getElementById('create-title-input').textContent
-    //         let deadline = document.getElementById('create-date-input').value
-    //         let categories = document.getElementById('create-category-input')
-
-    //         var selectedCategories = [];
-    //         for (var i = 0; i < categories.options.length; i++) {
-    //             var option = categories.options[i];
-    //             if (option.selected) {
-    //                 selectedCategories.push(option.value);
-    //             }
-    //         }
-
-    //         let description = document.getElementById('create-paragraph-input').textContent
-    //         let status = document.getElementById('create-status-input').value
-    //         let visibility = document.getElementById('create-visibility-input').value
-    //         let cost = document.getElementById('create-cost-input').textContent
-    //         let recurrence = document.getElementById('create-recurrence-input').value
-
-    //         let recurrenceStatus;
-    //         let recurrenceFrequency;
-    //         if (recurrence === "Off") {
-    //             recurrenceStatus = "Off"
-    //             recurrenceFrequency = "None"
-    //         }
-    //         else {
-    //             recurrenceStatus = "On"
-    //             recurrenceFrequency = recurrence
-    //         }
-
-    //         let options = {
-    //             title: title,
-    //             deadline: deadline,
-    //             categories: selectedCategories,
-    //             description: description,
-    //             status: status,
-    //             visibility: visibility,
-    //             deadline: deadline,
-    //             cost: cost,
-    //             recurrenceStatus: recurrenceStatus,
-    //             recurrenceFrequency: recurrenceFrequency
-    //         }
-
-    //         createNote(options)
-    //     })
-    // }
+            createNote(options)
+        })
+    }
 
     function setupLogout() {
         let logoutInput = document.getElementById('logout')
@@ -222,7 +178,7 @@ import Router from '../routes.js';
             window.location = '../HomePage/index.html'
         } else {
             // Set up event handlers
-            // setupCreateLLITemplate();
+            setupCreateNoteSubmit();
             // setupCreateLLISubmit();
             // setupFilterSelect();
             setupLogout();

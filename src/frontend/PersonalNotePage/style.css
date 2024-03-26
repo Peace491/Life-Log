@@ -241,11 +241,21 @@ display: block;
 }
 
 .note-input-container{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
     border: solid;
     border-color: #EEEEEE;
     height: 100%;
     padding: 11px 11px 11px 11px;
     border-radius: 10px;
+}
+
+.note-input-container div {
+    display: flex;
+    flex-direction: column;
 }
 
 p:empty:not(:focus)::before {
@@ -261,6 +271,27 @@ p:empty:not(:focus)::before {
     font-family: "Inter", sans-serif;
 }
 
+.note-input{
+    grid-area: 1 / 1 / 5 / 7;
+}
+
+#submit-note-button {
+    display: none;
+    grid-area: 5 / 6 / 6 / 7;
+    background-color: #EBA755;
+    height: 30px;
+    width: 80px;
+    justify-self: end;
+    align-self: end;
+    text-align: center;
+    padding-top: 10px;
+    border-radius: 15px;
+    font-size: larger;
+    color: white;
+    font-weight: bold;
+}
+
+#submit-note-button:hover {background-color: #c79354}
 .date-input{
     border: none;
 }

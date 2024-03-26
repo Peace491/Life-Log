@@ -55,7 +55,7 @@ public class PersonalNoteService : ICreatePersonalNote
         #endregion
 
         // Log
-        string message = "The Note is successfully been Created";
+        string message = "The Note has successfully been Created";
 
         CreateLog(userHash, message, timer);
 
@@ -71,23 +71,34 @@ public class PersonalNoteService : ICreatePersonalNote
         timer.Start();
 
         // Validate Input 
-        var validateDeletion = await checkIfPersonalNoteInputIsValid(userHash, personalnote);
 
-        if (validateDeletion.HasError)
+        if (personalnote.NoteId == string.Empty || personalnote.NoteId is null)
         {
-            return validateDeletion;
+            deletePersonalNoteResponse.HasError = true;
+            deletePersonalNoteResponse.ErrorMessage = "NoteId can not be empty";
+            return deletePersonalNoteResponse;
         }
-
-
-
 
         // Modify Data Base
         #region Delete Personal Note in DB
 
-        var sql = $"DELETE FROM PersonalNote WHERE userHash = \"{userHash}\" AND NoteDate = \"{personalnote.NoteDate}\"";
+        var sql = $"DELETE FROM PersonalNote WHERE userHash = \"{userHash}\" AND NoteId = \"{personalnote.NoteId}\";";
 
-        deletePersonalNoteResponse = await this.deleteDataOnlyDAO.DeleteData(sql);
+        var deleteResponse = await this.deleteDataOnlyDAO.DeleteData(sql);
         timer.Stop();
+
+        if (deleteResponse.Output != null)
+        {
+            foreach (int rowsAffected in deleteResponse.Output)
+            {
+                if (rowsAffected == 0)
+                {
+                    deletePersonalNoteResponse.HasError = true;
+                    deletePersonalNoteResponse.ErrorMessage = "Failed to delete Personal Note";
+                    return deletePersonalNoteResponse;
+                }
+            }
+        }
 
 
         #endregion
@@ -97,6 +108,7 @@ public class PersonalNoteService : ICreatePersonalNote
 
         CreateLog(userHash, message, timer);
 
+        deletePersonalNoteResponse = deleteResponse;
 
         return deletePersonalNoteResponse;
     }
@@ -120,9 +132,9 @@ public class PersonalNoteService : ICreatePersonalNote
         // Modify Data Base
         #region Retrive Personal Note from DB
 
-        var sql = $"SELECT FROM PersonalNote WHERE userHash = \"{userHash}\" AND NoteDate = \"{personalnote.NoteDate}\"";
+        var sql = $"SELECT * FROM PersonalNote WHERE UserHash = \"{personalnote.UserHash}\" AND NoteDate = \"{personalnote.NoteDate}\";";
 
-        viewPersonalNoteResponse = await this.readDataOnlyDAO.ReadData(sql);
+        var readPersonalNoteResponse = await this.readDataOnlyDAO.ReadData(sql);
         timer.Stop();
 
 
@@ -133,6 +145,11 @@ public class PersonalNoteService : ICreatePersonalNote
 
         CreateLog(userHash, message, timer);
 
+        var personalNoteOutput = ConvertDatabaseResponseOutputToPersonalNoteObjectList(readPersonalNoteResponse);
+
+        viewPersonalNoteResponse.Output = personalNoteOutput;
+
+        viewPersonalNoteResponse.HasError = false;
 
         return viewPersonalNoteResponse;
     }
@@ -156,16 +173,17 @@ public class PersonalNoteService : ICreatePersonalNote
         // Modify Data Base
         #region Update Personal Note in DB
 
-        var checkNoteSql = $"SELECT FROM PersonalNote WHERE userHash = \"{userHash}\" AND NoteDate = \"{personalnote.NoteDate}\"";
+        var checkNoteSql = $"SELECT * FROM PersonalNote WHERE NoteDate = \"{personalnote.NoteDate}\"";
         updatePersonalNoteResponse = await this.readDataOnlyDAO.ReadData(checkNoteSql);
 
 
         string updateNoteSql = "UPDATE PersonalNote SET "
-        + (personalnote.NoteContent != string.Empty ? $"NoteContent = \"{personalnote.NoteContent}\"," : "");
+        + (personalnote.NoteContent != string.Empty ? $"NoteContent = \"{personalnote.NoteContent}\"," : "")
+        + (personalnote.NoteDate != null && personalnote.NoteDate != string.Empty ? $"NoteDate = \"{personalnote.NoteDate}\"," : "");
 
         updateNoteSql = updateNoteSql.Remove(updateNoteSql.Length - 1);
 
-        updateNoteSql += $" WHERE UserHash = \"{userHash}\" AND NoteDate= \"{personalnote.NoteDate}\",";
+        updateNoteSql += $" WHERE NoteId = \"{personalnote.NoteId}\";";
 
         updatePersonalNoteResponse = await this.updateDataOnlyDAO.UpdateData(updateNoteSql);
 
@@ -186,7 +204,7 @@ public class PersonalNoteService : ICreatePersonalNote
 
         CreateLog(userHash, message, timer);
 
-
+        updatePersonalNoteResponse.HasError = false;
         return updatePersonalNoteResponse;
     }
 
@@ -240,7 +258,8 @@ public class PersonalNoteService : ICreatePersonalNote
 
         if (personalnote.NoteDate != string.Empty)
         {
-            var personalNoteYear = Convert.ToInt32(personalnote.NoteDate.Substring(0, 4));
+
+            var personalNoteYear = DateTime.Parse(personalnote.NoteDate).Year;
 
             if (personalNoteYear < EARLIEST_NOTE_YEAR || personalNoteYear > LATEST_NOTE_YEAR)
             {
@@ -269,7 +288,55 @@ public class PersonalNoteService : ICreatePersonalNote
     }
 
 
+    // convert to PN object 
+    private List<Object>? ConvertDatabaseResponseOutputToPersonalNoteObjectList(Response readPersonalNoteResponse)
+    {
+        List<Object> personalNoteList = new List<Object>();
 
+        if (readPersonalNoteResponse.Output == null)
+        {
+            return null;
+        }
+
+
+        foreach (List<Object> PersonalNote in readPersonalNoteResponse.Output)
+        {
+
+            var personalNote = new PN();
+
+            int index = 0;
+
+            foreach (var attribute in PersonalNote)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        personalNote.NoteId = attribute.ToString() ?? "";
+                        break;
+                    case 1:
+                        personalNote.UserHash = attribute.ToString() ?? "";
+                        break;
+                    case 2:
+                        personalNote.NoteDate = attribute.ToString() ?? "";
+                        break;
+                    case 3:
+                        personalNote.NoteContent = attribute.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            personalNoteList.Add(personalNote);
+
+        }
+
+        return personalNoteList;
+    }
 
 
 

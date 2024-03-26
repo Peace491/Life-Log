@@ -30,8 +30,8 @@ public class PersonalNoteController : ControllerBase
 
     }
     [HttpPost]
-    [Route("postpersonalnote")]
-    public async Task<IActionResult> PostLLI([FromBody] PostPersonalNoteRequest createPersonalNoteRequest)
+    [Route("postPN")]
+    public async Task<IActionResult> PostPersonalNote([FromBody] PostPersonalNoteRequest createPersonalNoteRequest)
     {
         if (Request.Headers == null)
         {
@@ -73,9 +73,9 @@ public class PersonalNoteController : ControllerBase
 
     }
 
-    /*[HttpGet]
-    [Route("getAllLLI")]
-    public async Task<IActionResult> GetAllLLI()
+    [HttpGet]
+    [Route("getPN")]
+    public async Task<IActionResult> GetPersonalNote([FromBody] GetPersonalNoteRequest viewPersonalNoteRequest)
     {
         if (Request.Headers == null)
         {
@@ -96,7 +96,11 @@ public class PersonalNoteController : ControllerBase
             return StatusCode(401);
         }
 
-        var response = await this.lliService.GetAllLLIFromUser(userHash);
+        var personalnote = new PN();
+        personalnote.NoteDate = viewPersonalNoteRequest.NoteDate;
+        personalnote.NoteContent = viewPersonalNoteRequest.NoteContent;
+
+        var response = await this.personalNoteService.ViewPersonalNote(userHash, personalnote);
 
         if (response.HasError == false)
         {
@@ -113,8 +117,8 @@ public class PersonalNoteController : ControllerBase
     }
 
     [HttpPut]
-    [Route("putLLI")]
-    public async Task<IActionResult> PutLLI([FromBody] PutLLIRequest updateLLIRequest)
+    [Route("putPN")]
+    public async Task<IActionResult> PutPersonalNote([FromBody] PutPersonalNoteRequest updatePersonalNoteRequest)
     {
         if (Request.Headers == null)
         {
@@ -135,19 +139,12 @@ public class PersonalNoteController : ControllerBase
             return StatusCode(401);
         }
 
-        var lli = new LLI();
-        lli.LLIID = updateLLIRequest.LLIID;
-        lli.Title = updateLLIRequest.Title;
-        lli.Categories = updateLLIRequest.Categories;
-        lli.Description = updateLLIRequest.Description;
-        lli.Status = updateLLIRequest.Status;
-        lli.Visibility = updateLLIRequest.Visibility;
-        lli.Deadline = updateLLIRequest.Deadline;
-        lli.Cost = updateLLIRequest.Cost;
-        lli.Recurrence.Status = updateLLIRequest.RecurrenceStatus;
-        lli.Recurrence.Frequency = updateLLIRequest.RecurrenceFrequency;
+        var personalnote = new PN();
+        personalnote.NoteId = updatePersonalNoteRequest.NoteId;
+        personalnote.NoteDate = updatePersonalNoteRequest.NoteDate;
+        personalnote.NoteContent = updatePersonalNoteRequest.NoteContent;
 
-        var response = await this.lliService.UpdateLLI(userHash, lli);
+        var response = await this.personalNoteService.UpdatePersonalNote(userHash, personalnote);
 
         if (response.HasError == false)
         {
@@ -164,8 +161,8 @@ public class PersonalNoteController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("deleteLLI")]
-    public async Task<IActionResult> DeleteLLI(string lliId)
+    [Route("deletePN")]
+    public async Task<IActionResult> DeleteLLI(string noteId)
     {
         if (Request.Headers == null)
         {
@@ -186,10 +183,11 @@ public class PersonalNoteController : ControllerBase
             return StatusCode(401);
         }
 
-        var lli = new LLI();
-        lli.LLIID = lliId;
+        // initializing the note object with an NoteId
+        var personalnote = new PN();
+        personalnote.NoteId = noteId;
 
-        var response = await this.lliService.DeleteLLI(userHash, lli);
+        var response = await this.personalNoteService.DeletePersonalNote(userHash, personalnote);
 
         if (response.HasError == false)
         {
@@ -203,7 +201,7 @@ public class PersonalNoteController : ControllerBase
         {
             return StatusCode(500);
         }
-    }*/
+    }
 
 
 }
