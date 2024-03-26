@@ -136,7 +136,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
 
     // Cost container
     const costHeading = document.createElement('h2');
-    costHeading.innerHTML = `<span style="font-weight: 600;">Cost:</span> $<span id="cost-input${lli.lliid}">${lli.cost || '100'}</span>`;
+    costHeading.innerHTML = `<span style="font-weight: 600;">Cost:</span> $<span id="cost-input${lli.lliid}">${lli.cost}</span>`;
 
     // Recurrence container
     const recurrenceContainer = document.createElement('div')

@@ -204,7 +204,7 @@
             return false
         }
 
-        if (option.cost < MIN_COST) {
+        if (option.cost < MIN_COST || isNaN(option.cost)) {
             alert("The LLI cost must be a numerical value greater or equal to $0 USD, please try again.")
             return false
         }
