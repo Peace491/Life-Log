@@ -106,8 +106,6 @@
     function updateLLI(options) {
         let updateLLIUrl = webServiceUrl + '/putLLI'
 
-        console.log(options)
-
         let isValidOption = validateLLIOptions(options)
         if (!isValidOption) {
             return

@@ -210,7 +210,6 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
 
 function convertLLIToEditMode(id, updateLLI) {
     // Current value
-    console.log(id)
     let currentDeadline = document.getElementById('deadline' + id).textContent
     var parts = currentDeadline.split('/');
     currentDeadline = parts[2] + '-' + parts[0].padStart(2, '0') + '-' + parts[1].padStart(2, '0')
