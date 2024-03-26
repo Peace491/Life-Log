@@ -173,7 +173,7 @@ public class REService : IReService
 
         foreach (List<Object> LLI in recomendations.Output)
         {
-            var lli = new LLI2();
+            var lli = new LLI();
             int index = 0;
             foreach (var attribute in LLI)
             {
