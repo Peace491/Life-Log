@@ -33,7 +33,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var createLLIResponse = new Response();
 
         #region Input Validation
-        if (lli.Title == null || lli.Categories == null || lli.Recurrence.Status == null || lli.Recurrence.Frequency == null)
+        if (lli.Title == null || lli.Category1 == null || lli.Recurrence.Status == null || lli.Recurrence.Frequency == null)
         {
             createLLIResponse.HasError = true;
             createLLIResponse.ErrorMessage = "The non-nullable LLI input is null";
@@ -60,7 +60,11 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             return createLLIResponse;
         }
 
-        if (lli.Categories is null || lli.Categories.Count == 0)
+        if (
+            (lli.Category1 != null && !LLICategory.IsValidCategory(lli.Category1))
+            || (lli.Category2 != null && !LLICategory.IsValidCategory(lli.Category2))
+            || (lli.Category3 != null && !LLICategory.IsValidCategory(lli.Category3))
+        )
         {
             createLLIResponse.HasError = true;
             createLLIResponse.ErrorMessage = "LLI categories must not be null or empty";
@@ -68,19 +72,6 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return createLLIResponse;
         }
-
-        foreach (var categories in lli.Categories)
-        {
-            if (!LLICategory.IsValidCategory(categories))
-            {
-                createLLIResponse.HasError = true;
-                createLLIResponse.ErrorMessage = "A LLI category is invalid";
-                var errorMessage = "The LLI category is invalid";
-                var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
-                return createLLIResponse;
-            }
-        }
-
 
         if (lli.Description is not null && lli.Description.Length > MAX_DESC_LENGTH_IN_CHAR)
         {
@@ -171,7 +162,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var timer = new Stopwatch();
         timer.Start();
 
-        var sql = "INSERT INTO LLI (UserHash, Title, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency, CreationDate, CompletionDate) VALUES ("
+        var sql = "INSERT INTO LLI (UserHash, Title, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency, CreationDate, Category1, Category2, Category3, CompletionDate) VALUES ("
         + $"\"{userHash}\", "
         + $"\"{lli.Title}\", "
         + $"\"{lli.Description}\", "
@@ -181,7 +172,22 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + $"{lli.Cost}, "
         + $"\"{lli.Recurrence.Status}\", "
         + $"\"{lli.Recurrence.Frequency}\", "
-        + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", ";
+        + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", "
+        + $"\"{lli.Category1}\", ";
+
+        if (lli.Category2 != null) {
+            sql += $"\"{lli.Category2}\", ";
+        }
+        else {
+            sql += "null, ";
+        }
+
+        if (lli.Category3 != null) {
+            sql += $"\"{lli.Category3}\", ";
+        }
+        else {
+            sql += "null, ";
+        }
 
         if (lli.CompletionDate != "") {
             sql += $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\"";
@@ -218,18 +224,6 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             return createLLIResponse;
         }
 
-        // Insert Category
-        var insertCategorySQL = "INSERT INTO LLICategories (LLIId, Category) VALUES ";
-
-        foreach (string category in lli.Categories!)
-        {
-            insertCategorySQL += $"({lliid}, \"{category}\"),";
-        }
-
-        // Remove trailing comma from sql
-        insertCategorySQL = insertCategorySQL.Remove(insertCategorySQL.Length - 1, 1);
-
-        var createCategoryResponse = this.createDataOnlyDAO.CreateData(insertCategorySQL);
 
         timer.Stop();
 
@@ -294,13 +288,6 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             return readLLIResponse;
         }
 
-        // Read LLI Categories
-        var readLLICategoriesSql = "SELECT lc.lliid, lc.category "
-        + "FROM LLICategories lc INNER JOIN LLI l ON lc.lliid = l.lliid "
-        + $"WHERE l.UserHash = \"{userHash}\"";
-
-        var readLLICategoriesResponse = await this.readDataOnlyDAO.ReadData(readLLICategoriesSql, count: null);
-
         timer.Stop();
         #endregion
 
@@ -330,7 +317,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
         #endregion
 
-        var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(readLLIResponse, readLLICategoriesResponse);
+        var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(readLLIResponse);
 
         readLLIResponse.Output = lliOutput;
 
@@ -342,14 +329,6 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var updateLLIResponse = new Response();
 
         #region Input Validation
-        // if (lli.Title == null || lli.Categories == null || lli.Recurrence.Status == null || lli.Recurrence.Frequency == null) {
-        //     updateLLIResponse.HasError = true;
-        //     updateLLIResponse.ErrorMessage = "The non-nullable LLI input is null";
-        //     var errorMessage = "The non-nullable LLI input is null";
-        //     var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
-        //     return updateLLIResponse;
-        // }
-
         if (userHash == string.Empty)
         {
             updateLLIResponse.HasError = true;
@@ -368,21 +347,18 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
             return updateLLIResponse;
         }
 
-        if (!(lli.Categories is null) && !(lli.Categories.Count == 0))
+        if (
+            (lli.Category1 != null && !LLICategory.IsValidCategory(lli.Category1))
+            || (lli.Category2 != null && !LLICategory.IsValidCategory(lli.Category2))
+            || (lli.Category3 != null && !LLICategory.IsValidCategory(lli.Category3))
+        )
         {
-            foreach (var categories in lli.Categories)
-            {
-                if (!LLICategory.IsValidCategory(categories))
-                {
-                    updateLLIResponse.HasError = true;
-                    updateLLIResponse.ErrorMessage = "A LLI Category is invalid";
-                    var errorMessage = "The LLI category is invalid";
-                    var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
-                    return updateLLIResponse;
-                }
-            }
+            updateLLIResponse.HasError = true;
+            updateLLIResponse.ErrorMessage = "LLI categories must not be null or empty";
+            var errorMessage = "The LLI category is invalid";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            return updateLLIResponse;
         }
-
         if (lli.Description is not null && lli.Description.Length > MAX_DESC_LENGTH_IN_CHAR)
         {
             updateLLIResponse.HasError = true;
@@ -485,7 +461,10 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + (lli.Cost != null ? $"Cost = {lli.Cost}," : "")
         + (lli.Recurrence!.Status != null && lli.Recurrence.Status != string.Empty ? $"RecurrenceStatus = \"{lli.Recurrence.Status}\"," : "")
         + (lli.Recurrence.Frequency != null && lli.Recurrence.Frequency != string.Empty ? $"RecurrenceFrequency = \"{lli.Recurrence.Frequency}\"," : "")
-        + (lli.CompletionDate != null && lli.CompletionDate != string.Empty ? $"CompletionDate = \"{lli.CompletionDate}\"," : "");
+        + (lli.CompletionDate != null && lli.CompletionDate != string.Empty ? $"CompletionDate = \"{lli.CompletionDate}\"," : "")
+        + (lli.Category1 != null && lli.Category1 != string.Empty ? $"Category1 = \"{lli.Category1}\"," : "")
+        + (lli.Category2 != null && lli.Category2 != string.Empty ? $"Category2 = \"{lli.Category2}\"," : "")
+        + (lli.Category3 != null && lli.Category3 != string.Empty ? $"Category3 = \"{lli.Category3}\"," : "");
 
         updateLLISql = updateLLISql.Remove(updateLLISql.Length - 1);
 
@@ -499,28 +478,6 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
             var errorMessage = updateLLIResponse.ErrorMessage;
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
-        }
-
-        // Update Category
-
-        if (lli.Categories != null && lli.Categories.Count != 0)
-        {
-            // Delete all existing lli categories of that lli
-            var deleteOldCategoriesSql = $"DELETE FROM LLICategories WHERE lliid=\"{lli.LLIID}\"";
-
-            var insertNewCategoriesSql = "INSERT INTO LLICategories (LLIId, Category) VALUES ";
-
-            foreach (string category in lli.Categories)
-            {
-                insertNewCategoriesSql += $"(\"{lli.LLIID}\", \"{category}\"),";
-            }
-
-            // Remove trailing comma from sql
-            insertNewCategoriesSql = insertNewCategoriesSql.Remove(insertNewCategoriesSql.Length - 1, 1);
-
-            var deleteOldCategoriesResponse = await this.deleteDataOnlyDAO.DeleteData(deleteOldCategoriesSql);
-            var insertNewCategoriesResponse = await this.createDataOnlyDAO.CreateData(insertNewCategoriesSql);
-
         }
 
         timer.Stop();
@@ -674,38 +631,13 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         response.HasError = false;
         return response;
     }
-    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse, Response readLLICategoriesResponse)
+    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse)
     {
         List<Object> lliList = new List<Object>();
 
         if (readLLIResponse.Output == null)
         {
             return null;
-        }
-
-        var lliCategoriesForLLI = new Dictionary<string, List<string>>();
-
-        if (readLLICategoriesResponse.Output != null)
-        {
-            foreach (List<Object> lliCategories in readLLICategoriesResponse.Output)
-            {
-                string lliid = lliCategories[0].ToString()!;
-                string lliCategory = lliCategories[1].ToString()!;
-
-                if (!lliCategoriesForLLI.ContainsKey(lliid))
-                {
-                    // Key doesn't exist, create a new list and add the item to it
-                    var newList = new List<string>();
-                    newList.Add(lliCategory);
-                    lliCategoriesForLLI.Add(lliid, newList);
-                }
-                else
-                {
-                    // Key exists, retrieve the list associated with that key and add the item to it
-                    lliCategoriesForLLI[lliid].Add(lliCategory);
-                }
-
-            }
         }
 
         foreach (List<Object> LLI in readLLIResponse.Output)
@@ -757,19 +689,21 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                     case 11:
                         lli.CompletionDate = attribute.ToString() ?? "";
                         break;
+                    case 12:
+                        lli.Category1 = attribute.ToString() ?? "";
+                        break;
+                    case 13:
+                        lli.Category2 = attribute.ToString() ?? "";
+                        break;
+                    case 14:
+                        lli.Category3 = attribute.ToString() ?? "";
+                        break;
                     default:
                         break;
                 }
                 index++;
 
             }
-
-            // Set Title
-            if (lliCategoriesForLLI.ContainsKey(lli.LLIID))
-            {
-                lli.Categories = lliCategoriesForLLI[lli.LLIID];
-            }
-
 
             lliList.Add(lli);
 

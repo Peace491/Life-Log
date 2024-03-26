@@ -51,7 +51,9 @@ public class LLIController : ControllerBase
 
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
-        lli.Categories = createLLIRequest.Categories;
+        lli.Category1 = createLLIRequest.Category1;
+        lli.Category2 = createLLIRequest.Category2;
+        lli.Category3 = createLLIRequest.Category3;
         lli.Description = createLLIRequest.Description;
         lli.Status = createLLIRequest.Status;
         lli.Visibility = createLLIRequest.Visibility;
@@ -136,7 +138,9 @@ public class LLIController : ControllerBase
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
         lli.Title = updateLLIRequest.Title;
-        lli.Categories = updateLLIRequest.Categories;
+        lli.Category1 = updateLLIRequest.Category1;
+        lli.Category2 = updateLLIRequest.Category2;
+        lli.Category3 = updateLLIRequest.Category3;
         lli.Description = updateLLIRequest.Description;
         lli.Status = updateLLIRequest.Status;
         lli.Visibility = updateLLIRequest.Visibility;
