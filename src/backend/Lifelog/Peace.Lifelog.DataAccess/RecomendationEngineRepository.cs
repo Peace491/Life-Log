@@ -88,7 +88,7 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
         try
         {
             UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-            var query = $"UPDATE RecommendationDataMart SET CategoryOne = '{category1}', CategoryTwo = '{category2}' WHERE UserHash = '{userHash}';";
+            var query = $"UPDATE RecommendationDataMart SET Category1 = '{category1}', Category2 = '{category2}' WHERE UserHash = '{userHash}';";
             var response = await updateDataOnlyDAO.UpdateData(query);
             return response;
         }
@@ -133,9 +133,9 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
     {
         return
             $"SELECT " + 
-            $"(SELECT CategoryOne FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategoryOne, " +
-            $"(SELECT CategoryTwo FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategoryTwo, " +
-            $"(SELECT CategoryOne FROM RecommendationDataMart WHERE UserHash = 'System') AS MostPopularSystemCategory ";
+            $"(SELECT Category1 FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategory1, " +
+            $"(SELECT Category2 FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategory2, " +
+            $"(SELECT Category1 FROM RecommendationDataMart WHERE UserHash = 'System') AS MostPopularSystemCategory ";
     }
 
     private REDataMart PopulateUserDataMart(string userHash, Response dataMartResponse)
@@ -237,7 +237,7 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
         $"WHERE ((UserHash != '{userHash}' " +
         "AND Visibility = 'Public') " +
         $"OR (LLI.UserHash = '{userHash}' " +
-        $"AND LLI.Status = 'complete' AND LLI.CompletionDate < DATE_SUB(CURDATE(), INTERVAL 1 YEAR))) " +
+        $"AND LLI.Status = 'Completed' AND LLI.CompletionDate < DATE_SUB(CURDATE(), INTERVAL 1 YEAR))) " +
         $"AND LLIId NOT IN (SELECT LLIId FROM `{tableName}`) " +
         $"AND (Category1 = '{category}' OR Category2 = '{category}' OR Category3 = '{category}') " +
         "ORDER BY RAND() " +
@@ -246,17 +246,18 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
 
     private string SelectNewLLINotOfCategories(string tableName, string userHash, List<string> categories, int limit)
     {
-        // do this way to handle the case where datamart takes more information in
-        string categoriesString = string.Join("', '", categories);
+        string categoriesString = string.Join(", ", categories);
         return 
             $"INSERT INTO `{tableName}` (LLIId) " +
             "SELECT LLIId FROM LLI " +
-            $"WHERE UserHash != '{userHash}' " +
-            "AND Visibility = 'public' " +
+            $"WHERE ((UserHash != '{userHash}' " +
+            "AND Visibility = 'Public') " +
+            $"OR (LLI.UserHash = '{userHash}' " +
+            $"AND LLI.Status = 'Completed' AND LLI.CompletionDate < DATE_SUB(CURDATE(), INTERVAL 1 YEAR))) " +
             $"AND LLIId NOT IN (SELECT LLIId FROM `{tableName}`) " +
-            $"AND Category1 NOT IN ('{categoriesString}') " +
-            $"AND Category2 NOT IN ('{categoriesString}') " +
-            $"AND Category3 NOT IN ('{categoriesString}') " +
+            $"AND Category1 NOT IN ('{categories[0]}', '{categories[1]}', '{categories[2]}') " +
+            $"AND Category2 NOT IN ('{categories[0]}', '{categories[1]}', '{categories[2]}') " +
+            $"AND Category3 NOT IN ('{categories[0]}', '{categories[1]}', '{categories[2]}') " +
             "ORDER BY RAND() " +
             $"LIMIT {limit};";
     }

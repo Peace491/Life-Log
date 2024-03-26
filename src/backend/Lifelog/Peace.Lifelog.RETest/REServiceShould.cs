@@ -3,6 +3,7 @@ using Peace.Lifelog.RE; // Add this line to import the 'ReService' class
 using Peace.Lifelog.DataAccess;
 public class ReServiceShould
 {
+    private const string TEST_USER_HASH = "3\u002B/ZXoeqkYQ9JTJ6vcdAfjl667hgcMxQ\u002BSBLqmVDBuY=";
     [Fact]
     public async void REServiceGetNumRecs_Should_GetTheNumberOfRecomendationsItIsPassed()
     {
@@ -12,7 +13,7 @@ public class ReServiceShould
         int numRecs = 5;
 
         // Act
-        var response = await reService.getNumRecs("3KWmzw9cIdwcPD9k8V9MV3yFtLdcEjw2gtPtcruKW6Y=", numRecs);
+        var response = await reService.getNumRecs(TEST_USER_HASH, numRecs);
 
         // Assert
         Assert.NotNull(response.Output);
@@ -42,7 +43,7 @@ public class ReServiceShould
         int numRecs = -1;
 
         // Act
-        var response = await reService.getNumRecs("3KWmzw9cIdwcPD9k8V9MV3yFtLdcEjw2gtPtcruKW6Y=", numRecs);
+        var response = await reService.getNumRecs(TEST_USER_HASH, numRecs);
 
         // Assert
         Assert.True(response.HasError);
@@ -56,7 +57,7 @@ public class ReServiceShould
         int numRecs = 11;
 
         // Act
-        var response = await reService.getNumRecs("3KWmzw9cIdwcPD9k8V9MV3yFtLdcEjw2gtPtcruKW6Y=", numRecs);
+        var response = await reService.getNumRecs(TEST_USER_HASH, numRecs);
 
         // Assert
         Assert.True(response.HasError);
@@ -70,7 +71,7 @@ public class ReServiceShould
         int numRecs = 5;
 
         // Act
-        var response = await reService.getNumRecs("3KWmzw9cIdwcPD9k8V9MV3yFtLdcEjw2gtPtcruKW6Y=", numRecs);
+        var response = await reService.getNumRecs(TEST_USER_HASH, numRecs);
 
         // Assert
         foreach (var lli in response.Output)

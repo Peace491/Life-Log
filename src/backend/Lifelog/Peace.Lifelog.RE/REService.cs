@@ -110,7 +110,7 @@ public class REService : IReService
                 mostPopularCategory.ErrorMessage = "An error occurred while processing your request.";
                 return mostPopularCategory;
             }
-            var updateDataMartResponse = await recomendationEngineRepository.UpdateUserDataMart("System", category[0].ToString(), "None");
+            var updateDataMartResponse = await recomendationEngineRepository.UpdateUserDataMart("System", category[0].ToString(), null);
             return updateDataMartResponse;
         }
         //
@@ -135,12 +135,13 @@ public class REService : IReService
             foreach (List<Object> userHash in allUserHashResponse.Output)
             {
                 string currentHash = userHash?[0]?.ToString() ?? string.Empty;
-                if (currentHash == "System") continue; // skip system user (admin only)
-                var updateDataMartResponse = await updateRecommendationDataMartForUser(currentHash);
-                if (updateDataMartResponse.HasError)
+                if (currentHash == "System")  
                 {
-                    response.ErrorMessage = "An error occurred while processing your request.";
-                    return response;
+                    var updateDataMartResponse = await updateRecommendationDataMartForSystem(); 
+                }
+                else
+                {
+                    var updateDataMartResponse = await updateRecommendationDataMartForUser(currentHash);
                 }
                 numUsersProcessed++;
             }
