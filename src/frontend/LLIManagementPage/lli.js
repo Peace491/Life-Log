@@ -46,6 +46,7 @@
         "Monthly",
         "Yearly"
     ])
+    const MAX_NUM_OF_CATEGORIES = 3;
 
     let jwtToken = ""
 
@@ -105,6 +106,8 @@
     function updateLLI(options) {
         let updateLLIUrl = webServiceUrl + '/putLLI'
 
+        console.log(options)
+
         let isValidOption = validateLLIOptions(options)
         if (!isValidOption) {
             return
@@ -153,22 +156,31 @@
     }
 
     function validateLLIOptions(option) {
+
         // Input Validation
         if (option.title == "" || option.title.length > MAX_TITLE_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.title.replaceAll(' ', ''))) {
             alert('The LLI title must only contain  alphanumeric values between 1-50 characters long, please try again.')
             return false
         }
 
-        if (option.categories == null) {
+        if (option.category1 == null) {
             alert('The category must not be empty')
             return false
         }
 
-        for (const category of option.categories) {
-            if (!CATEGORIES_LIST.has(category)) {
-                alert('The LLI category must be valid, please try again.')
-                return false
-            }
+        if (!CATEGORIES_LIST.has(option.category1)) {
+            alert('The LLI category must be valid, please try again.')
+            return false
+        }
+
+        if (option.category2 != null && !CATEGORIES_LIST.has(option.category2)) {
+            alert('The LLI category must be valid, please try again.')
+            return false
+        }
+        
+        if (option.category3 != null && !CATEGORIES_LIST.has(option.category3)) {
+            alert('The LLI category must be valid, please try again.')
+            return false
         }
 
         if (option.description == "" || option.description.length > MAX_DESC_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.description.replaceAll(' ', ''))) {
@@ -234,7 +246,7 @@
             var selectedCategories = [];
             for (var i = 0; i < categories.options.length; i++) {
                 var option = categories.options[i];
-                if (option.selected) {
+                if (option.selected && selectedCategories.length < MAX_NUM_OF_CATEGORIES) {
                     selectedCategories.push(option.value);
                 }
             }
@@ -259,7 +271,9 @@
             let options = {
                 title: title,
                 deadline: deadline,
-                categories: selectedCategories,
+                category1: selectedCategories[0],
+                category2: selectedCategories[1],
+                category3: selectedCategories[2],
                 description: description,
                 status: status,
                 visibility: visibility,

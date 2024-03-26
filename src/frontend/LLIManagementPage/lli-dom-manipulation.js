@@ -34,10 +34,15 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     categoryHeading.id = 'category' + lli.lliid;
 
     let categories = ''
-    for (const category of lli.categories) {
-        categories += `${category}, `
+    categories += lli.category1
+    
+    if (lli.category2 != null && lli.category2 != "") {
+        categories += `, ${lli.category2}`
     }
-    categories = categories.substring(0, categories.length - 2);
+
+    if (lli.category3 != null && lli.category3 != "") {
+        categories += `, ${lli.category3}`
+    }
 
     categoryHeading.innerHTML = `<span style="font-weight: 600;"> ${categories|| 'Mental Health'}`
     categoryContainer.appendChild(categoryHeading);
@@ -205,6 +210,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
 
 function convertLLIToEditMode(id, updateLLI) {
     // Current value
+    console.log(id)
     let currentDeadline = document.getElementById('deadline' + id).textContent
     var parts = currentDeadline.split('/');
     currentDeadline = parts[2] + '-' + parts[0].padStart(2, '0') + '-' + parts[1].padStart(2, '0')
@@ -354,12 +360,13 @@ function convertLLIToEditMode(id, updateLLI) {
         let deadline = document.getElementById('update-date-input' + id).value
         let categories = document.getElementById('update-category-input' + id)
 
+        const MAX_NUM_OF_CATEGORIES = 3;
         var selectedCategories = [];
         if (categories)
         {
             for (var i = 0; i < categories.options.length; i++) {
                 var option = categories.options[i];
-                if (option.selected) {
+                if (option.selected && selectedCategories.length < MAX_NUM_OF_CATEGORIES) {
                     selectedCategories.push(option.value);
                 }
             }
@@ -390,7 +397,9 @@ function convertLLIToEditMode(id, updateLLI) {
             lliid: id,
             title: title,
             deadline: deadline,
-            categories: selectedCategories,
+            category1: selectedCategories[0],
+            category2: selectedCategories[1],
+            category3: selectedCategories[2],
             description: description,
             status: status,
             visibility: visibility,
