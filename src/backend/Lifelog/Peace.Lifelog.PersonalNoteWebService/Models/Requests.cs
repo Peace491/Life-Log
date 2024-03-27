@@ -11,9 +11,3 @@ public class PutPersonalNoteRequest
     public string NoteDate { get; set; } = string.Empty;
     public string NoteContent { get; set; } = string.Empty;
 }
-
-public class GetPersonalNoteRequest
-{
-    public string NoteDate { get; set; } = string.Empty;
-    public string NoteContent { get; set; } = string.Empty;
-}

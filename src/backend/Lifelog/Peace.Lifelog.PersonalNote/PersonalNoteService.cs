@@ -121,19 +121,49 @@ public class PersonalNoteService : ICreatePersonalNote
         var timer = new Stopwatch();
         timer.Start();
 
-        // Validate Input 
-        var validateViewing = await checkIfPersonalNoteInputIsValid(userHash, personalnote);
+        #region Validate Input 
 
-        if (validateViewing.HasError)
+        if (userHash == string.Empty)
         {
-            return validateViewing;
+            viewPersonalNoteResponse.HasError = true;
+            viewPersonalNoteResponse.ErrorMessage = "User Hash must not be empty";
+            var errorMessage = "The Personal Note User Hash is invalid";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            return viewPersonalNoteResponse;
         }
+        //Console.WriteLine("Note date: " + DateTime.ParseExact(personalnote.NoteDate, "yyyy-MM-dd", null) + " || SystemDate: " + DateTime.Today);
+
+        if (DateTime.Parse(personalnote.NoteDate) > DateTime.Today)
+        {
+            viewPersonalNoteResponse.HasError = true;
+            viewPersonalNoteResponse.ErrorMessage = "The Date is Invalid";
+            var errorMessage = "The Date is invalid";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            return viewPersonalNoteResponse;
+        }
+
+        if (personalnote.NoteDate != string.Empty)
+        {
+
+            var personalNoteYear = DateTime.Parse(personalnote.NoteDate).Year;
+
+            if (personalNoteYear < EARLIEST_NOTE_YEAR || personalNoteYear > LATEST_NOTE_YEAR)
+            {
+                viewPersonalNoteResponse.HasError = true;
+                viewPersonalNoteResponse.ErrorMessage = "LLI Deadline is out of range";
+                var errorMessage = "The LLI deadline is invalid";
+                var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+                return viewPersonalNoteResponse;
+            }
+        }
+        #endregion
 
         // Modify Data Base
         #region Retrive Personal Note from DB
 
-        var sql = $"SELECT * FROM PersonalNote WHERE UserHash = \"{personalnote.UserHash}\" AND NoteDate = \"{personalnote.NoteDate}\";";
+        var sql = $"SELECT * FROM PersonalNote WHERE UserHash = \"{userHash}\" AND NoteDate = \"{personalnote.NoteDate}\";";
 
+        //Console.WriteLine(sql);
         var readPersonalNoteResponse = await this.readDataOnlyDAO.ReadData(sql);
         timer.Stop();
 
@@ -184,7 +214,7 @@ public class PersonalNoteService : ICreatePersonalNote
         updateNoteSql = updateNoteSql.Remove(updateNoteSql.Length - 1);
 
         updateNoteSql += $" WHERE NoteId = \"{personalnote.NoteId}\";";
-
+        Console.WriteLine(updateNoteSql);
         updatePersonalNoteResponse = await this.updateDataOnlyDAO.UpdateData(updateNoteSql);
 
         if (updatePersonalNoteResponse.HasError)

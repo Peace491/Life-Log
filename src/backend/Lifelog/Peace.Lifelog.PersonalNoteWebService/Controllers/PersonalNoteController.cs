@@ -75,13 +75,15 @@ public class PersonalNoteController : ControllerBase
 
     [HttpGet]
     [Route("getPN")]
-    public async Task<IActionResult> GetPersonalNote([FromBody] GetPersonalNoteRequest viewPersonalNoteRequest)
+    public async Task<IActionResult> GetPersonalNote(string notedate)
     {
         if (Request.Headers == null)
         {
             return StatusCode(401);
         }
 
+        // Console.WriteLine(Request.Headers);
+        Console.WriteLine(Request.Headers["Token"]);
         var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
 
         if (jwtToken == null)
@@ -97,8 +99,7 @@ public class PersonalNoteController : ControllerBase
         }
 
         var personalnote = new PN();
-        personalnote.NoteDate = viewPersonalNoteRequest.NoteDate;
-        personalnote.NoteContent = viewPersonalNoteRequest.NoteContent;
+        personalnote.NoteDate = notedate;
 
         var response = await this.personalNoteService.ViewPersonalNote(userHash, personalnote);
 
@@ -106,12 +107,19 @@ public class PersonalNoteController : ControllerBase
         {
             return Ok(response);
         }
-        else if (response.ErrorMessage!.Contains("UserHash can not be empty"))
+        if (response.ErrorMessage!.Contains("UserHash can not be empty"))
         {
+            Console.WriteLine(response.ErrorMessage);
+            return StatusCode(400, response.ErrorMessage);
+        }
+        if (response.ErrorMessage!.Equals("The Date is Invalid"))
+        {
+            Console.WriteLine(response.ErrorMessage);
             return StatusCode(400, response.ErrorMessage);
         }
         else
         {
+            Console.WriteLine(response.ErrorMessage);
             return StatusCode(500);
         }
     }
