@@ -14,6 +14,31 @@
     let jwtToken;
 
     const webServiceUrl = 'http://localhost:8082/authentication';
+    const motivationalQuoteServiceUrl = 'http://localhost:8084';
+
+    function getMotivationalQuote() {
+        const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
+    
+        let request = ajaxClient.get(quoteUrl);
+    
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                return response.json();
+            }).then(function (data) { 
+                // Check if data has the Output array and has at least two elements (quote and author)
+                //if (data.Output && data.Output.length >= 2) {
+                const quote = data.Output[0]; // Assuming the first element is the quote
+                const author = data.Output[1]; // Assuming the second element is the author
+                resolve({quote, author});
+                //} else {
+                //    reject('Quote data is not in the expected format.');
+                //}
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+    
 
     // NOT exposed to the global object ("Private" functions)
     function getOTPEmail(email) {
@@ -127,6 +152,45 @@
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
+    
+        if (jwtToken) {
+            window.location = "../LLIManagementPage/index.html"
+        } else {
+            const submitButton = document.getElementById('submit-credential-button');
+            submitButton.addEventListener('click', onSubmitRegistrationCredentials);
+    
+            const registerUserButton = document.getElementById('sign-up-text');
+            registerUserButton.addEventListener('click', function () {
+                window.location = '../RegistrationPage/index.html';
+            });
+
+        }
+        // Fetch and display the motivational quote
+        getMotivationalQuote().then(function (quoteData) {
+            const quoteElement = document.querySelector('.quote h2');
+            //console.log("a");
+            const authorElement = document.querySelector('.quote-author h3');
+
+            console.log(quoteData.quote[0]);
+            console.log(quoteData.quote[1]);
+            //console.log(quoteData.author);
+            
+
+            if (quoteData.quote) {
+                quoteElement.textContent = quoteData.quote[0];
+                //console.log("b");
+                authorElement.textContent = ` - ${quoteData.quote[1]}`;
+            }
+        }).catch(function (error) {
+            console.error(error);
+            // Handle any errors, e.g., display a default quote or show a message
+        });
+    }
+    
+    /*function init() {
+        if (localStorage.length != 0) {
+            jwtToken = localStorage["token-local"]
+        }
 
         if (jwtToken) {
             window.location = "../LLIManagementPage/index.html"
@@ -142,7 +206,7 @@
         }
 
 
-    }
+    }*/
 
     init();
 

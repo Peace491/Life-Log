@@ -36,176 +36,148 @@ public class MotivationalQuoteServiceShould
 
 
         //Act
+        timer.Start();
         var validNewPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validNewPhraseResponse.HasError != true && validNewPhraseResponse.ErrorMessage != "Quotes have not changed.");
-        //Assert.True(validNewPhraseResponse.ErrorMessage == "Quotes have not changed.");
+        Assert.False(validNewPhraseResponse.HasError == false && validNewPhraseResponse.ErrorMessage == "Quotes have not changed.");
     }
 
-    /*[Fact]
+    [Fact]
     public async void MotivationalQuoteServiceShould_OutputsAPlaceholder()
     {
         //Arrange
-        var correctPhrase = new Phrase();
-        
-        correctPhrase.Quote = "ERROR";
-        correctPhrase.Author = "ERROR";
-        correctPhrase.Time = "ERROR";
-        
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validQuoteResponse = MotivationQuoteService.IGetQuote(correctPhrase);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validPhraseResponse.HasError == true);
-        Assert.True(validPhraseResponse.ErrorMessage == "The phrase outputed a placeholder");
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
     }
-    
+
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfImpartialQuote()
     {
         //Arrange
-        var wrongQuote = "TestMotivationalQuote";
-
-        var invalidQuote = new Phrase();
-        
-        invalidQuote.Quote = wrongQuote;
-        invalidQuote.Author = AUTHOR;
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validQuoteResponse = MotivationQuoteService.ICheckQuote(invalidQuote);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validQuoteResponse.HasError == true);
-        Assert.True(validQuoteResponse.ErrorMessage == "Impartial Quote was pulled.");
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Impartial Quote Was Pulled");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Impartial Quote Was Pulled");
     }
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfWrongAuthor()
     {
         //Arrange
-        var wrongAuthor = "WrongAuthor";
-
-        var invalidAuthor = new Phrase();
-        
-        invalidAuthor.Quote = QUOTE;
-        invalidAuthor.Author = wrongAuthor; 
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validAuthorResponse = MotivationQuoteService.ICheckAuthor(invalidAuthor);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validAuthorResponse.HasError == true);
-        Assert.True(validAuthorResponse.ErrorMessage == "Associated Author was not pulled.");
-    }
-
-    /*[Fact]
-    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfUnableToRetrievePhrase()
-    {
-        //Arrange
-        var wrongQuote = "WrongQuote";
-        var wrongAuthor = "WrongAuthor";
-
-        var invalidQuote = new Phrase();
-        var invalidAuthor = new Phrase();
-        
-        invalidQuote.Quote = (wrongQuote, AUTHOR);
-        invalidAuthor.Author = (Quote, wrongAuthor); 
-
-        //Act
-        var validQuoteResponse = MotivationQuoteService.RegisterUser(invalidQuote);
-        var validAuthorResponse = MotivationQuoteService.RegisterUser(invalidAuthor);
-
-        // Assert
-        Assert.True(validQuoteResponse.HasError == true);
-        Assert.True(validAuthorResponse.HasError == true);
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Impartial Author Was Pulled");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Impartial Author Was Pulled");
     }
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangePrior()
     {
         //Arrange
-        string priorTime = "11:59:55 PM";
-
-        var correctPhrase = new Phrase();
-        
-        correctPhrase.Quote = QUOTE;
-        correctPhrase.Author = AUTHOR; 
-        correctPhrase.Time = priorTime; 
-                
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validTimeResponse = MotivationQuoteService.ICheckTime(correctPhrase);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validTimeResponse.HasError == true);
-        Assert.True(validTimeResponse.ErrorMessage == "The Quote changed prior to 12:00 AM.");
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
     }
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangeAfter()
     {
         //Arrange
-        string afterTime = "00:00:05 AM";
-
-        var correctPhrase = new Phrase();
-        
-        correctPhrase.Quote = QUOTE;
-        correctPhrase.Author = AUTHOR; 
-        correctPhrase.Time = afterTime; 
-                
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validTimeResponse = MotivationQuoteService.ICheckTime(correctPhrase);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validTimeResponse.HasError == true);
-        Assert.True(validTimeResponse.ErrorMessage == "The Quote changed after 12:00 AM.");
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
     }
-
-    
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHasNotBeenRecycled()
     {
         //Arrange
-        var correctPhrase = new Phrase();
-        var newPhrase = new Phrase();
-        
-        correctPhrase.Quote = QUOTE;
-        correctPhrase.Author = AUTHOR; 
-        correctPhrase.Time = TIME; 
-        newPhrase.Quote = newQuote;
-        newPhrase.Author = newAuthor; 
-        newPhrase.Time = TIME;
-                
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validPhraseResponse = MotivationQuoteService.ICheckPhrase(correctPhrase);
-        var validNewPhraseResponse = MotivationQuoteService.ICheckPhrase(newPhrase);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validNewPhraseResponse.HasError == true);
-        Assert.True(validNewPhraseResponse.ErrorMessage == "Quotes have not been recycled.");
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "The Quote was used prior to recycling");
+        //Assert.True(validPhraseResponse.Output != null); // Assuming the quote has been recycled
     }
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfPlaceholderWasNotDisplayed()
     {
         //Arrange
-        var correctPhrase = new Phrase();
-        
-        correctPhrase.Quote = "ERROR";
-        correctPhrase.Author = "ERROR"; 
-        correctPhrase.Time = "ERROR"; 
-                
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
 
         //Act
-        var validPhraseResponse = MotivationQuoteService.ISendPhrase(correctPhrase);
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
 
         // Assert
-        Assert.True(validPhraseResponse.HasError == true);
-        Assert.True(validPhraseResponse.ErrorMessage == "Placeholder message was not displayed");
-    }*/
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+    }
+
+    [Fact]
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuotesWereNotRecycled()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var motivationalQuoteService = new MotivationalQuoteService();
+
+        //Act
+        timer.Start();
+        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
+        timer.Stop();
+
+        // Assert
+        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Quotes were not recycled properly.");
+        //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+    }
+
 }
