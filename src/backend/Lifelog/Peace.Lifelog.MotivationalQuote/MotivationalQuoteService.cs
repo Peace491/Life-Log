@@ -56,8 +56,8 @@ public class MotivationalQuoteService : IGetPhrase
         // There's no quote for today, so let's retrieve a new one
         // Check the last entry in QuoteOfTheDay to ensure we don't repeat the same quote
         //WHERE Date = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY)
-        var lastEntryOfTheDay = $"SELECT Date, LifelogQuote_ID FROM LifelogQuoteOfTheDay WHERE Date = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY)";
-        var lastDayResponse = await readDataOnlyDAO.ReadData(lastEntryOfTheDay);
+        var lastEntryOfTheDay = $"SELECT Date, LifelogQuote_ID FROM LifelogQuoteOfTheDay ORDER BY Date DESC";
+        var lastDayResponse = await readDataOnlyDAO.ReadData(lastEntryOfTheDay, 1);
 
         var currentDate = "";
         var currentID = "";
@@ -128,7 +128,12 @@ public class MotivationalQuoteService : IGetPhrase
                 phrase.Author = output[1].ToString()!;
             }
         }
-
+        else
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unidentifiable issue with Data Repository which resulted in ERROR";
+            MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+        }
 
 
         ////previous placement for placeholder
@@ -143,7 +148,7 @@ public class MotivationalQuoteService : IGetPhrase
         {
             // Handle error - could not insert the new quote of the day
             response.ErrorMessage = "Error inserting new quote of the day.";
-            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+            MotivationalLogger("ERROR", "Data", response.ErrorMessage);
         }
 
         //response.HasError = true;
@@ -156,8 +161,8 @@ public class MotivationalQuoteService : IGetPhrase
             var placeholderRetrieveResponse = await readDataOnlyDAO.ReadData(placeholderRetrieve, 1);
 
             response.HasError = false;
-            response.ErrorMessage = "Critical Error, Placeholder Was Used.";
-            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+            response.ErrorMessage = "A placeholder message was displayed in place of a quote";
+            MotivationalLogger("Warning", "business", response.ErrorMessage);
             response.Output = placeholderRetrieveResponse.Output;
             return response;
         }
@@ -179,8 +184,8 @@ public class MotivationalQuoteService : IGetPhrase
         if (quoteCheckerResponse.Output == null)
         {
             response.HasError = true;
-            response.ErrorMessage = "Impartial Quote Was Pulled";
-            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+            response.ErrorMessage = "A quote from the datastore was not displayed or partially displayed";
+            MotivationalLogger("ERROR", "Data", response.ErrorMessage);
         }
 
         var authorChecker = $"SELECT ID FROM LifelogQuote WHERE Author = '{phrase.Author}'";
@@ -188,34 +193,40 @@ public class MotivationalQuoteService : IGetPhrase
 
         if (authorCheckerResponse.Output == null)
         {
-            response.HasError = true;
-            response.ErrorMessage = "Impartial Author Was Pulled";
-            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+            response.ErrorMessage = "A quote from the datastore did not include the associated author";
+            MotivationalLogger("Warning", "Data", response.ErrorMessage);
         }
 
         if (lastPhrase.Quote == phrase.Quote)
         {
             // Handle error - could not retrieve a new quote
             response.HasError = true;
-            response.ErrorMessage = "Error retrieving new quote and author.";
-            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+            response.ErrorMessage = "The quotes have not been refreshed/changed.";
+            MotivationalLogger("ERROR", "Data", response.ErrorMessage);
         }
 
         var monthChecker = $"SELECT Date From lifelogquoteoftheday WHERE Date < DATE_SUB(CURRENT_DATE, INTERVAL 180 DAY) AND LifelogQuote_ID = '{currentID}' ORDER BY Date DESC";
         var monthCheckerResponse = await readDataOnlyDAO.ReadData(monthChecker);
         if (monthCheckerResponse.Output != null)
         {
-            //response.HasError = true;
-            response.ErrorMessage = "Quotes were not recycled properly.";
-            //MotivationalLogger("ERROR", "Data", response.ErrorMessage);
+            response.HasError = true;
+            response.ErrorMessage = "The quotes have not been recycled";
+            MotivationalLogger("ERROR", "Data", response.ErrorMessage);
         }
 
 
-        if (DateTime.Parse(phrase.Time) > DateTime.Parse("11:59:59 PM") && DateTime.Parse(phrase.Time) < DateTime.Parse("00:00:03 AM"))
+        if (DateTime.Parse(phrase.Time) < DateTime.Parse("11:59:59 PM") && DateTime.Parse(phrase.Time) > DateTime.Parse("12:00:00 PM"))
         {
             //response.HasError = true;
-            response.ErrorMessage = "Quote changed outside the specified time window.";
-            //MotivationalLogger("ERROR", "Business", response.ErrorMessage);
+            response.ErrorMessage = "The quotes has changed prior to 12:00 am PST";
+            MotivationalLogger("Debug", "Business", response.ErrorMessage);
+        }
+
+        if (DateTime.Parse(phrase.Time) > DateTime.Parse("00:00:03 AM") && DateTime.Parse(phrase.Time) < DateTime.Parse("11:59:00 AM"))
+        {
+            //response.HasError = true;
+            response.ErrorMessage = "The quotes has changed after 12:00 am PST";
+            MotivationalLogger("Debug", "Business", response.ErrorMessage);
         }
 
 

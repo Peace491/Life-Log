@@ -80,6 +80,7 @@
             });
         });
     }
+    
 
     let otpStatus = false;
 
@@ -187,32 +188,10 @@
         });
     }
     
-    /*function init() {
-        if (localStorage.length != 0) {
-            jwtToken = localStorage["token-local"]
-        }
-
-        if (jwtToken) {
-            window.location = "../LLIManagementPage/index.html"
-        }
-        else {
-            const submitButton = document.getElementById('submit-credential-button')
-            submitButton.addEventListener('click', onSubmitRegistrationCredentials)
-
-            const registerUserButton = document.getElementById('sign-up-text')
-            registerUserButton.addEventListener('click', function () {
-                window.location = '../RegistrationPage/index.html'
-            })
-        }
-
-
-    }*/
 
     init();
 
 })(window, window.ajaxClient);
-
-
 
 
 

@@ -21,12 +21,12 @@ public class MotivationalQuoteController : ControllerBase
         if (getQuoteResponse.HasError)
         {
             // Handle the error case
-            return BadRequest("Failed to get a motivational quote.");
+            return BadRequest(JsonSerializer.Serialize<Response>(getQuoteResponse));
         }
         if (getQuoteResponse.Output == null)
         {
             // Handle the case where the output is null
-            return NotFound("No motivational quote found.");
+            return NotFound(JsonSerializer.Serialize<Response>(getQuoteResponse));
         }
         else
         {

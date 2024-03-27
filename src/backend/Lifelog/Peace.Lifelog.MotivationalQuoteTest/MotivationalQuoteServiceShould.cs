@@ -41,11 +41,11 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validNewPhraseResponse.HasError == false && validNewPhraseResponse.ErrorMessage == "Quotes have not changed.");
+        Assert.True(!(validNewPhraseResponse.ErrorMessage == "A quote from the datastore was not displayed or partially displayed"));
     }
 
     [Fact]
-    public async void MotivationalQuoteServiceShould_OutputsAPlaceholder()
+    public async void MotivationalQuoteServiceShould_ThrowErrorIfOutputsAPlaceholder()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -57,25 +57,8 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+        Assert.True(!(validPhraseResponse.ErrorMessage == "A placeholder message was displayed in place of a quote"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
-    }
-
-    [Fact]
-    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfImpartialQuote()
-    {
-        //Arrange
-        var timer = new Stopwatch();
-        var motivationalQuoteService = new MotivationalQuoteService();
-
-        //Act
-        timer.Start();
-        var validPhraseResponse = await motivationalQuoteService.GetPhrase();
-        timer.Stop();
-
-        // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Impartial Quote Was Pulled");
-        //Assert.True(validPhraseResponse.ErrorMessage == "Impartial Quote Was Pulled");
     }
 
     [Fact]
@@ -91,7 +74,7 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Impartial Author Was Pulled");
+        Assert.True(!(validPhraseResponse.ErrorMessage == "A quote from the datastore did not include the associated author"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Impartial Author Was Pulled");
     }
 
@@ -108,7 +91,7 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
+        Assert.False(!(validPhraseResponse.ErrorMessage == "The quotes has changed prior to 12:00 am PST"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
     }
 
@@ -125,7 +108,7 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
+        Assert.True(!(validPhraseResponse.ErrorMessage == "The quotes has changed after 12:00 am PST"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
     }
 
@@ -142,12 +125,12 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "The Quote was used prior to recycling");
+        Assert.True(!(validPhraseResponse.ErrorMessage == "The quotes have not been recycled"));
         //Assert.True(validPhraseResponse.Output != null); // Assuming the quote has been recycled
     }
 
     [Fact]
-    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfPlaceholderWasNotDisplayed()
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHaveNotBeenRefreshedOrChanged()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -159,12 +142,12 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
-        //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+        Assert.True(!(validPhraseResponse.ErrorMessage == "The quotes have not been refreshed/changed."));
+        //Assert.True(validPhraseResponse.Output != null); // Assuming the quote has been recycled
     }
 
     [Fact]
-    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuotesWereNotRecycled()
+    public async void MotivationalQuoteServiceShould_ThrowAnErrorIfUnableToPullQuote()
     {
         //Arrange
         var timer = new Stopwatch();
@@ -176,8 +159,9 @@ public class MotivationalQuoteServiceShould
         timer.Stop();
 
         // Assert
-        Assert.False(validPhraseResponse.HasError == false && validPhraseResponse.ErrorMessage == "Quotes were not recycled properly.");
-        //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
+        Assert.True(!(validPhraseResponse.ErrorMessage == "Unidentifiable issue with Data Repository which resulted in ERROR"));
+        //Assert.True(validPhraseResponse.Output != null); // Assuming the quote has been recycled
     }
+
 
 }
