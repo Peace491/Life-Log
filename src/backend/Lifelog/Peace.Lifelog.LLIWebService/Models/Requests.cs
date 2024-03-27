@@ -6,7 +6,9 @@ public class PostLLIRequest
 {
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public List<string>? Categories { get; set; }
+    public string? Category1 { get; set; } = null; // Maybe give default category
+    public string? Category2 { get; set; } = null;
+    public string? Category3 { get; set; } = null;
     public string Status { get; set; } = LLIStatus.Active;
     public string Visibility { get; set; } = LLIVisibility.Public;
     public string Deadline { get; set; } = string.Empty;
@@ -20,7 +22,9 @@ public class PutLLIRequest
     public string LLIID { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public List<string>? Categories { get; set; } = null;
+    public string? Category1 { get; set; } = null; // Maybe give default category
+    public string? Category2 { get; set; } = null;
+    public string? Category3 { get; set; } = null;
     public string Status { get; set; } = LLIStatus.Active;
     public string Visibility { get; set; } = LLIVisibility.Public;
     public string Deadline { get; set; } = string.Empty;

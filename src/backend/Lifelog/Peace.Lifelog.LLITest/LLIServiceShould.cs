@@ -82,7 +82,9 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = USER_HASH;
         testLLI.Title = testLLITitle;
         testLLI.Description = "Test Create LLI Description";
-        testLLI.Categories = [LLICategory.Travel, LLICategory.Art];
+        testLLI.Category1 = LLICategory.Travel;
+        testLLI.Category2 = LLICategory.Outdoor;
+        testLLI.Category3 = LLICategory.Volunteering;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = DEADLINE;
@@ -146,7 +148,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = invalidUserHash;
         testLLI.Title = testLLITitle;
         testLLI.Description = "Test Create LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = DEADLINE;
@@ -202,8 +204,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         var testLLI = new LLI();
         testLLI.UserHash = USER_HASH;
         testLLI.Title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Description = "Test Create LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = DEADLINE;
@@ -238,14 +240,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         var testLLI = new LLI();
         testLLI.Title = testLLITitle;
-        testLLI.Categories = [];
+        testLLI.Category1 = null!;
 
         // Act
         var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
 
         // Assert
         Assert.True(createLLIResponse.HasError == true);
-        Assert.True(createLLIResponse.ErrorMessage == "LLI categories must not be null or empty");
+        Assert.True(createLLIResponse.ErrorMessage == "The non-nullable LLI input is null");
     }
 
     [Fact]
@@ -253,21 +255,18 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     {
         // Arrange
         string testLLITitle = "TestLLITitle";
-        string testInvalidCategory = "Invalid Category";
-        
-
-        
+        string testInvalidCategory = "LLI categories must not be null or empty";
 
         var testLLI = new LLI();
         testLLI.Title = testLLITitle;
-        testLLI.Categories = [testInvalidCategory];
+        testLLI.Category1 = testInvalidCategory;
 
         // Act
         var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
 
         // Assert
         Assert.True(createLLIResponse.HasError == true);
-        Assert.True(createLLIResponse.ErrorMessage == "A LLI category is invalid");
+        Assert.True(createLLIResponse.ErrorMessage == "LLI categories must not be null or empty");
     }
 
     [Fact]
@@ -282,7 +281,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = "Test Invalid User Hash";
         testLLI.Title = "Test Create LLI Title";
         testLLI.Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = DEADLINE;
@@ -318,7 +317,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         var testLLI = new LLI();
         testLLI.Title = testLLITitle;
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Description = "";
         testLLI.Status = testInvalidStatus;
 
@@ -341,7 +340,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         var testLLI = new LLI();
         testLLI.Title = testLLITitle;
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Description = "";
         testLLI.Status = LLIStatus.Completed;
         testLLI.Visibility = testInvalidVisibility;
@@ -364,7 +363,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = "Test Invalid User Hash";
         testLLI.Title = "Test LLI Title";
         testLLI.Description = "Test LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = "1800-11-11";
@@ -400,7 +399,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         var testLLI = new LLI();
         testLLI.Title = testLLITitle;
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Description = "";
         testLLI.Status = LLIStatus.Completed;
         testLLI.Visibility = LLIVisibility.Public;
@@ -425,7 +424,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         var testLLI = new LLI();
         testLLI.Title = testLLITitle;
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Description = "";
         testLLI.Status = LLIStatus.Completed;
         testLLI.Visibility = LLIVisibility.Public;
@@ -452,7 +451,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = "Test Invalid User Hash";
         testLLI.Title = "Test LLI Title";
         testLLI.Description = "Test LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = "2011-11-11";
@@ -489,7 +488,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = "Test Invalid User Hash";
         testLLI.Title = "Test LLI Title";
         testLLI.Description = "Test LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = "2011-11-11";
@@ -525,7 +524,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = USER_HASH;
         testLLI.Title = "Test LLI Title";
         testLLI.Description = "Test LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = "2011-11"; // Invalid date format
@@ -561,7 +560,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = USER_HASH;
         testLLI.Title = testLLITitle;
         testLLI.Description = "Test LLI Description";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = "2011-11-11"; // Invalid date format
@@ -646,7 +645,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
             testLLI.UserHash = USER_HASH;
             testLLI.Title = testLLITitle;
             testLLI.Description = $"Test Get LLI number {i}";
-            testLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
+            testLLI.Category1 = LLICategory.Travel;
+            testLLI.Category2 = LLICategory.Hobby;
             testLLI.Status = LLIStatus.Active;
             testLLI.Visibility = LLIVisibility.Public;
             testLLI.Deadline = DEADLINE;
@@ -723,7 +723,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testOldLLI.UserHash = USER_HASH;
         testOldLLI.Title = testOldLLITitle;
         testOldLLI.Description = testOldLLIDescription;
-        testOldLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
+        testOldLLI.Category1 = LLICategory.Travel;
+        testOldLLI.Category2 = LLICategory.Outdoor;
         testOldLLI.Status = LLIStatus.Active;
         testOldLLI.Visibility = LLIVisibility.Public;
         testOldLLI.Deadline = DEADLINE;
@@ -749,7 +750,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testNewLLI.LLIID = id;
         testNewLLI.Title = testNewLLITitle;
         testNewLLI.Description = testNewLLIDescription;
-        testNewLLI.Categories = [LLICategory.Outdoor, LLICategory.Art];
+        testNewLLI.Category1 = LLICategory.Volunteering;
+        testNewLLI.Category2 = LLICategory.Sport;
         testNewLLI.Status = LLIStatus.Completed;
         testNewLLI.Visibility = LLIVisibility.Private;
         testNewLLI.Cost = testNewLLICost;
@@ -769,8 +771,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
             Assert.True(lli.Description == testNewLLIDescription);
             
             // Check if the two new categories match 
-            Assert.True(testNewLLI.Categories.IndexOf(lli.Categories![0]) != -1); 
-            Assert.True(testNewLLI.Categories.IndexOf(lli.Categories![1]) != -1);
+            Assert.True(testNewLLI.Category1 == lli.Category1); 
+            Assert.True(testNewLLI.Category2 == lli.Category2);
 
             Assert.True(lli.Status == testNewLLI.Status);
             Assert.True(lli.Visibility == testNewLLI.Visibility);
@@ -832,14 +834,14 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
 
         // New LLI
         var testNewLLI = new LLI();
-        testNewLLI.Categories = ["Invalid Category"];
+        testNewLLI.Category1 = "Invalid Category";
         
         // Act
         var updateResponse = await LLIService.UpdateLLI("UserHash", testNewLLI);
 
         // Assert
         Assert.True(updateResponse.HasError == true);
-        Assert.True(updateResponse.ErrorMessage == "A LLI Category is invalid");
+        Assert.True(updateResponse.ErrorMessage == "LLI categories must not be null or empty");
         Assert.Null(updateResponse.Output);
     }
 
@@ -1003,7 +1005,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testOldLLI.UserHash = USER_HASH;
         testOldLLI.Title = testOldLLITitle;
         testOldLLI.Description = testOldLLIDescription;
-        testOldLLI.Categories = [LLICategory.Travel];
+        testOldLLI.Category1 = LLICategory.Travel;
         testOldLLI.Status = LLIStatus.Active;
         testOldLLI.Visibility = LLIVisibility.Public;
         testOldLLI.Deadline = DEADLINE;
@@ -1052,7 +1054,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testOldLLI.UserHash = USER_HASH;
         testOldLLI.Title = testOldLLITitle;
         testOldLLI.Description = testOldLLIDescription;
-        testOldLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
+        testOldLLI.Category1 = LLICategory.Travel;
         testOldLLI.Status = LLIStatus.Completed;
         testOldLLI.Visibility = LLIVisibility.Public;
         testOldLLI.Deadline = DEADLINE;
@@ -1092,7 +1094,7 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
         testLLI.UserHash = USER_HASH;
         testLLI.Title = testLLITitle;
         testLLI.Description = $"Test Delete LLI";
-        testLLI.Categories = [LLICategory.Travel];
+        testLLI.Category1 = LLICategory.Travel;
         testLLI.Status = LLIStatus.Active;
         testLLI.Visibility = LLIVisibility.Public;
         testLLI.Deadline = DEADLINE;
