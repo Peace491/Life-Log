@@ -1,13 +1,15 @@
 namespace Peace.Lifelog.RETest;
-using Peace.Lifelog.RE; // Add this line to import the 'ReService' class
+using Peace.Lifelog.RE; 
 using Peace.Lifelog.DataAccess;
 public class ReServiceShould
 {
     private const string TEST_USER_HASH = "3\u002B/ZXoeqkYQ9JTJ6vcdAfjl667hgcMxQ\u002BSBLqmVDBuY=";
     [Fact]
-    public async void REServiceGetNumRecs_Should_GetTheNumberOfRecomendationsItIsPassed()
+    public async Task REServiceGetNumRecs_Should_GetTheNumberOfRecomendationsItIsPassed()
     {
         // Arrange
+
+        // need to setup a user every single time this test is run 
         var recomendationEngineRepository = new RecomendationEngineRepository();
         var reService = new REService(recomendationEngineRepository);
         int numRecs = 5;
@@ -114,7 +116,7 @@ public class ReServiceShould
         // Arrange
         var recomendationEngineRepository = new RecomendationEngineRepository();
         var reService = new REService(recomendationEngineRepository);
-        var userHash = "3KWmzw9cIdwcPD9k8V9MV3yFtLdcEjw2gtPtcruKW6Y=";
+        var userHash = TEST_USER_HASH;
 
         // Act
         var result = await reService.updateRecommendationDataMartForUser(userHash);

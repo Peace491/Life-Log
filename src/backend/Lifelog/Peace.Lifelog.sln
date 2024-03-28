@@ -51,6 +51,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RETest", "Pea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REWebService", "Peace.Lifelog.REWebService\Peace.Lifelog.REWebService.csproj", "{253A4817-688C-4436-BFA7-1261FA8C5C15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REDatamartService", "Peace.Lifelog.REDatamartService\Peace.Lifelog.REDatamartService.csproj", "{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REDatamartTest", "Peace.Lifelog.REDatamartTest\Peace.Lifelog.REDatamartTest.csproj", "{8DB3E449-F454-46F9-9E71-3EF52DEB280E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +145,14 @@ Global
 		{253A4817-688C-4436-BFA7-1261FA8C5C15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{253A4817-688C-4436-BFA7-1261FA8C5C15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{253A4817-688C-4436-BFA7-1261FA8C5C15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB3E449-F454-46F9-9E71-3EF52DEB280E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB3E449-F454-46F9-9E71-3EF52DEB280E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB3E449-F454-46F9-9E71-3EF52DEB280E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB3E449-F454-46F9-9E71-3EF52DEB280E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
