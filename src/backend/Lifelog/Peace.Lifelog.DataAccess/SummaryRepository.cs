@@ -1,7 +1,7 @@
 ﻿namespace Peace.Lifelog.DataAccess;
 
 using DomainModels;
-public class SummaryRepository
+public class SummaryRepository : ISummaryRepository
 {
     private string selectAllUserHash = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
 

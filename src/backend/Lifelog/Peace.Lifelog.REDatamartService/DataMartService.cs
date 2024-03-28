@@ -3,9 +3,17 @@
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 
-public class REDatamartService
+public class REDatamartService : IREDatamart
 {
-        // only allow users to do this Y times a day
+    // Inject RecomendationEngineRepository through the constructor
+    private readonly SummaryRepository summaryRepository;
+
+    public REDatamartService(SummaryRepository summaryRepository)
+    {
+        this.summaryRepository = summaryRepository;
+    }
+
+    // only allow users to do this Y times a day
     public async Task<Response> updateRecommendationDataMartForUser(string userHash)
     {
         var response = new Response();
