@@ -1,0 +1,6 @@
+@MotivationalQuoteWebService_HostAddress = http://localhost:5274
+
+GET {{MotivationalQuoteWebService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
