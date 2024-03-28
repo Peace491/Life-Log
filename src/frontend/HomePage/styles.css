@@ -137,11 +137,14 @@ main {
 }
 
 .quote>h2 {
-    text-align: center;
+    /*text-align: center;
     font-weight: 550;
-    font-size: 2.5em;
+    font-size: 2.5em;*/
+    text-align: center;
+    max-width: 1000px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
-
 .quote-author>h3 {
     padding-top: 10px;
     padding-right: 50px;
