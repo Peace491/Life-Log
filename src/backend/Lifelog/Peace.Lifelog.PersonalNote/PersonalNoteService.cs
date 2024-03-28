@@ -6,7 +6,8 @@ namespace Peace.Lifelog.PersonalNote;
 
 public class PersonalNoteService : ICreatePersonalNote
 {
-    private static int ERROR_TIME_LIMIT_IN_SECOND = 3;
+    private static int WARNING_TIME_LIMIT_IN_SECOND = 3;
+    private static int ERROR_TIME_LIMIT_IN_SECOND = 5;
     private static int MAX_NOTE_LENGTH_IN_CHAR = 1200;
     private static int EARLIEST_NOTE_YEAR = 1960;
     private static int LATEST_NOTE_YEAR = DateTime.Today.Year;
@@ -238,7 +239,69 @@ public class PersonalNoteService : ICreatePersonalNote
         return updatePersonalNoteResponse;
     }
 
+    // Get all User Notes
+    public async Task<Response> GetAllPersonalNotesFromUser(string userHash)
+    {
+        var readPersonalNoteResponse = new Response();
 
+        #region Input Validation
+        if (userHash == string.Empty)
+        {
+            readPersonalNoteResponse.HasError = true;
+            readPersonalNoteResponse.ErrorMessage = "UserHash can not be empty";
+            return readPersonalNoteResponse;
+        }
+        #endregion
+
+        #region Read Personal Note In DB
+        var timer = new Stopwatch();
+        timer.Start();
+        var readPersonalNoteSql = $"SELECT * FROM PersonalNote WHERE userHash = \"{userHash}\"";
+
+        readPersonalNoteResponse = await this.readDataOnlyDAO.ReadData(readPersonalNoteSql, count: null);
+
+        if (readPersonalNoteResponse.Output == null)
+        {
+            var message = "There is no personal Note associated with the account";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", message);
+            return readPersonalNoteResponse;
+        }
+
+        timer.Stop();
+        #endregion
+
+        #region Log
+
+        if (readPersonalNoteResponse.HasError)
+        {
+            readPersonalNoteResponse.ErrorMessage = "Personal Notes fields are invalid";
+
+            var errorMessage = "Failed to fetch user's Personal Notes";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        else
+        {
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", $"{userHash} get all Personal Notes.");
+        }
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+        #endregion
+
+        var personalNoteOutput = ConvertDatabaseResponseOutputToPersonalNoteObjectList(readPersonalNoteResponse);
+
+        readPersonalNoteResponse.Output = personalNoteOutput;
+
+        return readPersonalNoteResponse;
+    }
 
 
 
