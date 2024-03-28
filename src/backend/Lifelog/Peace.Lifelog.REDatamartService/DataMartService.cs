@@ -18,7 +18,6 @@ public class REDatamartService : IREDatamart
     {
         var response = new Response();
         // TODO Inject
-        var summaryRepository  = new SummaryRepository();
         try
         {
             // Get userform
@@ -51,7 +50,6 @@ public class REDatamartService : IREDatamart
     public async Task<Response> updateRecommendationDataMartForSystem()
     {
         // This method is horrid right now - need to fix takign a break for the night
-        var summaryRepository  = new SummaryRepository();
         var mostPopularCategory = await summaryRepository.GetMostPopularCategory();
 
         foreach (List<Object> category in mostPopularCategory.Output)
@@ -72,7 +70,6 @@ public class REDatamartService : IREDatamart
     // only system admins can do this, and only once a day
     public async Task<Response> updateRecommendationDataMartForAllUsers()
     {
-        var summaryRepository  = new SummaryRepository();
         var response = new Response();
         try
         {
@@ -106,9 +103,6 @@ public class REDatamartService : IREDatamart
         }
         return response;
     }
-
-
-
 
     private Dictionary<string, int> scoreLLI(Dictionary<string, int> scoreDict, Response lliResponse)
     {

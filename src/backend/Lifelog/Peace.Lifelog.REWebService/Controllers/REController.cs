@@ -17,7 +17,7 @@ public class REController : ControllerBase
     }
 
     [HttpPost]
-    [Route("getNumRecs")]
+    [Route("NumRecs")]
     public async Task<IActionResult> GetNumRecs([FromBody] PostNumRecsRequest request)
     {
         try
@@ -27,56 +27,6 @@ public class REController : ControllerBase
             int numRecs = request.NumRecs;
             
             var response = await reService.getNumRecs(userHash, numRecs);
-
-            // Consider checking response for errors and handling them accordingly
-            if (response.HasError)
-            {
-                return BadRequest(response.ErrorMessage);
-            }
-
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            // Log the exception details here
-            // Return a generic error message to the client, optionally with a custom error object
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-    
-    // Update recommendation data mart for a user
-    [HttpGet]
-    [Route("updateRecommendationDataMartForUser")]
-    public async Task<IActionResult> UpdateRecommendationDataMartForUser(string userHash)
-    {
-        try
-        {
-            var response = await reService.updateRecommendationDataMartForUser(userHash);
-
-            // Consider checking response for errors and handling them accordingly
-            if (response.HasError)
-            {
-                return BadRequest(response.ErrorMessage);
-            }
-
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            // Log the exception details here
-            // Return a generic error message to the client, optionally with a custom error object
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
-    // Update recommendation data mart for ALL users
-    [HttpGet]
-    [Route("updateRecommendationDataMartForAllUsers")]
-    public async Task<IActionResult> UpdateRecommendationDataMartForAllUsers()
-    {
-        try
-        {
-            var response = await reService.updateRecommendationDataMartForAllUsers();
 
             // Consider checking response for errors and handling them accordingly
             if (response.HasError)

@@ -110,46 +110,4 @@ public class ReServiceShould
     {
         
     }
-    [Fact]
-    public async void updateRecommendationDataMartForUser_Should_UpdateUserRecommendationDataMart()
-    {
-        // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
-        var userHash = TEST_USER_HASH;
-
-        // Act
-        var result = await reService.updateRecommendationDataMartForUser(userHash);
-
-        // Assert
-        Assert.False(result.HasError);
-    }
-    [Fact]
-    public async void updateRecommendationDataMartForSystem_Should_UpdateSystemToHoldMostPopularCategory()
-    {
-        // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
-
-        // Act
-        var result = await reService.updateRecommendationDataMartForSystem();
-
-        // Assert
-        Assert.False(result.HasError);
-    }
-    [Fact]
-    public async void updateRecommendationDataMartForAllUsers_Should_UpdateAllUserRecommendationDataMart()
-    {
-        // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
-        
-
-        // Act
-        var result = await reService.updateRecommendationDataMartForAllUsers();
-
-        // Assert
-        Assert.False(result.HasError);
-
-    }
 }
