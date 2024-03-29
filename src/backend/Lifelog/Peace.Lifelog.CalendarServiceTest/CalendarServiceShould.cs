@@ -202,7 +202,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
             testLLI.UserHash = USER_HASH;
             testLLI.Title = testLLIInboundDeadline;
             testLLI.Description = $"inbound Deadline Test Get LLI number {i}";
-            testLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
+            //testLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
             testLLI.Status = LLIStatus.Active;
             testLLI.Visibility = LLIVisibility.Public;
             testLLI.Deadline = DateTime.Today.ToString("yyyy-MM-dd");
@@ -225,7 +225,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
             testLLI.UserHash = USER_HASH;
             testLLI.Title = testLLIOutboundDeadline;
             testLLI.Description = $"outbound Deadline Test Get LLI number {i}";
-            testLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
+            //testLLI.Categories = [LLICategory.Travel, LLICategory.Hobby];
             testLLI.Status = LLIStatus.Active;
             testLLI.Visibility = LLIVisibility.Public;
             var outboundDatetime = DateTime.Today.AddMonths(-1);

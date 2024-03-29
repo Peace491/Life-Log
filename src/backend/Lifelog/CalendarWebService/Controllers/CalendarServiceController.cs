@@ -150,7 +150,7 @@ public class CalendarServiceController : ControllerBase
 
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
-        lli.Categories = createLLIRequest.Categories;
+        //lli.Categories = createLLIRequest.Categories;
         lli.Description = createLLIRequest.Description;
         lli.Status = createLLIRequest.Status;
         lli.Visibility = createLLIRequest.Visibility;
@@ -202,7 +202,7 @@ public class CalendarServiceController : ControllerBase
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
         lli.Title = updateLLIRequest.Title;
-        lli.Categories = updateLLIRequest.Categories;
+        //lli.Categories = updateLLIRequest.Categories;
         lli.Description = updateLLIRequest.Description;
         lli.Status = updateLLIRequest.Status;
         lli.Visibility = updateLLIRequest.Visibility;
