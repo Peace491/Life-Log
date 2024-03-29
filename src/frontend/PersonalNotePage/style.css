@@ -1,0 +1,280 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html, body, #root {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("Assets/lli-management-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    padding: 2% 5%;
+}
+
+.note-container {
+    height: 34rem;
+    width: 100%;
+    min-height: 100px;
+    background-color: rgba(141, 141, 141, 0.3);
+
+    border-radius: 20px;
+
+    padding: 10px 20px 30px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.note-header-container {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.note-header-title-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: fit-content;
+    padding: 5px;
+    position: relative;
+    bottom: 25px;
+
+    background-color: #EBA755;
+    border-radius: 10px;
+}
+
+.note-header-title-container>h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.note{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 15px;
+    height: 90%;
+    min-width: 250px;
+    width: 95%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.note-options{
+    display: flex;
+    justify-content: space-between;
+}
+
+.note-date-container{
+    display: flex;
+    gap: 8px;
+    flex-direction: row;
+    justify-items: center;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 4px;
+    border-radius: 5px;
+    margin-right: auto;
+}
+
+.note-delete-container{
+    align-self: center;
+    transform: scale(1.4);
+    margin-right: 6px;
+}
+.date-bold-span {
+    font-weight: 600; /* Apply the bold font weight */
+    display: inline-block; /* Ensure the span is inline but can have a width and height */
+}
+
+.note-input-container{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    border: solid;
+    border-color: #EEEEEE;
+    height: 100%;
+    padding: 11px 11px 11px 11px;
+    border-radius: 10px;
+}
+
+.note-input-container div {
+    display: flex;
+    flex-direction: column;
+}
+
+p:empty:not(:focus)::before {
+    content: attr(data-placeholder);
+}
+
+#create-paragraph-input:focus {
+    outline: none;
+    background: none;
+}
+#date-input {
+    font-size: 20px;
+    font-family: "Inter", sans-serif;
+}
+
+.note-input{
+    grid-area: 1 / 1 / 5 / 7;
+}
+
+#submit-note-button {
+    display: none;
+    grid-area: 5 / 6 / 6 / 7;
+    background-color: #EBA755;
+    height: 30px;
+    width: 80px;
+    justify-self: end;
+    align-self: end;
+    text-align: center;
+    padding-top: 10px;
+    border-radius: 15px;
+    font-size: larger;
+    color: white;
+    font-weight: bold;
+}
+
+#submit-note-button:hover {background-color: #c79354}
+.date-input{
+    border: none;
+}
+
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+

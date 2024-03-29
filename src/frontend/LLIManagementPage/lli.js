@@ -1,5 +1,5 @@
 'use strict';
-
+import Router from '../routes.js';
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
 (function (root, ajaxClient) {
@@ -449,6 +449,10 @@
 
             // Get data
             showLLI();
+
+            //navigate 
+            const router = new Router;
+            router.navigatePages();
         }
     }
 

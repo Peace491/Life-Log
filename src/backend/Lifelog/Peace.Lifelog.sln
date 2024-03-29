@@ -50,6 +50,17 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.SecurityWebService", "Peace.Lifelog.SecurityWebService\Peace.Lifelog.SecurityWebService.csproj", "{08371E04-86AC-4407-AEBB-EC06B8992329}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.CalendarWebService", "CalendarWebService\Peace.Lifelog.CalendarWebService.csproj", "{9FD57082-C9AA-4686-84E7-B601C5D24BC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.PersonalNote", "Peace.Lifelog.PersonalNote\Peace.Lifelog.PersonalNote.csproj", "{CA4FDE6B-03D3-4542-903A-00AD5D81CB96}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuote", "Peace.Lifelog.MotivationalQuote\Peace.Lifelog.MotivationalQuote.csproj", "{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuoteTest", "Peace.Lifelog.MotivationalQuoteTest\Peace.Lifelog.MotivationalQuoteTest.csproj", "{D29409A3-47BC-440D-8322-93C550177A2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuoteWebService", "Peace.Lifelog.MotivationalQuoteWebService\Peace.Lifelog.MotivationalQuoteWebService.csproj", "{CE49A3C0-9F2A-4C52-AEC8-E5B70B74745B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.PersonalNoteTest", "Peace.Lifelog.PersonalNoteTest\Peace.Lifelog.PersonalNoteTest.csproj", "{AE6F72FB-3B52-4342-9D18-E0B8618867BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.PersonalNoteWebService", "Peace.Lifelog.PersonalNoteWebService\Peace.Lifelog.PersonalNoteWebService.csproj", "{DB86B3E0-D791-4D8A-AA4A-EAE5EC41B83C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MotivationalQuote", "Peace.Lifelog.MotivationalQuote\Peace.Lifelog.MotivationalQuote.csproj", "{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}"
 EndProject
@@ -159,6 +170,26 @@ Global
 		{9FD57082-C9AA-4686-84E7-B601C5D24BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FD57082-C9AA-4686-84E7-B601C5D24BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FD57082-C9AA-4686-84E7-B601C5D24BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D29409A3-47BC-440D-8322-93C550177A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D29409A3-47BC-440D-8322-93C550177A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D29409A3-47BC-440D-8322-93C550177A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D29409A3-47BC-440D-8322-93C550177A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA4FDE6B-03D3-4542-903A-00AD5D81CB96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA4FDE6B-03D3-4542-903A-00AD5D81CB96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA4FDE6B-03D3-4542-903A-00AD5D81CB96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA4FDE6B-03D3-4542-903A-00AD5D81CB96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE6F72FB-3B52-4342-9D18-E0B8618867BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE6F72FB-3B52-4342-9D18-E0B8618867BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE6F72FB-3B52-4342-9D18-E0B8618867BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE6F72FB-3B52-4342-9D18-E0B8618867BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB86B3E0-D791-4D8A-AA4A-EAE5EC41B83C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB86B3E0-D791-4D8A-AA4A-EAE5EC41B83C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB86B3E0-D791-4D8A-AA4A-EAE5EC41B83C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB86B3E0-D791-4D8A-AA4A-EAE5EC41B83C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{650591B9-DAFD-40D8-8B2B-0AEBD3F1D7E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
