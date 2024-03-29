@@ -13,8 +13,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.LLITest\Peace.Lifelog.LLITest.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
   </ItemGroup>
 
   

@@ -10,7 +10,7 @@ public class MonthData
 
     public int Year { get; set; } = 0;
 
-    public int CurrDay { get; set; } = 0;
+    public int CurrDay { get; set; } = -1;
 
     public int NumOfDayInMonth { get; set;} = 0;
 

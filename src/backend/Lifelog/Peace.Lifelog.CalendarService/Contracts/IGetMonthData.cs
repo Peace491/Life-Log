@@ -4,5 +4,5 @@ using DomainModels;
 
 public interface IGetMonthData
 {
-    Response GetMonthData();
+    Task<Response> GetMonthData(string userHash);
 }

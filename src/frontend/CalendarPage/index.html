@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifelog Calendar</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" />
+        </div>
+        <div class="header-contents-container">
+            <div class="page-link-container">
+                <div class="calendar-link-container">
+                    <h2>Calendar</h2>
+                </div>
+                <div class="map-link-container">
+                    <h2>Map</h2>
+                </div>
+                <div class="note-link-container">
+                    <h2>Notes</h2>
+                </div>
+                <div class="life-tree-link-container">
+                    <h2>Life Tree</h2>
+                </div>
+            </div>
+            <div class="user-management-container">
+                <div class="setting-container">
+                    <img src="./Assets/setting.svg" alt="">
+                </div>
+                <div class="user-setting-container">
+                    <img src="./Assets/user-setting.svg" alt="">
+                </div>
+                <div class="logout-container" id="logout">
+                    <h2>Log Out</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="current-lli-container lli-container">
+            <div class="current-lli-header-title-container lli-header-title-container">
+                <h2>Lifelog Calendar</h2>
+            </div>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button id="get-prev-month" class="prev-month">&#8249;</button>
+                    <h2 class="month-year">March 2024</h2>
+                    <button id="get-next-month" class="next-month">&#8250;</button>
+                </div>
+                <div class="calendar-body">
+                    <div class="weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="days">
+                        <!-- Days of the month will be dynamically generated here -->
+                        <div class="day">
+                            1
+                            <div class="events">
+                                <div class="event">
+                                    event1
+                                </div>
+                            </div>
+                        </div>
+                        <div class="day">2</div>
+                        <div class="day current-day">3</div> <!-- Example with event -->
+                        <div class="day">4</div>
+                        <div class="day">5</div>
+                        <div class="day">6</div>
+                        <div class="day">7</div>
+                        <div class="day">8</div>
+                        <div class="day">9</div>
+                        <div class="day">10</div>
+                        <div class="day">11</div>
+                        <div class="day">12</div>
+                        <div class="day">13</div>
+                        <div class="day">14</div>
+                        <div class="day">15</div>
+                        <div class="day">16</div>
+                        <div class="day">17</div>
+                        <div class="day">18</div>
+                        <div class="day">19</div>
+                        <div class="day">20</div>
+                        <div class="day">21</div>
+                        <div class="day">22</div>
+                        <div class="day">23</div>
+                        <div class="day">24</div>
+                        <div class="day">25</div>
+                        <div class="day">26</div>
+                        <div class="day">27</div>
+                        <div class="day">28</div>
+                        <div class="day">29</div>
+                        <div class="day">30</div>
+                        <div class="day">31</div>
+
+                        <!-- Add more days here -->
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../Resources/Ajax/fetch-ajax.js"></script>
+    <script src="calendar.js"></script>
+
+    <!-- Page Specific -->
+    
+
+
+</body>
+
+</html>

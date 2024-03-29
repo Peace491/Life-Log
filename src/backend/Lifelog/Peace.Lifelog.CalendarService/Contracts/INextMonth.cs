@@ -4,6 +4,6 @@ using DomainModels;
 
 public interface INextMonth
 {
-    Response NextMonth();
+    Task<Response> NextMonth(string userHash);
 
 }

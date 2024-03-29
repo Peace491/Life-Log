@@ -4,5 +4,5 @@ using DomainModels;
 
 public interface IPrevMonth
 {
-    Response PrevMonth();
+    Task<Response> PrevMonth(string userHash);
 }

@@ -1,0 +1,280 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/*
+END OF CSS RESET
+*/
+
+html, body, #root {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("Assets/lli-management-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
+}
+
+/* 
+END OF NAVBAR/HEADER
+*/
+
+main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    padding: 2% 5%;
+}
+
+.lli-container {
+    height: 1000px;
+    width: 100%;
+    min-height: 100px;
+    background-color: rgba(141, 141, 141, 0.3);
+
+    border-radius: 20px;
+
+    padding: 10px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.lli-header-container {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.lli-header-title-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: fit-content;
+    padding: 5px;
+    position: relative;
+    bottom: 25px;
+    right: 640px;
+
+    background-color: #EBA755;
+    border-radius: 10px;
+}
+/**/
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.calendar {
+    
+    width: 95%;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-header h2 {
+    margin: 0;
+}
+
+.calendar-body {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.weekdays div {
+    text-align: center;
+    padding: 5px;
+    background-color: #f0f0f0;
+}
+
+.prev-month,
+.next-month {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+.prev-month:hover,
+.next-month:hover {
+    color: blue;
+}
+
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.day {
+    text-align: center;
+    
+    padding: 70px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    position: relative; /* Added for positioning events */
+}
+
+.current-day {
+    background-color: lightblue; /* Example event styling */
+}
+
+.event-element {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+
+

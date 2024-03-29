@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
   <TargetFramework>net8.0</TargetFramework>
@@ -10,8 +10,8 @@
 
 <ItemGroup>
   <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
-  <PackageReference Include="xunit" Version="2.7.0" />
-  <PackageReference Include="xunit.runner.visualstudio" Version="2.7.0">
+	<PackageReference Include="xunit" Version="2.7.0" />
+	<PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     <PrivateAssets>all</PrivateAssets>
   </PackageReference>
@@ -24,7 +24,10 @@
 <ItemGroup>
   <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.CalendarService\Peace.Lifelog.CalendarService.csproj" />
+  <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj" />
+  <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
+  <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
 </ItemGroup>
 
 </Project>
