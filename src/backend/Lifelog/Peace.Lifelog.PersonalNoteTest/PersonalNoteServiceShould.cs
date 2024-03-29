@@ -106,7 +106,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
 
     #region Delete Note Tests
     [Fact]
-    public async void PersonalNoteServiceDeletePersonalNoteShould_DeleteAnPersonalNoteInTheDatabase()
+    public async Task PersonalNoteServiceDeletePersonalNoteShould_DeleteAnPersonalNoteInTheDatabase()
     {
         // Arrange
 
@@ -147,7 +147,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
 
     #region View Note Tests
     [Fact]
-    public async void PersonalNoteServiceViewPersonalNoteShould_GetAPersonalNoteForAnUser()
+    public async Task PersonalNoteServiceViewPersonalNoteShould_GetAPersonalNoteForAnUser()
     {
         // Arrange
 
@@ -189,7 +189,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
 
     #region Edit/update Note Tests
     [Fact]
-    public async void PersonalNoteServiceUpdatePersonalNoteShould_UpdateANoteInTheDatabase()
+    public async Task PersonalNoteServiceUpdatePersonalNoteShould_UpdateANoteInTheDatabase()
     {
         // Arrange
         string testOldPersonalNoteContent = "Test the personal note update";
