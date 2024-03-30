@@ -18,8 +18,11 @@
 
     // NOT exposed to the global object ("Private" functions)
     function getNextMonthData() {
-        let getDataUrl = calendarServiceUrl + "/postNextMonth"
-        let data = {}
+        let getDataUrl = calendarServiceUrl + "/postMonthLLI"
+        let data = {
+            Month : 11,
+            Year : 2024
+        }
         let request = ajaxClient.post(getDataUrl, data, jwtToken)
 
         return new Promise((resolve, reject) => {
@@ -36,14 +39,13 @@
 
     
     function onClickGetNextMonth(){
+
+        console.log("works")
         
         getNextMonthData().then(function(data) {
-            let MonthData = data.output[0]
+            let LLIData = data.output[0]
 
-            console.log(MonthData.month)
-            console.log(MonthData.year)
-            console.log(MonthData.currDay)
-            console.log(MonthData.numOfDayInMonth)
+            console.log(LLIData)
 
         })
     }

@@ -187,7 +187,7 @@ main {
     padding: 5px;
     position: relative;
     bottom: 25px;
-    right: 640px;
+    right: 500px;
 
     background-color: #EBA755;
     border-radius: 10px;
@@ -257,12 +257,46 @@ body {
 
 .day {
     text-align: center;
-    
-    padding: 70px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 5px;
+    padding-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    position: relative; /* Added for positioning events */
+    position: relative; 
+   
 }
+
+.event {
+    text-align: center;
+    
+    border-radius: 4px;
+    position: relative; 
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.lli-events{
+    height: 70px;
+    width: auto;
+    border: 1px solid #0c0b0b;
+    overflow-y: auto;
+}
+
+.lli-btn{
+    background-color: rgb(120, 223, 166);
+    width: 80px;
+    
+}
+
+.pn-btn{
+    background-color: rgb(120, 223, 166);
+}
+
+
+
+
+
 
 .current-day {
     background-color: lightblue; /* Example event styling */

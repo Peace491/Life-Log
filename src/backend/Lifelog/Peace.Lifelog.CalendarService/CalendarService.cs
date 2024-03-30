@@ -1,18 +1,16 @@
 ﻿namespace Peace.Lifelog.CalendarService;
 
 using DomainModels;
-using Peace.Lifelog.CalendarService.Models;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.PersonalNote;
 using System;
 
 
 
-public class CalendarService : IGetMonthData, IGetMonthLLI, IPrevMonth, INextMonth
+public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWithCalendar, IGetMonthPN, ICreatePNWithCalendar, IUpdatePNWithCalendar
 {
-
-    public DateTime MonthState = DateTime.Now;
 
     // contructor to create LLIService
     private CreateDataOnlyDAO createDataOnlyDAO;
@@ -22,6 +20,7 @@ public class CalendarService : IGetMonthData, IGetMonthLLI, IPrevMonth, INextMon
     private LogTarget logTarget;
     private Logging logging;
     private LLIService lliService;
+    private PersonalNoteService personalNoteService;
     public CalendarService()
     {
         this.createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -31,87 +30,36 @@ public class CalendarService : IGetMonthData, IGetMonthLLI, IPrevMonth, INextMon
         this.logTarget = new LogTarget(this.createDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
         this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+        this.personalNoteService = new PersonalNoteService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+
 
     }
+    
 
-    public async Task<Response> PrevMonth(string userHash)
+    public async Task<Response> GetMonthLLI(string userHash, int month, int year) 
     {
+        var getLLIResponse = new Response();
         
+        getLLIResponse.Output = new List<object>();
 
-        MonthState = MonthState.AddMonths(-1);
-        var prevMonthResponse = await GetMonthData(userHash);
+        DateTime validDateTime = new DateTime(year, month, 1);
 
-        return prevMonthResponse;
-    }
-
-    public async Task<Response> NextMonth(string userHash)
-    {
-        
-
-        MonthState = MonthState.AddMonths(1);
-        var nextMonthResponse = await GetMonthData(userHash);
-
-        return nextMonthResponse;
-    }
-
-    public async Task<Response> GetMonthData(string userHash)
-    {
-        var getMonthResponse = new Response();
-        // get PN data
-
-        var monthData = new MonthData();
-        var LLIMonthData = await GetMonthLLI(userHash);
-        monthData.LLIEvent = LLIMonthData.LLIEvent;
-
-        
-        monthData.Month = MonthState.Month;
-        monthData.Year = MonthState.Year;
-
-        if (MonthState.Year == DateTime.Now.Year && MonthState.Month == DateTime.Now.Month)
-        { monthData.CurrDay = DateTime.Now.Day; }
-        else { monthData.CurrDay = -1; }
-
-        monthData.NumOfDayInMonth = DateTime.DaysInMonth(MonthState.Year, MonthState.Month);
-
-        DateTime firstDayOfMonth = new DateTime(MonthState.Year, MonthState.Month, 1);
-        monthData.DayOfTheWeekFor1stDay = firstDayOfMonth.DayOfWeek.ToString();
+        var getAllLLIResponse = await lliService.GetAllLLIFromUser(userHash);
 
 
-        getMonthResponse.Output = new List<object>();
-        if (getMonthResponse.Output is not null)
+        if (getAllLLIResponse.Output is not null)
         {
-            getMonthResponse.Output.Add(monthData);
-        }
-        
-
-
-        getMonthResponse.HasError = false;
-
-        return getMonthResponse;
-    }
-
-    public async Task<MonthData> GetMonthLLI(string userHash) 
-    {
-        
-        var monthData = new MonthData();
-        monthData.LLIEvent = new List<LLI>();
-
-        var getLLIResponse = await lliService.GetAllLLIFromUser(userHash);
-
-
-        if (getLLIResponse.Output is not null)
-        {
-            foreach (LLI LLI in getLLIResponse.Output.Cast<LLI>())
+            foreach (LLI LLI in getAllLLIResponse.Output.Cast<LLI>())
             {
 
                 DateTime LLIdateTime;
                 DateTime.TryParseExact(LLI.Deadline, "M/d/yyyy h:mm:ss tt", null, System.Globalization.DateTimeStyles.None, out LLIdateTime);
 
                 
-                if (LLIdateTime.Year == MonthState.Year && LLIdateTime.Month == MonthState.Month)
+                if (LLIdateTime.Year == validDateTime.Year && LLIdateTime.Month == validDateTime.Month)
                 {
                     
-                    monthData.LLIEvent.Add(LLI);
+                    getLLIResponse.Output.Add(LLI);
                 }
             }
         }
@@ -120,7 +68,7 @@ public class CalendarService : IGetMonthData, IGetMonthLLI, IPrevMonth, INextMon
 
         // return monthData
 
-        return monthData;
+        return getLLIResponse;
 
     }
 
@@ -134,6 +82,55 @@ public class CalendarService : IGetMonthData, IGetMonthLLI, IPrevMonth, INextMon
     {
         var editLLIResponse = await lliService.UpdateLLI(userHash, lli);
         return editLLIResponse;
+    }
+
+
+    public async Task<Response> GetMonthPN(string userHash, int month, int year)
+    {
+        var getPNResponse = new Response();
+
+        getPNResponse.Output = new List<object>();
+
+        DateTime validDateTime = new DateTime(year, month, 1);
+
+        var getAllPNResponse = await personalNoteService.GetAllPersonalNotesFromUser(userHash);
+
+
+        if (getAllPNResponse.Output is not null)
+        {
+            foreach (PN PN in getAllPNResponse.Output.Cast<PN>())
+            {
+
+                DateTime PNdateTime;
+                //MAKE SURE PN.NOTEDATE IS THE  CORRECT FORMAT 
+                
+                DateTime.TryParseExact(PN.NoteDate, "M/d/yyyy h:mm:ss tt", null, System.Globalization.DateTimeStyles.None, out PNdateTime);
+
+              
+                if (PNdateTime.Year == validDateTime.Year && PNdateTime.Month == validDateTime.Month)
+                {
+
+                    getPNResponse.Output.Add(PN);
+                }
+            }
+        }
+
+        // return monthData
+
+        return getPNResponse;
+
+    }
+
+    public async Task<Response> CreatePNWithCalendar(string userHash, PN pn)
+    {
+        var createPNResponse = await personalNoteService.CreatePersonalNote(userHash, pn);
+        return createPNResponse;
+    }
+
+    public async Task<Response> UpdatePNWithCalendar(string userHash, PN pn)
+    {
+        var editPNResponse = await personalNoteService.UpdatePersonalNote(userHash, pn);
+        return editPNResponse;
     }
 
 
