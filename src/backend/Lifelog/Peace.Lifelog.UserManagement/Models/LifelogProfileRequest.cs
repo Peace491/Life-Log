@@ -1,6 +1,6 @@
 ﻿using Peace.Lifelog.UserManagement;
 
-namespace Peace.Lifelog.UserManagementTest;
+namespace Peace.Lifelog.UserManagement;
 
 public class LifelogProfileRequest : IUserProfileRequest
 {

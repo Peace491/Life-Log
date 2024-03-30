@@ -23,4 +23,25 @@ public class LifelogAuthService
         return principal;
     }
 
+    public bool IsAuthorized(AppPrincipal currentPrincipal, List<string> authorizedRoles) {
+        var appAuthService = new AppAuthService();
+        
+
+        bool isAuthorize = false;
+
+        if (currentPrincipal.Claims == null || !currentPrincipal.Claims.ContainsKey("RoleName")) {
+            return false;
+        }
+
+        foreach (string role in authorizedRoles) {
+            if (currentPrincipal.Claims["RoleName"] == role) {
+                var requiredClaims = new Dictionary<string, string>() {{"RoleName", role}};
+                isAuthorize = appAuthService.IsAuthorize(currentPrincipal, requiredClaims);
+            }
+        }
+
+        return isAuthorize;
+
+    }
+
 }

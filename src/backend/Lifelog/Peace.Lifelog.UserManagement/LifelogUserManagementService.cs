@@ -241,8 +241,8 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
 
     private async Task<Response> createLifelogAuthenticationInDB(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
-        string sql = $"INSERT INTO LifelogAuthentication ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})" 
-         + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
+        string sql = $"INSERT INTO LifelogAuthentication ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type}, IsUserFormCompleted)" 
+         + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\", 0)";
         var createLifelogAuthenticationInDBResponse = await createDataOnlyDAO.CreateData(sql);
 
         return createLifelogAuthenticationInDBResponse;
