@@ -192,10 +192,10 @@ public class PersonalNoteController : ControllerBase
         }
 
         // initializing the note object with an NoteId
-        var personalnote = new PN();
-        personalnote.NoteId = noteId;
+        /*var personalnote = new PN();
+        personalnote.NoteId = noteId;*/
 
-        var response = await this.personalNoteService.DeletePersonalNote(userHash, personalnote);
+        var response = await this.personalNoteService.DeletePersonalNote(userHash, noteId);
 
         if (response.HasError == false)
         {

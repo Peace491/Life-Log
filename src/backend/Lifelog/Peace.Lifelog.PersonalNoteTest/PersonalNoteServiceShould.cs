@@ -68,7 +68,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
 
     #region Create Note Tests
     [Fact]
-    public async void PersonalNoteServiceCreatePersonalNoteShould_CreateAnPersonalNoteInTheDatabase()
+    public async Task PersonalNoteServiceCreatePersonalNoteShould_CreateAnPersonalNoteInTheDatabase()
     {
         // Arrange
 
@@ -102,6 +102,113 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
         await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
 
     }
+
+    [Fact]
+    public async Task PersonalNoteServiceCreatePersonalNoteShouldShould_ThrowAnErrorIfTheUserHashIsEmpty()
+    {
+        // Arrange
+
+        string testPersonalNoteContent = "Test the personal note creation";
+        string invalidUserHash = "";
+
+        var testPN = new PN();
+        testPN.UserHash = invalidUserHash;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DATE;
+
+        // Act
+        timer.Start();
+        var createPersonalNoteResponse = await personalNoteService.CreatePersonalNote(invalidUserHash, testPN);
+        timer.Stop();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var readPersonalNoteSql = $"SELECT UserHash FROM PersonalNote WHERE NoteContent=\"{testPersonalNoteContent}\"";
+        var readResponse = await readDataOnlyDAO.ReadData(readPersonalNoteSql);
+
+        // Assert
+        Assert.True(createPersonalNoteResponse.ErrorMessage == "User Hash must not be empty");
+        Assert.True(createPersonalNoteResponse.HasError == true);
+        Assert.Null(readResponse.Output);
+
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceCreatePersonalNoteShouldShould_ThrowAnErrorIfTheDateIsInvalid()
+    {
+        // Arrange
+
+        string testPersonalNoteContent = "Test the personal note creation";
+
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DateTime.Now.Date.AddDays(1).ToString(); // Invaid day: A date in the future
+
+        // Act
+        timer.Start();
+        var createPersonalNoteResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testPN);
+        timer.Stop();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var readPersonalNoteSql = $"SELECT UserHash FROM PersonalNote WHERE NoteContent=\"{testPersonalNoteContent}\"";
+        var readResponse = await readDataOnlyDAO.ReadData(readPersonalNoteSql);
+
+        // Assert
+        Assert.True(createPersonalNoteResponse.ErrorMessage == "The Date is Invalid");
+        Assert.True(createPersonalNoteResponse.HasError == true);
+        Assert.Null(readResponse.Output);
+
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceCreatePersonalNoteShouldShould_ThrowAnErrorIfNoteContentIsTooLong()
+    {
+        var testPersonalNoteContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        // Arrange
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DATE;
+
+        // Act
+        timer.Start();
+        var createPersonalNoteResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testPN);
+        timer.Stop();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var readPersonalNoteSql = $"SELECT UserHash FROM PersonalNote WHERE NoteContent=\"{testPersonalNoteContent}\"";
+        var readResponse = await readDataOnlyDAO.ReadData(readPersonalNoteSql);
+
+        // Assert
+        Assert.True(createPersonalNoteResponse.HasError == true);
+        Assert.True(createPersonalNoteResponse.ErrorMessage == "The Personal Note content is too long");
+        Assert.Null(readResponse.Output);
+
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceCreatePersonalNoteShouldShould_ThrowAnErrorIfNoteContentContainsNonAlphanumericvalues()
+    {
+        var testPersonalNoteContent = "Lorem ipsum dolor sit amet, @ consectetur adipiscing elit.";
+        // Arrange
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DATE;
+
+        // Act
+        timer.Start();
+        var createPersonalNoteResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testPN);
+        timer.Stop();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var readPersonalNoteSql = $"SELECT UserHash FROM PersonalNote WHERE NoteContent=\"{testPersonalNoteContent}\"";
+        var readResponse = await readDataOnlyDAO.ReadData(readPersonalNoteSql);
+
+        // Assert
+        Assert.True(createPersonalNoteResponse.HasError == true);
+        Assert.True(createPersonalNoteResponse.ErrorMessage == "The personal note content has invalid nonalphanumeric characters");
+        Assert.Null(readResponse.Output);
+
+    }
+
+
     #endregion
 
     #region Delete Note Tests
@@ -129,7 +236,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
             }
         }
         timer.Start();
-        var deletePersonalNoteResponse = await personalNoteService.DeletePersonalNote(USER_HASH, testPN);
+        var deletePersonalNoteResponse = await personalNoteService.DeletePersonalNote(USER_HASH, testPN.NoteId);
         timer.Stop();
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readPersonalNoteSql = $"SELECT UserHash FROM PersonalNote WHERE NoteContent=\"{testPersonalNoteContent}\"";
@@ -140,6 +247,34 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
         Assert.True(deletePersonalNoteResponse.HasError == false);
         Assert.True(timer.Elapsed.TotalSeconds <= 3);
         Assert.True(readResponse.Output == null);
+
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceDeletePersonalNoteShould_ThrowAnErrorIfTheUserHashIsEmpty()
+    {
+        // Arrange
+
+        string testPersonalNoteContent = "Test the personal note deletion";
+        string invalidUserHash = "";
+
+        var testPN = new PN();
+        testPN.UserHash = invalidUserHash;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DATE;
+
+        // Act
+        timer.Start();
+        var deletePersonalNoteResponse = await personalNoteService.DeletePersonalNote(invalidUserHash, testPN.NoteId);
+        timer.Stop();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var readPersonalNoteSql = $"SELECT UserHash FROM PersonalNote WHERE NoteContent=\"{testPersonalNoteContent}\"";
+        var readResponse = await readDataOnlyDAO.ReadData(readPersonalNoteSql);
+
+        // Assert
+        Assert.True(deletePersonalNoteResponse.HasError == true);
+        Assert.True(deletePersonalNoteResponse.ErrorMessage == "User Hash must not be empty");
+        Assert.Null(readResponse.Output);
 
     }
 
@@ -182,6 +317,31 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
         var deletePersonalNoteSql = $"DELETE FROM PersonalNote WHERE NoteDate=\"{DATE}\";";
 
         await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
+
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceViewPersonalNoteShould_ThrowAnErrorIfTheUserHashIsEmpty()
+    {
+        // Arrange
+
+        string testPersonalNoteContent = "Test the personal note viewing method";
+        string invalidUserHash = "";
+
+        var testPN = new PN();
+        testPN.UserHash = invalidUserHash;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DATE;
+
+        // Act
+        timer.Start();
+        var viewPersonalNoteResponse = await personalNoteService.ViewPersonalNote(invalidUserHash, testPN);
+        timer.Stop();
+
+
+        // Assert
+        Assert.True(viewPersonalNoteResponse.HasError == true);
+        Assert.True(viewPersonalNoteResponse.ErrorMessage == "User Hash must not be empty");
 
     }
 
@@ -249,6 +409,228 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
         var deletePersonalNoteSql = $"DELETE FROM PersonalNote WHERE NoteId=\"{updatedPN.NoteId}\";";
 
         await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceUpdatePersonalNoteShould_ThrowAnErrorIfTheUserHashIsEmpty()
+    {
+        // Arrange
+        string testOldPersonalNoteContent = "Test the personal note update";
+        string testNewPersonalNoteContent = "Updated";
+        string invalidUserHash = "";
+
+        // Old Note        
+        var testOldPN = new PN();
+        testOldPN.UserHash = USER_HASH;
+        testOldPN.NoteContent = testOldPersonalNoteContent;
+        testOldPN.NoteDate = DATE;
+
+        // New Note
+        var testNewPN = new PN();
+        testNewPN.UserHash = invalidUserHash;
+        testNewPN.NoteContent = testNewPersonalNoteContent;
+        testNewPN.NoteDate = DATE;
+
+        //updated Note
+        var updatedPN = new PN();
+
+        var createResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testOldPN);
+
+        var readResponse = await personalNoteService.ViewPersonalNote(USER_HASH, testOldPN);
+
+        if (readResponse.Output != null)
+        {
+            foreach (PN personalNote in readResponse.Output)
+            {
+                testNewPN.NoteId = personalNote.NoteId;
+            }
+        }
+
+
+        // Act
+
+        timer.Start();
+        var updateResponse = await personalNoteService.UpdatePersonalNote(invalidUserHash, testNewPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "User Hash must not be empty");
+
+        // Cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePersonalNoteSql = $"DELETE FROM PersonalNote WHERE NoteId=\"{updatedPN.NoteId}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
+    }
+
+
+    [Fact]
+    public async Task PersonalNoteServiceUpdatePersonalNoteShould_ThrowAnErrorIfTheDateIsInvalid()
+    {
+        // Arrange
+        string testOldPersonalNoteContent = "Test the personal note update";
+        string testNewPersonalNoteContent = "Updated";
+
+        // Old Note        
+        var testOldPN = new PN();
+        testOldPN.UserHash = USER_HASH;
+        testOldPN.NoteContent = testOldPersonalNoteContent;
+        testOldPN.NoteDate = DATE;
+
+        // New Note
+        var testNewPN = new PN();
+        testNewPN.UserHash = USER_HASH;
+        testNewPN.NoteContent = testNewPersonalNoteContent;
+        testNewPN.NoteDate = DateTime.Now.Date.AddDays(1).ToString();
+
+        //updated Note
+        var updatedPN = new PN();
+
+        var createResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testOldPN);
+
+        var readResponse = await personalNoteService.ViewPersonalNote(USER_HASH, testOldPN);
+
+        if (readResponse.Output != null)
+        {
+            foreach (PN personalNote in readResponse.Output)
+            {
+                testNewPN.NoteId = personalNote.NoteId;
+            }
+        }
+
+
+        // Act
+
+        timer.Start();
+        var updateResponse = await personalNoteService.UpdatePersonalNote(USER_HASH, testNewPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(readResponse.Output != null);
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "The Date is Invalid");
+        Assert.True(timer.Elapsed.TotalSeconds < 3);
+
+        // Cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePersonalNoteSql = $"DELETE FROM PersonalNote WHERE NoteId=\"{testNewPN.NoteId}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceUpdatePersonalNoteShould_ThrowAnErrorIfNoteContentIsTooLong()
+    {
+        // Arrange
+        string testOldPersonalNoteContent = "Test the personal note update";
+        var testNewPersonalNoteContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+        // Old Note        
+        var testOldPN = new PN();
+        testOldPN.UserHash = USER_HASH;
+        testOldPN.NoteContent = testOldPersonalNoteContent;
+        testOldPN.NoteDate = DATE;
+
+        // New Note
+        var testNewPN = new PN();
+        testNewPN.UserHash = USER_HASH;
+        testNewPN.NoteContent = testNewPersonalNoteContent;
+        testNewPN.NoteDate = DATE;
+
+        //updated Note
+        var updatedPN = new PN();
+
+        var createResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testOldPN);
+
+        var readResponse = await personalNoteService.ViewPersonalNote(USER_HASH, testOldPN);
+
+        if (readResponse.Output != null)
+        {
+            foreach (PN personalNote in readResponse.Output)
+            {
+                testNewPN.NoteId = personalNote.NoteId;
+            }
+        }
+
+
+        // Act
+
+        timer.Start();
+        var updateResponse = await personalNoteService.UpdatePersonalNote(USER_HASH, testNewPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(readResponse.Output != null);
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "The Personal Note content is too long");
+        Assert.True(timer.Elapsed.TotalSeconds < 3);
+
+        // Cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePersonalNoteSql = $"DELETE FROM PersonalNote WHERE NoteId=\"{testNewPN.NoteId}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
+
+    }
+
+    [Fact]
+    public async Task PersonalNoteServiceUpdatePersonalNoteShould_ThrowAnErrorIfNoteContentContainsNonAlphanumericvalues()
+    {
+        // Arrange
+        string testOldPersonalNoteContent = "Test the personal note update";
+        var testNewPersonalNoteContent = "Lorem ipsum dolor sit amet, @ consectetur adipiscing elit.";
+
+        // Old Note        
+        var testOldPN = new PN();
+        testOldPN.UserHash = USER_HASH;
+        testOldPN.NoteContent = testOldPersonalNoteContent;
+        testOldPN.NoteDate = DATE;
+
+        // New Note
+        var testNewPN = new PN();
+        testNewPN.UserHash = USER_HASH;
+        testNewPN.NoteContent = testNewPersonalNoteContent;
+        testNewPN.NoteDate = DATE;
+
+        //updated Note
+        var updatedPN = new PN();
+
+        var createResponse = await personalNoteService.CreatePersonalNote(USER_HASH, testOldPN);
+
+        var readResponse = await personalNoteService.ViewPersonalNote(USER_HASH, testOldPN);
+
+        if (readResponse.Output != null)
+        {
+            foreach (PN personalNote in readResponse.Output)
+            {
+                testNewPN.NoteId = personalNote.NoteId;
+            }
+        }
+
+
+        // Act
+
+        timer.Start();
+        var updateResponse = await personalNoteService.UpdatePersonalNote(USER_HASH, testNewPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(readResponse.Output != null);
+        Assert.True(updateResponse.HasError == true);
+        Assert.True(updateResponse.ErrorMessage == "The personal note content has invalid nonalphanumeric characters");
+        Assert.True(timer.Elapsed.TotalSeconds < 3);
+
+        // Cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePersonalNoteSql = $"DELETE FROM PersonalNote WHERE NoteId=\"{testNewPN.NoteId}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deletePersonalNoteSql);
+
     }
     #endregion
 

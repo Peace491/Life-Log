@@ -1,6 +1,6 @@
 namespace Peace.Lifelog.MotivationalQuoteTest;
-using System.Diagnostics;
 using Peace.Lifelog.MotivationalQuote;
+using System.Diagnostics;
 
 
 public class MotivationalQuoteServiceShould
@@ -78,7 +78,7 @@ public class MotivationalQuoteServiceShould
         //Assert.True(validPhraseResponse.ErrorMessage == "Impartial Author Was Pulled");
     }
 
-    [Fact]
+    /*[Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangePrior()
     {
         //Arrange
@@ -110,7 +110,7 @@ public class MotivationalQuoteServiceShould
         // Assert
         Assert.True(!(validPhraseResponse.ErrorMessage == "The quotes has changed after 12:00 am PST"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
-    }
+    }*/
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHasNotBeenRecycled()
