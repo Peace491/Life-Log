@@ -1,8 +1,11 @@
 'use strict';
 
+import * as lliDomManip from './lli-dom-manipulation.js'
+import * as routeManager from '../routeManager.js';
+
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function loadLLIPage(root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -407,7 +410,8 @@
 
         logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
-            location.reload()
+            routeManager.loadPage(routeManager.PAGES.homePage)
+            
         })
     }
 
@@ -419,7 +423,7 @@
         getAllLLI().then(function (completedLLIList) {
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
+                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -437,7 +441,7 @@
         jwtToken = localStorage["token-local"]
 
         if (jwtToken == null) {
-            window.location = '../HomePage/index.html'
+            routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
             // Set up event handlers
             setupCreateLLITemplate();
@@ -454,7 +458,7 @@
 
     init();
 
-})(window, window.ajaxClient);
+}
 
 
 

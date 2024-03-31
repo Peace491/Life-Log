@@ -1,4 +1,4 @@
-function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
+export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -208,7 +208,7 @@ function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
     return lliDiv;
 }
 
-function convertLLIToEditMode(id, updateLLI) {
+export function convertLLIToEditMode(id, updateLLI) {
     // Current value
     let currentDeadline = document.getElementById('deadline' + id).textContent
     var parts = currentDeadline.split('/');
@@ -418,7 +418,7 @@ function convertLLIToEditMode(id, updateLLI) {
     return lliDiv.outerHTML;
 }
 
-function filterLLI(filterOption, filterContainer) {
+export function filterLLI(filterOption, filterContainer) {
     const categoriesList = new Set([
         "Mental Health",
         "Physical Health",
@@ -587,12 +587,6 @@ function filterLLI(filterOption, filterContainer) {
         else if (filterOption.label == "Search") alert('Failed to get all LLIs from the search. Please try again.')
     }
 
-}
-
-window.lliDomManip ={
-    createLLIComponents: createLLIComponents,
-    convertLLIToEditMode: convertLLIToEditMode,
-    filterLLI: filterLLI
 }
 
 // export {
