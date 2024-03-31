@@ -14,6 +14,7 @@ public class SummaryController : ControllerBase
         this.reDMService = reDMService;
 
     }
+    
     [HttpGet]
     [Route("updateRecommendationDataMartForUser")]
     public async Task<IActionResult> UpdateRecommendationDataMartForUser(string userHash)

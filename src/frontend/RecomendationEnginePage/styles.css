@@ -1,0 +1,214 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html, body, #root {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("../Assets/lli-management-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
+}
+
+.recommendation-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Adjusts the gap between child elements */
+    padding-left: 5%;
+    padding-right: 5%;
+    display: flex; /* Enables Flexbox */
+    justify-content: center; /* Centers items horizontally */
+}
+
+.lli-recommendation {
+    flex: 1 0 calc(20% - 10px); /* Takes up 20% of the container width, adjusting for the gap */
+    padding: 20px;
+    max-width: 250px;
+    min-height: 300px;
+    background-color: rgba(255, 255, 255, 0.75); /* Semi-transparent white background */
+    box-sizing: border-box; /* Ensures padding is included in the width calculation */
+    /* Add other styles here as needed */
+}
+
+.recommendation-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* This creates space between the input and the button */
+    align-items: center; /* This centers the items horizontally */
+    padding: 20px; /* Adds some padding around the container */
+}
+
+#numberRecs {
+    max-width: 17%; /* Sets the maximum width of the input */
+    padding: 10px; /* Adds some padding inside the input for better appearance */
+    border: 1px solid #ccc; /* Adds a border to the input */
+    border-radius: 5px; /* Optional: Rounds the corners of the input */
+}
+
+#getRecommendation {
+    max-width: 17%; /* Sets the maximum width of the button */
+    padding: 10px; /* Adds some padding inside the button for better appearance */
+    border: none; /* Removes the border */
+    background-color: #007bff; /* Sets a background color for the button */
+    color: white; /* Sets the text color */
+    border-radius: 5px; /* Optional: Rounds the corners of the button */
+    cursor: pointer; /* Changes the mouse cursor to a pointer when hovering over the button */
+}
+
+#getRecommendation:hover {
+    background-color: #0056b3; /* Darkens the button on hover for a simple interaction feedback */
+}
+
+
+/* Styles for the new category container */
+.category-container {
+    display: flex; /* Enables Flexbox, making children divs line up horizontally */
+    gap: 10px; /* Optional: Puts some space between each category */
+    text-align: center;
+  }
+  
+  /* Style adjustments for categories (if needed) */
+.lli-recommendation-categories {
+    flex-grow: 1; /* Makes each category div take equal width */
+    /* Additional styling here (e.g., padding, borders) */
+  }
+  
+.lli-recommendation-title {
+    text-align: center; /* Centers inline content */
+}
+
+.category-container {
+    display: flex; /* This line is if you're aligning its children */
+    justify-content: center; /* Horizontally center children */
+    align-items: center; /* Vertically center children (if needed) */
+    width: 80%; /* Set a specific width */
+    margin: 0 auto; /* Auto margins for horizontal centering */
+    text-align: center;
+}

@@ -85,10 +85,9 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
                 }
                 if (current == 4)
                 {
-                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[0], 1);
+                    query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[0], 2);
                     query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[1], 1);
                     query += SelectNewLLIWithCategory(tableName, userDatamart.UserHash, userDatamart.Categories[2], 1);
-                    query += SelectNewLLINotOfCategories(tableName, userDatamart.UserHash, userDatamart.Categories, 1);
                     numRecs -= 4;
                 }
                 if (current == 3)
@@ -154,18 +153,16 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
 
     private string SelectNewLLINotOfCategories(string tableName, string userHash, List<string> categories, int limit)
     {
-        string categoriesString = string.Join(", ", categories);
         return 
             $"INSERT INTO `{tableName}` (LLIId) " +
             "SELECT LLIId FROM LLI " +
             $"WHERE ((UserHash != '{userHash}' " +
             "AND Visibility = 'Public') " +
-            $"OR (LLI.UserHash = '{userHash}' " +
-            $"AND LLI.Status = 'Completed' AND LLI.CompletionDate < DATE_SUB(CURDATE(), INTERVAL 1 YEAR))) " +
             $"AND LLIId NOT IN (SELECT LLIId FROM `{tableName}`) " +
-            $"AND Category1 NOT IN ('{categories[0]}', '{categories[1]}', '{categories[2]}') " +
-            $"AND Category2 NOT IN ('{categories[0]}', '{categories[1]}', '{categories[2]}') " +
-            $"AND Category3 NOT IN ('{categories[0]}', '{categories[1]}', '{categories[2]}') " +
+            $"AND (Category1 != '{categories[0]}' AND Category2 != '{categories[0]}' AND Category3 != '{categories[0]}') " +
+            $"AND (Category1 != '{categories[1]}' AND Category2 != '{categories[1]}' AND Category3 != '{categories[1]}') " +
+            $"AND (Category1 != '{categories[2]}' AND Category2 != '{categories[2]}' AND Category3 != '{categories[2]}') " +
+            ") " +
             "ORDER BY RAND() " +
             $"LIMIT {limit};";
     }

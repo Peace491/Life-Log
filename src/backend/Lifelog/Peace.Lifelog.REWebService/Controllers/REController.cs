@@ -1,8 +1,10 @@
 namespace Peace.Lifelog.REWebService;
 
+using DomainModels;
 using Peace.Lifelog.RE;
 using Peace.Lifelog.LLIWebService;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
+using System.Text.Json;
 
 [ApiController]
 [Route("re")]  // Defines the default parent URL path for all action methods to be the name of controller
@@ -23,7 +25,7 @@ public class REController : ControllerBase
         try
         {
             // TODO: Token processing
-            string userHash = "0Yg6cgh/M4+ImmL0GozWqhgcDCqTZEhzm9angvVAC30=";
+            string userHash = "3\u002B/ZXoeqkYQ9JTJ6vcdAfjl667hgcMxQ\u002BSBLqmVDBuY=";
             int numRecs = request.NumRecs;
             
             var response = await reService.getNumRecs(userHash, numRecs);
@@ -33,8 +35,13 @@ public class REController : ControllerBase
             {
                 return BadRequest(response.ErrorMessage);
             }
-
-            return Ok(response);
+            if (response == null || response.Output == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(JsonSerializer.Serialize<ICollection<Object>>(response.Output));
+            // return Ok(response);
         }
         catch (Exception ex)
         {

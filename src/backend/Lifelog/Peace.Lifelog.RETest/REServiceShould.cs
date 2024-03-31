@@ -4,15 +4,25 @@ using Peace.Lifelog.DataAccess;
 public class ReServiceShould
 {
     private const string TEST_USER_HASH = "3\u002B/ZXoeqkYQ9JTJ6vcdAfjl667hgcMxQ\u002BSBLqmVDBuY=";
-    [Fact]
-    public async Task REServiceGetNumRecs_Should_GetTheNumberOfRecomendationsItIsPassed()
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    [InlineData(9)]
+    [InlineData(10)]
+    public async Task REServiceGetNumRecs_Should_GetTheNumberOfRecomendationsItIsPassed(int numRecs)
     {
         // Arrange
 
         // need to setup a user every single time this test is run 
         var recomendationEngineRepository = new RecomendationEngineRepository();
         var reService = new REService(recomendationEngineRepository);
-        int numRecs = 5;
 
         // Act
         var response = await reService.getNumRecs(TEST_USER_HASH, numRecs);
@@ -23,7 +33,7 @@ public class ReServiceShould
         Assert.False(response.HasError);
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_ReturnAnErrorIfTheUserHashIsInvalid()
+    public async Task REServiceGetNumRecs_Should_ReturnAnErrorIfTheUserHashIsInvalid()
     {
         // Arrange
         var recomendationEngineRepository = new RecomendationEngineRepository();
