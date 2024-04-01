@@ -14,6 +14,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Peace.Lifelog.CalendarService\Peace.Lifelog.CalendarService.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
 		<ProjectReference Include="..\Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj" />
 		<ProjectReference Include="..\DomainModels\DomainModels.csproj" />
 		<ProjectReference Include="..\Peace.Lifelog.PersonalNote\Peace.Lifelog.PersonalNote.csproj" />

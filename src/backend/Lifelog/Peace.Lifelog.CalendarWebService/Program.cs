@@ -21,7 +21,7 @@ if (app.Environment.IsDevelopment())
 /* Setup of Middleware Pipeline */
 
 // app.UseHttpsRedirection();
-
+var config = LifelogConfig.LoadConfiguration();
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline
 app.Use((httpContext, next) =>
@@ -40,7 +40,8 @@ app.Use((httpContext, next) =>
 
         httpContext.Response.StatusCode = 204;
 
-        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        Console.WriteLine(config.HostURL);
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, config.HostURL);
         httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
         httpContext.Response.Headers.AccessControlAllowCredentials = "true";
@@ -64,7 +65,7 @@ app.Use((httpContext, next) => {
         HttpMethods.Delete
     };
 
-    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, config.HostURL);
     httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
     httpContext.Response.Headers.AccessControlAllowHeaders = "*";
     httpContext.Response.Headers.AccessControlAllowCredentials = "true";

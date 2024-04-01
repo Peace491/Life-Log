@@ -642,6 +642,15 @@
         createNote(options)
     }
 
+    function setupLogout() {
+        let logoutInput = document.getElementById('logout')
+
+        logoutInput.addEventListener('click', function () {
+            window.localStorage.clear()
+            window.location = '../HomePage/index.html'
+            location.reload()
+        })
+    }
     
     
 
@@ -678,7 +687,10 @@
 
                     pnCreation()
                 
-                })     
+            })  
+            
+            setupLogout();
+
         }
     }
 

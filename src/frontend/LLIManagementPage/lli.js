@@ -411,6 +411,15 @@ import Router from '../routes.js';
         })
     }
 
+    function setupHeaderLinks(){
+        let calendarLink = document.getElementById("calendar-link")
+
+        calendarLink.addEventListener('click', function () {
+            window.location = "../CalendarPage/index.html"
+            
+        })
+    }
+
     function showLLI() {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
@@ -446,6 +455,7 @@ import Router from '../routes.js';
             setupFilter();
             setupSearch();
             setupLogout();
+            setupHeaderLinks();
 
             // Get data
             showLLI();
