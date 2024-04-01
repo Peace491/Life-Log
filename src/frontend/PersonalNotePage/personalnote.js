@@ -51,15 +51,13 @@ import Router from '../routes.js';
     // NOT exposed to the global object ("Private" functions)
     function getNote(notedate) {
         let getUrl = webServiceUrl + '/getPN?notedate=' + notedate;
-
+        console.log(getUrl)
         // validate the date
         let year = parseInt(notedate.substring(0, 4))
         if (year < EARLIEST_NOTE_YEAR || year > LATEST_NOTE_YEAR) {
             alert(`The Note date must be between 01/01/${EARLIEST_NOTE_YEAR} and 12/31/${LATEST_NOTE_YEAR}, please try again.`)
             return
         }
-
-        console.log(jwtToken);
 
         let request = ajaxClient.get(getUrl, jwtToken);
 
@@ -68,13 +66,14 @@ import Router from '../routes.js';
                 if (response.status != 200) {
                     throw new Error(response.statusText)
                 }
-
+                console.log(response.body)
                 return response.json();
             }).then(function (data) {
-                console.log(data);
+                console.log("Note Data: ", data.output);
                 let output = data.output;
                 resolve(output);
             }).catch(function (error) {
+                console.log("error" + error)
                 alert(error)
                 reject(error);
             });
@@ -159,7 +158,7 @@ import Router from '../routes.js';
                 notedate: date,
                 notecontent: content
             }
-            console.log(options);
+            //console.log(options);
             if (noteParagraph.classList.contains("NewNote"))
             {
                 createNote(options)
@@ -167,17 +166,18 @@ import Router from '../routes.js';
                     getNote(date)
                     .then(function(noteText){
                         noteParagraph.setAttribute("noteid", noteText[0]["noteId"]);
+                        noteParagraph.classList.remove("NewNote")
                     })
                     .catch(function (error) {
                         // Handle error if retrieval fails
                         alert("Error retrieving note: " + error);
                     });
                 })
-                console.log(date);
                 
             }
             else
             {
+                console.log("this updated")
                 updateNote(options);
             }
             
@@ -185,7 +185,6 @@ import Router from '../routes.js';
     }
 
     function showNote() {
-        console.log("here");
         let dateInput = document.getElementById("create-date-input");
         let selectedDate = dateInput.value;
         // Call getNote function to retrieve note data
@@ -195,7 +194,6 @@ import Router from '../routes.js';
             if(noteText == null)
             {
                 noteParagraph.textContent = '';
-                console.log("nothing for this date");
                 noteParagraph.placeholder = "What are you thinking?......";
                 noteParagraph.classList.add("NewNote");
                 noteParagraph.setAttribute("noteid", "");
@@ -254,7 +252,7 @@ import Router from '../routes.js';
     // Initialize the current view by setting up data and attaching event handlers 
     function init() {
         jwtToken = localStorage["token-local"]
-
+        console.log("Jwt Token: "+jwtToken)
         if (jwtToken == null) {
             window.location = '../HomePage/index.html'
         } else {
