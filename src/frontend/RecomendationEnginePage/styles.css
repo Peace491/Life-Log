@@ -145,6 +145,7 @@ header {
     padding-right: 5%;
     display: flex; /* Enables Flexbox */
     justify-content: center; /* Centers items horizontally */
+
 }
 
 .lli-recommendation {
@@ -154,7 +155,6 @@ header {
     min-height: 300px;
     background-color: rgba(255, 255, 255, 0.75); /* Semi-transparent white background */
     box-sizing: border-box; /* Ensures padding is included in the width calculation */
-    /* Add other styles here as needed */
 }
 
 .recommendation-input-container {

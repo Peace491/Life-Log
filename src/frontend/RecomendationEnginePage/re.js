@@ -61,14 +61,28 @@ import * as validator from './reInputValidation.js';
         const recommendationDiv = document.createElement('div');
         recommendationDiv.className = 'lli-recommendation';
 
+        titleDiv.appendChild(createTitleDiv(recommendation));
+
+        categoriesDiv.appendChild(createCategoryDiv(recommendation));
+
+        deadlineDiv.appendChild(createDeadlineInputDiv());
+        
+        // Append the title and categories divs to the LLI recomendations container
+        recommendationDiv.appendChild(titleDiv);
+        recommendationDiv.appendChild(categoriesDiv);
+        return recommendationDiv;
+    }
+    
+    function createTitleDiv(recommendation) {  
         // Create and setup the title div and its content
         const titleDiv = document.createElement('div');
         titleDiv.className = 'lli-recommendation-title';
         const titleH2 = document.createElement('h2');
         titleH2.innerText = recommendation.Title;
-        // Append the title H2 to the title div
-        titleDiv.appendChild(titleH2);
+        return titleDiv;
+    }
 
+    function createCategoryDiv(recommendation) {
         // Create and setup the categories div and its content
         const categoriesDiv = document.createElement('div');
         categoriesDiv.className = 'lli-recommendation-categories';
@@ -81,14 +95,27 @@ import * as validator from './reInputValidation.js';
         if (recommendation.Category3 != null && recommendation.Category3 != "") {
             categoriesH2.innerText += ", " + recommendation.Category3;
         }
-        
-        // Append the categories H2 to the categories div
-        categoriesDiv.appendChild(categoriesH2);
+        return categoriesDiv;
+    }
 
-        // Append the title and categories divs to the main recommendation container
-        recommendationDiv.appendChild(titleDiv);
-        recommendationDiv.appendChild(categoriesDiv);
-        return recommendationDiv;
+    function createDeadlineInputDiv() {
+        // Create and setup the deadline input div and its content
+        const deadlineDiv = document.createElement('div');
+        deadlineDiv.className = 'lli-recommendation-deadline';
+
+        const deadlineLabel = document.createElement('label');
+        deadlineLabel.for = 'deadline';
+        deadlineLabel.innerText = 'Deadline: ';
+
+        const deadlineInput = document.createElement('input');
+        deadlineInput.type = 'date';
+        deadlineInput.id = 'deadline';
+
+        // Append the label and input to the deadline div
+        deadlineDiv.appendChild(deadlineLabel);
+        deadlineDiv.appendChild(deadlineInput);
+
+        return deadlineDiv;
     }
 
 

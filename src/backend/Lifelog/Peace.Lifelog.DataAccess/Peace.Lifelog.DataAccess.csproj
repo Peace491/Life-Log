@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

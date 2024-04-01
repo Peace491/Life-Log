@@ -2,24 +2,26 @@
 
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
+using Peace.Lifelog.Logging;
 using System.Diagnostics;
 using DomainModels;
 
 public class REService : IReService
 {
     private readonly RecomendationEngineRepository recomendationEngineRepository;
+    private readonly Logging logger;
 
     // Inject RecomendationEngineRepository through the constructor
-    public REService(RecomendationEngineRepository recomendationEngineRepository)
+    public REService(RecomendationEngineRepository recomendationEngineRepository, Logging logger)
     {
         this.recomendationEngineRepository = recomendationEngineRepository;
+        this.logger = logger;
     }
     
     public async Task<Response> getNumRecs(string userhash, int numRecs)
     {
         var timer = new Stopwatch();
         var response = new Response();
-
         try
         {
             if (!validateNumRecs(numRecs))
@@ -30,7 +32,9 @@ public class REService : IReService
 
             // Start timer
             timer.Start();
-            var recommendations = await recomendationEngineRepository.GetNumRecs(userhash, numRecs);
+
+            // Preform operation
+            response = await recomendationEngineRepository.GetNumRecs(userhash, numRecs);
 
             // Stop timer
             timer.Stop();
@@ -42,7 +46,7 @@ public class REService : IReService
             }
 
             // TODO : Method to convert response to LLI objects
-            List<object> recommendedLLI = convertResponseToCleanLLI(recommendations) ?? new List<object>();
+            List<object> recommendedLLI = convertResponseToCleanLLI(response) ?? new List<object>();
 
             if (!validateLLI(recommendedLLI))
             {
@@ -51,12 +55,12 @@ public class REService : IReService
             }
 
             // If no error
-            response.HasError = false;
             response.Output = recommendedLLI;
         }
         catch (Exception ex)
         {
-            // Log exception details here using your preferred logging framework
+            // TODO specifiy logging stuff
+            var logResponse = await logger.CreateLog("Logs", userhash, "ERROR", "Service", ex.Message);
             response.ErrorMessage = "An error occurred while processing your request.";
         }
 
