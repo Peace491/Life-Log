@@ -5,6 +5,7 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.PersonalNote;
+using System.Diagnostics;
 using System;
 
 
@@ -13,6 +14,8 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 {
 
     // contructor to create LLIService
+    private static int WARNING_TIME_LIMIT_IN_SECOND = 3;
+    private static int ERROR_TIME_LIMIT_IN_SECOND = 5;
     private CreateDataOnlyDAO createDataOnlyDAO;
     private ReadDataOnlyDAO readDataOnlyDAO;
     private UpdateDataOnlyDAO updateDataOnlyDAO;
@@ -38,24 +41,38 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
     public async Task<Response> GetMonthLLI(string userHash, int month, int year) 
     {
+        var timer = new Stopwatch();
+
+        timer.Start();
+
         var getLLIResponse = new Response();
         
         getLLIResponse.Output = new List<object>();
 
         DateTime validDateTime = new DateTime(year, month, 1);
 
+        
         var getAllLLIResponse = await lliService.GetAllLLIFromUser(userHash);
 
+        
 
         if (getAllLLIResponse.Output is not null)
         {
+            Console.WriteLine("lliservice works");
             foreach (LLI LLI in getAllLLIResponse.Output.Cast<LLI>())
             {
+                var lliDeadline = LLI.Deadline!.Substring(0, LLI.Deadline!.IndexOf(' '));
+
 
                 DateTime LLIdateTime;
-                DateTime.TryParseExact(LLI.Deadline, "M/d/yyyy h:mm:ss tt", null, System.Globalization.DateTimeStyles.None, out LLIdateTime);
+                LLIdateTime = DateTime.ParseExact(lliDeadline, "M/d/yyyy", null);
 
-                
+                Console.WriteLine(LLIdateTime.Month);
+                Console.WriteLine(LLIdateTime.Year);
+                Console.WriteLine(validDateTime.Month);
+                Console.WriteLine(validDateTime.Year);
+
+
                 if (LLIdateTime.Year == validDateTime.Year && LLIdateTime.Month == validDateTime.Month)
                 {
                     
@@ -63,10 +80,24 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
                 }
             }
         }
-        
-        
+        getLLIResponse.HasError = getAllLLIResponse.HasError;
+        getLLIResponse.ErrorMessage = getAllLLIResponse.ErrorMessage;
 
-        // return monthData
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The user fetched all lli using the calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
 
         return getLLIResponse;
 
@@ -74,19 +105,59 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
     public async Task<Response> CreateLLIWithCalendar(string userHash, LLI lli)
     {
+        var timer = new Stopwatch();
+
+        timer.Start();
         var createLLIResponse = await lliService.CreateLLI(userHash, lli);
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The user created a LLI using the calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
         return createLLIResponse;
     }
 
     public async Task<Response> EditLLIWithCalendar(string userHash, LLI lli)
     {
+        var timer = new Stopwatch();
+
+        timer.Start();
         var editLLIResponse = await lliService.UpdateLLI(userHash, lli);
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User changed a LLI using the calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
         return editLLIResponse;
     }
 
 
     public async Task<Response> GetMonthPN(string userHash, int month, int year)
     {
+        var timer = new Stopwatch();
+
+        timer.Start();
+
         var getPNResponse = new Response();
 
         getPNResponse.Output = new List<object>();
@@ -101,12 +172,12 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
             foreach (PN PN in getAllPNResponse.Output.Cast<PN>())
             {
 
-                DateTime PNdateTime;
-                //MAKE SURE PN.NOTEDATE IS THE  CORRECT FORMAT 
-                
-                DateTime.TryParseExact(PN.NoteDate, "M/d/yyyy h:mm:ss tt", null, System.Globalization.DateTimeStyles.None, out PNdateTime);
+                var pnDeadline = PN.NoteDate!.Substring(0, PN.NoteDate!.IndexOf(' '));
 
-              
+
+                DateTime PNdateTime;
+                PNdateTime = DateTime.ParseExact(pnDeadline, "M/d/yyyy", null);
+
                 if (PNdateTime.Year == validDateTime.Year && PNdateTime.Month == validDateTime.Month)
                 {
 
@@ -115,21 +186,99 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
             }
         }
 
+        getPNResponse.HasError = getAllPNResponse.HasError;
+        getPNResponse.ErrorMessage = getAllPNResponse.ErrorMessage;
+
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User fetched all PN using the calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
         // return monthData
 
         return getPNResponse;
 
     }
 
+    public async Task<Response> GetOnePNWithCalendar(string userHash, PN pn)
+    {
+        var timer = new Stopwatch();
+
+        timer.Start();
+        var getPNResponse = await personalNoteService.ViewPersonalNote(userHash, pn);
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User is viewing Personal Note though calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
+        return getPNResponse;
+    }
+
     public async Task<Response> CreatePNWithCalendar(string userHash, PN pn)
     {
+        var timer = new Stopwatch();
+
+        timer.Start();
         var createPNResponse = await personalNoteService.CreatePersonalNote(userHash, pn);
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The note is successfully created though the calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
         return createPNResponse;
     }
 
     public async Task<Response> UpdatePNWithCalendar(string userHash, PN pn)
     {
+        var timer = new Stopwatch();
+
+        timer.Start();
         var editPNResponse = await personalNoteService.UpdatePersonalNote(userHash, pn);
+        timer.Stop();
+
+        var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The note is successfully edited though the calendar");
+
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation exceeded time frame";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+        }
+        else if (timer.Elapsed.TotalSeconds > ERROR_TIME_LIMIT_IN_SECOND)
+        {
+            var errorMessage = "Operation took too long";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
+        }
+
         return editPNResponse;
     }
 

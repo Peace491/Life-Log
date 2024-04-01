@@ -1,8 +1,7 @@
 const daysContainer = document.querySelector(".days"),
   nextBtn = document.querySelector(".next-btn"),
   prevBtn = document.querySelector(".prev-btn"),
-  month = document.querySelector(".month"),
-  todayBtn = document.querySelector(".today-btn")
+  month = document.querySelector(".month")
 
 
 const months = [
@@ -46,12 +45,20 @@ function renderCalendar() {
 
     month.innerHTML = `${months[currentMonth]} ${currentYear}`
 
+    
+    
     let days = ""
 
     //prev days 
     for (let x = firstDay.getDay(); x > 0; x--) {
         days += `<div class="day prev-month-days">${prevLastDayDate - x + 1}</div>`
     }
+
+    // get all lli and pn 
+    window.showCalendarLLI(currentMonth + 1, currentYear)
+
+   
+    
 
     // curr month
     for (let i = 1; i <= lastDayDate; i++) {
@@ -61,11 +68,27 @@ function renderCalendar() {
           currentMonth === new Date().getMonth() &&
           currentYear === new Date().getFullYear()
         ) {
-          // if date month year matches add today
-          days += `<div class="day current-day">${i}</div>`
+          // current day 
+          if(i < 10){
+            i = `0${i}`
+          }
+          let monthid = '00'
+          if(currentMonth+1 < 10){
+            monthid= `0${currentMonth+1}`
+          }
+
+          // div for inserting a single lli event : <button data-modal-target="#lli-modal-edit" class="lli-btn event">LLI 1</button>
+          days += `<div class="day current-day">${i} <div id="insert-llievent-${i}" class="lli-events event"></div><button data-modal-target="#lli-modal-create" class="add-lli-btn">+</button><button data-modal-target="#pn-modal" class="pn-btn event" id="pn-btn-${monthid}/${i}/${currentYear}">PN</button></div></div>`
         } else {
-          //else dont add today
-          days += `<div class="day">${i} <div class="lli-events event"><button class="lli-btn event">LLI 1</button></div><button class="pn-btn event">PN</button></div>`
+          // all other days 
+          if(i < 10){
+            i = `0${i}`
+          }
+          let monthid = '00'
+          if(currentMonth+1 < 10){
+            monthid= `0${currentMonth+1}`
+          }
+          days += `<div class="day">${i} <div id="insert-llievent-${i}" class="lli-events event"></div><button data-modal-target="#lli-modal-create" class="add-lli-btn">+</button><button data-modal-target="#pn-modal" class="pn-btn event" id="pn-btn-${monthid}/${i}/${currentYear}">PN</button></div>`
         }
     }
     
@@ -76,11 +99,26 @@ function renderCalendar() {
 
     daysContainer.innerHTML = days;
 
-
-
 }
 
+// function useOutput() {
+    
+//     window.showCalendarLLI(currentMonth + 1, currentYear)
+//         .then(function(output) {
+//             console.log(output); // Use the output array here
+
+//         })
+        
+// }
+
+// Call the function when needed
+
+
+
+
 renderCalendar()
+renderModals()
+window.PNRetrieval()
 
 // get the next month
 nextBtn.addEventListener("click", () => {
@@ -92,6 +130,9 @@ nextBtn.addEventListener("click", () => {
     }
    
     renderCalendar();
+    renderModals()
+    window.PNRetrieval()
+    
 });
 
 
@@ -105,7 +146,52 @@ prevBtn.addEventListener("click", () => {
     }
 
     renderCalendar();
+    renderModals()
+    window.PNRetrieval()
+    
 });
+
+// ------------------Modal-------------------------------------
+
+function renderModals(){
+
+const openModalButtons = document.querySelectorAll('[data-modal-target]')
+const overlay = document.getElementById('overlay')
+
+openModalButtons.forEach(button => {
+    
+  button.addEventListener('click', () => {
+    const modal = document.querySelector(button.dataset.modalTarget)
+    openModal(modal)
+  })
+})
+
+overlay.addEventListener('click', () => {
+  const modals = document.querySelectorAll('.modal.active')
+  modals.forEach(modal => {
+    closeModal(modal)
+  })
+})
+
+
+function openModal(modal) {
+    if (modal == null){
+        console.log("null")
+        return 
+    }
+    modal.classList.add('active')
+    overlay.classList.add('active')
+}
+  
+  function closeModal(modal) {
+    if (modal == null) return
+    modal.classList.remove('active')
+    overlay.classList.remove('active')
+}
+}
+
+
+
 
 
 

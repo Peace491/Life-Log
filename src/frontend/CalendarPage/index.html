@@ -77,15 +77,210 @@
 
         </div>
 
+        <div id="lli-modal-create" class="modal lli-modal-create">
+            <div class="lli expanded-lli" id="create-lli-template">
+                <div class="lli-non-hidden-content">
+                    <div class="lli-title-container">
+                        <h2 id="create-title-input" contenteditable>Enter Title</h2>
+                    </div>
+                    <div class="lli-main-content-container">
+                        <div class="lli-deadline-container">
+                            <h2><span style="font-weight: 600;">Deadline:</span></h2>
+                            <input type="date" id="create-date-input" class="date-input" value="2024-11-11" autocomplete="off"></input>
+                        </div>
+                        <div class="lli-category-container">
+                            <select name="" id="create-category-input" class="category-select" multiple autocomplete="off">
+                                <option value="Mental Health" selected="selected">Mental Health</option>
+                                <option value="Physical Health">Physical Health</option>
+                                <option value="Outdoor">Outdoor</option>
+                                <option value="Sport">Sport</option>
+                                <option value="Art">Art</option>
+                                <option value="Hobby">Hobby</option>
+                                <option value="Thrill">Thrill</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Volunteering">Volunteering</option>
+                                <option value="Food">Food</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lli-description-container">
+                        <h2>Description</h2>
+                        <p contenteditable id="create-paragraph-input">Edit</p>
+                    </div>
+                </div>
+
+                <div class="lli-hidden-content">
+                    <div class="lli-button-container">
+                        <button id="close-create-lli-button"></button>
+
+                    </div>
+                    <div class="lli-hidden-fields-container">
+                        <div class="lli-hidden-required-fields-container">
+                            <div class="lli-status-container">
+                                <h2><span style="font-weight: 600;">Status: </span></h2>
+                                <select id="create-status-input" class="status-select" autocomplete="off">
+                                    <option value="Active" selected="selected">Active</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Postponed">Postponed</option>
+                                </select>
+                            </div>
+                            <div class="lli-visibility-container">
+                                <h2><span style="font-weight: 600;">Visibility: </span></h2>
+                                <select name="" id="create-visibility-input" class="visibility-select" autocomplete="off">
+                                    <option value="Public" selected="selected">Public</option>
+                                    <option value="Private">Private</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="lli-hidden-non-required-fields-container">
+                            <h2><span style="font-weight: 600;">Cost:</span> $<span id="create-cost-input"
+                                    contenteditable="">100</span></h2>
+                            <div class="lli-recurrence-container">
+                                <h2><span style="font-weight: 600;">Recurring: </span></h2>
+                                <select id="create-recurrence-input" class="recurrence-select" autocomplete="off">
+                                    <option value="Off" selected="selected">Off</option>
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lli-media-container">
+                        <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
+                    </div>
+                    <div class="create-lli-button-container">
+                        <button id="create-lli-button">Create LLI</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="lli-modal-edit" class="modal lli-modal-edit">
+            <div class="lli expanded-lli" id="create-lli-template">
+                <div class="lli-non-hidden-content">
+                    <div class="lli-title-container">
+                        <h2 id="edit-title-input" contenteditable>Enter Title</h2> <!-- title -->
+                    </div>
+                    <div class="lli-main-content-container">
+                        <div class="lli-deadline-container">
+                            <h2><span style="font-weight: 600;">Deadline:</span></h2> <!-- change value to lli.deadline -->
+                            <input type="date" id="edit-date-input" class="date-input" value="2024-11-11" autocomplete="off" readonly></input> 
+                        </div>
+                        <div class="lli-category-container"> <!-- select options -->
+                            <select name="" id="edit-category-input" class="category-select" multiple autocomplete="off">
+                                <option value="Mental Health" selected="selected">Mental Health</option>
+                                <option value="Physical Health">Physical Health</option>
+                                <option value="Outdoor">Outdoor</option>
+                                <option value="Sport">Sport</option>
+                                <option value="Art">Art</option>
+                                <option value="Hobby">Hobby</option>
+                                <option value="Thrill">Thrill</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Volunteering">Volunteering</option>
+                                <option value="Food">Food</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lli-description-container">
+                        <h2>Description</h2>
+                        <p contenteditable id="edit-paragraph-input">Edit</p> <!-- change edit -->
+                    </div>
+                </div>
+
+                <div class="lli-hidden-content">
+                    <div class="lli-button-container">
+                        <button id="close-create-lli-button"></button> <!-- close button -->
+
+                    </div>
+                    <div class="lli-hidden-fields-container">
+                        <div class="lli-hidden-required-fields-container">
+                            <div class="lli-status-container">
+                                <h2><span style="font-weight: 600;">Status: </span></h2>
+                                <select id="edit-status-input" class="status-select" autocomplete="off"> <!-- select option -->
+                                    <option value="Active" selected="selected">Active</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Postponed">Postponed</option>
+                                </select>
+                            </div>
+                            <div class="lli-visibility-container"> 
+                                <h2><span style="font-weight: 600;">Visibility: </span></h2>
+                                <select name="" id="edit-visibility-input" class="visibility-select" autocomplete="off">
+                                    <option value="Public" selected="selected">Public</option> <!-- select option -->
+                                    <option value="Private">Private</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="lli-hidden-non-required-fields-container">
+                            <h2><span style="font-weight: 600;">Cost:</span> $<span id="create-cost-input"
+                                    contenteditable="">100</span></h2> <!-- cost -->
+                            <div class="lli-recurrence-container">
+                                <h2><span style="font-weight: 600;">Recurring: </span></h2>
+                                <select id="edit-recurrence-input" class="recurrence-select" autocomplete="off"> <!-- select option -->
+                                    <option value="Off" selected="selected">Off</option>
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lli-media-container">
+                        <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
+                    </div>
+                    <div class="create-lli-button-container">
+                        <button id="edit-lli-button">Edit LLI</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="pn-modal" class="modal pn-modal">
+            <div class="note">
+                <div class="note-options">
+                    <div class="note-date-container">
+                        <h2 class="date-aligned-header">
+                            <span class="date-bold-span">Date:</span>
+                        </h2>                    
+                        <input type="date" id="create-date-input-pn" class="date-input" value="" autocomplete="off"></input>
+                    </div>
+                    <div class="note-create-container">
+                        <button id="create-pn-btn">Create PN</button>    
+                    </div>
+                </div>
+
+                <div class="note-input-container">
+                    <div class="note-input">
+                        <p contenteditable id="create-paragraph-input-pn" data-placeholder="What are you thinking?......"></p>
+                    </div>
+                    <div class="hold-id"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="overlay"></div>
+
+
         
     </main>
 
     <!-- Dependencies -->
     <script src="../Resources/Ajax/fetch-ajax.js"></script>
+    
     <script src="calendar.js"></script>
 
     <script src="calendar-dom-manipulation.js"></script>
+    
+    
 
+    
+    
     <!-- Page Specific -->
     
 

@@ -23,47 +23,9 @@ public class CalendarServiceController : ControllerBase
     }
 
 
-    [HttpPost]
-    [Route("postMonthLLI")]
-    public async Task<IActionResult> PostMonthLLI([FromBody] CurrMonthRequest currMonthRequest)
-    {
-
-        /*if (Request.Headers == null)
-        {
-            return StatusCode(401);
-        }
-
-        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
-
-        if (jwtToken == null)
-        {
-            return StatusCode(401);
-        }
-
-        var userHash = jwtToken.Payload.UserHash;
-
-        if (userHash == null)
-        {
-            return StatusCode(401);
-        }*/
-
-        string userHash = "0YTSaRHcKl8F1bFpysSmK6sgXNCdJhl4roHfN93u+fY=";
-
-        var response = await this.calendarService.GetMonthLLI(userHash, currMonthRequest.Month, currMonthRequest.Year);
-
-        if (response.HasError == false)
-        {
-            return Ok(response);
-        }
-
-
-        return StatusCode(500);
-
-    }
-
-    [HttpPost]
-    [Route("postMonthPN")]
-    public async Task<IActionResult> PostMonthPN([FromBody] CurrMonthRequest currMonthRequest)
+    [HttpGet]
+    [Route("getMonthLLI")]
+    public async Task<IActionResult> GetMonthLLI(int month, int year)
     {
 
         if (Request.Headers == null)
@@ -85,9 +47,51 @@ public class CalendarServiceController : ControllerBase
             return StatusCode(401);
         }
 
-        // string userHash = "e1ZWxq+V6lOBKjppU9R+AtOToy5zSRaxV40jfllVcXY=";
+          
 
-        var response = await this.calendarService.GetMonthPN(userHash, currMonthRequest.Month, currMonthRequest.Year);
+     
+        var response = await calendarService.GetMonthLLI(userHash, month, year);
+
+        if (response.HasError == false)
+        {
+            return Ok(response);
+        }
+
+
+        return StatusCode(500);
+
+    }
+
+    [HttpGet]
+    [Route("getMonthPN")]
+    public async Task<IActionResult> GetMonthPN(string notedate)
+    {
+
+        if (Request.Headers == null)
+        {
+            return StatusCode(401);
+        }
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null)
+        {
+            return StatusCode(401);
+        }
+
+        var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null)
+        {
+            return StatusCode(401);
+        }
+
+        
+
+        var personalnote = new PN();
+        personalnote.NoteDate = notedate;
+
+        var response = await this.calendarService.GetOnePNWithCalendar(userHash, personalnote);
 
         if (response.HasError == false)
         {
@@ -124,6 +128,7 @@ public class CalendarServiceController : ControllerBase
         {
             return StatusCode(401);
         }
+
 
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
@@ -177,6 +182,8 @@ public class CalendarServiceController : ControllerBase
         {
             return StatusCode(401);
         }
+
+        
 
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
@@ -233,6 +240,7 @@ public class CalendarServiceController : ControllerBase
         {
             return StatusCode(401);
         }
+        
 
         var personalnote = new PN();
         personalnote.NoteDate = createPersonalNoteRequest.NoteDate;
@@ -277,6 +285,8 @@ public class CalendarServiceController : ControllerBase
         {
             return StatusCode(401);
         }
+
+       
 
         var personalnote = new PN();
         personalnote.NoteId = updatePersonalNoteRequest.NoteId;

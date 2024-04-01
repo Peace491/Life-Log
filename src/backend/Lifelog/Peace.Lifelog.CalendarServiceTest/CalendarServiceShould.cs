@@ -79,9 +79,9 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
 
     #region Get Month Data Tests
 
-        [Fact]
-        public async void CalendarServiceShould_HaveCurrentMonthLLI()
-        {
+    [Fact]
+    public async void CalendarServiceShould_HaveCurrentMonthLLI()
+    {
         // Arrange
 
         //Create LLI for the user
@@ -145,7 +145,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
         var monthLLIResponse = await calendarService.GetMonthLLI(USER_HASH, inboundDatetime.Month, inboundDatetime.Year);
 
         // Assert
-        
+
         if (monthLLIResponse.Output is not null)
         {
             foreach (LLI outputLLI in monthLLIResponse.Output)
@@ -173,11 +173,11 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
 
     }
 
-        
 
-        [Fact]
-        public async void CalendarServiceShould_HaveCurrentMonthPN()
-        {
+
+    [Fact]
+    public async void CalendarServiceShould_HaveCurrentMonthPN()
+    {
         // Arrange
 
         //Create LLI for the user
@@ -189,7 +189,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
 
         for (int i = 1; i <= numberOfPN; i++)
         {
-            
+
             var testPN = new PN();
             testPN.UserHash = USER_HASH;
             testPN.NoteContent = testPersonalNoteContent + $"{i}";
@@ -226,7 +226,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
             foreach (PN outputPN in monthPNResponse.Output)
             {
                 DateTime PNdateTime;
-                
+
                 DateTime.TryParseExact(outputPN.NoteDate, "M/d/yyyy h:mm:ss tt", null, System.Globalization.DateTimeStyles.None, out PNdateTime);
 
                 Assert.True(inboundDatetime.Year == PNdateTime.Year && inboundDatetime.Month == PNdateTime.Month);
@@ -253,5 +253,114 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
     #endregion
 
 
+    [Fact]
+    public async void CalendarServiceShould_CreateLLIWithCalendar()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var calendarService = new CalendarService();
+        var testTitle = "Test Title";
+
+        var testLLI = new LLI();
+        testLLI.UserHash = USER_HASH;
+        testLLI.Title = testTitle;
+        testLLI.Description = $"test description";
+        testLLI.Category1 = LLICategory.Travel;
+        testLLI.Category2 = LLICategory.Outdoor;
+        testLLI.Category3 = LLICategory.Volunteering;
+        testLLI.Status = LLIStatus.Active;
+        testLLI.Visibility = LLIVisibility.Public;
+        testLLI.Deadline = DateTime.Today.ToString("yyyy-MM-dd");
+        testLLI.Cost = 0;
+
+        var LLIRecurrence = new LLIRecurrence();
+        LLIRecurrence.Status = LLIRecurrenceStatus.On;
+        LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
+
+        testLLI.Recurrence = LLIRecurrence;
+
+
+
+        //Act
+        timer.Start();
+        var validCreateLLIResponse = await calendarService.CreateLLIWithCalendar(USER_HASH, testLLI);
+        timer.Stop();
+
+        // Assert
+        Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
+        Assert.True(validCreateLLIResponse.HasError == false);
+
+        //Cleanup
+
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deleteLLISql = $"DELETE FROM LLI WHERE Title=\"{testTitle}\";";
+        await deleteDataOnlyDAO.DeleteData(deleteLLISql);
+    }
+
+
+    [Fact]
+    public async void CalendarServiceShould_GetOnePNWithCalendar()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var calendarService = new CalendarService();
+        string testPersonalNoteContent = "personal note creation";
+
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+        var createPersonalNoteResponse = await this.PNService.CreatePersonalNote(USER_HASH, testPN);
+
+        //Act
+        timer.Start();
+        var getPNResponse = await calendarService.GetOnePNWithCalendar(USER_HASH, testPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(getPNResponse.HasError == false);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePNSql = $"DELETE FROM PersonalNote WHERE NoteDate=\"{DateTime.Today.ToString("yyyy-MM-dd")}\";";
+        await deleteDataOnlyDAO.DeleteData(deletePNSql);
+
+    }
+
+    [Fact]
+    public async void CalendarServiceShould_CreatePNWithCalendar()
+    {
+        //Arrange
+        var timer = new Stopwatch();
+        var calendarService = new CalendarService();
+        string testPersonalNoteContent = "personal note creation with calendar";
+
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+        
+
+        //Act
+        timer.Start();
+        var createPNResponse = await calendarService.CreatePNWithCalendar(USER_HASH, testPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(createPNResponse.HasError == false);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePNSql = $"DELETE FROM PersonalNote WHERE NoteDate=\"{DateTime.Today.ToString("yyyy-MM-dd")}\";";
+        await deleteDataOnlyDAO.DeleteData(deletePNSql);
+    }
+
 }
+
+   
 

@@ -318,7 +318,7 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "User Hash must not be empty";
             var errorMessage = "The Personal Note User Hash is invalid";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
