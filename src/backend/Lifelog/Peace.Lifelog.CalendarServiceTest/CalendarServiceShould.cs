@@ -10,7 +10,7 @@ using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.UserManagementTest;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 public class CalendarServiceShould : IAsyncLifetime, IDisposable
 {

@@ -13,7 +13,8 @@ using System;
 public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWithCalendar, IGetMonthPN, ICreatePNWithCalendar, IUpdatePNWithCalendar
 {
 
-    // contructor to create LLIService
+    // contructor to create LLIService and Personal Note Service
+    #region Constructor Method
     private static int WARNING_TIME_LIMIT_IN_SECOND = 3;
     private static int ERROR_TIME_LIMIT_IN_SECOND = 5;
     private CreateDataOnlyDAO createDataOnlyDAO;
@@ -37,8 +38,10 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
 
     }
-    
+    #endregion
 
+
+    // get all LLI for a specified month
     public async Task<Response> GetMonthLLI(string userHash, int month, int year) 
     {
         var timer = new Stopwatch();
@@ -102,7 +105,8 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         return getLLIResponse;
 
     }
-
+    
+    //Calls CreateLLI from lliservice to create a LLI
     public async Task<Response> CreateLLIWithCalendar(string userHash, LLI lli)
     {
         var timer = new Stopwatch();
@@ -127,6 +131,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         return createLLIResponse;
     }
 
+    //Calls UpdateLLI from lliservice to edit a LLI
     public async Task<Response> EditLLIWithCalendar(string userHash, LLI lli)
     {
         var timer = new Stopwatch();
@@ -151,7 +156,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         return editLLIResponse;
     }
 
-
+    //Gets all the PN of the specified month
     public async Task<Response> GetMonthPN(string userHash, int month, int year)
     {
         var timer = new Stopwatch();
@@ -210,6 +215,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
     }
 
+    //Gets only one PN for specified date (input date into PN obj)
     public async Task<Response> GetOnePNWithCalendar(string userHash, PN pn)
     {
         var timer = new Stopwatch();
@@ -234,6 +240,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         return getPNResponse;
     }
 
+    // uses CreatePN from pnservice to create a PN
     public async Task<Response> CreatePNWithCalendar(string userHash, PN pn)
     {
         var timer = new Stopwatch();
@@ -258,6 +265,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         return createPNResponse;
     }
 
+    //uses updatePN from pnservice to update PN
     public async Task<Response> UpdatePNWithCalendar(string userHash, PN pn)
     {
         var timer = new Stopwatch();

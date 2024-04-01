@@ -594,7 +594,7 @@
                         
                         let noteParagraphElement = document.getElementById("create-paragraph-input-pn")
                         
-                        noteParagraphElement.textContent = `${personalNote.noteContent}`; // content is not showing??
+                        noteParagraphElement.textContent = `${personalNote.noteContent}`; 
 
                     }
                     else{
