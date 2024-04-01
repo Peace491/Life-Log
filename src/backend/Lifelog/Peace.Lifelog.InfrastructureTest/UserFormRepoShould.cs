@@ -91,6 +91,31 @@ public class UserFormRepoShould : IAsyncLifetime, IDisposable
         var readUserFormResponse = await readDataOnlyDAO.ReadData(readUserFormDataSql);
         var readAuthenticationResponse = await readDataOnlyDAO.ReadData(readAuthenticationSql);
 
+    }
 
+    [Fact]
+    public async Task UserFormRepoShould_UpdateUserFormForUserInDB()
+    {
+        // Arrange
+        int mentalHealthRating = 1;
+        int physicalHealthRating = 2;
+        int outdoorRating = 3;
+        int sportRating = 4;
+        int artRating = 5;
+        int hobbyRating = 6;
+        int thrillRating = 7;
+        int travelRating = 8;
+        int volunteeringRating = 9;
+        int foodRating = 10;
+
+        var response = await userFormRepo!.CreateUserFormInDB(USER_HASH, mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating);
+
+        // Act
+        var updateResponse = await userFormRepo.UpdateUserFormInDB(USER_HASH, mentalHealthRating: 2, physicalHealthRating: 1);
+
+        // Assert
+        Assert.True(updateResponse.HasError == false);
+
+        
     }
 }

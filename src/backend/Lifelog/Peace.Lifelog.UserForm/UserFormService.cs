@@ -21,15 +21,16 @@ public class UserFormService : IUserFormService
         this.userFormValidation = new UserFormValidation();
     }
 
-    public async Task<Response> createUserForm(CreateUserFormRequest createUserFormRequest)
+    public async Task<Response> CreateUserForm(CreateUserFormRequest createUserFormRequest)
     {
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
 
         // Validate Input
-        var validateCreateUserFormRequestResponse = this.userFormValidation.validateCreateUserFormRequest(response, createUserFormRequest);
-        if (validateCreateUserFormRequestResponse.HasError) {
+        var validateCreateUserFormRequestResponse = this.userFormValidation.ValidateUserFormRequest(response, createUserFormRequest, UserFormRequestType.Create);
+        if (validateCreateUserFormRequestResponse.HasError)
+        {
             errorMessage = validateCreateUserFormRequestResponse.ErrorMessage;
             return handleUserFormError(response, createUserFormRequest.Principal!, errorMessage!);
         }
@@ -46,14 +47,15 @@ public class UserFormService : IUserFormService
 
         Response createUserFormInDBResponse;
 
-        try 
+        try
         {
             createUserFormInDBResponse = await this.userFormRepo.CreateUserFormInDB(userHash, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
-        } catch (Exception error)
+        }
+        catch (Exception error)
         {
             return handleUserFormError(response, createUserFormRequest.Principal, error.Message);
         }
-        
+
         // Handle Failure Response
         if (createUserFormInDBResponse.HasError)
         {
@@ -64,12 +66,53 @@ public class UserFormService : IUserFormService
         // Handle Success Response
         var logResponse = this.logging.CreateLog("Logs", "User Form successfully created", createUserFormRequest.Principal.UserId, "Info", "Business");
         return response;
-
     }
 
-    public Task<Response> updateUserForm()
+    public async Task<Response> UpdateUserForm(UpdateUserFormRequest updateUserFormRequest)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate Input
+        var validateUpdateUserFormRequestResponse = this.userFormValidation.ValidateUserFormRequest(response, updateUserFormRequest, UserFormRequestType.Update);
+        if (validateUpdateUserFormRequestResponse.HasError)
+        {
+            errorMessage = validateUpdateUserFormRequestResponse.ErrorMessage;
+            return handleUserFormError(response, updateUserFormRequest.Principal!, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForUserForm(updateUserFormRequest.Principal!))
+        {
+            errorMessage = "The User Is Not Authorized To Use The User Form";
+            return handleUserFormError(response, updateUserFormRequest.Principal!, errorMessage);
+        }
+
+        // Update User Form in DB
+        var userHash = updateUserFormRequest.Principal!.UserId;
+
+        Response updateUserFormInDBResponse;
+
+        try
+        {
+            updateUserFormInDBResponse = await this.userFormRepo.UpdateUserFormInDB(userHash, updateUserFormRequest.MentalHealthRating, updateUserFormRequest.PhysicalHealthRating, updateUserFormRequest.OutdoorRating, updateUserFormRequest.SportRating, updateUserFormRequest.ArtRating, updateUserFormRequest.HobbyRating, updateUserFormRequest.ThrillRating, updateUserFormRequest.TravelRating, updateUserFormRequest.VolunteeringRating, updateUserFormRequest.FoodRating);
+        }
+        catch (Exception error)
+        {
+            return handleUserFormError(response, updateUserFormRequest.Principal, error.Message);
+        }
+
+        // Handle Failure Response
+        if (updateUserFormInDBResponse.HasError)
+        {
+            errorMessage = "The User Form failed to save to the persistent data store";
+            return handleUserFormError(response, updateUserFormRequest.Principal, errorMessage);
+        }
+
+        // Handle Success Response
+        var logResponse = this.logging.CreateLog("Logs", "User Form successfully updated", updateUserFormRequest.Principal.UserId, "Info", "Business");
+        return response;
     }
 
     private bool IsUserAuthorizedForUserForm(AppPrincipal appPrincipal)

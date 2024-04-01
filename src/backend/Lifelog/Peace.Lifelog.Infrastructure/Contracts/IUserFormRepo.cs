@@ -11,5 +11,11 @@ public interface IUserFormRepo
         int thrillRating, int travelRating, int volunteeringRating,
         int foodRating
     );
-    public Task<Response> UpdateUserFormInDB();
+    public Task<Response> UpdateUserFormInDB(
+        string userHash,
+        int mentalHealthRating, int physicalHealthRating, int outdoorRating,
+        int sportRating, int artRating, int hobbyRating,
+        int thrillRating, int travelRating, int volunteeringRating,
+        int foodRating
+    );
 }

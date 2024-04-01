@@ -7,31 +7,31 @@ public class UserFormValidation : IUserFormValidation
 {
     private const int NUM_OF_CATEGORIES = 10;
 
-    public Response validateCreateUserFormRequest(Response response, CreateUserFormRequest createUserFormRequest)
+    public Response ValidateUserFormRequest(Response response, IUserFormRequest createUserFormRequest, string requestType)
     {
-        var validateAppPrincipalResponse = validateAppPrincipal(response, createUserFormRequest.Principal);
+        var validateAppPrincipalResponse = ValidateAppPrincipal(response, createUserFormRequest.Principal);
         if (validateAppPrincipalResponse.HasError)
         {
-            return handleValidationError(response, validateAppPrincipalResponse.ErrorMessage!);
+            return HandleValidationError(response, validateAppPrincipalResponse.ErrorMessage!);
         }
 
-        var validateUserFormFieldInputValueResponse = validateUserFormFieldInputValue(response, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
+        var validateUserFormFieldInputValueResponse = ValidateUserFormFieldInputValue(response, requestType, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
         if (validateUserFormFieldInputValueResponse.HasError)
         {
-            return handleValidationError(response, validateUserFormFieldInputValueResponse.ErrorMessage!);
+            return HandleValidationError(response, validateUserFormFieldInputValueResponse.ErrorMessage!);
         }
 
-        var validateUserFormFieldUniquenessResponse = validateUserFormFieldUniqueness(response, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
+        var validateUserFormFieldUniquenessResponse = ValidateUserFormFieldUniqueness(response, requestType ,createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
         if (validateUserFormFieldUniquenessResponse.HasError)
         {
-            return handleValidationError(response, validateUserFormFieldUniquenessResponse.ErrorMessage!);
+            return HandleValidationError(response, validateUserFormFieldUniquenessResponse.ErrorMessage!);
         }
 
         return response;
 
     }
 
-    public Response validateAppPrincipal(Response response, AppPrincipal? appPrincipal)
+    private Response ValidateAppPrincipal(Response response, AppPrincipal? appPrincipal)
     {
         if (appPrincipal == null)
         {
@@ -64,25 +64,34 @@ public class UserFormValidation : IUserFormValidation
         return response;
     }
 
-    public Response validateUserFormFieldInputValue(
+    private Response ValidateUserFormFieldInputValue(
         Response response,
+        string requestType,
         int mentalHealthRating, int physicalHealthRating, int outdoorRating,
         int sportRating, int artRating, int hobbyRating,
         int thrillRating, int travelRating, int volunteeringRating,
         int foodRating
     )
     {
+        int MIN_RANKING = 1;
+        if (requestType == UserFormRequestType.Update)
+        {
+            MIN_RANKING = 0;
+        }
+
+        int MAX_RANKING = 10;
+
         if (
-            mentalHealthRating < 1 || mentalHealthRating > 10
-            || physicalHealthRating < 1 || physicalHealthRating > 10
-            || outdoorRating < 1 || outdoorRating > 10
-            || sportRating < 1 || sportRating > 10
-            || artRating < 1 || artRating > 10
-            || hobbyRating < 1 || hobbyRating > 10
-            || thrillRating < 1 || thrillRating > 10
-            || travelRating < 1 || travelRating > 10
-            || volunteeringRating < 1 || volunteeringRating > 10
-            || foodRating < 1 || foodRating > 10
+            mentalHealthRating < MIN_RANKING || mentalHealthRating > MAX_RANKING
+            || physicalHealthRating < MIN_RANKING || physicalHealthRating > MAX_RANKING
+            || outdoorRating < MIN_RANKING || outdoorRating > MAX_RANKING
+            || sportRating < MIN_RANKING || sportRating > MAX_RANKING
+            || artRating < MIN_RANKING || artRating > MAX_RANKING
+            || hobbyRating < MIN_RANKING || hobbyRating > MAX_RANKING
+            || thrillRating < MIN_RANKING || thrillRating > MAX_RANKING
+            || travelRating < MIN_RANKING || travelRating > MAX_RANKING
+            || volunteeringRating < MIN_RANKING || volunteeringRating > MAX_RANKING
+            || foodRating < MIN_RANKING || foodRating > MAX_RANKING
         )
         {
             response.HasError = true;
@@ -92,8 +101,9 @@ public class UserFormValidation : IUserFormValidation
         return response;
     }
 
-    private Response validateUserFormFieldUniqueness(
+    private Response ValidateUserFormFieldUniqueness(
         Response response,
+        string requestType,
         int mentalHealthRating, int physicalHealthRating, int outdoorRating,
         int sportRating, int artRating, int hobbyRating,
         int thrillRating, int travelRating, int volunteeringRating,
@@ -103,27 +113,29 @@ public class UserFormValidation : IUserFormValidation
         HashSet<int> uniqueValues = new HashSet<int>();
 
         // Add all ratings to the HashSet to check for uniqueness and presence
-        uniqueValues.Add(mentalHealthRating);
-        uniqueValues.Add(physicalHealthRating);
-        uniqueValues.Add(outdoorRating);
-        uniqueValues.Add(sportRating);
-        uniqueValues.Add(artRating);
-        uniqueValues.Add(hobbyRating);
-        uniqueValues.Add(thrillRating);
-        uniqueValues.Add(travelRating);
-        uniqueValues.Add(volunteeringRating);
-        uniqueValues.Add(foodRating);
+        if (mentalHealthRating != 0) uniqueValues.Add(mentalHealthRating);
+        if (physicalHealthRating != 0) uniqueValues.Add(physicalHealthRating);
+        if (outdoorRating != 0) uniqueValues.Add(outdoorRating);
+        if (sportRating != 0) uniqueValues.Add(sportRating);
+        if (artRating != 0) uniqueValues.Add(artRating);
+        if (hobbyRating != 0) uniqueValues.Add(hobbyRating);
+        if (thrillRating != 0) uniqueValues.Add(thrillRating);
+        if (travelRating != 0) uniqueValues.Add(travelRating);
+        if (volunteeringRating != 0) uniqueValues.Add(volunteeringRating);
+        if (foodRating != 0) uniqueValues.Add(foodRating);
 
-        // Check if all ratings are unique
-        if (uniqueValues.Count != NUM_OF_CATEGORIES)
+        // Check if non-zero ratings are unique
+        if (uniqueValues.Count != CountNonZeroRatings(mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating))
         {
-            response.HasError = true;
+            response.HasError = false;
             response.ErrorMessage = "The LLI rankings are not unique";
             return response;
         }
 
-        // Check if all numbers from 1 to 10 are present
-        for (int i = 1; i <= NUM_OF_CATEGORIES; i++)
+        // Check if all numbers from 1 to 10 are present, if we are validating a create
+        if (requestType == UserFormRequestType.Create)
+        {
+            for (int i = 1; i <= NUM_OF_CATEGORIES; i++)
         {
             if (!uniqueValues.Contains(i))
             {
@@ -132,13 +144,42 @@ public class UserFormValidation : IUserFormValidation
                 return response;
             }
         }
+        }
 
         // All validations passed
         return response;
     }
 
+    // Helper function to count the number of non-zero ratings
+    private int CountNonZeroRatings(
+        int mentalHealthRating, int physicalHealthRating, int outdoorRating,
+        int sportRating, int artRating, int hobbyRating,
+        int thrillRating, int travelRating, int volunteeringRating,
+        int foodRating
+    )
+    {
+        int count = 0;
+        int[] ratings = { mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating };
 
-    private Response handleValidationError(Response response, string errorMessage)
+        foreach (int rating in ratings)
+        {
+            if (rating != 0)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Helper function to check if a rating is non-zero
+    private bool IsNonZeroRating(int rating)
+    {
+        return rating != 0;
+    }
+
+
+    private Response HandleValidationError(Response response, string errorMessage)
     {
         response.HasError = true;
         response.ErrorMessage = errorMessage;

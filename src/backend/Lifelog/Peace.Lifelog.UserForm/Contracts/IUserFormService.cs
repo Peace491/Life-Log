@@ -5,8 +5,10 @@ namespace Peace.Lifelog.UserForm;
 
 public interface IUserFormService
 {
-    public Task<Response> createUserForm(
+    public Task<Response> CreateUserForm(
         CreateUserFormRequest createUserFormRequest
     );
-    public Task<Response> updateUserForm();
+    public Task<Response> UpdateUserForm(
+        UpdateUserFormRequest updateUserFormRequest
+    );
 }

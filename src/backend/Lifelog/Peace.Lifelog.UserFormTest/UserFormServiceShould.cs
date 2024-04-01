@@ -97,10 +97,10 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
             FoodRating = 1
         };
         
-        var readUserFormSql = $"SELECT MentalHealthRanking, PhysicaHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking FROM UserForm WHERE UserHash=\"{USER_HASH}\"";
+        var readUserFormSql = $"SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking FROM UserForm WHERE UserHash=\"{USER_HASH}\"";
 
         // Act
-        var response = await userFormService.createUserForm(createUserFormRequest);
+        var response = await userFormService.CreateUserForm(createUserFormRequest);
 
         // Assert
         Assert.True(response.HasError == false);
@@ -119,5 +119,60 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
         }
 
         Assert.True(uniqueValues.Count == NUM_OF_CATEGORIES);
+    }
+
+    [Fact]
+    public async void UserFormServiceShould_UpdateTheUserForm()
+    {
+        // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"RoleName", "Normal"}};
+
+        var createUserFormRequest = new CreateUserFormRequest
+        {
+            Principal = principal,
+            MentalHealthRating = 9,
+            PhysicalHealthRating = 7,
+            OutdoorRating = 5,
+            SportRating = 8,
+            ArtRating = 3,
+            HobbyRating = 6,
+            ThrillRating = 2,
+            TravelRating = 4,
+            VolunteeringRating = 10,
+            FoodRating = 1
+        };
+        
+        
+        var response = await userFormService.CreateUserForm(createUserFormRequest);
+
+        var updateUserFormRequest = new UpdateUserFormRequest
+        {
+            Principal = principal,
+            MentalHealthRating = 7,
+            PhysicalHealthRating = 9
+        };
+
+        var readUserFormSql = $"SELECT MentalHealthRanking FROM UserForm WHERE UserHash=\"{USER_HASH}\"";
+
+        // Act
+        var updateResponse = await userFormService.UpdateUserForm(updateUserFormRequest);
+
+        // Assert
+        Assert.True(updateResponse.HasError == false);
+        
+        var readUserFormResponse = await readDataOnlyDAO.ReadData(readUserFormSql);
+
+        Assert.True(readUserFormResponse.Output != null);
+
+        foreach (List<Object> userFormData in readUserFormResponse.Output)
+        {
+            foreach(int ranking in userFormData)
+            {
+                Assert.True(ranking == 7);
+            }
+        }
+
     }
 }

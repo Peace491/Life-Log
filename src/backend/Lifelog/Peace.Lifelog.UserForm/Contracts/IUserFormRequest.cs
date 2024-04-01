@@ -2,7 +2,7 @@
 
 using Peace.Lifelog.Security;
 
-public class CreateUserFormRequest
+public interface IUserFormRequest
 {
     public AppPrincipal? Principal { get; set; }
     public int MentalHealthRating { get; set; }
@@ -15,5 +15,4 @@ public class CreateUserFormRequest
     public int TravelRating { get; set; }
     public int VolunteeringRating { get; set; }
     public int FoodRating { get; set; }
-
 }

@@ -5,8 +5,8 @@ namespace Peace.Lifelog.UserForm;
 
 public interface IUserFormValidation
 {
-    public Response validateCreateUserFormRequest(
-        Response respones, CreateUserFormRequest createUserFormRequest
+    public Response ValidateUserFormRequest(
+        Response response, IUserFormRequest userFormRequest, string requestType
     );
 
 }
