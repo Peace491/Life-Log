@@ -1,5 +1,5 @@
 'use strict';
-
+import Router from '../routes.js';
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
 (function (root, ajaxClient) {
@@ -411,6 +411,15 @@
         })
     }
 
+    function setupHeaderLinks(){
+        let calendarLink = document.getElementById("calendar-link")
+
+        calendarLink.addEventListener('click', function () {
+            window.location = "../CalendarPage/index.html"
+            
+        })
+    }
+
     function showLLI() {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
@@ -446,9 +455,14 @@
             setupFilter();
             setupSearch();
             setupLogout();
+            setupHeaderLinks();
 
             // Get data
             showLLI();
+
+            //navigate 
+            const router = new Router;
+            router.navigatePages();
         }
     }
 

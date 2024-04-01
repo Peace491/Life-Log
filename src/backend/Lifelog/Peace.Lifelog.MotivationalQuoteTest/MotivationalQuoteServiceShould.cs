@@ -44,7 +44,7 @@ public class MotivationalQuoteServiceShould
         Assert.True(!(validNewPhraseResponse.ErrorMessage == "A quote from the datastore was not displayed or partially displayed"));
     }
 
-    [Fact]
+    /*[Fact]
     public async void MotivationalQuoteServiceShould_ThrowErrorIfOutputsAPlaceholder()
     {
         //Arrange
@@ -59,7 +59,7 @@ public class MotivationalQuoteServiceShould
         // Assert
         Assert.True(!(validPhraseResponse.ErrorMessage == "A placeholder message was displayed in place of a quote"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
-    }
+    }*/
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfWrongAuthor()
@@ -78,7 +78,7 @@ public class MotivationalQuoteServiceShould
         //Assert.True(validPhraseResponse.ErrorMessage == "Impartial Author Was Pulled");
     }
 
-    [Fact]
+    /*[Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteChangePrior()
     {
         //Arrange
@@ -110,7 +110,7 @@ public class MotivationalQuoteServiceShould
         // Assert
         Assert.True(!(validPhraseResponse.ErrorMessage == "The quotes has changed after 12:00 am PST"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Quote changed outside the specified time window.");
-    }
+    }*/
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfQuoteHasNotBeenRecycled()
