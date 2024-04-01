@@ -1,10 +1,11 @@
 namespace Peace.Lifelog.RETest;
 using Peace.Lifelog.RE; 
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Logging;
 public class ReServiceShould
 {
     private const string TEST_USER_HASH = "3\u002B/ZXoeqkYQ9JTJ6vcdAfjl667hgcMxQ\u002BSBLqmVDBuY=";
-
+    
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
@@ -19,10 +20,14 @@ public class ReServiceShould
     public async Task REServiceGetNumRecs_Should_GetTheNumberOfRecomendationsItIsPassed(int numRecs)
     {
         // Arrange
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var reService = new REService(recomendationEngineRepository, logger);
 
         // Act
         var response = await reService.getNumRecs(TEST_USER_HASH, numRecs);
@@ -36,8 +41,14 @@ public class ReServiceShould
     public async Task REServiceGetNumRecs_Should_ReturnAnErrorIfTheUserHashIsInvalid()
     {
         // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+        // need to setup a user every single time this test is run 
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = 5;
 
         // Act
@@ -50,8 +61,14 @@ public class ReServiceShould
     public async void REServiceGetNumRecs_Should_ReturnAnErrorIfTheNumberOfRecomendationsIsLessThan1()
     {
         // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+        // need to setup a user every single time this test is run 
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = -1;
 
         // Act
@@ -64,8 +81,14 @@ public class ReServiceShould
     public async void REServiceGetNumRecs_Should_ReturnAnErrorIfTheNumberOfRecomendationsIsGreaterThan10()
     {
         // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+        // need to setup a user every single time this test is run 
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = 11;
 
         // Act
@@ -78,8 +101,14 @@ public class ReServiceShould
     public async void REServiceGetNumRecs_Should_RecommendLLIWithTitlesInValidLengthRange()
     {
         // Arrange
-        var recomendationEngineRepository = new RecomendationEngineRepository();
-        var reService = new REService(recomendationEngineRepository);
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+        // need to setup a user every single time this test is run 
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = 5;
 
         // Act
