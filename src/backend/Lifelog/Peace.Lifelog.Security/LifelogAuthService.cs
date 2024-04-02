@@ -1,6 +1,6 @@
 ﻿namespace Peace.Lifelog.Security;
 
-public class LifelogAuthService
+public class LifelogAuthService : ILifelogAuthService
 {
     public Task<AppPrincipal>? AuthenticateLifelogUser(string UserHash, string OTPHash)
     {

@@ -1,4 +1,10 @@
 using Microsoft.Net.Http.Headers;
+using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
+using Peace.Lifelog.UserForm;
+using Peace.Lifelog.UserManagementWebService.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +14,15 @@ builder.Services.AddSwaggerGen();
 /* Registration of objects for .NET's DI Container */
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
+
+// Dependency Injection
+builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
+builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
+builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
+builder.Services.AddTransient<ILogTarget, LogTarget>();
+builder.Services.AddTransient<ILogging, Logging>();
+builder.Services.AddTransient<IUserFormService, UserFormService>();
 
 // Creation of the WebApplication host object
 var app = builder.Build(); // Only part needed to execute Web API project
