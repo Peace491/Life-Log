@@ -9,11 +9,11 @@ public class UserFormService : IUserFormService
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
 
     private IUserFormRepo userFormRepo;
-    private LifelogAuthService lifelogAuthService;
+    private ILifelogAuthService lifelogAuthService;
     private UserFormValidation userFormValidation;
-    private Logging.Logging logging;
+    private Logging.ILogging logging;
 
-    public UserFormService(IUserFormRepo userFormRepo, LifelogAuthService lifelogAuthService, Logging.Logging logging)
+    public UserFormService(IUserFormRepo userFormRepo, ILifelogAuthService lifelogAuthService, Logging.ILogging logging)
     {
         this.userFormRepo = userFormRepo;
         this.lifelogAuthService = lifelogAuthService;
