@@ -58,7 +58,7 @@ public class ReServiceShould
         Assert.True(response.HasError);
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_ReturnAnErrorIfTheNumberOfRecomendationsIsLessThan1()
+    public async Task REServiceGetNumRecs_Should_ReturnAnErrorIfTheNumberOfRecomendationsIsLessThan1()
     {
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -78,7 +78,7 @@ public class ReServiceShould
         Assert.True(response.HasError);
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_ReturnAnErrorIfTheNumberOfRecomendationsIsGreaterThan10()
+    public async Task REServiceGetNumRecs_Should_ReturnAnErrorIfTheNumberOfRecomendationsIsGreaterThan10()
     {
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -98,7 +98,7 @@ public class ReServiceShould
         Assert.True(response.HasError);
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_RecommendLLIWithTitlesInValidLengthRange()
+    public async Task REServiceGetNumRecs_Should_RecommendLLIWithTitlesInValidLengthRange()
     {
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -121,22 +121,22 @@ public class ReServiceShould
         }
     }
     [Fact]
-    public async void REServiceGetNumRecs_ShouldNot_RecommendLLISetAsCompleteByUserWithinTheYear()
+    public async Task REServiceGetNumRecs_ShouldNot_RecommendLLISetAsCompleteByUserWithinTheYear()
     {
         // Add 'await' before the method call
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_RecommendLLIWithValidCategories()
+    public async Task REServiceGetNumRecs_Should_RecommendLLIWithValidCategories()
     {
 
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_RecommendLLIThatExistOnDB()
+    public async Task REServiceGetNumRecs_Should_RecommendLLIThatExistOnDB()
     {
 
     }
     [Fact]
-    public async void REServiceGetNumRec5_Should_RecommendLLIFollowingBizRules()
+    public async Task REServiceGetNumRec5_Should_RecommendLLIFollowingBizRules()
     {
         // two LLI with category 1
         // one LLI with category 2
@@ -145,7 +145,7 @@ public class ReServiceShould
 
     }
     [Fact]
-    public async void REServiceGetNumRecs_Should_LogOnSuccess()
+    public async Task REServiceGetNumRecs_Should_LogOnSuccess()
     {
         
     }
