@@ -1,19 +1,18 @@
-﻿namespace Peace.Lifelog.RE;
+﻿namespace Peace.Lifelog.RecEngineService;
 
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using System.Diagnostics;
 using DomainModels;
-using Peace.Lifelog.RecEngineService;
 
-public class REService : IRecEngineService
+public class RecEngineService : IRecEngineService
 {
     private readonly IRecomendationEngineRepository recomendationEngineRepository;
     private readonly ILogging logger;
 
     // Inject RecomendationEngineRepository through the constructor
-    public REService(IRecomendationEngineRepository recomendationEngineRepository, ILogging logger)
+    public RecEngineService(IRecomendationEngineRepository recomendationEngineRepository, ILogging logger)
     {
         this.recomendationEngineRepository = recomendationEngineRepository;
         this.logger = logger;
