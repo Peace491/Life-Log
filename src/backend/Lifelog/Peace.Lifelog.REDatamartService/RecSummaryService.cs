@@ -37,6 +37,9 @@ public class RecSummaryService : IRecSummaryService
             // Get the user's two highest scoring categories
             var topTwoCategories = getTopTwoCategories(scoreDict);
 
+            // Get system most popular category
+            response = await summaryRepository.GetMostPopularCategory();
+
             // Update the user's data mart with the two highest scoring categories
             response = await summaryRepository.UpdateUserDataMart(userHash, topTwoCategories[0], topTwoCategories[1]);
 
@@ -81,13 +84,17 @@ public class RecSummaryService : IRecSummaryService
             // Num of users
             int numUsers = allUserHashResponse.Output.Count;
             int numUsersProcessed = 0;
+
             // for each userhash, updateRecommendationDatMartForUser(userhash)
+
+            response = await updateSystemUserRecSummary(); // update system first to get most popular category
+
             foreach (List<Object> userHash in allUserHashResponse.Output)
             {
                 string currentHash = userHash?[0]?.ToString() ?? string.Empty;
                 if (currentHash == "System")  
                 {
-                    var updateDataMartResponse = await updateSystemUserRecSummary(); 
+                    continue;
                 }
                 else
                 {

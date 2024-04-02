@@ -1,7 +1,7 @@
-namespace Peace.Lifelog.REDatamartTest;
+namespace Peace.Lifelog.RecSummaryService;
 
 using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.RecSummaryService;
+
 public class RecSummaryServiceShould
 {
     [Fact]

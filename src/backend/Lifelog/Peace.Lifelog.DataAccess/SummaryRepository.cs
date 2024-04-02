@@ -1,9 +1,11 @@
 ﻿namespace Peace.Lifelog.DataAccess;
 
+using System.ComponentModel;
 using DomainModels;
 public class SummaryRepository : ISummaryRepository
 {
     private string selectAllUserHash = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
+    private string tableName = "RecSummary";
 
     public async Task<Response> GetAllUserHash(CancellationToken cancellationToken = default)
     {
@@ -57,7 +59,27 @@ public class SummaryRepository : ISummaryRepository
         try
         {
             UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-            var query = $"UPDATE RecommendationDataMart SET Category1 = '{category1}', Category2 = '{category2}' WHERE UserHash = '{userHash}';";
+            var query = $"UPDATE {tableName} SET Category1 = '{category1}', Category2 = '{category2}', SystemMostPopular = (SELECT Category1 FROM (SELECT Category1 FROM RecSummary WHERE UserHash = 'system') AS derivedTable) WHERE UserHash = '{userHash}';";
+            var response = await updateDataOnlyDAO.UpdateData(query);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            // Log or handle the exception as needed
+            throw;
+        }
+    }
+
+    public async Task<Response> UpdateSystemDataMart(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+            var res = await GetMostPopularCategory();
+            // get the category from the response
+            //var category = res.Output[0][0].ToString();
+            string category = "Art";
+            var query = $"UPDATE {tableName} SET Category1 = '{category}', Category2 = '{category}', SystemMostPopular = '{category}  WHERE UserHash = 'system';";
             var response = await updateDataOnlyDAO.UpdateData(query);
             return response;
         }
