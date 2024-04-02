@@ -150,6 +150,7 @@ import Router from '../routes.js';
     function setupCreateNoteSubmit() {
         let createButton = document.getElementById('submit-note-button')
         createButton.addEventListener('click', function () {
+            let charContainer = document.getElementById('indicator');
             let noteParagraph = document.getElementById("create-paragraph-input")
             let content = noteParagraph.textContent
             let date = document.getElementById('create-date-input').value
@@ -158,7 +159,8 @@ import Router from '../routes.js';
                 notedate: date,
                 notecontent: content
             }
-            //console.log(options);
+            charContainer.style.visibility = "hidden";
+
             if (noteParagraph.classList.contains("NewNote"))
             {
                 createNote(options)
@@ -218,11 +220,34 @@ import Router from '../routes.js';
     // Attach event listener to the date input element, to always show latest change
     function currNote () {
         let date_input = document.getElementById("create-date-input");
-
+        
         date_input.onchange = function (){
             showNote();
         }
     }
+
+    function countCharacters() {
+        let noteParagraph = document.getElementById("create-paragraph-input");
+        noteParagraph.oninput = function () {
+            let modifiedParagraph = document.getElementById("create-paragraph-input");
+            const characterCount = modifiedParagraph.innerText.length;
+            const maxCharacters = 1200;
+            let charContainer = document.getElementById('indicator');
+
+            if (characterCount > maxCharacters){
+                alert("Character Limit of " + maxCharacters + " Exceeded!")
+            }
+            charContainer.textContent = `(${characterCount}/${maxCharacters})`;
+
+            // Show or hide the character indicator based on whether there is input
+            if (characterCount > 0) {
+                charContainer.style.visibility = "visible";
+            } else {
+                charContainer.style.visibility = "hidden";
+            }
+        };
+    }
+    
 
     function setupLogout() {
         let logoutInput = document.getElementById('logout')
@@ -260,6 +285,7 @@ import Router from '../routes.js';
             setupCreateNoteSubmit();
             setupDeleteNote();
             setupLogout();
+            countCharacters();
 
             // Get data
             showNote();

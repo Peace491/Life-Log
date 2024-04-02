@@ -207,6 +207,13 @@ main {
     margin-right: auto;
 }
 
+.character-indicator{
+    align-self: center;
+    margin-right: 10px;
+    color: grey;
+    visibility: hidden;
+}
+
 .note-delete-container{
     align-self: center;
     transform: scale(1.4);
