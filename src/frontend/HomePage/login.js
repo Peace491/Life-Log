@@ -69,6 +69,7 @@ export function loadHomePage(root, ajaxClient) {
 
         let request = ajaxClient.post(postUrl, data)
 
+
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
