@@ -12,9 +12,12 @@ import Router from '../routes.js';
     }
 
     const MAX_CONTENT_LENGTH = 1200
-    const MAX_DATE = 2100
-    const EARLIEST_NOTE_YEAR = 1960
-    const LATEST_NOTE_YEAR = new Date().getFullYear();
+    // To get the date six months earlier
+    let early_date = new Date();
+    early_date.setMonth(early_date.getMonth() - 6);
+
+    const EARLIEST_NOTE_DATE = early_date;
+    const LATEST_NOTE_DATE = new Date();
 
     let jwtToken = ""
 
@@ -51,12 +54,22 @@ import Router from '../routes.js';
     // NOT exposed to the global object ("Private" functions)
     function getNote(notedate) {
         let getUrl = webServiceUrl + '/getPN?notedate=' + notedate;
-        console.log(getUrl)
-        // validate the date
-        let year = parseInt(notedate.substring(0, 4))
-        if (year < EARLIEST_NOTE_YEAR || year > LATEST_NOTE_YEAR) {
-            alert(`The Note date must be between 01/01/${EARLIEST_NOTE_YEAR} and 12/31/${LATEST_NOTE_YEAR}, please try again.`)
-            return
+
+        // Validate Date
+        let year = parseInt(notedate.substring(0, 4));
+        let month = parseInt(notedate.substring(5, 7)) - 1; // Subtract 1 because months are zero-based
+        let day = parseInt(notedate.substring(8, 10));
+
+        let noteDate = new Date();
+        noteDate.setDate(day);
+        noteDate.setMonth(month);
+        noteDate.setFullYear(year);
+
+        if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
+            alert(`You can only select dates within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
+            let dateInput = document.getElementById("create-date-input");
+            dateInput.valueAsDate = new Date();
+            return false
         }
 
         let request = ajaxClient.get(getUrl, jwtToken);
@@ -66,14 +79,11 @@ import Router from '../routes.js';
                 if (response.status != 200) {
                     throw new Error(response.statusText)
                 }
-                console.log(response.body)
                 return response.json();
             }).then(function (data) {
-                console.log("Note Data: ", data.output);
                 let output = data.output;
                 resolve(output);
             }).catch(function (error) {
-                console.log("error" + error)
                 alert(error)
                 reject(error);
             });
@@ -132,13 +142,21 @@ import Router from '../routes.js';
     function validatePersonalNoteOptions(option) {
         // Input Validation
         if (option.notecontent == "" || option.notecontent.length > MAX_CONTENT_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.notecontent.replaceAll(' ', ''))) {
-            alert('The note must only contain  alphanumeric values between 1-50 characters long, please try again.')
+            alert("The note must only contain  alphanumeric values between 1-" + MAX_CONTENT_LENGTH + " characters long, please try again.")
             return false
         }
 
-        let year = parseInt(option.notedate.substring(0, 4))
-        if (year < EARLIEST_NOTE_YEAR || year > LATEST_NOTE_YEAR) {
-            alert(`The Note date must be between 01/01/${EARLIEST_NOTE_YEAR} and 12/31/${LATEST_NOTE_YEAR}, please try again.`)
+        let year = parseInt(option.notedate.substring(0, 4));
+        let month = parseInt(option.notedate.substring(5, 7)) - 1; // Subtract 1 because months are zero-based
+        let day = parseInt(option.notedate.substring(8, 10));
+
+        let noteDate = new Date();
+        noteDate.setDate(day);
+        noteDate.setMonth(month);
+        noteDate.setFullYear(year);
+
+        if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
+            alert(`You can only select dates within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
             return false
         }
 
@@ -179,7 +197,6 @@ import Router from '../routes.js';
             }
             else
             {
-                console.log("this updated")
                 updateNote(options);
             }
             
@@ -277,7 +294,6 @@ import Router from '../routes.js';
     // Initialize the current view by setting up data and attaching event handlers 
     function init() {
         jwtToken = localStorage["token-local"]
-        console.log("Jwt Token: "+jwtToken)
         if (jwtToken == null) {
             window.location = '../HomePage/index.html'
         } else {

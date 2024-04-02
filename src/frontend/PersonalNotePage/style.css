@@ -93,6 +93,21 @@ header {
     padding: 0 40px;
 }
 
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
+}
+
 .page-link-container, .user-management-container {
     display: flex;
     flex-direction: row;
@@ -131,6 +146,10 @@ main {
     gap: 50px;
 
     padding: 2% 5%;
+}
+
+.note-link-container:hover {
+    cursor: pointer;
 }
 
 .note-container {
@@ -219,6 +238,10 @@ main {
     transform: scale(1.4);
     margin-right: 6px;
 }
+
+.note-delete-container:hover{
+    cursor: pointer;
+}
 .date-bold-span {
     font-weight: 600; /* Apply the bold font weight */
     display: inline-block; /* Ensure the span is inline but can have a width and height */
@@ -275,7 +298,10 @@ p:empty:not(:focus)::before {
     font-weight: bold;
 }
 
-#submit-note-button:hover {background-color: #c79354}
+#submit-note-button:hover {
+    cursor: pointer;
+    background-color: #c79354
+}
 .date-input{
     border: none;
 }

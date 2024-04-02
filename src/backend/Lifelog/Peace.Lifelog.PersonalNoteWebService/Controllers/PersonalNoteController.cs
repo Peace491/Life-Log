@@ -82,8 +82,6 @@ public class PersonalNoteController : ControllerBase
             return StatusCode(401);
         }
 
-        // Console.WriteLine(Request.Headers);
-        Console.WriteLine(Request.Headers["Token"]);
         var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
 
         if (jwtToken == null)
@@ -190,10 +188,6 @@ public class PersonalNoteController : ControllerBase
         {
             return StatusCode(401);
         }
-
-        // initializing the note object with an NoteId
-        /*var personalnote = new PN();
-        personalnote.NoteId = noteId;*/
 
         var response = await this.personalNoteService.DeletePersonalNote(userHash, noteId);
 
