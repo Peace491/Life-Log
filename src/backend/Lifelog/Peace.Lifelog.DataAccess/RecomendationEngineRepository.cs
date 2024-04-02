@@ -2,18 +2,17 @@
 
 using DomainModels;
 using Peace.Lifelog.RE;
-using Peace.Lifelog.Logging;
 
 public class RecomendationEngineRepository : IRecomendationEngineRepository
 {
-    private readonly ReadDataOnlyDAO readDataOnlyDAO;
-    private readonly Logging logger;
+    private readonly IReadDataOnlyDAO readDataOnlyDAO;
+
 
     // Inject Nessesary DAO and Logger
-    public RecomendationEngineRepository(ReadDataOnlyDAO readDataOnlyDAO, Logging logger)
+    public RecomendationEngineRepository(IReadDataOnlyDAO readDataOnlyDAO)
     {
         this.readDataOnlyDAO = readDataOnlyDAO;
-        this.logger = logger;
+
     }
     public async Task<Response> GetNumRecs(string userHash, int numRecs, CancellationToken cancellationToken = default)
     {
@@ -42,7 +41,7 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
         catch (Exception ex)
         {
             // Log or handle the exception as needed
-            var logResponse = await logger.CreateLog("Logs", userHash, "ERROR", "Data Access", ex.Message);
+            // var logResponse = await logger.CreateLog("Logs", userHash, "ERROR", "Data Access", ex.Message);
         }
         return response;
     }

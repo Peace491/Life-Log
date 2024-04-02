@@ -1,16 +1,19 @@
 using Microsoft.Net.Http.Headers;
 using Peace.Lifelog.RE;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// should i inject specifc daos? or just the repository?
-builder.Services.AddTransient<RecomendationEngineRepository>(); 
+/* Registration of objects for .NET's DI Container */ 
+builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
+builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<ILogTarget, LogTarget>();
+builder.Services.AddTransient<ILogging, Logging>();
+builder.Services.AddTransient<IRecomendationEngineRepository, RecomendationEngineRepository>(); 
 builder.Services.AddTransient<IReService, REService>();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-/* Registration of objects for .NET's DI Container */
+builder.Services.AddSwaggerGen(); 
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 

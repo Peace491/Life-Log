@@ -8,11 +8,11 @@ using DomainModels;
 
 public class REService : IReService
 {
-    private readonly RecomendationEngineRepository recomendationEngineRepository;
-    private readonly Logging logger;
+    private readonly IRecomendationEngineRepository recomendationEngineRepository;
+    private readonly ILogging logger;
 
     // Inject RecomendationEngineRepository through the constructor
-    public REService(RecomendationEngineRepository recomendationEngineRepository, Logging logger)
+    public REService(IRecomendationEngineRepository recomendationEngineRepository, ILogging logger)
     {
         this.recomendationEngineRepository = recomendationEngineRepository;
         this.logger = logger;

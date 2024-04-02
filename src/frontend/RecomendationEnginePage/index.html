@@ -42,7 +42,7 @@
         <div class="lli-recommendation">
           <div class="unmodifiable-recommendation-attributes">
             <div class="lli-recommendation-title">
-              <h2> Title</h2>
+              <h2 contenteditable="true"> Title</h2>
             </div>
             <div class="category-container"> <!-- New container for categories -->
               <div class="lli-recommendation-categories">
@@ -53,93 +53,54 @@
               </div>
               <div class="lli-recommendation-categories">
                 <h2>Category3</h2>
+              </div> 
+            </div>
+            <div class="form-container">
+              <div class="input-area">
+                <h2><span style="font-weight: 600;">Description:</span></h2>
+                <textarea id="description-input" required>Enter Description</textarea>
               </div>
+              <div class="lli-status-container">
+                  <h2><span style="font-weight: 600;">Status:</span></h2>
+                  <select name="" id="create-status-input" class="status-select" autocomplete="off">
+                      <option value="Active" selected="selected">Active</option>
+                      <option value="Postponed">Postponed</option>
+                      <option value="Completed">Completed</option>
+                  </select>
+              </div>
+              <div class="lli-visibility-container">
+                <h2><span style="font-weight: 600;">Visibility:</span></h2>
+                  <select name="Visibility" id="create-visibility-input" class="visibility-select" autocomplete="off">
+                      <option value="Public" selected="selected">Public</option>
+                      <option value="Private">Private</option>
+                  </select>
+              </div>
+              <div class="lli-deadline-container">
+                  <h2><span style="font-weight: 600;">Deadline:</span></h2>
+                  <input type="date" id="create-date-input" class="date-input" value="2024-11-11" autocomplete="off"></input>
+              </div>
+              <div class="lli-recurrence-container">
+                <h2><span style="font-weight: 600;">Recurrence:</span></h2>
+                <select name="Recurrence" id="create-recurrence-input" class="recurrence-select" autocomplete="off">
+                    <option value="Off" selected="selected">Off</option>
+                    <option value="On(Weekly)">On(Weekly)</option>
+                    <option value="On(Monthly)">On(Monthly)</option>
+                    <option value="On(Yearly)">On(Yearly)</option>
+                </select>
+              </div>
+              
+              <div class="lli-cost-container">
+                <h2><span style="font-weight: 600;">Cost:</span></h2>
+                <input type="number" id="create-cost-input" class="cost-input" placeholder="Enter cost" autocomplete="off"></input>
+              </div>
+              <div class="create-recommendation-container">
+                <button id="create-recommendation-button">Create Item</button>
+              </div> 
             </div>
           </div>
         </div>
-        
-        <!-- <div class="lli" id="create-lli-template">
-          <div class="lli-non-hidden-content">
-              <div class="lli-title-container">
-                  <h2 id="create-title-input" contenteditable>Enter Title</h2>
-              </div>
-              <div class="lli-main-content-container">
-                  <div class="lli-deadline-container">
-                      <h2><span style="font-weight: 600;">Deadline:</span></h2>
-                      <input type="date" id="create-date-input" class="date-input" value="2024-11-11" autocomplete="off"></input>
-                  </div>
-                  <div class="lli-category-container">
-                      <select name="" id="create-category-input" class="category-select" multiple autocomplete="off">
-                          <option value="Mental Health" selected="selected">Mental Health</option>
-                          <option value="Physical Health">Physical Health</option>
-                          <option value="Outdoor">Outdoor</option>
-                          <option value="Sport">Sport</option>
-                          <option value="Art">Art</option>
-                          <option value="Hobby">Hobby</option>
-                          <option value="Thrill">Thrill</option>
-                          <option value="Travel">Travel</option>
-                          <option value="Volunteering">Volunteering</option>
-                          <option value="Food">Food</option>
-                      </select>
-                  </div>
-              </div>
-              <div class="lli-description-container">
-                  <h2>Description</h2>
-                  <p contenteditable id="create-paragraph-input">Edit</p>
-              </div>
-          </div>
-
-          <div class="lli-hidden-content">
-              <div class="lli-button-container">
-                  <button id="close-create-lli-button"></button>
-
-              </div>
-              <div class="lli-hidden-fields-container">
-                  <div class="lli-hidden-required-fields-container">
-                      <div class="lli-status-container">
-                          <h2><span style="font-weight: 600;">Status: </span></h2>
-                          <select id="create-status-input" class="status-select" autocomplete="off">
-                              <option value="Active" selected="selected">Active</option>
-                              <option value="Completed">Completed</option>
-                              <option value="Postponed">Postponed</option>
-                          </select>
-                      </div>
-                      <div class="lli-visibility-container">
-                          <h2><span style="font-weight: 600;">Visibility: </span></h2>
-                          <select name="" id="create-visibility-input" class="visibility-select" autocomplete="off">
-                              <option value="Public" selected="selected">Public</option>
-                              <option value="Private">Private</option>
-                          </select>
-                      </div>
-
-                  </div>
-                  <div class="lli-hidden-non-required-fields-container">
-                      <h2><span style="font-weight: 600;">Cost:</span> $<span id="create-cost-input"
-                              contenteditable="">100</span></h2>
-                      <div class="lli-recurrence-container">
-                          <h2><span style="font-weight: 600;">Recurring: </span></h2>
-                          <select id="create-recurrence-input" class="recurrence-select" autocomplete="off">
-                              <option value="Off" selected="selected">Off</option>
-                              <option value="Weekly">Weekly</option>
-                              <option value="Monthly">Monthly</option>
-                              <option value="Yearly">Yearly</option>
-                          </select>
-                      </div>
-                  </div>
-              </div>
-              <div class="lli-media-container">
-                  <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
-              </div>
-              <div class="create-lli-button-container">
-                  <button id="create-lli-button">Create LLI</button>
-              </div>
-
-          </div>
-
-
-
-      </div> -->
       </div>
+
       <div class="recommendation-input-container">
         <input
         id="numberRecs"
@@ -148,6 +109,31 @@
         />
         <button id="getRecommendation" type="button">Get Recommendation</button>
       </div>
+
+      <div class="seeding-container-wrapper">
+        <div class="recommendation-seeding-container">
+            <p>This button will seed the recommendation engine with initial data. Please use it responsibly.</p>
+            <button id="seedRecommendation" type="button">Seed Recommendation Engine</button>
+        </div>
+
+        <div class="admin-seeding-container">
+            <p>This button will reseed the entire recommendation summary table. Please use this responsibly, as you could restrict lifelog users from using our app.</p>
+            <button id="seedDatabase" type="button">Reseed All Users</button>
+        </div>
+      </div>
+
+
+
+</main>
+
+<!-- Dependencies -->
+<script src="../Resources/Ajax/fetch-ajax.js"></script>
+
+<!-- Page Specific -->
+<script src="re.js" type="module"></script>
+</body>
+</html>
+      
       
     </main>
 

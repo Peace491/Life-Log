@@ -12,9 +12,9 @@ using System.Text.Json;
 public class REController : ControllerBase
 {
     private IReService reService;
-    private readonly Logging logger;
+    private readonly ILogging logger;
 
-    public REController(IReService reService, Logging logger)
+    public REController(IReService reService, ILogging logger)
     {
         this.reService = reService;
         this.logger = logger;

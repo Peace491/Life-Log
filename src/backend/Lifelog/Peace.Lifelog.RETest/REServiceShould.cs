@@ -26,7 +26,7 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
         var reService = new REService(recomendationEngineRepository, logger);
 
         // Act
@@ -47,7 +47,7 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
         var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = 5;
 
@@ -67,7 +67,7 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
         var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = -1;
 
@@ -87,7 +87,7 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
         var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = 11;
 
@@ -107,7 +107,7 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO, logger);
+        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
         var reService = new REService(recomendationEngineRepository, logger);
         int numRecs = 5;
 

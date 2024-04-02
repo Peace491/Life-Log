@@ -212,3 +212,145 @@ header {
     margin: 0 auto; /* Auto margins for horizontal centering */
     text-align: center;
 }
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto; /* Centers the container horizontally */
+  }
+
+  .input-area, .lli-status-container, .lli-visibility-container, .lli-deadline-container, .lli-cost-container, .create-recommendation-container {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  .status-select, .visibility-select, .date-input, .cost-input, #description-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #create-recommendation-button {
+    width: 100%;
+    cursor: pointer;
+  }
+
+/* General container styles */
+/* Wrapper for both seeding containers */
+.seeding-container-wrapper {
+    display: flex; /* Enables Flexbox, allowing child elements to sit side by side */
+    justify-content: center; /* Centers the child containers horizontally */
+    gap: 20px; /* Adds space between the two containers */
+    flex-wrap: wrap; /* Allows containers to wrap onto the next line on smaller screens */
+    margin: 20px auto; /* Centers the wrapper horizontally and adds vertical space */
+    max-width: 1200px; /* Maximum width of the wrapper */
+    padding: 0 15px; /* Padding on the sides */
+}
+
+/* Adjustments for individual seeding containers for a consistent look when side by side */
+.recommendation-seeding-container,
+.admin-seeding-container {
+    flex: 1; /* Each container will take up equal space */
+    max-width: calc(50% - 10px); /* Adjusts the maximum width of each container, accounting for the gap */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px; /* Ensures spacing between rows when wrapped */
+}
+
+/* Continue with the rest of the styles as previously defined */
+
+
+/* Paragraph styles for description */
+.recommendation-seeding-container p,
+.admin-seeding-container p {
+  color: #333; /* Dark grey color for text */
+  font-size: 16px; /* Readable font size */
+  line-height: 1.5; /* Spacing between lines for readability */
+  margin-bottom: 15px; /* Spacing between text and button */
+}
+
+/* Button styles */
+#seedRecommendation,
+#seedDatabase {
+  background-color: #0056b3; /* Primary color for buttons */
+  color: white; /* White text color */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners for the button */
+  padding: 10px 20px; /* Padding inside the button */
+  text-transform: uppercase; /* Uppercase text for emphasis */
+  font-weight: bold; /* Bold font weight */
+  cursor: pointer; /* Cursor changes to pointer to indicate clickable */
+  transition: background-color 0.3s ease; /* Smooth background color transition for hover effect */
+}
+/* Adjustments for individual seeding containers for a consistent look when side by side */
+.recommendation-seeding-container,
+.admin-seeding-container {
+    display: flex; /* Enables Flexbox */
+    flex-direction: column; /* Stacks children vertically */
+    align-items: center; /* Centers children horizontally */
+    justify-content: center; /* Centers children vertically */
+    flex: 1; /* Each container will take up equal space */
+    max-width: calc(50% - 10px); /* Adjusts the maximum width of each container, accounting for the gap */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px; /* Ensures spacing between rows when wrapped */
+    text-align: center; /* Ensures text within paragraphs is centered */
+}
+
+/* Ensuring buttons are full-width for consistency */
+#seedRecommendation,
+#seedDatabase {
+    width: 100%; /* Makes the button stretch to the container width */
+    box-sizing: border-box; /* Ensures padding doesn't affect the final width */
+    margin-top: 10px; /* Adds space between the paragraph and the button */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .seeding-container-wrapper {
+    flex-direction: column; /* Stacks seeding containers vertically on smaller screens */
+  }
+  
+  .recommendation-seeding-container,
+  .admin-seeding-container {
+    max-width: 100%; /* Allows each container to take full width of the viewport */
+    margin: 15px; /* Adjust margin for better spacing */
+  }
+  
+  #seedRecommendation,
+  #seedDatabase {
+    max-width: 250px; /* Optional: Limits button width for better aesthetics */
+  }
+}
+
+
+#seedRecommendation:hover,
+#seedDatabase:hover {
+  background-color: #004494; /* Darker shade for hover state */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .recommendation-seeding-container,
+  .admin-seeding-container {
+    padding: 15px;
+    margin: 15px; /* Slightly reduce spacing for smaller screens */
+  }
+
+  #seedRecommendation,
+  #seedDatabase {
+    padding: 8px 15px; /* Slightly reduce padding for smaller screens */
+  }
+}
+
