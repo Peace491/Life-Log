@@ -1,0 +1,6 @@
+@Peace.Lifelog.PersonalNoteWebService_HostAddress = http://localhost:5253
+
+GET {{Peace.Lifelog.PersonalNoteWebService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,5 +1,5 @@
 'use strict';
-
+import Router from '../routes.js';
 import * as lliDomManip from './lli-dom-manipulation.js'
 import * as routeManager from '../routeManager.js';
 
@@ -411,6 +411,23 @@ export function loadLLIPage(root, ajaxClient) {
         logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
             routeManager.loadPage(routeManager.PAGES.homePage)
+        })
+    }
+
+    function setupHeaderLinks(){
+        let calendarLink = document.getElementById("calendar-link")
+
+        calendarLink.addEventListener('click', function () {
+            window.location = "../CalendarPage/index.html"
+            
+        })
+    }
+
+    function setupHeaderLinks(){
+        let calendarLink = document.getElementById("calendar-link")
+
+        calendarLink.addEventListener('click', function () {
+            window.location = "../CalendarPage/index.html"
             
         })
     }
@@ -450,9 +467,14 @@ export function loadLLIPage(root, ajaxClient) {
             setupFilter();
             setupSearch();
             setupLogout();
+            setupHeaderLinks();
 
             // Get data
             showLLI();
+
+            //navigate 
+            const router = new Router;
+            router.navigatePages();
         }
     }
 
