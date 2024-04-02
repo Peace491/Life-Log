@@ -10,14 +10,14 @@ using Peace.Lifelog.RecEngineService;
 
 [ApiController]
 [Route("re")]  // Defines the default parent URL path for all action methods to be the name of controller
-public class REController : ControllerBase
+public class RecEngineController : ControllerBase
 {
-    private IRecEngineService reService;
+    private IRecEngineService recEngineService;
     private readonly ILogging logger;
 
-    public REController(IRecEngineService reService, ILogging logger)
+    public RecEngineController(IRecEngineService recEngineService, ILogging logger)
     {
-        this.reService = reService;
+        this.recEngineService = recEngineService;
         this.logger = logger;
     }
 
@@ -32,7 +32,7 @@ public class REController : ControllerBase
             string userHash = "3\u002B/ZXoeqkYQ9JTJ6vcdAfjl667hgcMxQ\u002BSBLqmVDBuY=";
             int numRecs = request.NumRecs;
             
-            response = await reService.getNumRecs(userHash, numRecs);
+            response = await recEngineService.getNumRecs(userHash, numRecs);
 
             // Consider checking response for errors and handling them accordingly
             if (response.HasError)

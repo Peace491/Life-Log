@@ -15,8 +15,9 @@ import * as validator from "./reInputValidation.js";
 
   let jwtToken = "";
 
-  const webServiceUrl = "http://localhost:8086/re"; // into config
-  const lliWebServiceUrl = "http://localhost:8080/lli"; // into config
+  const webServiceUrl = "http://localhost:8086/re"; 
+  const lliWebServiceUrl = "http://localhost:8080/lli"; 
+  const summaryWebServiceUrl = "http://localhost:8085/summary"; 
 
   root.myApp = root.myApp || {};
 
@@ -58,38 +59,74 @@ import * as validator from "./reInputValidation.js";
     });
   }
 
-  function postRecommendation(lli) {
+  function postRecommendation(idPrefix) {
+
 
   }
 
-  function repopulateDatamart() {
+  function repopulateUserDatamart() {
     // populate url with the accurate url for the service
     // TODO : Fix with correct url
-    const url = `${webServiceUrl}/NumRecs`;
+    const url = `${summaryWebServiceUrl}/UserRecSummary`;
     return ajaxClient
       .get(url)
       .then((response) => response.json())
       .catch((error) => Promise.reject(error));
   }
 
-  function setupRepopulateUserSummary() {
-    // Function to setup the repopulate datamart button
+  function setupRepopulateUserDatamart() {
+    let repopulateUserDatamartButton = document.getElementById("seedRecommendation");
+
+    repopulateUserDatamartButton.addEventListener("click", function () {
+      // pass in the user hash
+      let response = repopulateUserDatamart();
+
+      response
+        .then(() => {
+          console.log("Recommendations have been repopulated");
+          alert("Recommendations have been repopulated");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    });
   }
 
-  function repopulateEntireSummaryTable() {
+  function repopulateAllUserSummary() {
     // Preform validation to check if admin.
-    // If admin, populate the entire summary table
+    // If admin, populate the entire summary tableconst 
+    const url = `${summaryWebServiceUrl}/AllUserRecSummary`;
+    if (true){ // TODO validate user role
+      return ajaxClient
+      .get(url)
+      .then((response) => response.json())
+      .catch((error) => Promise.reject(error));
+    }
+    
 
     // If not admin, return an error message
-    // TODO: Fix with correct url
-    const url = `${webServiceUrl}/NumRecs`;
-    return ajaxClient
-      .get(url)
-      .then((response) => response.json())
-      .catch((error) => Promise.reject(error));
   }
 
-  function setupRepopulateEntireSummaryTable() {}
+
+  function setupRepopulateAllUserSummary() {
+    // Function to setup the repopulate datamart button
+    let repopulateAllUserSummaryButton = document.getElementById("seedDatabase");
+
+    repopulateAllUserSummaryButton.addEventListener("click", function () {
+      // pass in the user hash
+      let response = repopulateAllUserSummary();
+
+      response
+        .then(() => {
+          console.log("Recommendations db have been repopulated");
+          alert("Recommendations db have been repopulated");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    });
+  }
+
 
   let formCounter = 0;
 
@@ -423,6 +460,8 @@ import * as validator from "./reInputValidation.js";
   function init() {
     jwtToken = localStorage["token-local"];
     setupGetNumRecomendations();
+    setupRepopulateUserDatamart();
+    setupRepopulateAllUserSummary();
   }
 
   init();
