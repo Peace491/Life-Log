@@ -1,27 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using Peace.Lifelog.REDatamartService;
+using Peace.Lifelog.RecSummaryService;
 
 namespace Peace.Lifelog.REDatamartWebService.Controllers;
 
 [ApiController]
 [Route("summary")]
-public class SummaryController : ControllerBase
+public class RecSummaryController : ControllerBase
 {
-    private IREDatamart reDMService;
+    private IRecSummaryService recSummaryService;
 
-    public SummaryController(IREDatamart reDMService)
+    public RecSummaryController(IRecSummaryService recSummaryService)
     {
-        this.reDMService = reDMService;
-
+        this.recSummaryService = recSummaryService;
     }
     
     [HttpGet]
-    [Route("updateRecommendationDataMartForUser")]
+    [Route("UserRecSummary")]
     public async Task<IActionResult> UpdateRecommendationDataMartForUser(string userHash)
     {
         try
         {
-            var response = await reDMService.updateRecommendationDataMartForUser(userHash);
+            var response = await recSummaryService.updateUserRecSummary(userHash);
 
             // Consider checking response for errors and handling them accordingly
             if (response.HasError)
@@ -41,12 +40,14 @@ public class SummaryController : ControllerBase
 
     // Update recommendation data mart for ALL users
     [HttpGet]
-    [Route("updateRecommendationDataMartForAllUsers")]
+    [Route("AllUserRecSummary")]
     public async Task<IActionResult> UpdateRecommendationDataMartForAllUsers()
     {
         try
         {
-            var response = await reDMService.updateRecommendationDataMartForAllUsers();
+            // Check that the user is an admin thru token
+            
+            var response = await recSummaryService.updateAllUserRecSummary();
 
             // Consider checking response for errors and handling them accordingly
             if (response.HasError)

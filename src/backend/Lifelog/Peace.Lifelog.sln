@@ -45,17 +45,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RegistrationT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.SecurityWebService", "Peace.Lifelog.SecurityWebService\Peace.Lifelog.SecurityWebService.csproj", "{08371E04-86AC-4407-AEBB-EC06B8992329}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RE", "Peace.Lifelog.RE\Peace.Lifelog.RE.csproj", "{786B3E7B-0556-40FA-90FB-E25FC3EF26E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RecEngineService", "Peace.Lifelog.RE\Peace.Lifelog.RecEngineService.csproj", "{786B3E7B-0556-40FA-90FB-E25FC3EF26E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RETest", "Peace.Lifelog.RETest\Peace.Lifelog.RETest.csproj", "{70CF48FC-2B48-43E6-AB66-D1FC402ECAFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RecEngineTest", "Peace.Lifelog.RETest\Peace.Lifelog.RecEngineTest.csproj", "{70CF48FC-2B48-43E6-AB66-D1FC402ECAFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REWebService", "Peace.Lifelog.REWebService\Peace.Lifelog.REWebService.csproj", "{253A4817-688C-4436-BFA7-1261FA8C5C15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RecEngineWebService", "Peace.Lifelog.REWebService\Peace.Lifelog.RecEngineWebService.csproj", "{253A4817-688C-4436-BFA7-1261FA8C5C15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REDatamartService", "Peace.Lifelog.REDatamartService\Peace.Lifelog.REDatamartService.csproj", "{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RecSummaryService", "Peace.Lifelog.REDatamartService\Peace.Lifelog.RecSummaryService.csproj", "{B0C85CC8-941C-45D2-92C1-1487F1D3C52C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REDatamartTest", "Peace.Lifelog.REDatamartTest\Peace.Lifelog.REDatamartTest.csproj", "{8DB3E449-F454-46F9-9E71-3EF52DEB280E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RecSummaryTest", "Peace.Lifelog.REDatamartTest\Peace.Lifelog.RecSummaryTest.csproj", "{8DB3E449-F454-46F9-9E71-3EF52DEB280E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.REDatamartWebService", "Peace.Lifelog.REDatamartWebService\Peace.Lifelog.REDatamartWebService.csproj", "{26220364-785D-4BCD-9D04-62A4E79CE064}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RecSummaryWebService", "Peace.Lifelog.REDatamartWebService\Peace.Lifelog.RecSummaryWebService.csproj", "{26220364-785D-4BCD-9D04-62A4E79CE064}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

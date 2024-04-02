@@ -1,20 +1,20 @@
-﻿namespace Peace.Lifelog.REDatamartService;
+﻿namespace Peace.Lifelog.RecSummaryService;
 
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 
-public class REDatamartService : IREDatamart
+public class RecSummaryService : IRecSummaryService
 {
-    // Inject RecomendationEngineRepository through the constructor
+    // Inject summary repo through the constructor
     private readonly SummaryRepository summaryRepository;
 
-    public REDatamartService(SummaryRepository summaryRepository)
+    public RecSummaryService(SummaryRepository summaryRepository)
     {
         this.summaryRepository = summaryRepository;
     }
 
     // only allow users to do this Y times a day
-    public async Task<Response> updateRecommendationDataMartForUser(string userHash)
+    public async Task<Response> updateUserRecSummary(string userHash)
     {
         var response = new Response();
         // TODO Inject
@@ -47,7 +47,7 @@ public class REDatamartService : IREDatamart
         return response;
     }
 
-    public async Task<Response> updateRecommendationDataMartForSystem()
+    public async Task<Response> updateAllUserRecSummary()
     {
         // This method is horrid right now - need to fix takign a break for the night
         var mostPopularCategory = await summaryRepository.GetMostPopularCategory();
@@ -85,11 +85,11 @@ public class REDatamartService : IREDatamart
                 string currentHash = userHash?[0]?.ToString() ?? string.Empty;
                 if (currentHash == "System")  
                 {
-                    var updateDataMartResponse = await updateRecommendationDataMartForSystem(); 
+                    // var updateDataMartResponse = await updateRecommendationDataMartForSystem(); 
                 }
                 else
                 {
-                    var updateDataMartResponse = await updateRecommendationDataMartForUser(currentHash);
+                    // var updateDataMartResponse = await updateRecommendationDataMartForUser(currentHash);
                 }
                 numUsersProcessed++;
             }

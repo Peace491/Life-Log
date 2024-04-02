@@ -5,8 +5,9 @@ using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using System.Diagnostics;
 using DomainModels;
+using Peace.Lifelog.RecEngineService;
 
-public class REService : IReService
+public class REService : IRecEngineService
 {
     private readonly IRecomendationEngineRepository recomendationEngineRepository;
     private readonly ILogging logger;

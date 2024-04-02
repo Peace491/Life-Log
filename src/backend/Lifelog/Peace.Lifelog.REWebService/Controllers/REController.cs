@@ -6,15 +6,16 @@ using Peace.Lifelog.LLIWebService;
 using Peace.Lifelog.Logging;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
 using System.Text.Json;
+using Peace.Lifelog.RecEngineService;
 
 [ApiController]
 [Route("re")]  // Defines the default parent URL path for all action methods to be the name of controller
 public class REController : ControllerBase
 {
-    private IReService reService;
+    private IRecEngineService reService;
     private readonly ILogging logger;
 
-    public REController(IReService reService, ILogging logger)
+    public REController(IRecEngineService reService, ILogging logger)
     {
         this.reService = reService;
         this.logger = logger;

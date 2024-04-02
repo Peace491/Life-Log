@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Peace.Lifelog.RE\Peace.Lifelog.RE.csproj" />
+    <ProjectReference Include="../Peace.Lifelog.RE/Peace.Lifelog.RecEngineService.csproj" />
   </ItemGroup>
 
 </Project>

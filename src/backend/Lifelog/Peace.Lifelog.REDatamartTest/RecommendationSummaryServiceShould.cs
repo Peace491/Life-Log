@@ -2,7 +2,7 @@ namespace Peace.Lifelog.REDatamartTest;
 
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.REDatamartService;
-public class UnitTest1
+public class RecommendationSummaryServiceShould
 {
     [Fact]
     public async void updateRecommendationDataMartForUser_Should_UpdateUserRecommendationDataMart()
