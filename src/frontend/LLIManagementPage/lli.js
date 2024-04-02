@@ -418,16 +418,7 @@ export function loadLLIPage(root, ajaxClient) {
         let calendarLink = document.getElementById("calendar-link")
 
         calendarLink.addEventListener('click', function () {
-            window.location = "../CalendarPage/index.html"
-            
-        })
-    }
-
-    function setupHeaderLinks(){
-        let calendarLink = document.getElementById("calendar-link")
-
-        calendarLink.addEventListener('click', function () {
-            window.location = "../CalendarPage/index.html"
+            routeManager.loadPage(routeManager.PAGES.calendarPage)
             
         })
     }
