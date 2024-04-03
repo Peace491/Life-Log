@@ -1,28 +1,23 @@
 ﻿using DomainModels;
-using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Peace.Lifelog.PersonalNote;
 
-public class PersonalNoteService : ICreatePersonalNote
+public class PersonalNoteService : IPersonalNoteService
 {
     private static int WARNING_TIME_LIMIT_IN_SECOND = 3;
     private static int ERROR_TIME_LIMIT_IN_SECOND = 5;
     private static int MAX_NOTE_LENGTH_IN_CHAR = 1200;
     private static int EARLIEST_NOTE_YEAR = 1960;
     private static int LATEST_NOTE_YEAR = DateTime.Today.Year;
-    private CreateDataOnlyDAO createDataOnlyDAO;
-    private ReadDataOnlyDAO readDataOnlyDAO;
-    private UpdateDataOnlyDAO updateDataOnlyDAO;
-    private DeleteDataOnlyDAO deleteDataOnlyDAO;
-    private Logging.Logging logging;
+    private IPersonalNoteRepo personalNoteRepo;
+    private Logging.ILogging logging;
 
-    public PersonalNoteService(CreateDataOnlyDAO createDataOnlyDAO, ReadDataOnlyDAO readDataOnlyDAO, UpdateDataOnlyDAO updateDataOnlyDAO, DeleteDataOnlyDAO deleteDataOnlyDAO, Logging.Logging logging)
+    public PersonalNoteService(IPersonalNoteRepo personalNoteRepo, Logging.ILogging logging)
     {
-        this.createDataOnlyDAO = createDataOnlyDAO;
-        this.readDataOnlyDAO = readDataOnlyDAO;
-        this.updateDataOnlyDAO = updateDataOnlyDAO;
-        this.deleteDataOnlyDAO = deleteDataOnlyDAO;
+        this.personalNoteRepo = personalNoteRepo;
         this.logging = logging;
     }
 
@@ -42,18 +37,11 @@ public class PersonalNoteService : ICreatePersonalNote
         }
 
         // Populate Data Base
-        #region Create Personal Note in DB
 
-        var sql = "INSERT INTO PersonalNote (UserHash, NoteContent, NoteDate) VALUES ("
-        + $"\"{userHash}\", "
-        + $"\"{personalnote.NoteContent}\", "
-        + $"\"{personalnote.NoteDate}\");";
+        // Create Personal Note in DB
 
-        createPersonalNoteResponse = await this.createDataOnlyDAO.CreateData(sql);
+        createPersonalNoteResponse = await this.personalNoteRepo.CreatePersonalNoteInDB(userHash, personalnote.NoteContent, personalnote.NoteDate);
         timer.Stop();
-
-
-        #endregion
 
         // Log
         string message = "The Note has successfully been Created";
@@ -65,7 +53,7 @@ public class PersonalNoteService : ICreatePersonalNote
     }
 
     // Delete Note
-    public async Task<Response> DeletePersonalNote(string userHash, PN personalnote)
+    public async Task<Response> DeletePersonalNote(string userHash, string noteId)
     {
         var deletePersonalNoteResponse = new Response();
         var timer = new Stopwatch();
@@ -73,7 +61,16 @@ public class PersonalNoteService : ICreatePersonalNote
 
         // Validate Input 
 
-        if (personalnote.NoteId == string.Empty || personalnote.NoteId is null)
+        if (userHash == string.Empty)
+        {
+            deletePersonalNoteResponse.HasError = true;
+            deletePersonalNoteResponse.ErrorMessage = "User Hash must not be empty";
+            var errorMessage = "The Personal Note User Hash is invalid";
+            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            return deletePersonalNoteResponse;
+        }
+
+        if (noteId == string.Empty || noteId is null)
         {
             deletePersonalNoteResponse.HasError = true;
             deletePersonalNoteResponse.ErrorMessage = "NoteId can not be empty";
@@ -81,11 +78,8 @@ public class PersonalNoteService : ICreatePersonalNote
         }
 
         // Modify Data Base
-        #region Delete Personal Note in DB
-
-        var sql = $"DELETE FROM PersonalNote WHERE userHash = \"{userHash}\" AND NoteId = \"{personalnote.NoteId}\";";
-
-        var deleteResponse = await this.deleteDataOnlyDAO.DeleteData(sql);
+        // Delete Personal Note in DB
+        var deleteResponse = await this.personalNoteRepo.DeletePersonalNoteInDB(userHash, noteId);
         timer.Stop();
 
         if (deleteResponse.Output != null)
@@ -100,9 +94,6 @@ public class PersonalNoteService : ICreatePersonalNote
                 }
             }
         }
-
-
-        #endregion
 
         // Log
         string message = "The Note is successfully deleted";
@@ -132,7 +123,6 @@ public class PersonalNoteService : ICreatePersonalNote
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return viewPersonalNoteResponse;
         }
-        //Console.WriteLine("Note date: " + DateTime.ParseExact(personalnote.NoteDate, "yyyy-MM-dd", null) + " || SystemDate: " + DateTime.Today);
 
         if (DateTime.Parse(personalnote.NoteDate) > DateTime.Today)
         {
@@ -159,17 +149,10 @@ public class PersonalNoteService : ICreatePersonalNote
         }
         #endregion
 
-        // Modify Data Base
-        #region Retrive Personal Note from DB
+        // Retrive Personal Note from DB
+        var readPersonalNoteResponse = await this.personalNoteRepo.ReadPersonalNoteInDB(userHash, personalnote.NoteDate);
 
-        var sql = $"SELECT * FROM PersonalNote WHERE UserHash = \"{userHash}\" AND NoteDate = \"{personalnote.NoteDate}\";";
-
-        //Console.WriteLine(sql);
-        var readPersonalNoteResponse = await this.readDataOnlyDAO.ReadData(sql);
         timer.Stop();
-
-
-        #endregion
 
         // Log
         string message = "The Note is successfully fetched";
@@ -201,22 +184,8 @@ public class PersonalNoteService : ICreatePersonalNote
             return validateupdate;
         }
 
-        // Modify Data Base
-        #region Update Personal Note in DB
-
-        var checkNoteSql = $"SELECT * FROM PersonalNote WHERE NoteDate = \"{personalnote.NoteDate}\"";
-        updatePersonalNoteResponse = await this.readDataOnlyDAO.ReadData(checkNoteSql);
-
-
-        string updateNoteSql = "UPDATE PersonalNote SET "
-        + (personalnote.NoteContent != string.Empty ? $"NoteContent = \"{personalnote.NoteContent}\"," : "")
-        + (personalnote.NoteDate != null && personalnote.NoteDate != string.Empty ? $"NoteDate = \"{personalnote.NoteDate}\"," : "");
-
-        updateNoteSql = updateNoteSql.Remove(updateNoteSql.Length - 1);
-
-        updateNoteSql += $" WHERE NoteId = \"{personalnote.NoteId}\";";
-        Console.WriteLine(updateNoteSql);
-        updatePersonalNoteResponse = await this.updateDataOnlyDAO.UpdateData(updateNoteSql);
+        // Update Personal Note in DB
+        updatePersonalNoteResponse = await this.personalNoteRepo.UpdatePersonalNoteInDB(personalnote.NoteContent, personalnote.NoteDate, personalnote.NoteId);
 
         if (updatePersonalNoteResponse.HasError)
         {
@@ -225,10 +194,8 @@ public class PersonalNoteService : ICreatePersonalNote
             var errorMessage = updatePersonalNoteResponse.ErrorMessage;
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
         }
+
         timer.Stop();
-
-
-        #endregion
 
         // Log
         string message = "The Note is successfully updated";
@@ -253,12 +220,11 @@ public class PersonalNoteService : ICreatePersonalNote
         }
         #endregion
 
-        #region Read Personal Note In DB
         var timer = new Stopwatch();
         timer.Start();
-        var readPersonalNoteSql = $"SELECT * FROM PersonalNote WHERE userHash = \"{userHash}\"";
 
-        readPersonalNoteResponse = await this.readDataOnlyDAO.ReadData(readPersonalNoteSql, count: null);
+        // Retrive all Personal Notes from DB
+        readPersonalNoteResponse = await this.personalNoteRepo.ReadAllPersonalNoteInDB(userHash);
 
         if (readPersonalNoteResponse.Output == null)
         {
@@ -268,7 +234,6 @@ public class PersonalNoteService : ICreatePersonalNote
         }
 
         timer.Stop();
-        #endregion
 
         #region Log
 
@@ -327,17 +292,29 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "The non-nullable Personal Note input is null";
             var errorMessage = "The non-nullable Personal Note input is null";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
         if (personalnote.NoteContent == null || personalnote.NoteContent.Length > MAX_NOTE_LENGTH_IN_CHAR)
         {
             validationResponse.HasError = true;
-            validationResponse.ErrorMessage = "The Personal Note Invalid";
+            validationResponse.ErrorMessage = "The Personal Note content is too long";
             var errorMessage = "The personal note contents is invalid";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
+        }
+
+        if (personalnote.NoteContent != null)
+        {
+            if (!Regex.IsMatch(personalnote.NoteContent.Replace(" ", ""), @"^[a-zA-Z0-9]+$"))
+            {
+                validationResponse.HasError = true;
+                validationResponse.ErrorMessage = "The personal note content has invalid nonalphanumeric characters";
+                var errorMessage = "Note contains nonalphanumeric characters";
+                var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+                return validationResponse;
+            }
         }
 
         if (DateTime.Parse(personalnote.NoteDate) > DateTime.Today)
@@ -345,7 +322,7 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "The Date is Invalid";
             var errorMessage = "The Date is invalid";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
@@ -357,9 +334,9 @@ public class PersonalNoteService : ICreatePersonalNote
             if (personalNoteYear < EARLIEST_NOTE_YEAR || personalNoteYear > LATEST_NOTE_YEAR)
             {
                 validationResponse.HasError = true;
-                validationResponse.ErrorMessage = "LLI Deadline is out of range";
-                var errorMessage = "The LLI deadline is invalid";
-                var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+                validationResponse.ErrorMessage = "The Note date is out of range";
+                var errorMessage = "The Note date is invalid";
+                var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
                 return validationResponse;
             }
         }
@@ -430,19 +407,6 @@ public class PersonalNoteService : ICreatePersonalNote
 
         return personalNoteList;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     #endregion
 }

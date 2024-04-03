@@ -1,16 +1,15 @@
 ﻿namespace Peace.Lifelog.CalendarServiceTest;
 
+using Peace.Lifelog.CalendarService;
+using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.LLI;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.PersonalNote;
+using Peace.Lifelog.UserManagement;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Peace.Lifelog.CalendarService;
-using Peace.Lifelog.LLI;
-using Peace.Lifelog.PersonalNote;
-using Peace.Lifelog.UserManagement;
-using Peace.Lifelog.UserManagementTest;
-using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.Logging;
-
 
 public class CalendarServiceShould : IAsyncLifetime, IDisposable
 {
@@ -26,7 +25,8 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
     private LLIService LLIService = new LLIService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
-    private PersonalNoteService PNService = new PersonalNoteService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static IPersonalNoteRepo personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+    private PersonalNoteService PNService = new PersonalNoteService(personalNoteRepo, logging);
 
     private const string USER_ID = "TestLLIServiceAccount2";
     private string USER_HASH = "";
@@ -343,7 +343,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
         testPN.NoteContent = testPersonalNoteContent;
         testPN.NoteDate = DateTime.Today.ToString("yyyy-MM-dd");
 
-        
+
 
         //Act
         timer.Start();
@@ -362,5 +362,5 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
 
 }
 
-   
+
 

@@ -1,6 +1,6 @@
 namespace Peace.Lifelog.MotivationalQuoteTest;
-using System.Diagnostics;
 using Peace.Lifelog.MotivationalQuote;
+using System.Diagnostics;
 
 
 public class MotivationalQuoteServiceShould

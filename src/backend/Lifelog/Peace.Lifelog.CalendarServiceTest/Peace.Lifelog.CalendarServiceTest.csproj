@@ -25,6 +25,7 @@
   <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.CalendarService\Peace.Lifelog.CalendarService.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
+  <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.LLI\Peace.Lifelog.LLI.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
   <ProjectReference Include="..\Peace.Lifelog.PersonalNote\Peace.Lifelog.PersonalNote.csproj" />

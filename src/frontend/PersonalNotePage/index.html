@@ -5,27 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Notes</title>
-    <link rel="stylesheet" href="./style.css">
-
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <link rel="stylesheet" href="./PersonalNotePage/styles.css">
     <header>
         <div class="logo-container">
             <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view" />
         </div>
         <div class="header-contents-container">
             <div class="page-link-container">
-                <div class="calendar-link-container">
+                <div class="calendar-link-container" id="calendar-link">
                     <h2>Calendar</h2>
                 </div>
                 <div class="map-link-container">
                     <h2>Map</h2>
                 </div>
-                <div class="note-link-container" id="notes-view">
+                <div class="note-link-container" id="notes-view" data-testid = "note-view">
                     <h2 style="color: white;">Notes</h2>
                 </div>
                 <div class="life-tree-link-container">
@@ -64,8 +64,11 @@
                         </h2>                    
                         <input type="date" id="create-date-input" class="date-input" value="" autocomplete="off"></input>
                     </div>
+                    <div class="character-indicator" id="characterIndicator">
+                        <p id="indicator" data-placeholder="(0/1200)"></p>
+                    </div>
                     <div class="note-delete-container">
-                        <img src="./Assets/trash.svg" alt="" id="note-delete-button">
+                        <img src="./Assets/trash.svg" alt="Delete Note" id="note-delete-button">
                     </div>
                 </div>
 
