@@ -1,4 +1,4 @@
-﻿namespace Peace.Lifelog.UserManagementTest;
+﻿namespace Peace.Lifelog.UserManagement;
 
 using Peace.Lifelog.UserManagement;
 

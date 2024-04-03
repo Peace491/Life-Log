@@ -1,17 +1,20 @@
 'use strict';
 
+import * as routeManager from '../routeManager.js'
+import * as calendarDomManipulation from './calendar-dom-manipulation.js'
+
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function loadCalendarPage(root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
-    if(!isValid){
+    if (!isValid) {
         // Handle missing dependencies
         alert("Missing dependencies");
     }
-    
+
     //LLI Constants
     const MAX_TITLE_LENGTH = 50
     const EARLIEST_DEADLINE = 1960
@@ -59,14 +62,14 @@
     let jwtToken = ""
 
     const calendarServiceUrl = 'http://localhost:8087/calendarService';
-    
+
 
     // NOT exposed to the global object ("Private" functions)
     // HTTP REQUESTS -----------------------------------------------------------
 
     function getMonthLLI(month, year) {
         let getDataUrl = calendarServiceUrl + "/getMonthLLI?month=" + month + "&&year=" + year
-        
+
         let request = ajaxClient.get(getDataUrl, jwtToken)
 
         return new Promise((resolve, reject) => {
@@ -78,7 +81,7 @@
                 reject(error)
             })
         })
-        
+
     }
 
     function getNote(notedate) {
@@ -255,7 +258,7 @@
             alert('The LLI category must be valid, please try again.')
             return false
         }
-        
+
         if (option.category3 != null && !CATEGORIES_LIST.has(option.category3)) {
             alert('The LLI category must be valid, please try again.')
             return false
@@ -303,55 +306,55 @@
     // -------------VALIDATION LLI PN END -----------------------------
 
     // add your functions here
-    window.showCalendarLLI = function (month, year){
-        
-        getMonthLLI(month, year).then(function(data) {
-                
+    function showCalendarLLI(month, year) {
+
+        getMonthLLI(month, year).then(function (data) {
+
             //display each lli event on calendar
-            data.output.forEach(function(lli, index) {
-            
-                let lliDeadlineDay = lli.deadline.split("/")[1]; 
-                
-                
+            data.output.forEach(function (lli, index) {
+
+                let lliDeadlineDay = lli.deadline.split("/")[1];
+
+
                 let lliEventDay = document.getElementById(`insert-llievent-${lliDeadlineDay}`);
-                
+
                 let event = `<button data-modal-target="#lli-modal-edit" class="lli-btn event" id="lli-btn-${lli.lliid}">${lli.title}</button>`
 
                 lliEventDay.innerHTML += event
                 renderModals()
                 // #region modals 
-                function renderModals(){
-                    
+                function renderModals() {
+
                     const openModalButtons = document.querySelectorAll('[data-modal-target]')
                     const overlay = document.getElementById('overlay')
-                    
-                    openModalButtons.forEach(button => {
-                        
-                      button.addEventListener('click', () => {
 
-                        const modal = document.querySelector(button.dataset.modalTarget)
-                        openModal(modal)
-                      })
+                    openModalButtons.forEach(button => {
+
+                        button.addEventListener('click', () => {
+
+                            const modal = document.querySelector(button.dataset.modalTarget)
+                            openModal(modal)
+                        })
                     })
-                    
+
                     overlay.addEventListener('click', () => {
-                      const modals = document.querySelectorAll('.modal.active')
-                      modals.forEach(modal => {
-                        closeModal(modal)
-                      })
+                        const modals = document.querySelectorAll('.modal.active')
+                        modals.forEach(modal => {
+                            closeModal(modal)
+                        })
                     })
-                    
-                    
+
+
                     function openModal(modal) {
-                        if (modal == null){
+                        if (modal == null) {
                             console.log("null")
-                            return 
+                            return
                         }
                         modal.classList.add('active')
                         overlay.classList.add('active')
                     }
-                      
-                      function closeModal(modal) {
+
+                    function closeModal(modal) {
                         if (modal == null) return
                         modal.classList.remove('active')
                         overlay.classList.remove('active')
@@ -360,24 +363,24 @@
                 // #endregion
 
             })
-            
+
             //add event lister when #lli-btn-${lli.lliid} is clicked
             // Give info to modal
             let lliEventBox = document.querySelectorAll(".lli-events.event")
 
             lliEventBox.forEach((eachBox) => {
                 eachBox.addEventListener('click', (event) => {
-                    
+
                     const isButton = event.target.nodeName === 'BUTTON';
                     if (!isButton) {
-                        
+
                         return;
                     }
-                    
-                    let lliidToFind = event.target.id.split("-")[2]; 
-    
-                    
-    
+
+                    let lliidToFind = event.target.id.split("-")[2];
+
+
+
                     let llititle = ""
                     let llideadline = ""
                     let llidescription = ""
@@ -387,7 +390,7 @@
                     let cat1 = ""
                     let cat2 = ""
                     let cat3 = ""
-                    data.output.forEach(function(item) {
+                    data.output.forEach(function (item) {
                         if (item.lliid === lliidToFind) {
                             llititle = item.title;
                             llideadline = item.deadline.split(" ")[0]
@@ -400,84 +403,84 @@
                             cat3 = item.category3
                         }
                     })
-                    
+
                     // get all info for that lliid and put into divs 
                     let titleElement = document.getElementById("edit-title-input")
                     titleElement.textContent = `${llititle}`;
-    
+
                     let deadlineElement = document.getElementById("edit-date-input")
                     deadlineElement.value = `${llideadline.split("/")[2]}-${llideadline.split("/")[0]}-${llideadline.split("/")[1]}`;
-    
+
                     let descriptionElement = document.getElementById("edit-paragraph-input")
                     descriptionElement.textContent = `${llidescription}`;
-    
+
                     let statusElement = document.getElementById("edit-status-input")
                     statusElement.value = `${llistatus}`;
-    
+
                     let visibilityElement = document.getElementById("edit-visibility-input")
                     visibilityElement.value = `${visibility}`;
-    
+
                     let costElement = document.getElementById("edit-cost-input")
-                    
-                    if(costElement){
+
+                    if (costElement) {
                         costElement.textContent = `${cost}`;
                     }
-                    
-    
+
+
                     let categoryElement = document.getElementById("edit-category-input")
                     categoryElement.value = `${cat1}`;
                     categoryElement.value = `${cat2}`;
                     categoryElement.value = `${cat3}`;
                 })
-              });
+            });
         })
     }
-   
 
-    function editLLI(){
+
+    function editLLI() {
 
         let titleElement = document.getElementById("edit-title-input")
         let llititle = titleElement.textContent
-    
-        let deadlineElement = document.getElementById("edit-date-input")
-        let llideadline = deadlineElement.value 
 
-        
+        let deadlineElement = document.getElementById("edit-date-input")
+        let llideadline = deadlineElement.value
+
+
         let getLLIID = document.getElementById(`insert-llievent-${llideadline.split("-")[2]}`).querySelector(".lli-btn.event");
         console.log("id parent", `insert-llievent-${llideadline.split("-")[2]}`)
         console.log(getLLIID.id)
         let lliid = getLLIID.id.split("-")[2]
-        
+
 
         let descriptionElement = document.getElementById("edit-paragraph-input")
         let llidescription = descriptionElement.textContent
-    
+
         let statusElement = document.getElementById("edit-status-input")
         let llistatus = statusElement.value
-    
+
         let visibilityElement = document.getElementById("edit-visibility-input")
         let llivisibility = visibilityElement.value
-    
+
         let costElement = document.getElementById("edit-cost-input")
         let llicost = 100
-        if(costElement){
+        if (costElement) {
             llicost = costElement.textContent
         }
         // else{
         //     alert('unable to update cost')
         // }
-        
-    
+
+
         let categoryElement = document.getElementById("edit-category-input")
-        let category1 = categoryElement.value 
+        let category1 = categoryElement.value
         let category2 = categoryElement.value
-        let category3 = categoryElement.value 
+        let category3 = categoryElement.value
 
         let recurrenceElement = document.getElementById("edit-recurrence-input")
         let recurrence = recurrenceElement.value
         let recurrenceStatus = "Off"
         let recurrenceFrequency = "None"
-        if(recurrence in ["Weekly", "Monthly", "Yearly"]){
+        if (recurrence in ["Weekly", "Monthly", "Yearly"]) {
             recurrenceFrequency = recurrence
             recurrenceStatus = "On"
         }
@@ -500,44 +503,44 @@
         updateLLI(options)
     }
 
-    function lliCreation(){
+    function lliCreation() {
 
         let titleElement = document.getElementById("create-title-input")
         let llititle = titleElement.textContent
-    
+
         let deadlineElement = document.getElementById("create-date-input")
-        let llideadline = deadlineElement.value 
-        
+        let llideadline = deadlineElement.value
+
 
         let descriptionElement = document.getElementById("create-paragraph-input")
         let llidescription = descriptionElement.textContent
-    
+
         let statusElement = document.getElementById("create-status-input")
         let llistatus = statusElement.value
-    
+
         let visibilityElement = document.getElementById("create-visibility-input")
         let llivisibility = visibilityElement.value
-    
+
         let costElement = document.getElementById("create-cost-input")
         let llicost = 100
-        if(costElement){
+        if (costElement) {
             llicost = costElement.textContent
         }
         // else{
         //     alert('unable to update cost')
         // }
-        
-    
+
+
         let categoryElement = document.getElementById("create-category-input")
-        let category1 = categoryElement.value 
+        let category1 = categoryElement.value
         let category2 = categoryElement.value
-        let category3 = categoryElement.value 
+        let category3 = categoryElement.value
 
         let recurrenceElement = document.getElementById("create-recurrence-input")
         let recurrence = recurrenceElement.value
         let recurrenceStatus = "Off"
         let recurrenceFrequency = "None"
-        if(recurrence in ["Weekly", "Monthly", "Yearly"]){
+        if (recurrence in ["Weekly", "Monthly", "Yearly"]) {
             recurrenceFrequency = recurrence
             recurrenceStatus = "On"
         }
@@ -559,7 +562,7 @@
         createLLI(options)
     }
 
-    window.PNRetrieval = function(){
+    window.PNRetrieval = function () {
 
         let allPNButtons = document.querySelectorAll(".pn-btn")
 
@@ -568,10 +571,10 @@
 
                 let pnDateNoFormat = PNButton.id.split("-")[2]
                 let formattedDate = `${pnDateNoFormat.split("/")[2]}-${pnDateNoFormat.split("/")[0]}-${pnDateNoFormat.split("/")[1]}`
-                
-                getNote(formattedDate).then(function(data) {
-                    
-                    if(data.output !== null){
+
+                getNote(formattedDate).then(function (data) {
+
+                    if (data.output !== null) {
 
                         let pnDateElement = document.getElementById("create-date-input-pn")
                         pnDateElement.readOnly = true;
@@ -580,24 +583,23 @@
                         let submitBtn = document.getElementById("create-pn-btn")
                         submitBtn.disabled = true;
 
-                        
+
                         // adding and removing classes for creating/editing a note
-                        
-                        if (submitBtn.classList.contains("new-note"))
-                        {
+
+                        if (submitBtn.classList.contains("new-note")) {
                             submitBtn.classList.remove("new-note");
                         }
                         submitBtn.classList.add("existing-note")
 
                         // show the content of note in here div should have this content
                         let personalNote = data.output[0]
-                        
+
                         let noteParagraphElement = document.getElementById("create-paragraph-input-pn")
-                        
-                        noteParagraphElement.textContent = `${personalNote.noteContent}`; 
+
+                        noteParagraphElement.textContent = `${personalNote.noteContent}`;
 
                     }
-                    else{
+                    else {
 
                         let pnDateElement = document.getElementById("create-date-input-pn")
                         pnDateElement.readOnly = false;
@@ -611,15 +613,14 @@
 
                         let noteParagraphElement = document.getElementById("create-paragraph-input-pn")
                         noteParagraphElement.textContent = '';
-                       
+
                         // adding and removing classes for creating/editing a note
                         let submitPNBtn = document.getElementById("create-pn-btn")
-                        if (submitPNBtn.classList.contains("existing-note"))
-                        {
+                        if (submitPNBtn.classList.contains("existing-note")) {
                             submitPNBtn.classList.remove("existing-note");
                         }
                         submitPNBtn.classList.add("new-note")
-                    
+
                     }
 
                 })
@@ -627,11 +628,11 @@
         })
     }
 
-    function pnCreation(){
-        
+    function pnCreation() {
+
         let pnDateElement = document.getElementById("create-date-input-pn")
         let noteDate = pnDateElement.value
-    
+
         let pnDesElement = document.getElementById("create-paragraph-input-pn")
         let noteContent = pnDesElement.textContent
 
@@ -647,14 +648,13 @@
 
         logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
-            window.location = '../HomePage/index.html'
-            location.reload()
+            routeManager.loadPage(routeManager.PAGES.homePage)
         })
     }
-    
-    
 
-    
+
+
+
 
     root.myApp = root.myApp || {};
 
@@ -664,13 +664,14 @@
 
     // Initialize the current view by attaching event handlers 
     function init() {
+
         jwtToken = localStorage["token-local"]
 
         if (jwtToken == null) {
             alert("Unauthorized User In View")
-            window.location = '../HomePage/index.html'
+            routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
-        
+
             // call functions here 
             let editLLIBtn = document.getElementById("edit-lli-button")
             editLLIBtn.addEventListener('click', () => {
@@ -683,12 +684,15 @@
             })
 
             let createPNBtn = document.getElementById("create-pn-btn")
-                createPNBtn.addEventListener('click', () => {
+            createPNBtn.addEventListener('click', () => {
 
-                    pnCreation()
-                
-            })  
-            
+                pnCreation()
+
+            })
+
+            calendarDomManipulation.renderCalendar(showCalendarLLI)
+            calendarDomManipulation.renderModals()
+
             setupLogout();
 
         }
@@ -699,7 +703,7 @@
     // let nextMonth = document.getElementById("get-next-month")
     // nextMonth.addEventListener("click", onClickGetNextMonth)
 
-})(window, window.ajaxClient);
+}
 
 
 

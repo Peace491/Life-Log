@@ -1,8 +1,11 @@
 'use strict';
 import Router from '../routes.js';
+import * as lliDomManip from './lli-dom-manipulation.js'
+import * as routeManager from '../routeManager.js';
+
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function loadLLIPage(root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -407,7 +410,7 @@ import Router from '../routes.js';
 
         logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
-            location.reload()
+            routeManager.loadPage(routeManager.PAGES.homePage)
         })
     }
 
@@ -415,7 +418,7 @@ import Router from '../routes.js';
         let calendarLink = document.getElementById("calendar-link")
 
         calendarLink.addEventListener('click', function () {
-            window.location = "../CalendarPage/index.html"
+            routeManager.loadPage(routeManager.PAGES.calendarPage)
             
         })
     }
@@ -428,7 +431,7 @@ import Router from '../routes.js';
         getAllLLI().then(function (completedLLIList) {
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
+                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -446,7 +449,7 @@ import Router from '../routes.js';
         jwtToken = localStorage["token-local"]
 
         if (jwtToken == null) {
-            window.location = '../HomePage/index.html'
+            routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
             // Set up event handlers
             setupCreateLLITemplate();
@@ -468,7 +471,7 @@ import Router from '../routes.js';
 
     init();
 
-})(window, window.ajaxClient);
+}
 
 
 
