@@ -14,10 +14,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction="Create") {
 
     let jwtToken;
 
-    let principal = {
-        userId: "System",
-        claims: {"Role": "Admin"}
-    }
+    let principal = {}
 
     function setupSubmitUserForm() {
         let submitButton = document.getElementById('submit-ranking-button')
@@ -51,12 +48,16 @@ export function loadUserFormPage(root, ajaxClient, userFormAction="Create") {
     }
 
     function init() {
-        // jwtToken = localStorage["token-local"]
-        jwtToken = "Token"
+        jwtToken = localStorage["token-local"]
 
         if (jwtToken == null) { // User not logged in
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            let jwtTokenObject = JSON.parse(jwtToken); 
+            principal = {
+                userId: jwtTokenObject.Payload.UserHash,
+                claims: jwtTokenObject.Payload.Claims,
+            };
             setupSubmitUserForm()
         }
     }

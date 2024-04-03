@@ -12,6 +12,7 @@ public interface IUserFormRepo
         int foodRating
     );
     public Task<Response> ReadUserFormCompletionStatusInDB(string userHash);
+    public Task<Response> ReadUserFormCategoriesRankingInDB(string userHash);
     public Task<Response> UpdateUserFormInDB(
         string userHash,
         int mentalHealthRating, int physicalHealthRating, int outdoorRating,

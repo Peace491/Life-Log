@@ -170,4 +170,8 @@ public class UserFormService : IUserFormService
         return response;
     }
 
+    public Task<UserFormRanking> GetUserFormRanking(string userHash)
+    {
+        throw new NotImplementedException();
+    }
 }

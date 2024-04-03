@@ -416,11 +416,16 @@ export function loadLLIPage(root, ajaxClient) {
 
     function setupHeaderLinks(){
         let calendarLink = document.getElementById("calendar-link")
+        let userFormLink = document.getElementById("user-form-link")
 
         calendarLink.addEventListener('click', function () {
             routeManager.loadPage(routeManager.PAGES.calendarPage)
-            
         })
+
+        userFormLink.addEventListener('click', function() {
+            routeManager.loadPage(routeManager.PAGES.userFormPage, "Update")
+        })
+
     }
 
     function showLLI() {

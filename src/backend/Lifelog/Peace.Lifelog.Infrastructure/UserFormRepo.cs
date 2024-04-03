@@ -69,11 +69,29 @@ public class UserFormRepo : IUserFormRepo
         return createUserFormResponse;
     }
 
+    public async Task<Response> ReadUserFormCategoriesRankingInDB(string userHash)
+    {
+        var readResponse = new Response();
+
+        string sql = "SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking "
+        + $"FROM UserForm Where UserHash=\"{userHash}\"";
+
+        try {
+            readResponse = await readDataOnlyDAO.ReadData(sql);
+        } catch (Exception error) {
+            readResponse.HasError = true;
+            readResponse.ErrorMessage = error.Message;
+            readResponse.Output = null;
+        }
+        
+        return readResponse;
+    }
+
     public async Task<Response> ReadUserFormCompletionStatusInDB(string userHash)
     {
         var readResponse = new Response();
 
-        string sql = $"SELECT IsUserFormCompleted FROM LifelogProfile WHERE UserHash=\"{userHash}\"";
+        string sql = $"SELECT IsUserFormCompleted FROM LifelogAuthentication WHERE UserHash=\"{userHash}\"";
 
         try {
             readResponse = await readDataOnlyDAO.ReadData(sql);
@@ -166,7 +184,7 @@ public class UserFormRepo : IUserFormRepo
 
     private Task<Response> UpdateUserIsCompletedFieldInAuthenticationTableInDB(string userHash)
     {
-        var sql = $"UPDATE LifelogProfile SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
+        var sql = $"UPDATE LifelogAuthentication SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
 
         var response = this.updateDataOnlyDAO.UpdateData(sql);
 
