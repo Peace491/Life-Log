@@ -46,11 +46,14 @@ import * as validator from "./reInputValidation.js";
           let recommendationContainer = document.getElementsByClassName(
             "recommendation-container"
           )[0];
+          console.log(recommendationContainer);
           recommendationContainer.innerHTML = "";
           for (let recommendation of recommendationList) {
-            let lliDiv = createLLIDiv(recommendation);
-            console.log(lliDiv);
-            recommendationContainer.appendChild(lliDiv);
+            console.log(recommendation);
+            let result = createLLIDiv(recommendation);
+            console.log(result[0]);
+            recommendationContainer.appendChild(result[0]);
+            setupPostLLI(result[1]);
           }
         })
         .catch(function (error) {
@@ -59,35 +62,34 @@ import * as validator from "./reInputValidation.js";
     });
   }
 
-  function postLLI(attributes, idPrefix) {
+  function postLLI(options) {
     // Validate the input
-    if (!validator.validateLLI(attributes)) {
-      alert("Invalid input");
-      return Promise.reject(new Error("Invalid input"));
-    }
+    // if (!validator.validateLLI(options)) {
+    //   alert("Invalid input");
+    //   return Promise.reject(new Error("Invalid input"));
+    // }
+    let createLLIUrl = `${lliWebServiceUrl}/postLLI`;
 
-    // Extract the values from the attributes object
-    const title = attributes.title;
-    const description = attributes.description;
-    const category = attributes.category;
-    const status = attributes.status;
-    const visibility = attributes.visibility;
-    const deadline = attributes.deadline;
-    const recurrence = attributes.recurrence;
-    const cost = attributes.cost;
+    let request = ajaxClient.post(createLLIUrl, options, jwtToken)
 
-    // Prepare the data to be sent to the server
-    const data = {
-      title: title,
-      description: description,
-      category: category,
-      status: status,
-      visibility: visibility,
-      deadline: deadline,
-      recurrence: recurrence,
-      cost: cost,
-    };
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json()
+            }).then(function (response) {
+                alert('The LLI is successfully created.')
+                location.reload()
+                resolve(response)
+            }).catch(function (error) {
+                alert(error)
+                reject(error)
+            })
+        })
   }
+
   function setupPostLLI(idPrefix) {
     console.log(`${idPrefix}-create-recommendation-button`)
       let createRecommendationButton = document.getElementById(
@@ -96,10 +98,11 @@ import * as validator from "./reInputValidation.js";
 
       createRecommendationButton.addEventListener("click", function () {
         // pass in the user hash
-        let response = postLLI(data, idPrefix);
         let title = document.getElementById(`${idPrefix}-title`).textContent;
         let deadline = document.getElementById(`${idPrefix}-date-input`).value;
         // TODO categories
+        let selectedCategories = document.getElementById(`${idPrefix}-categories`).textContent.split(", ");
+        console.log(selectedCategories);
         let description = document.getElementById(
           `${idPrefix}-description-input`
         ).textContent;
@@ -108,9 +111,22 @@ import * as validator from "./reInputValidation.js";
           `${idPrefix}-visibility-input`
         ).value;
         let cost = document.getElementById(`${idPrefix}-cost-input`).textContent;
+        
         let recurrence = document.getElementById(
           `${idPrefix}-recurrence-input`
         ).value;
+
+        let recurrenceStatus;
+        let recurrenceFrequency;
+
+        if (recurrence === "Off") {
+          recurrenceStatus = "Off"
+          recurrenceFrequency = "None"
+        }
+        else {
+            recurrenceStatus = "On"
+            recurrenceFrequency = recurrence
+        }
 
         let options = {
           title: title,
@@ -128,6 +144,7 @@ import * as validator from "./reInputValidation.js";
       }
 
       console.log(options)
+      let response = postLLI(options, idPrefix);
 
         response
           .then(() => {
@@ -255,7 +272,7 @@ import * as validator from "./reInputValidation.js";
 
     // Append form created by createForm function
     recommendationDiv.appendChild(createForm(idPrefix, recommendation)); // Pass idPrefix to maintain consistency
-    return recommendationDiv;
+    return [recommendationDiv, idPrefix];
   }
 
   function createForm(idPrefix, recommendation) {
@@ -295,6 +312,7 @@ import * as validator from "./reInputValidation.js";
     formContainer.appendChild(recurrenceContainer);
     formContainer.appendChild(costContainer);
     formContainer.appendChild(recommendationContainer);
+
 
     return formContainer;
   }
@@ -507,8 +525,6 @@ import * as validator from "./reInputValidation.js";
     createRecommendationContainer.innerHTML = `
           <button id="${idPrefix}-create-recommendation-button">Create Item</button>
         `;
-    setupPostLLI(idPrefix);
-
     return createRecommendationContainer;
   }
   
