@@ -1,4 +1,4 @@
-﻿namespace Peace.Lifelog.RE;
+﻿namespace DomainModels;
 
 public class REDataMart
 {

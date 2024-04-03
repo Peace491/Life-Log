@@ -1,5 +1,6 @@
 namespace Peace.Lifelog.RecEngineTest;
 
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.RecEngineService;
@@ -27,8 +28,8 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
-        var recEngineService = new RecEngineService(recomendationEngineRepository, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO);
+        var recEngineService = new RecEngineService(recEngineRepo, logger);
 
         // Act
         var response = await recEngineService.getNumRecs(TEST_USER_HASH, numRecs);
@@ -50,8 +51,8 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
-        var recEngineService = new RecEngineService(recomendationEngineRepository, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO);
+        var recEngineService = new RecEngineService(recEngineRepo, logger);
         int numRecs = 5;
 
         // Act
@@ -73,8 +74,8 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
-        var recEngineService = new RecEngineService(recomendationEngineRepository, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO);
+        var recEngineService = new RecEngineService(recEngineRepo, logger);
         int numRecs = -1;
 
         // Act
@@ -96,8 +97,8 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
-        var recEngineService = new RecEngineService(recomendationEngineRepository, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO);
+        var recEngineService = new RecEngineService(recEngineRepo, logger);
         int numRecs = 11;
 
         // Act
@@ -119,8 +120,8 @@ public class ReServiceShould
         Logging logger = new Logging(logTarget: logTarget);
 
         // need to setup a user every single time this test is run 
-        var recomendationEngineRepository = new RecomendationEngineRepository(readDataOnlyDAO);
-        var recEngineService = new RecEngineService(recomendationEngineRepository, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO);
+        var recEngineService = new RecEngineService(recEngineRepo, logger);
         int numRecs = 5;
 
         // Act

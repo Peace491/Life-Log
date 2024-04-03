@@ -1,8 +1,7 @@
-﻿using DomainModels;
+﻿namespace Peace.Lifelog.Infrastructure;
+using DomainModels;
 
-namespace Peace.Lifelog.DataAccess;
-
-public interface IRecomendationEngineRepository
+public interface IRecEngineRepo
 {
     Task<Response> GetNumRecs(string userHash, int numRecs, CancellationToken cancellationToken = default);
 }

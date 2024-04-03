@@ -1,8 +1,8 @@
 namespace Peace.Lifelog.REWebService;
 
 using DomainModels;
-using Peace.Lifelog.RE;
-using Peace.Lifelog.LLIWebService;
+
+
 using Peace.Lifelog.Logging;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
 using System.Text.Json;

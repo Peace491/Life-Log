@@ -1,8 +1,9 @@
-﻿namespace Peace.Lifelog.DataAccess;
+﻿namespace Peace.Lifelog.Infrastructure;
 
-using System.ComponentModel;
 using DomainModels;
-public class SummaryRepository : ISummaryRepository
+using Peace.Lifelog.DataAccess;
+
+public class RecSummaryRepo : IRecSummaryRepo
 {
     private string selectAllUserHash = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
     private string tableName = "RecSummary";

@@ -1,6 +1,6 @@
 ﻿namespace Peace.Lifelog.RecEngineService;
 
-using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using System.Diagnostics;
@@ -8,13 +8,13 @@ using DomainModels;
 
 public class RecEngineService : IRecEngineService
 {
-    private readonly IRecomendationEngineRepository recomendationEngineRepository;
+    private readonly IRecEngineRepo recEngineRepo;
     private readonly ILogging logger;
 
-    // Inject RecomendationEngineRepository through the constructor
-    public RecEngineService(IRecomendationEngineRepository recomendationEngineRepository, ILogging logger)
+    // Inject recEngineRepo through the constructor
+    public RecEngineService(IRecEngineRepo recEngineRepo, ILogging logger)
     {
-        this.recomendationEngineRepository = recomendationEngineRepository;
+        this.recEngineRepo = recEngineRepo;
         this.logger = logger;
     }
     
@@ -34,7 +34,7 @@ public class RecEngineService : IRecEngineService
             timer.Start();
 
             // Preform operation
-            response = await recomendationEngineRepository.GetNumRecs(userhash, numRecs);
+            response = await recEngineRepo.GetNumRecs(userhash, numRecs);
 
             // Stop timer
             timer.Stop();

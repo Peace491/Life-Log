@@ -1,6 +1,6 @@
 namespace Peace.Lifelog.RecSummaryService;
 
-using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 
 public class RecSummaryServiceShould
 {
@@ -9,8 +9,8 @@ public class RecSummaryServiceShould
     public async Task updateRecommendationDataMartForUser_Should_UpdateUserRecommendationDataMart()
     {
         // Arrange
-        var summaryRepository = new SummaryRepository();
-        var reService = new RecSummaryService(summaryRepository);
+        var recSummaryRepo = new RecSummaryRepo();
+        var reService = new RecSummaryService(recSummaryRepo);
         var userHash = TEST_USER_HASH;
 
         // Act
@@ -23,8 +23,8 @@ public class RecSummaryServiceShould
     public async Task updateRecommendationDataMartForSystem_Should_UpdateSystemToHoldMostPopularCategory()
     {
         // Arrange
-        var summaryRepository = new SummaryRepository();
-        var reService = new  RecSummaryService(summaryRepository);
+        var recSummaryRepo = new RecSummaryRepo();
+        var reService = new  RecSummaryService(recSummaryRepo);
 
         // Act
         var result = await reService.updateSystemUserRecSummary();
@@ -36,8 +36,8 @@ public class RecSummaryServiceShould
     public async Task updateRecommendationDataMartForAllUsers_Should_UpdateAllUserRecommendationDataMart()
     {
         // Arrange
-        var summaryRepository = new SummaryRepository();
-        var reService = new RecSummaryService(summaryRepository);
+        var recSummaryRepo = new RecSummaryRepo();
+        var reService = new RecSummaryService(recSummaryRepo);
         
         // Act
         var result = await reService.updateAllUserRecSummary();
@@ -50,8 +50,8 @@ public class RecSummaryServiceShould
     public async Task updateUserRecSummary_Should_ReturnAnErrorIfTheUserHashIsInvalid()
     {
         // Arrange
-        var summaryRepository = new SummaryRepository();
-        var reService = new RecSummaryService(summaryRepository);
+        var recSummaryRepo = new RecSummaryRepo();
+        var reService = new RecSummaryService(recSummaryRepo);
         var userHash = "InvalidUserHash";
 
         // Act
@@ -66,8 +66,8 @@ public class RecSummaryServiceShould
         // Somehow check if the user is an admin
 
         // Arrange
-        var summaryRepository = new SummaryRepository();
-        var reService = new RecSummaryService(summaryRepository);
+        var recSummaryRepo = new RecSummaryRepo();
+        var reService = new RecSummaryService(recSummaryRepo);
 
         // Act
         var result = await reService.updateAllUserRecSummary();

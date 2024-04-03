@@ -2,7 +2,7 @@ using Microsoft.Net.Http.Headers;
 using Peace.Lifelog.RecEngineService;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
-using Peace.Lifelog.RecEngineService;
+using Peace.Lifelog.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
-builder.Services.AddTransient<IRecomendationEngineRepository, RecomendationEngineRepository>(); 
+builder.Services.AddTransient<IRecEngineRepo, RecEngineRepo>(); 
 builder.Services.AddTransient<IRecEngineService, RecEngineService>();
 
 builder.Services.AddEndpointsApiExplorer();

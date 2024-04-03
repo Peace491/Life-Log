@@ -1,17 +1,17 @@
 ﻿namespace Peace.Lifelog.RecSummaryService;
 
 using DomainModels;
-using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 
 public class RecSummaryService : IRecSummaryService
 {
     // Inject summary repo through the constructor
     // Summary repo will need a read only dao
-    private readonly SummaryRepository summaryRepository;
+    private readonly RecSummaryRepo recSummaryRepo;
 
-    public RecSummaryService(SummaryRepository summaryRepository)
+    public RecSummaryService(RecSummaryRepo recSummaryRepo)
     {
-        this.summaryRepository = summaryRepository;
+        this.recSummaryRepo = recSummaryRepo;
     }
 
     // only allow users to do this Y times a day
@@ -21,7 +21,7 @@ public class RecSummaryService : IRecSummaryService
         try
         {
             // Get userform
-            response = await summaryRepository.GetUserForm(userHash);
+            response = await recSummaryRepo.GetUserForm(userHash);
             
             if (response.Output == null)
             {
@@ -35,7 +35,7 @@ public class RecSummaryService : IRecSummaryService
             // TODO : Evaluate for biz rules
 
             // Get userLLI
-            response = await summaryRepository.GetNumUserLLI(userHash, null);
+            response = await recSummaryRepo.GetNumUserLLI(userHash, null);
             // Update scores with userLLI
             var scoreDict = scoreLLI(userScores, response);
 
@@ -45,10 +45,10 @@ public class RecSummaryService : IRecSummaryService
             var topTwoCategories = getTopTwoCategories(scoreDict);
 
             // Get system most popular category
-            response = await summaryRepository.GetMostPopularCategory();
+            response = await recSummaryRepo.GetMostPopularCategory();
 
             // Update the user's data mart with the two highest scoring categories
-            response = await summaryRepository.UpdateUserDataMart(userHash, topTwoCategories[0], topTwoCategories[1]);
+            response = await recSummaryRepo.UpdateUserDataMart(userHash, topTwoCategories[0], topTwoCategories[1]);
 
             // TODO : Evaluate for biz rules
         }
@@ -63,7 +63,7 @@ public class RecSummaryService : IRecSummaryService
     public async Task<Response> updateSystemUserRecSummary()
     {
         // This method is horrid right now - need to fix takign a break for the night
-        var mostPopularCategory = await summaryRepository.GetMostPopularCategory();
+        var mostPopularCategory = await recSummaryRepo.GetMostPopularCategory();
 
         foreach (List<Object> category in mostPopularCategory.Output)
         {
@@ -72,7 +72,7 @@ public class RecSummaryService : IRecSummaryService
                 mostPopularCategory.ErrorMessage = "An error occurred while processing your request.";
                 return mostPopularCategory;
             }
-            var updateDataMartResponse = await summaryRepository.UpdateUserDataMart("System", category[0].ToString(), null);
+            var updateDataMartResponse = await recSummaryRepo.UpdateUserDataMart("System", category[0].ToString(), null);
             return updateDataMartResponse;
         }
         return mostPopularCategory;
@@ -86,7 +86,7 @@ public class RecSummaryService : IRecSummaryService
         try
         {
             // get all userHashes
-            var allUserHashResponse = await summaryRepository.GetAllUserHash();
+            var allUserHashResponse = await recSummaryRepo.GetAllUserHash();
 
             // Num of users
             int numUsers = allUserHashResponse.Output.Count;

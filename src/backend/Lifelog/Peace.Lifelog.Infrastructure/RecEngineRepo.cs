@@ -1,16 +1,16 @@
-﻿namespace Peace.Lifelog.DataAccess;
+﻿namespace Peace.Lifelog.Infrastructure;
 
 using DomainModels;
-using Peace.Lifelog.RE;
+using Peace.Lifelog.DataAccess;
 
-public class RecomendationEngineRepository : IRecomendationEngineRepository
+public class RecEngineRepo : IRecEngineRepo
 {
-    private readonly IReadDataOnlyDAO readDataOnlyDAO;
+private readonly IReadDataOnlyDAO readDataOnlyDAO;
 
     private string tableName = "RecSummary";
 
     // Inject Nessesary DAO and Logger
-    public RecomendationEngineRepository(IReadDataOnlyDAO readDataOnlyDAO)
+    public RecEngineRepo(IReadDataOnlyDAO readDataOnlyDAO)
     {
         this.readDataOnlyDAO = readDataOnlyDAO;
 
@@ -177,4 +177,3 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
         return userDatamart;
     }
 }
-
