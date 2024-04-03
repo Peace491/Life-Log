@@ -2,13 +2,12 @@
 
 using DomainModels;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.PersonalNote;
-using System.Diagnostics;
 using System;
-
-
+using System.Diagnostics;
 
 public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWithCalendar, IGetMonthPN, ICreatePNWithCalendar, IUpdatePNWithCalendar
 {
@@ -25,6 +24,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
     private Logging logging;
     private LLIService lliService;
     private PersonalNoteService personalNoteService;
+    private IPersonalNoteRepo personalNoteRepo;
     public CalendarService()
     {
         this.createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -34,7 +34,8 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         this.logTarget = new LogTarget(this.createDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
         this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
-        this.personalNoteService = new PersonalNoteService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+        this.personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+        this.personalNoteService = new PersonalNoteService(personalNoteRepo, this.logging);
 
 
     }
@@ -42,22 +43,22 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
 
     // get all LLI for a specified month
-    public async Task<Response> GetMonthLLI(string userHash, int month, int year) 
+    public async Task<Response> GetMonthLLI(string userHash, int month, int year)
     {
         var timer = new Stopwatch();
 
         timer.Start();
 
         var getLLIResponse = new Response();
-        
+
         getLLIResponse.Output = new List<object>();
 
         DateTime validDateTime = new DateTime(year, month, 1);
 
-        
+
         var getAllLLIResponse = await lliService.GetAllLLIFromUser(userHash);
 
-        
+
 
         if (getAllLLIResponse.Output is not null)
         {
@@ -78,7 +79,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
                 if (LLIdateTime.Year == validDateTime.Year && LLIdateTime.Month == validDateTime.Month)
                 {
-                    
+
                     getLLIResponse.Output.Add(LLI);
                 }
             }
@@ -105,7 +106,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         return getLLIResponse;
 
     }
-    
+
     //Calls CreateLLI from lliservice to create a LLI
     public async Task<Response> CreateLLIWithCalendar(string userHash, LLI lli)
     {

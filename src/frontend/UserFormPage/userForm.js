@@ -54,12 +54,10 @@ export function loadUserFormPage(root, ajaxClient, userFormAction="Create") {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
             let jwtTokenObject = JSON.parse(jwtToken); 
-            console.log(jwtTokenObject);
             principal = {
                 userId: jwtTokenObject.Payload.UserHash,
                 claims: jwtTokenObject.Payload.Claims,
             };
-            console.log(principal);
             setupSubmitUserForm()
         }
     }

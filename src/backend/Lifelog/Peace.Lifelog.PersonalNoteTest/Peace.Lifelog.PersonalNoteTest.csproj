@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Peace.Lifelog.DataAccessTest\Peace.Lifelog.DataAccessTest.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.PersonalNote\Peace.Lifelog.PersonalNote.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" />

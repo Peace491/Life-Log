@@ -1,8 +1,9 @@
 'use strict';
-import Router from '../routes.js';
+import * as routeManager from '../routeManager.js'
+import * as personalNoteDomManipulator from './personalnote-dom-manipulation.js'
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function LoadPersonalNotePage (root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -12,17 +13,24 @@ import Router from '../routes.js';
     }
 
     const MAX_CONTENT_LENGTH = 1200
-    const MAX_DATE = 2100
-    const EARLIEST_NOTE_YEAR = 1960
-    const LATEST_NOTE_YEAR = new Date().getFullYear();
+    // To get the date six months earlier
+    let early_date = new Date();
+    early_date.setMonth(early_date.getMonth() - 6);
+
+    const EARLIEST_NOTE_DATE = early_date;
+    const LATEST_NOTE_DATE = new Date();
+    LATEST_NOTE_DATE.setDate(LATEST_NOTE_DATE.getDate() + 1);
 
     let jwtToken = ""
-
-    const webServiceUrl = 'http://localhost:8083/personalnote';
+    let webServiceUrl = ""
+    let createUrl = ""
+    let getUrl = ""
+    let updateUrl = ""
+    let deleteUrl = ""
 
     // NOT exposed to the global object ("Private" functions)
     function createNote(options) {
-        let createPersonalNoteUrl = webServiceUrl + '/postPN'
+        let createPersonalNoteUrl = webServiceUrl + createUrl;
 
         let isValidOption = validatePersonalNoteOptions(options)
         if (!isValidOption) {
@@ -50,28 +58,16 @@ import Router from '../routes.js';
 
     // NOT exposed to the global object ("Private" functions)
     function getNote(notedate) {
-        let getUrl = webServiceUrl + '/getPN?notedate=' + notedate;
-
-        // validate the date
-        let year = parseInt(notedate.substring(0, 4))
-        if (year < EARLIEST_NOTE_YEAR || year > LATEST_NOTE_YEAR) {
-            alert(`The Note date must be between 01/01/${EARLIEST_NOTE_YEAR} and 12/31/${LATEST_NOTE_YEAR}, please try again.`)
-            return
-        }
-
-        console.log(jwtToken);
-
-        let request = ajaxClient.get(getUrl, jwtToken);
+        let get_Url = webServiceUrl + getUrl + notedate;
+        let request = ajaxClient.get(get_Url, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 if (response.status != 200) {
                     throw new Error(response.statusText)
                 }
-
                 return response.json();
             }).then(function (data) {
-                console.log(data);
                 let output = data.output;
                 resolve(output);
             }).catch(function (error) {
@@ -82,14 +78,14 @@ import Router from '../routes.js';
     }
 
     function updateNote(options) {
-        let updateLLIUrl = webServiceUrl + '/putPN'
+        let Url = webServiceUrl + updateUrl;
 
         let isValidOption = validatePersonalNoteOptions(options)
         if (!isValidOption) {
             return
         }
 
-        let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
+        let request = ajaxClient.put(Url, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
@@ -109,8 +105,8 @@ import Router from '../routes.js';
     }
 
     function deleteNote(noteid) {
-        let deleteUrl = webServiceUrl + '/deletePN?noteid=' + noteid;
-        let request = ajaxClient.del(deleteUrl, jwtToken);
+        let Url = webServiceUrl + deleteUrl + noteid;
+        let request = ajaxClient.del(Url, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
@@ -133,13 +129,22 @@ import Router from '../routes.js';
     function validatePersonalNoteOptions(option) {
         // Input Validation
         if (option.notecontent == "" || option.notecontent.length > MAX_CONTENT_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.notecontent.replaceAll(' ', ''))) {
-            alert('The note must only contain  alphanumeric values between 1-50 characters long, please try again.')
+            alert("The note must only contain  alphanumeric values between 1-" + MAX_CONTENT_LENGTH + ", please try again.")
             return false
         }
 
-        let year = parseInt(option.notedate.substring(0, 4))
-        if (year < EARLIEST_NOTE_YEAR || year > LATEST_NOTE_YEAR) {
-            alert(`The Note date must be between 01/01/${EARLIEST_NOTE_YEAR} and 12/31/${LATEST_NOTE_YEAR}, please try again.`)
+        let year = parseInt(option.notedate.substring(0, 4));
+        let month = parseInt(option.notedate.substring(5, 7)) - 1; // Subtract 1 because months are zero-based
+        let day = parseInt(option.notedate.substring(8, 10));
+
+        let noteDate = new Date();
+        noteDate.setDate(day);
+        noteDate.setMonth(month);
+        noteDate.setFullYear(year);
+
+        if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
+            alert(`You can only select dates within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
+            location.reload()
             return false
         }
 
@@ -151,6 +156,7 @@ import Router from '../routes.js';
     function setupCreateNoteSubmit() {
         let createButton = document.getElementById('submit-note-button')
         createButton.addEventListener('click', function () {
+            let charContainer = document.getElementById('indicator');
             let noteParagraph = document.getElementById("create-paragraph-input")
             let content = noteParagraph.textContent
             let date = document.getElementById('create-date-input').value
@@ -159,7 +165,8 @@ import Router from '../routes.js';
                 notedate: date,
                 notecontent: content
             }
-            console.log(options);
+            charContainer.style.visibility = "hidden";
+
             if (noteParagraph.classList.contains("NewNote"))
             {
                 createNote(options)
@@ -167,13 +174,13 @@ import Router from '../routes.js';
                     getNote(date)
                     .then(function(noteText){
                         noteParagraph.setAttribute("noteid", noteText[0]["noteId"]);
+                        noteParagraph.classList.remove("NewNote")
                     })
                     .catch(function (error) {
                         // Handle error if retrieval fails
                         alert("Error retrieving note: " + error);
                     });
                 })
-                console.log(date);
                 
             }
             else
@@ -185,9 +192,24 @@ import Router from '../routes.js';
     }
 
     function showNote() {
-        console.log("here");
         let dateInput = document.getElementById("create-date-input");
         let selectedDate = dateInput.value;
+        // Validate Date
+        let year = parseInt(selectedDate.substring(0, 4));
+        let month = parseInt(selectedDate.substring(5, 7)) - 1; // Subtract 1 because months are zero-based
+        let day = parseInt(selectedDate.substring(8, 10));
+
+        let noteDate = new Date();
+        noteDate.setDate(day);
+        noteDate.setMonth(month);
+        noteDate.setFullYear(year);
+
+        if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
+            alert(`You can only select datess within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
+            location.reload()
+            return false
+        }
+
         // Call getNote function to retrieve note data
         getNote(selectedDate)
         .then(function (noteText) {
@@ -195,7 +217,6 @@ import Router from '../routes.js';
             if(noteText == null)
             {
                 noteParagraph.textContent = '';
-                console.log("nothing for this date");
                 noteParagraph.placeholder = "What are you thinking?......";
                 noteParagraph.classList.add("NewNote");
                 noteParagraph.setAttribute("noteid", "");
@@ -220,18 +241,41 @@ import Router from '../routes.js';
     // Attach event listener to the date input element, to always show latest change
     function currNote () {
         let date_input = document.getElementById("create-date-input");
-
+        
         date_input.onchange = function (){
             showNote();
         }
     }
+
+    function countCharacters() {
+        let noteParagraph = document.getElementById("create-paragraph-input");
+        noteParagraph.oninput = function () {
+            let modifiedParagraph = document.getElementById("create-paragraph-input");
+            const characterCount = modifiedParagraph.innerText.length;
+            const maxCharacters = 1200;
+            let charContainer = document.getElementById('indicator');
+
+            if (characterCount > maxCharacters){
+                alert("Character Limit of " + maxCharacters + " Exceeded!")
+            }
+            charContainer.textContent = `(${characterCount}/${maxCharacters})`;
+
+            // Show or hide the character indicator based on whether there is input
+            if (characterCount > 0) {
+                charContainer.style.visibility = "visible";
+            } else {
+                charContainer.style.visibility = "hidden";
+            }
+        };
+    }
+    
 
     function setupLogout() {
         let logoutInput = document.getElementById('logout')
 
         logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
-            location.reload()
+            routeManager.loadPage(routeManager.PAGES.homePage)
         })
     }
 
@@ -249,35 +293,46 @@ import Router from '../routes.js';
             }
         })
     }
+
+    async function fetchConfig() {
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        webServiceUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteWebService;
+        createUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteCreate;
+        getUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteGet;
+        updateUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteUpdate;
+        deleteUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteDelete;
+    }
+
     root.myApp = root.myApp || {};
 
     // Initialize the current view by setting up data and attaching event handlers 
-    function init() {
+    async function init() {
         jwtToken = localStorage["token-local"]
-
         if (jwtToken == null) {
-            window.location = '../HomePage/index.html'
+            routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            await fetchConfig();
+            personalNoteDomManipulator.setUp();
+            window.name = routeManager.PAGES.personalNotePage
             // Set up event handlers
             setupCreateNoteSubmit();
             setupDeleteNote();
             setupLogout();
+            countCharacters();
 
             // Get data
             showNote();
             currNote();
-
             //navigate 
-            const router = new Router;
-            router.navigatePages();
+            routeManager.setupHeaderLinks();
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        init();
-    });
+    init()
 
-})(window, window.ajaxClient);
+}
 
 
 

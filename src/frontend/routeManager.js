@@ -6,6 +6,7 @@ import * as registrationPage from './RegistrationPage/registration.js'
 import * as calendarPage from './CalendarPage/calendar.js'
 import * as userFormPage from './UserFormPage/userForm.js'
 import * as recEnginePage from './RecEnginePage/recEngine.js'
+import * as personalNotePage from './PersonalNotePage/personalnote.js'
 
 
 export const PAGES = {
@@ -14,7 +15,8 @@ export const PAGES = {
     registrationPage: 'RegistrationPage',
     calendarPage: 'CalendarPage',
     userFormPage: 'UserFormPage',
-    recEnginePage: 'RecEnginePage'
+    recEnginePage: 'RecEnginePage',
+    personalNotePage: 'PersonalNotePage'
 }
 
 const SCRIPTS = {
@@ -23,7 +25,8 @@ const SCRIPTS = {
     'RegistrationPage': 'registration.js',
     'CalendarPage': 'calendar.js',
     'UserFormPage': 'userForm.js',
-    'RecEnginePage': 'recEngine.js'
+    'RecEnginePage': 'recEngine.js',
+    'PersonalNotePage': 'personalnote.js'
 }
 
 const LOAD_FUNCTION = {
@@ -32,10 +35,12 @@ const LOAD_FUNCTION = {
     'RegistrationPage': registrationPage.loadRegistrationPage,
     'CalendarPage': calendarPage.loadCalendarPage,
     'UserFormPage': userFormPage.loadUserFormPage,
-    'RecEnginePage': recEnginePage.loadRecEnginePage
+    'RecEnginePage': recEnginePage.loadRecEnginePage,
+    'PersonalNotePage': personalNotePage.LoadPersonalNotePage
 }
 
-export async function loadPage(page) {
+export async function loadPage(page, state = null) {
+    window.name = ''
     let fetchHtmlResponse = await fetchHtml(window.location.origin + "/" + page + "/index.html")
 
     document.body.innerHTML = fetchHtmlResponse.innerHTML
@@ -49,9 +54,14 @@ export async function loadPage(page) {
     document.body.appendChild(scriptElement);
 
     // Add an onload event listener to ensure the script is loaded before calling init()
-    scriptElement.onload = function() {
+    scriptElement.onload = function () {
         // Call init() function after the script is loaded
-        LOAD_FUNCTION[page](window, window.ajaxClient)
+        if (state == null) {
+            LOAD_FUNCTION[page](window, window.ajaxClient)
+        } else {
+            LOAD_FUNCTION[page](window, window.ajaxClient, state)
+        }
+        
     };
 
 }
@@ -67,6 +77,28 @@ async function fetchHtml(pageRoute) {
         return null;
     }
 }
+
+export function setupHeaderLinks() {
+    let calendarLink = document.getElementById("calendar-link")
+    let personalNotesLink = document.getElementById('notes-view')
+    let lliLink = document.getElementById('lli-view')
+
+    calendarLink.addEventListener('click', function () {
+        loadPage(PAGES.calendarPage)
+
+    })
+
+    personalNotesLink.addEventListener('click', function () {
+        loadPage(PAGES.personalNotePage)
+    })
+
+    lliLink.addEventListener('click', function () {
+        loadPage(PAGES.lliManagementPage)
+    })
+
+
+}
+
 
 
 
