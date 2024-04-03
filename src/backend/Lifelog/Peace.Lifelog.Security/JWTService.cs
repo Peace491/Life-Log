@@ -17,8 +17,8 @@ public class JWTService
             Iss = request.Host.Host,
             Sub = "myApp",
             Aud = "myApp",
-            Iat = DateTime.UtcNow.Ticks,
-            Exp = DateTime.UtcNow.AddMinutes(20).Ticks,
+            Iat = DateTime.UtcNow.Ticks.ToString(),
+            Exp = DateTime.UtcNow.AddMinutes(20).Ticks.ToString(),
             UserHash = userHash,
             Claims = appPrincipal.Claims
         };
@@ -54,6 +54,31 @@ public class JWTService
             return jwt;
         }
 
+    }
+
+    public bool IsJwtValid(Jwt jwt) 
+    {
+        var serializerOptions = new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        };
+
+        var encodedHeader = Base64UrlEncode(JsonSerializer.Serialize(jwt.Header, serializerOptions));
+        var encodedPayload = Base64UrlEncode(JsonSerializer.Serialize(jwt.Payload, serializerOptions));
+
+        using(var hash = new HMACSHA256(Encoding.UTF8.GetBytes("simple-key")))
+        {
+            // String to Byte[]
+            var signatureInput = $"{encodedHeader}.{encodedPayload}";
+            var signatureInputBytes = Encoding.UTF8.GetBytes(signatureInput); 
+
+            // Byte[] to String
+            var signatureDigestBytes = hash.ComputeHash(signatureInputBytes);
+            var encodedSignature = WebEncoders.Base64UrlEncode(signatureDigestBytes);
+
+            return jwt.Signature == encodedSignature;
+        }
     }
 
     private static string Base64UrlEncode(string input) 

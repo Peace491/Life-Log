@@ -1,8 +1,10 @@
 'use strict';
 
+import * as routeManager from '../routeManager.js';
+
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function loadRegistrationPage(root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -55,8 +57,7 @@
                 return response.json();
             }).then(function (jwtToken) {
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
-                window.location = "../LLIManagementPage/index.html"
-                location.reload()
+                routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
                 reject(error);
@@ -145,7 +146,7 @@
         }
 
         if (jwtToken) {
-            window.location = "../LLIManagementPage/index.html"
+            routeManager.loadPage(routeManager.PAGES.lliManagementPage)
         } else {
             let submitButton = document.getElementById("submit-credential-button")
             submitButton.addEventListener("click", onSubmitRegistrationCredentials)
@@ -154,7 +155,7 @@
 
     init();
 
-})(window, window.ajaxClient);
+}
 
 
 

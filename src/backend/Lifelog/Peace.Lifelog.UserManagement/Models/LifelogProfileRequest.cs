@@ -1,6 +1,6 @@
 ﻿using Peace.Lifelog.UserManagement;
 
-namespace Peace.Lifelog.UserManagementTest;
+namespace Peace.Lifelog.UserManagement;
 
 public class LifelogProfileRequest : IUserProfileRequest
 {
@@ -8,5 +8,6 @@ public class LifelogProfileRequest : IUserProfileRequest
     public (string Type, string Value) UserId { get; set; }
     public (string Type, string Value) DOB { get; set; }
     public (string Type, string Value) ZipCode { get; set; }
+    public (string Type, string Value) IsUserFormCompleted { get; set; } = ("IsUserFormCompleted", "0");
 
 }

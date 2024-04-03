@@ -19,6 +19,7 @@ public class LLIController : ControllerBase
     private LogTarget logTarget;
     private Logging logging;
     private LLIService lliService;
+    private JWTService jwtService;
     public LLIController() {
         this.createDataOnlyDAO = new CreateDataOnlyDAO();
         this.readDataOnlyDAO = new ReadDataOnlyDAO();
@@ -27,6 +28,7 @@ public class LLIController : ControllerBase
         this.logTarget = new LogTarget(this.createDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
         this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+        this.jwtService = new JWTService();
         
     }
     [HttpPost]
@@ -48,6 +50,11 @@ public class LLIController : ControllerBase
         if (userHash == null) {
             return StatusCode(401);
         }
+
+        if (!jwtService.IsJwtValid(jwtToken))
+        {
+            return StatusCode(401);
+        }        
 
         var lli = new LLI();
         lli.Title = createLLIRequest.Title;
@@ -99,6 +106,11 @@ public class LLIController : ControllerBase
             return StatusCode(401);
         }
 
+        if (!jwtService.IsJwtValid(jwtToken))
+        {
+            return StatusCode(401);
+        }        
+
         var response = await this.lliService.GetAllLLIFromUser(userHash);
 
         if (response.HasError == false) 
@@ -134,6 +146,11 @@ public class LLIController : ControllerBase
         if (userHash == null) {
             return StatusCode(401);
         }
+
+        if (!jwtService.IsJwtValid(jwtToken))
+        {
+            return StatusCode(401);
+        }        
 
         var lli = new LLI();
         lli.LLIID = updateLLIRequest.LLIID;
@@ -184,6 +201,11 @@ public class LLIController : ControllerBase
         if (userHash == null) {
             return StatusCode(401);
         }
+
+        if (!jwtService.IsJwtValid(jwtToken))
+        {
+            return StatusCode(401);
+        }        
 
         var lli = new LLI();
         lli.LLIID = lliId;

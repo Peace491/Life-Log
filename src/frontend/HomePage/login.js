@@ -1,8 +1,11 @@
 'use strict';
 
+import * as routeManager from '../routeManager.js';
+import * as userFormService from '../UserFormPage/userFormServices.js'
+
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function loadHomePage(root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -14,6 +17,32 @@
     let jwtToken;
 
     const webServiceUrl = 'http://localhost:8082/authentication';
+    const motivationalQuoteServiceUrl = 'http://localhost:8084';
+    const userFormUrl = 'http://localhost:8081/userForm'
+
+    function getMotivationalQuote() {
+        const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
+
+        let request = ajaxClient.get(quoteUrl);
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                // Check if data has the Output array and has at least two elements (quote and author)
+                //if (data.Output && data.Output.length >= 2) {
+                const quote = data.Output[0]; // Assuming the first element is the quote
+                const author = data.Output[1]; // Assuming the second element is the author
+                resolve({ quote, author });
+                //} else {
+                //    reject('Quote data is not in the expected format.');
+                //}
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
 
     // NOT exposed to the global object ("Private" functions)
     function getOTPEmail(email) {
@@ -42,13 +71,12 @@
 
         let request = ajaxClient.post(postUrl, data)
 
+
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
             }).then(function (jwtToken) {
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
-                window.location = "../LLIManagementPage/index.html"
-                location.reload()
                 resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
                 reject(error);
@@ -56,9 +84,10 @@
         });
     }
 
+
     let otpStatus = false;
 
-    function onSubmitRegistrationCredentials() {
+    async function onSubmitRegistrationCredentials() {
         // Get html elements
         let loginContainer = document.getElementById('login-container')
 
@@ -110,14 +139,25 @@
         submitButton.removeEventListener('click', onSubmitRegistrationCredentials)
 
         // Make API queries
-        var email = usernameInput.value
-        getOTPEmail(email)
-            .then(function (userHash) {
-                // Change event listener of button
-                submitButton.addEventListener('click', () => {
-                    authenticateOTP(userHash, otpInput.value)
-                });
-            })
+        try {
+            var email = usernameInput.value;
+            var userHash = await getOTPEmail(email);
+    
+            // Change event listener of button
+            submitButton.addEventListener('click', async () => {
+                jwtToken = await authenticateOTP(userHash, otpInput.value);
+                var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
+
+                if (userFormIsCompleted == 'true') {
+                    routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+                } else {
+                    routeManager.loadPage(routeManager.PAGES.userFormPage)
+                }
+            });
+        } catch (error) {
+            // Handle any errors that might occur
+            console.error(error);
+        }
     }
 
     root.myApp = root.myApp || {};
@@ -129,26 +169,35 @@
         }
 
         if (jwtToken) {
-            window.location = "../LLIManagementPage/index.html"
-        }
-        else {
-            const submitButton = document.getElementById('submit-credential-button')
-            submitButton.addEventListener('click', onSubmitRegistrationCredentials)
+            routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+        } else {
+            const submitButton = document.getElementById('submit-credential-button');
+            submitButton.addEventListener('click', onSubmitRegistrationCredentials);
 
-            const registerUserButton = document.getElementById('sign-up-text')
+            const registerUserButton = document.getElementById('sign-up-text');
             registerUserButton.addEventListener('click', function () {
-                window.location = '../RegistrationPage/index.html'
-            })
+                routeManager.loadPage(routeManager.PAGES.registrationPage)
+            });
+
         }
+        // Fetch and display the motivational quote
+        getMotivationalQuote().then(function (quoteData) {
+            const quoteElement = document.querySelector('.quote h2');
+            //console.log("a");
+            const authorElement = document.querySelector('.quote-author h3');
 
-
+            if (quoteData.quote) {
+                quoteElement.textContent = quoteData.quote[0];
+                //console.log("b");
+                authorElement.textContent = ` - ${quoteData.quote[1]}`;
+            }
+        }).catch(function (error) {
+            console.error(error);
+            // Handle any errors, e.g., display a default quote or show a message
+        });
     }
+
 
     init();
 
-})(window, window.ajaxClient);
-
-
-
-
-
+}

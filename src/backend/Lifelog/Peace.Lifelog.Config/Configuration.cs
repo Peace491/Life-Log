@@ -9,6 +9,7 @@ public class LifelogConfig
     public string LifelogSystemEmail { get; set; } = "";
     public string LifelogSystemEmailAppPassword { get; set; } = "";
     public string MaxExecutionTimeInMilliseconds { get; set; } = "";
+    public string HostURL { get; set; } = "";
 
     public static LifelogConfig LoadConfiguration()
     {
