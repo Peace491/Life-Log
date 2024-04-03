@@ -1,10 +1,10 @@
 "use strict";
 
-import * as validator from "./reInputValidation.js";
+import * as validator from "./recEngineInputValidation.js";
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function loadRecEnginePage (root, ajaxClient) {
   // Dependency check
   const isValid = root && ajaxClient;
 
@@ -14,6 +14,8 @@ import * as validator from "./reInputValidation.js";
   }
 
   let jwtToken = "";
+  let principal = { };
+
 
   const webServiceUrl = "http://localhost:8086/re"; 
   const lliWebServiceUrl = "http://localhost:8080/lli"; 
@@ -29,7 +31,12 @@ import * as validator from "./reInputValidation.js";
 
     const url = `${webServiceUrl}/NumRecs`;
     return ajaxClient
-      .post(url, { numRecs: numRecs })
+      .post(url, { 
+        appPrincipal: principal,
+        numRecs: numRecs 
+      }, 
+      jwtToken
+      )
       .then((response) => response.json())
       .catch((error) => Promise.reject(error));
   }
@@ -504,17 +511,29 @@ import * as validator from "./reInputValidation.js";
     costHeadingSpan.innerText = "Cost:";
     costHeading.appendChild(costHeadingSpan);
 
-    // Create the input element for cost
-    const costInput = document.createElement("input");
-    costInput.type = "number";
-    costInput.id = `${idPrefix}-cost-input`; // Use unique ID for the input
-    costInput.className = "cost-input";
-    costInput.placeholder = cost;
-    costInput.setAttribute("autocomplete", "off");
+    const costValueSpan = document.createElement("span");
+    costValueSpan.id = `${idPrefix}-cost-input`;
+    costValueSpan.contentEditable = "true";
+    costValueSpan.innerText = "100";
+    costHeading.appendChild(document.createTextNode(" $"));
+    costHeading.appendChild(costValueSpan);
+    // const costHeading = document.createElement("h2");
+    // const costHeadingSpan = document.createElement("span");
+    // costHeadingSpan.style.fontWeight = "600";
+    // costHeadingSpan.innerText = "Cost:";
+    // costHeading.appendChild(costHeadingSpan);
+
+    // // Create the input element for cost
+    // const costInput = document.createElement("input");
+    // costInput.type = "number";
+    // costInput.id = `${idPrefix}-cost-input`; // Use unique ID for the input
+    // costInput.className = "cost-input";
+    // costInput.placeholder = cost;
+    // costInput.setAttribute("autocomplete", "off");
 
     // Append the heading and input to the cost container
     costContainer.appendChild(costHeading);
-    costContainer.appendChild(costInput);
+    costContainer.appendChild(costValueSpan);
 
     return costContainer;
   }
@@ -533,10 +552,23 @@ import * as validator from "./reInputValidation.js";
   // Initialize the current view by setting up data and attaching event handlers
   function init() {
     jwtToken = localStorage["token-local"];
-    setupGetNumRecomendations();
-    setupRepopulateUserDatamart();
-    setupRepopulateAllUserSummary();
+
+    if (jwtToken == null) {
+      routeManager.loadPage(routeManager.PAGES.homePage)
+    } else {
+      let jwtTokenObject = JSON.parse(jwtToken); 
+      console.log(jwtTokenObject);
+      principal = {
+        userId: jwtTokenObject.Payload.UserHash,
+        claims: jwtTokenObject.Payload.Claims,
+      };
+      console.log(principal);
+      setupGetNumRecomendations();
+      setupRepopulateUserDatamart();
+      setupRepopulateAllUserSummary();
+    } 
+    
   }
 
   init();
-})(window, window.ajaxClient);
+}

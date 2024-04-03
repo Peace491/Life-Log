@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text.Json;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
-public class JWTService
+public class JWTService : IJWTService
 {
-    public Jwt createJWT(HttpRequest request, AppPrincipal appPrincipal, string userHash) {
+    public Jwt createJWT(HttpRequest request, AppPrincipal appPrincipal, string userHash)
+    {
         var header = new JwtHeader();
         var payload = new JwtPayload()
         {
@@ -34,11 +36,11 @@ public class JWTService
         var encodedPayload = Base64UrlEncode(JsonSerializer.Serialize(payload, serializerOptions));
 
 
-        using(var hash = new HMACSHA256(Encoding.UTF8.GetBytes("simple-key")))
+        using (var hash = new HMACSHA256(Encoding.UTF8.GetBytes("simple-key")))
         {
             // String to Byte[]
             var signatureInput = $"{encodedHeader}.{encodedPayload}";
-            var signatureInputBytes = Encoding.UTF8.GetBytes(signatureInput); 
+            var signatureInputBytes = Encoding.UTF8.GetBytes(signatureInput);
 
             // Byte[] to String
             var signatureDigestBytes = hash.ComputeHash(signatureInputBytes);
@@ -56,7 +58,7 @@ public class JWTService
 
     }
 
-    public bool IsJwtValid(Jwt jwt) 
+    public bool IsJwtValid(Jwt jwt)
     {
         var serializerOptions = new JsonSerializerOptions()
         {
@@ -67,11 +69,11 @@ public class JWTService
         var encodedHeader = Base64UrlEncode(JsonSerializer.Serialize(jwt.Header, serializerOptions));
         var encodedPayload = Base64UrlEncode(JsonSerializer.Serialize(jwt.Payload, serializerOptions));
 
-        using(var hash = new HMACSHA256(Encoding.UTF8.GetBytes("simple-key")))
+        using (var hash = new HMACSHA256(Encoding.UTF8.GetBytes("simple-key")))
         {
             // String to Byte[]
             var signatureInput = $"{encodedHeader}.{encodedPayload}";
-            var signatureInputBytes = Encoding.UTF8.GetBytes(signatureInput); 
+            var signatureInputBytes = Encoding.UTF8.GetBytes(signatureInput);
 
             // Byte[] to String
             var signatureDigestBytes = hash.ComputeHash(signatureInputBytes);
@@ -81,11 +83,45 @@ public class JWTService
         }
     }
 
-    private static string Base64UrlEncode(string input) 
+    public int ProcessToken(HttpRequest request)
+    {
+
+        if (request.Headers == null)
+        {
+            return 401;
+        }
+
+
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(request.Headers["Token"]!);
+
+        if (jwtToken == null)
+        {
+            return 401;
+        }
+
+
+
+        var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null)
+        {
+            return 401;
+        }
+
+        if (!IsJwtValid(jwtToken))
+        {
+            return 401;
+        }
+
+        return 200;
+    }
+
+    private static string Base64UrlEncode(string input)
     {
         var bytes = Encoding.UTF8.GetBytes(input);
 
-        return WebEncoders.Base64UrlEncode(bytes); 
+        return WebEncoders.Base64UrlEncode(bytes);
     }
 
 }

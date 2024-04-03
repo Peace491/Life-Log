@@ -154,7 +154,7 @@ private readonly IReadDataOnlyDAO readDataOnlyDAO;
             $"SELECT " + 
             $"(SELECT Category1 FROM RecSummary WHERE UserHash = '{userHash}') AS UserCategory1, " +
             $"(SELECT Category2 FROM RecSummary WHERE UserHash = '{userHash}') AS UserCategory2, " +
-            $"(SELECT Category1 FROM RecSummary WHERE UserHash = 'System') AS MostPopularSystemCategory ";
+            $"(SELECT SystemMostPopular FROM RecSummary WHERE UserHash = '{userHash}') AS MostPopularSystemCategory ";
     }
 
     private REDataMart PopulateUserDataMart(string userHash, Response dataMartResponse)

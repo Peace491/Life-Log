@@ -5,6 +5,7 @@ import * as lliPage from './LLIManagementPage/lli.js'
 import * as registrationPage from './RegistrationPage/registration.js'
 import * as calendarPage from './CalendarPage/calendar.js'
 import * as userFormPage from './UserFormPage/userForm.js'
+import * as recEnginePage from './RecEnginePage/recEngine.js'
 
 
 export const PAGES = {
@@ -12,7 +13,8 @@ export const PAGES = {
     lliManagementPage: 'LLIManagementPage',
     registrationPage: 'RegistrationPage',
     calendarPage: 'CalendarPage',
-    userFormPage: 'UserFormPage'
+    userFormPage: 'UserFormPage',
+    recEnginePage: 'RecEnginePage'
 }
 
 const SCRIPTS = {
@@ -20,7 +22,8 @@ const SCRIPTS = {
     'LLIManagementPage': 'lli.js',
     'RegistrationPage': 'registration.js',
     'CalendarPage': 'calendar.js',
-    'UserFormPage': 'userForm.js'
+    'UserFormPage': 'userForm.js',
+    'RecEnginePage': 'recEngine.js'
 }
 
 const LOAD_FUNCTION = {
@@ -28,7 +31,8 @@ const LOAD_FUNCTION = {
     'LLIManagementPage': lliPage.loadLLIPage,
     'RegistrationPage': registrationPage.loadRegistrationPage,
     'CalendarPage': calendarPage.loadCalendarPage,
-    'UserFormPage': userFormPage.loadUserFormPage
+    'UserFormPage': userFormPage.loadUserFormPage,
+    'RecEnginePage': recEnginePage.loadRecEnginePage
 }
 
 export async function loadPage(page) {

@@ -3,8 +3,12 @@ using Peace.Lifelog.RecEngineService;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.Security;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
 /* Registration of objects for .NET's DI Container */ 
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
@@ -13,6 +17,8 @@ builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 builder.Services.AddTransient<IRecEngineRepo, RecEngineRepo>(); 
 builder.Services.AddTransient<IRecEngineService, RecEngineService>();
+builder.Services.AddTransient<IJWTService, JWTService>();
+builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); 
@@ -49,7 +55,7 @@ app.Use((httpContext, next) =>
 
         httpContext.Response.StatusCode = 204;
     
-        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, lifelogConfig.HostURL);
         httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
         httpContext.Response.Headers.AccessControlAllowCredentials = "true";
@@ -72,7 +78,7 @@ app.Use((httpContext, next) => {
         HttpMethods.Delete
     };
 
-    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, lifelogConfig.HostURL);
     httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
     httpContext.Response.Headers.AccessControlAllowHeaders = "*";
     httpContext.Response.Headers.AccessControlAllowCredentials = "true";

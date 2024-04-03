@@ -3,38 +3,52 @@
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 using System.Diagnostics;
 using DomainModels;
 
 public class RecEngineService : IRecEngineService
 {
+    private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
     private readonly IRecEngineRepo recEngineRepo;
     private readonly ILogging logger;
+    private readonly ILifelogAuthService lifelogAuthService;
 
     // Inject recEngineRepo through the constructor
-    public RecEngineService(IRecEngineRepo recEngineRepo, ILogging logger)
+    public RecEngineService(IRecEngineRepo recEngineRepo, ILogging logger, ILifelogAuthService lifelogAuthService)
     {
         this.recEngineRepo = recEngineRepo;
         this.logger = logger;
+        this.lifelogAuthService = lifelogAuthService;
     }
     
-    public async Task<Response> getNumRecs(string userhash, int numRecs)
+    public async Task<Response> getNumRecs(AppPrincipal appPrincipal, int numRecs)
     {
         var timer = new Stopwatch();
         var response = new Response();
         try
         {
+            // Check if user is authorized
+            if (!isUserAuthorized(appPrincipal))
+            {
+                response.ErrorMessage = "User is not authorized to access this service";
+                return response;
+            }
+            Console.WriteLine("User is authorized");
+            Console.WriteLine(appPrincipal.UserId);
+
             if (!validateNumRecs(numRecs))
             {
                 response.ErrorMessage = "Invalid number of recommendations. Number of recommendations must be between 1 and 10";
                 return response;
             }
+            
 
             // Start timer
             timer.Start();
 
             // Preform operation
-            response = await recEngineRepo.GetNumRecs(userhash, numRecs);
+            response = await recEngineRepo.GetNumRecs(appPrincipal.UserId, numRecs);
 
             // Stop timer
             timer.Stop();
@@ -59,8 +73,9 @@ public class RecEngineService : IRecEngineService
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             // TODO specifiy logging stuff
-            var logResponse = await logger.CreateLog("Logs", userhash, "ERROR", "Service", ex.Message);
+            var logResponse = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Service", ex.Message);
             response.ErrorMessage = "An error occurred while processing your request.";
         }
 
@@ -163,5 +178,10 @@ public class RecEngineService : IRecEngineService
             return true;
         }
         return false;
+    }
+
+    private bool isUserAuthorized(AppPrincipal appPrincipal)
+    {
+        return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
     }
 }

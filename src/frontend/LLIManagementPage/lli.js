@@ -1,5 +1,4 @@
 'use strict';
-import Router from '../routes.js';
 import * as lliDomManip from './lli-dom-manipulation.js'
 import * as routeManager from '../routeManager.js';
 
@@ -416,10 +415,14 @@ export function loadLLIPage(root, ajaxClient) {
 
     function setupHeaderLinks(){
         let calendarLink = document.getElementById("calendar-link")
+        let recEngineLink = document.getElementById("rec-engine-link")
 
         calendarLink.addEventListener('click', function () {
             routeManager.loadPage(routeManager.PAGES.calendarPage)
             
+        })
+        recEngineLink.addEventListener('click', function () {
+            routeManager.loadPage(routeManager.PAGES.recEnginePage)
         })
     }
 
@@ -464,8 +467,6 @@ export function loadLLIPage(root, ajaxClient) {
             showLLI();
 
             //navigate 
-            const router = new Router;
-            router.navigatePages();
         }
     }
 

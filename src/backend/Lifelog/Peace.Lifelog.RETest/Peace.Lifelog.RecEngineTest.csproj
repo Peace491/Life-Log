@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="../Peace.Lifelog.RE/Peace.Lifelog.RecEngineService.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" />
   </ItemGroup>
 
 </Project>
