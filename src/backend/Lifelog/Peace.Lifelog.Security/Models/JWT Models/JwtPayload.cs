@@ -8,8 +8,8 @@ namespace back_end
         public string Iss {get; set;} = string.Empty;
         public string Sub {get; set;} = string.Empty;
         public string Aud {get; set;} = string.Empty;
-        public long Exp {get; set;}
-        public long Iat {get; set;}
+        public string Exp {get; set;} = string.Empty;
+        public string Iat {get; set;} = string.Empty;
 
 
         public long? Nbf {get; set;}

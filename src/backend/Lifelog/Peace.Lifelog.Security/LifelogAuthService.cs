@@ -1,6 +1,6 @@
 ﻿namespace Peace.Lifelog.Security;
 
-public class LifelogAuthService
+public class LifelogAuthService : ILifelogAuthService
 {
     public Task<AppPrincipal>? AuthenticateLifelogUser(string UserHash, string OTPHash)
     {
@@ -21,6 +21,27 @@ public class LifelogAuthService
         var principal = appAuthService.AuthenticateUser(lifelogAuthenticationRequest);
 
         return principal;
+    }
+
+    public bool IsAuthorized(AppPrincipal currentPrincipal, List<string> authorizedRoles) {
+        var appAuthService = new AppAuthService();
+        
+
+        bool isAuthorize = false;
+
+        if (currentPrincipal.Claims == null || !currentPrincipal.Claims.ContainsKey("Role")) {
+            return false;
+        }
+
+        foreach (string role in authorizedRoles) {
+            if (currentPrincipal.Claims["Role"] == role) {
+                var requiredClaims = new Dictionary<string, string>() {{"Role", role}};
+                isAuthorize = appAuthService.IsAuthorize(currentPrincipal, requiredClaims);
+            }
+        }
+
+        return isAuthorize;
+
     }
 
 }

@@ -1,5 +1,8 @@
 'use strict';
 
+import * as routeManager from './routeManager.js';
+import * as userFormService from './UserFormPage/userFormServices.js'
+
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
 (function (root) {
@@ -13,22 +16,6 @@
         alert("Missing dependencies");
     }
 
-    function fromHTML(html, trim = true) {
-        // Process the HTML string.
-        html = trim ? html.trim() : html;
-        if (!html) return null;
-
-        // Then set up a new template element.
-        const template = document.createElement('template');
-        template.innerHTML = html;
-        const result = template.content.children;
-
-        // Then return either an HTMLElement or HTMLCollection,
-        // based on whether the input HTML had one or more roots.
-        if (result.length === 1) return result[0];
-        return result;
-    }
-
     root.myApp = root.myApp || {};
 
 
@@ -39,9 +26,15 @@
         }
 
         if (!jwtToken) {
-            window.location = "HomePage/index.html"
+            routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
-            window.location = "LLIManagementPage/index.html"
+            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
+
+            if (userFormIsCompleted == 'true') {
+                routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+            } else {
+                routeManager.loadPage(routeManager.PAGES.userFormPage)
+            }
         }
     }
 

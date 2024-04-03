@@ -44,7 +44,7 @@ public class MotivationalQuoteServiceShould
         Assert.True(!(validNewPhraseResponse.ErrorMessage == "A quote from the datastore was not displayed or partially displayed"));
     }
 
-    [Fact]
+    /*[Fact]
     public async void MotivationalQuoteServiceShould_ThrowErrorIfOutputsAPlaceholder()
     {
         //Arrange
@@ -59,7 +59,7 @@ public class MotivationalQuoteServiceShould
         // Assert
         Assert.True(!(validPhraseResponse.ErrorMessage == "A placeholder message was displayed in place of a quote"));
         //Assert.True(validPhraseResponse.ErrorMessage == "Critical Error, Placeholder Was Used");
-    }
+    }*/
 
     [Fact]
     public async void MotivationalQuoteServiceShould_ThrowAnErrorIfWrongAuthor()

@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLI Management</title>
-    <link rel="stylesheet" href="styles.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,13 +12,15 @@
 </head>
 
 <body>
+    <link rel="stylesheet" href="./LLIManagementPage/styles.css">
+
     <header>
         <div class="logo-container">
             <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view"/>
         </div>
         <div class="header-contents-container">
             <div class="page-link-container">
-                <div class="calendar-link-container">
+                <div class="calendar-link-container" id="calendar-link">
                     <h2>Calendar</h2>
                 </div>
                 <div class="map-link-container">
@@ -213,7 +214,7 @@
                             </div>
                         </div>
                         <div class="lli-media-container">
-                            <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
+                            <img src="./Assets/default-pic.svg" alt="">
                         </div>
                         <div class="create-lli-button-container">
                             <button id="create-lli-button">Create LLI</button>
@@ -332,13 +333,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Dependencies -->
-    <script src="../Resources/Ajax/fetch-ajax.js"></script>
-    <script src="lli-dom-manipulation.js"></script>
-
-    <!-- Page Specific -->
-    <script src="lli.js" type="module"></script>
 
 
 </body>
