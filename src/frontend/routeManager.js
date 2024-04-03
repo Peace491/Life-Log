@@ -31,7 +31,7 @@ const LOAD_FUNCTION = {
     'UserFormPage': userFormPage.loadUserFormPage
 }
 
-export async function loadPage(page) {
+export async function loadPage(page, state=null) {
     let fetchHtmlResponse = await fetchHtml(window.location.origin + "/" + page + "/index.html")
 
     document.body.innerHTML = fetchHtmlResponse.innerHTML
@@ -47,7 +47,12 @@ export async function loadPage(page) {
     // Add an onload event listener to ensure the script is loaded before calling init()
     scriptElement.onload = function() {
         // Call init() function after the script is loaded
-        LOAD_FUNCTION[page](window, window.ajaxClient)
+        if (state == null) {
+            LOAD_FUNCTION[page](window, window.ajaxClient)
+        } else {
+            LOAD_FUNCTION[page](window, window.ajaxClient, state)
+        }
+        
     };
 
 }

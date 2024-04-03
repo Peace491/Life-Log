@@ -12,4 +12,6 @@ public interface IUserFormService
         UpdateUserFormRequest updateUserFormRequest
     );
     public Task<bool> IsUserFormCompleted(string userHash);
+
+    public Task<UserFormRanking> GetUserFormRanking(string userHash);
 }
