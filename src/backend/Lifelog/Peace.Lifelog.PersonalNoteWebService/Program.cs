@@ -12,8 +12,6 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 var app = builder.Build(); // Only part needed to execute Web API project
 
 /* Setup of Middleware Pipeline */
-
-
 // Defining a custom middleware AND adding it to Kestral's request pipeline
 app.Use((httpContext, next) =>
 {

@@ -18,6 +18,7 @@ import Router from '../routes.js';
 
     const EARLIEST_NOTE_DATE = early_date;
     const LATEST_NOTE_DATE = new Date();
+    LATEST_NOTE_DATE.setDate(LATEST_NOTE_DATE.getDate() + 1);
 
     let jwtToken = ""
 
@@ -54,23 +55,6 @@ import Router from '../routes.js';
     // NOT exposed to the global object ("Private" functions)
     function getNote(notedate) {
         let getUrl = webServiceUrl + '/getPN?notedate=' + notedate;
-
-        // Validate Date
-        let year = parseInt(notedate.substring(0, 4));
-        let month = parseInt(notedate.substring(5, 7)) - 1; // Subtract 1 because months are zero-based
-        let day = parseInt(notedate.substring(8, 10));
-
-        let noteDate = new Date();
-        noteDate.setDate(day);
-        noteDate.setMonth(month);
-        noteDate.setFullYear(year);
-
-        if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
-            alert(`You can only select dates within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
-            let dateInput = document.getElementById("create-date-input");
-            dateInput.valueAsDate = new Date();
-            return false
-        }
 
         let request = ajaxClient.get(getUrl, jwtToken);
 
@@ -142,7 +126,7 @@ import Router from '../routes.js';
     function validatePersonalNoteOptions(option) {
         // Input Validation
         if (option.notecontent == "" || option.notecontent.length > MAX_CONTENT_LENGTH || !/^[a-zA-Z0-9]+$/.test(option.notecontent.replaceAll(' ', ''))) {
-            alert("The note must only contain  alphanumeric values between 1-" + MAX_CONTENT_LENGTH + " characters long, please try again.")
+            alert("The note must only contain  alphanumeric values between 1-" + MAX_CONTENT_LENGTH + ", please try again.")
             return false
         }
 
@@ -157,6 +141,7 @@ import Router from '../routes.js';
 
         if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
             alert(`You can only select dates within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
+            location.reload()
             return false
         }
 
@@ -206,6 +191,22 @@ import Router from '../routes.js';
     function showNote() {
         let dateInput = document.getElementById("create-date-input");
         let selectedDate = dateInput.value;
+        // Validate Date
+        let year = parseInt(selectedDate.substring(0, 4));
+        let month = parseInt(selectedDate.substring(5, 7)) - 1; // Subtract 1 because months are zero-based
+        let day = parseInt(selectedDate.substring(8, 10));
+
+        let noteDate = new Date();
+        noteDate.setDate(day);
+        noteDate.setMonth(month);
+        noteDate.setFullYear(year);
+
+        if (noteDate < EARLIEST_NOTE_DATE || noteDate > LATEST_NOTE_DATE) {
+            alert(`You can only select datess within the past 6 months. (${EARLIEST_NOTE_DATE.toDateString()} and ${LATEST_NOTE_DATE.toDateString()}), please try again.`)
+            location.reload()
+            return false
+        }
+
         // Call getNote function to retrieve note data
         getNote(selectedDate)
         .then(function (noteText) {

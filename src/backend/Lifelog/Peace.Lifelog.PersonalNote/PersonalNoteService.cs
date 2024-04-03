@@ -328,7 +328,7 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "User Hash must not be empty";
             var errorMessage = "The Personal Note User Hash is invalid";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
@@ -337,7 +337,7 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "The non-nullable Personal Note input is null";
             var errorMessage = "The non-nullable Personal Note input is null";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
@@ -346,7 +346,7 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "The Personal Note content is too long";
             var errorMessage = "The personal note contents is invalid";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
@@ -357,7 +357,7 @@ public class PersonalNoteService : ICreatePersonalNote
                 validationResponse.HasError = true;
                 validationResponse.ErrorMessage = "The personal note content has invalid nonalphanumeric characters";
                 var errorMessage = "Note contains nonalphanumeric characters";
-                var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+                var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
                 return validationResponse;
             }
         }
@@ -367,7 +367,7 @@ public class PersonalNoteService : ICreatePersonalNote
             validationResponse.HasError = true;
             validationResponse.ErrorMessage = "The Date is Invalid";
             var errorMessage = "The Date is invalid";
-            var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+            var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return validationResponse;
         }
 
@@ -381,7 +381,7 @@ public class PersonalNoteService : ICreatePersonalNote
                 validationResponse.HasError = true;
                 validationResponse.ErrorMessage = "The Note date is out of range";
                 var errorMessage = "The Note date is invalid";
-                var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
+                var logResponse = await this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
                 return validationResponse;
             }
         }
@@ -452,19 +452,6 @@ public class PersonalNoteService : ICreatePersonalNote
 
         return personalNoteList;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     #endregion
 }
