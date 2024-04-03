@@ -7,6 +7,7 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
 {
     private readonly IReadDataOnlyDAO readDataOnlyDAO;
 
+    private string tableName = "RecSummary";
 
     // Inject Nessesary DAO and Logger
     public RecomendationEngineRepository(IReadDataOnlyDAO readDataOnlyDAO)
@@ -49,7 +50,7 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
 
     // Helper methods
 
-        private string DynamicallyConstructQuery(REDataMart userDatamart, int numRecs)
+    private string DynamicallyConstructQuery(REDataMart userDatamart, int numRecs)
     {
         string tableName = $"{userDatamart.UserHash}Recs";
         string query = StartQuery(tableName);
@@ -151,9 +152,9 @@ public class RecomendationEngineRepository : IRecomendationEngineRepository
     {
         return
             $"SELECT " + 
-            $"(SELECT Category1 FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategory1, " +
-            $"(SELECT Category2 FROM RecommendationDataMart WHERE UserHash = '{userHash}') AS UserCategory2, " +
-            $"(SELECT Category1 FROM RecommendationDataMart WHERE UserHash = 'System') AS MostPopularSystemCategory ";
+            $"(SELECT Category1 FROM RecSummary WHERE UserHash = '{userHash}') AS UserCategory1, " +
+            $"(SELECT Category2 FROM RecSummary WHERE UserHash = '{userHash}') AS UserCategory2, " +
+            $"(SELECT Category1 FROM RecSummary WHERE UserHash = 'System') AS MostPopularSystemCategory ";
     }
 
     private REDataMart PopulateUserDataMart(string userHash, Response dataMartResponse)

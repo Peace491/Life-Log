@@ -59,10 +59,88 @@ import * as validator from "./reInputValidation.js";
     });
   }
 
-  function postRecommendation(idPrefix) {
+  function postLLI(attributes, idPrefix) {
+    // Validate the input
+    if (!validator.validateLLI(attributes)) {
+      alert("Invalid input");
+      return Promise.reject(new Error("Invalid input"));
+    }
 
+    // Extract the values from the attributes object
+    const title = attributes.title;
+    const description = attributes.description;
+    const category = attributes.category;
+    const status = attributes.status;
+    const visibility = attributes.visibility;
+    const deadline = attributes.deadline;
+    const recurrence = attributes.recurrence;
+    const cost = attributes.cost;
 
+    // Prepare the data to be sent to the server
+    const data = {
+      title: title,
+      description: description,
+      category: category,
+      status: status,
+      visibility: visibility,
+      deadline: deadline,
+      recurrence: recurrence,
+      cost: cost,
+    };
   }
+  function setupPostLLI(idPrefix) {
+    console.log(`${idPrefix}-create-recommendation-button`)
+      let createRecommendationButton = document.getElementById(
+        `${idPrefix}-create-recommendation-button`
+      );
+
+      createRecommendationButton.addEventListener("click", function () {
+        // pass in the user hash
+        let response = postLLI(data, idPrefix);
+        let title = document.getElementById(`${idPrefix}-title`).textContent;
+        let deadline = document.getElementById(`${idPrefix}-date-input`).value;
+        // TODO categories
+        let description = document.getElementById(
+          `${idPrefix}-description-input`
+        ).textContent;
+        let status = document.getElementById(`${idPrefix}-status-input`).value;
+        let visibility = document.getElementById(
+          `${idPrefix}-visibility-input`
+        ).value;
+        let cost = document.getElementById(`${idPrefix}-cost-input`).textContent;
+        let recurrence = document.getElementById(
+          `${idPrefix}-recurrence-input`
+        ).value;
+
+        let options = {
+          title: title,
+          deadline: deadline,
+          category1: selectedCategories[0],
+          category2: selectedCategories[1],
+          category3: selectedCategories[2],
+          description: description,
+          status: status,
+          visibility: visibility,
+          deadline: deadline,
+          cost: cost,
+          recurrenceStatus: recurrenceStatus,
+          recurrenceFrequency: recurrenceFrequency
+      }
+
+      console.log(options)
+
+        response
+          .then(() => {
+            console.log("Recommendation has been created");
+            alert("Recommendation has been created");
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      });
+    }
+
+
 
   function repopulateUserDatamart() {
     // populate url with the accurate url for the service
@@ -191,16 +269,6 @@ import * as validator from "./reInputValidation.js";
 
     // Create status container
     const statusContainer = createStatusContainer(idPrefix);
-    // const statusContainer = document.createElement("div");
-    // statusContainer.className = "lli-status-container";
-    // statusContainer.innerHTML = `
-    //       <h2><span style="font-weight: 600;">Status:</span></h2>
-    //       <select name="" id="create-status-input" class="status-select" autocomplete="off">
-    //         <option value="Active" selected="selected">Active</option>
-    //         <option value="Postponed">Postponed</option>
-    //         <option value="Completed">Completed</option>
-    //       </select>
-    //     `;
 
     // Create visibility container
     const visibilityContainer = createVisibilityContainer(idPrefix);
@@ -210,35 +278,14 @@ import * as validator from "./reInputValidation.js";
 
     // Create recurrence container
     const recurrenceContainer = createRecurrenceContainer(idPrefix);
-    // const recurrenceContainer = document.createElement("div");
-    // recurrenceContainer.className = "lli-recurrence-container";
-    // recurrenceContainer.innerHTML = `
-    //       <h2><span style="font-weight: 600;">Recurrence:</span></h2>
-    //       <select name="Recurrence" id="create-recurrence-input" class="recurrence-select" autocomplete="off">
-    //         <option value="Off" selected="selected">Off</option>
-    //         <option value="On(Weekly)">On(Weekly)</option>
-    //         <option value="On(Monthly)">On(Monthly)</option>
-    //         <option value="On(Yearly)">On(Yearly)</option>
-    //       </select>
-    //     `;
+
 
     // Create cost container
     const costContainer = createCostContainer(idPrefix, recommendation.Cost);
-    // const costContainer = document.createElement("div");
-    // costContainer.className = "lli-cost-container";
-    // costContainer.innerHTML = `
-    //       <h2><span style="font-weight: 600;">Cost:</span></h2>
-    //       <input type="number" id="create-cost-input" class="cost-input" placeholder="Enter cost" autocomplete="off">
-    //     `;
 
     // Create recommendation button container
-    
-    // const RecommendationContainer = createRecommendationContainer(idPrefix)
-    const createRecommendationContainer = document.createElement("div");
-    createRecommendationContainer.className = "create-recommendation-container";
-    createRecommendationContainer.innerHTML = `
-          <button id="create-recommendation-button">Create Item</button>
-        `;
+    const recommendationContainer = createRecommendationButtonContainer(idPrefix);
+
 
     // Append all containers to formContainer
     formContainer.appendChild(inputArea);
@@ -247,7 +294,7 @@ import * as validator from "./reInputValidation.js";
     formContainer.appendChild(deadlineContainer);
     formContainer.appendChild(recurrenceContainer);
     formContainer.appendChild(costContainer);
-    formContainer.appendChild(createRecommendationContainer);
+    formContainer.appendChild(recommendationContainer);
 
     return formContainer;
   }
@@ -452,6 +499,17 @@ import * as validator from "./reInputValidation.js";
     costContainer.appendChild(costInput);
 
     return costContainer;
+  }
+
+  function createRecommendationButtonContainer(idPrefix) {
+    const createRecommendationContainer = document.createElement("div");
+    createRecommendationContainer.className = "create-recommendation-container";
+    createRecommendationContainer.innerHTML = `
+          <button id="${idPrefix}-create-recommendation-button">Create Item</button>
+        `;
+    setupPostLLI(idPrefix);
+
+    return createRecommendationContainer;
   }
   
 

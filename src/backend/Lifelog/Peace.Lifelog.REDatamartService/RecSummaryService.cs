@@ -22,6 +22,13 @@ public class RecSummaryService : IRecSummaryService
         {
             // Get userform
             response = await summaryRepository.GetUserForm(userHash);
+            
+            if (response.Output == null)
+            {
+                response.HasError = true;
+                response.ErrorMessage = "An error occurred fetching user form.";
+                return response;
+            }
             // Init scoring with userform
             var userScores = scoreInit(response);
 
