@@ -66,8 +66,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.Infrastructure", "Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj", "{5A0AFD82-8890-447C-B6F9-CB82A8946F3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.InfrastructureTest", "Peace.Lifelog.InfrastructureTest\Peace.Lifelog.InfrastructureTest.csproj", "{468BB7C8-DA7B-4412-8486-6E45338F2D04}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Lifelog.RegistrationService", "Peace.LifeLog.RegistrationService\Peace.Lifelog.RegistrationService.csproj", "{3F14320C-29D8-4B4F-8BBC-7710CFFF389E}"
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.InfrastructureTest", "Peace.Lifelog.InfrastructureTest\Peace.Lifelog.InfrastructureTest.csproj", "{468BB7C8-DA7B-4412-8486-6E45338F2D04}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.UserForm", "Peace.Lifelog.UserForm\Peace.Lifelog.UserForm.csproj", "{95420960-B3E2-4E1C-A996-0D565240FA94}"
 EndProject

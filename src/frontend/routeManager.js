@@ -82,10 +82,10 @@ export function setupHeaderLinks() {
     let calendarLink = document.getElementById("calendar-link")
     let personalNotesLink = document.getElementById('notes-view')
     let lliLink = document.getElementById('lli-view')
+    let recEngineLink = document.getElementById('rec-engine-view')
 
     calendarLink.addEventListener('click', function () {
         loadPage(PAGES.calendarPage)
-
     })
 
     personalNotesLink.addEventListener('click', function () {
