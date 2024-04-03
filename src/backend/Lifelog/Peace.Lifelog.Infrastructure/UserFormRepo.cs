@@ -6,11 +6,13 @@ namespace Peace.Lifelog.Infrastructure;
 public class UserFormRepo : IUserFormRepo
 {
     private ICreateDataOnlyDAO createDataOnlyDAO;
+    private IReadDataOnlyDAO readDataOnlyDAO;
     private IUpdateDataOnlyDAO updateDataOnlyDAO;
 
-    public UserFormRepo(ICreateDataOnlyDAO createDataOnlyDAO, IUpdateDataOnlyDAO updateDataOnlyDAO)
+    public UserFormRepo(ICreateDataOnlyDAO createDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO, IUpdateDataOnlyDAO updateDataOnlyDAO)
     {
         this.createDataOnlyDAO = createDataOnlyDAO;
+        this.readDataOnlyDAO = readDataOnlyDAO;
         this.updateDataOnlyDAO = updateDataOnlyDAO;
     }
 
@@ -65,6 +67,24 @@ public class UserFormRepo : IUserFormRepo
         }
 
         return createUserFormResponse;
+    }
+
+    public async Task<Response> ReadUserFormCompletionStatusInDB(string userHash)
+    {
+        var readResponse = new Response();
+
+        string sql = $"SELECT IsUserFormCompleted FROM LifelogProfile WHERE UserHash=\"{userHash}\"";
+
+        try {
+            readResponse = await readDataOnlyDAO.ReadData(sql);
+        } catch (Exception error) {
+            readResponse.HasError = true;
+            readResponse.ErrorMessage = error.Message;
+            readResponse.Output = null;
+        }
+
+        return readResponse;
+
     }
 
     public async Task<Response> UpdateUserFormInDB(
@@ -146,7 +166,7 @@ public class UserFormRepo : IUserFormRepo
 
     private Task<Response> UpdateUserIsCompletedFieldInAuthenticationTableInDB(string userHash)
     {
-        var sql = $"UPDATE LifelogAuthentication SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
+        var sql = $"UPDATE LifelogProfile SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
 
         var response = this.updateDataOnlyDAO.UpdateData(sql);
 

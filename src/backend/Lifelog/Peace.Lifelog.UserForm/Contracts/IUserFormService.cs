@@ -11,4 +11,5 @@ public interface IUserFormService
     public Task<Response> UpdateUserForm(
         UpdateUserFormRequest updateUserFormRequest
     );
+    public Task<bool> IsUserFormCompleted(string userHash);
 }

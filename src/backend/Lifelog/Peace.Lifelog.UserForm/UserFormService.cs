@@ -1,6 +1,7 @@
 ﻿namespace Peace.Lifelog.UserForm;
 
 using DomainModels;
+using Microsoft.AspNetCore.Mvc;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Security;
 
@@ -115,6 +116,46 @@ public class UserFormService : IUserFormService
         return response;
     }
 
+    public async Task<bool> IsUserFormCompleted(string userHash)
+    {
+        var response = new Response();
+
+        if (!userFormValidation.IsValidUserHash(userHash))
+        {
+            return false;
+        }
+
+        try
+        {
+            response = await this.userFormRepo.ReadUserFormCompletionStatusInDB(userHash);
+        }
+        catch
+        {
+            return false;
+        }
+
+        if (response.Output == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            foreach (List<Object> output in response.Output)
+            {
+                foreach (bool completionStatus in output) {
+                    return completionStatus;
+                }
+            }
+        }
+        catch {
+            return false;
+        }
+
+        return false;
+    }
+
+
     private bool IsUserAuthorizedForUserForm(AppPrincipal appPrincipal)
     {
 
@@ -128,4 +169,5 @@ public class UserFormService : IUserFormService
         var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
         return response;
     }
+
 }

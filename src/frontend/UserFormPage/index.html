@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Form</title>
+</head>
+
+<body>
+    <link rel="stylesheet" href="./UserFormPage/styles.css">
+
+    <header>
+        <div class="logo-container">
+            <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" />
+        </div>
+        <div class="header-contents-container">
+
+        </div>
+    </header>
+
+    <main>
+        <div class="user-form-container">
+            <h1>User Form</h1>
+
+
+            <div class="category-container mental-health-container">
+                <h2>Mental Health</h2>
+                <input type="number" id="mental-health-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container physical-health-container">
+                <h2>Physical Health</h2>
+                <input type="number" id="physical-health-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container outdoor-container">
+                <h2>Outdoor</h2>
+                <input type="number" id="outdoor-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container sport-container">
+                <h2>Sport</h2>
+                <input type="number" id="sport-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container art-container">
+                <h2>Art</h2>
+                <input type="number" id="art-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container hobby-container">
+                <h2>Hobby</h2>
+                <input type="number" id="hobby-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container thrill-container">
+                <h2>Thrill</h2>
+                <input type="number" id="thrill-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container travel-container">
+                <h2>Travel</h2>
+                <input type="number" id="travel-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container volunteering-container">
+                <h2>Volunteering</h2>
+                <input type="number" id="volunteering-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+            <div class="category-container food-container">
+                <h2>Food</h2>
+                <input type="number" id="food-rank" min="1" max="10" value="0" autocomplete="off">
+            </div>
+
+
+
+            <div class="submit-button-container">
+                <button id="submit-ranking-button">Submit Rankings</button>
+            </div>
+        </div>
+
+        <script src="../Resources/Ajax/fetch-ajax.js"></script>
+        <script src="./userForm.js" type="module"></script>
+
+    </main>
+
+</body>
+
+</html>

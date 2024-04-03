@@ -18,7 +18,7 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
     private static LifelogAuthService lifelogAuthService = new LifelogAuthService();
-    private static IUserFormRepo userFormRepo = new UserFormRepo(createDataOnlyDAO, updateDataOnlyDAO);
+    private static IUserFormRepo userFormRepo = new UserFormRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO);
     private static IUserFormService userFormService = new UserFormService(userFormRepo, lifelogAuthService, logging);
     
     
@@ -80,7 +80,7 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
         // Arrange
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
-        principal.Claims = new Dictionary<string, string>() {{"RoleName", "Normal"}};
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
 
         var createUserFormRequest = new CreateUserFormRequest
         {
@@ -127,7 +127,7 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
         // Arrange
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
-        principal.Claims = new Dictionary<string, string>() {{"RoleName", "Normal"}};
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
 
         var createUserFormRequest = new CreateUserFormRequest
         {
@@ -173,6 +173,40 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
                 Assert.True(ranking == 7);
             }
         }
+
+    }
+
+    [Fact]
+    public async void UserFormServiceShould_CheckIfTheUserFormHasBeenCompleted()
+    {
+        // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
+
+        var createUserFormRequest = new CreateUserFormRequest
+        {
+            Principal = principal,
+            MentalHealthRating = 9,
+            PhysicalHealthRating = 7,
+            OutdoorRating = 5,
+            SportRating = 8,
+            ArtRating = 3,
+            HobbyRating = 6,
+            ThrillRating = 2,
+            TravelRating = 4,
+            VolunteeringRating = 10,
+            FoodRating = 1
+        };
+        
+        
+        var response = await userFormService.CreateUserForm(createUserFormRequest);
+
+        // Act
+        var isUserFormCompleted = await userFormService.IsUserFormCompleted(USER_HASH);
+
+        // Assert
+        Assert.True(isUserFormCompleted);
 
     }
 }

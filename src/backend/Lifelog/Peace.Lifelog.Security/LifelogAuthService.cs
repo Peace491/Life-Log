@@ -29,13 +29,13 @@ public class LifelogAuthService : ILifelogAuthService
 
         bool isAuthorize = false;
 
-        if (currentPrincipal.Claims == null || !currentPrincipal.Claims.ContainsKey("RoleName")) {
+        if (currentPrincipal.Claims == null || !currentPrincipal.Claims.ContainsKey("Role")) {
             return false;
         }
 
         foreach (string role in authorizedRoles) {
-            if (currentPrincipal.Claims["RoleName"] == role) {
-                var requiredClaims = new Dictionary<string, string>() {{"RoleName", role}};
+            if (currentPrincipal.Claims["Role"] == role) {
+                var requiredClaims = new Dictionary<string, string>() {{"Role", role}};
                 isAuthorize = appAuthService.IsAuthorize(currentPrincipal, requiredClaims);
             }
         }

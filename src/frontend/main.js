@@ -1,6 +1,7 @@
 'use strict';
 
 import * as routeManager from './routeManager.js';
+import * as userFormService from './UserFormPage/userFormServices.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -27,7 +28,13 @@ import * as routeManager from './routeManager.js';
         if (!jwtToken) {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
-            routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
+
+            if (userFormIsCompleted == 'true') {
+                routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+            } else {
+                routeManager.loadPage(routeManager.PAGES.userFormPage)
+            }
         }
     }
 

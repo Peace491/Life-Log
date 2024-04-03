@@ -31,6 +31,15 @@ public class UserFormValidation : IUserFormValidation
 
     }
 
+    public bool IsValidUserHash(string userHash) {
+        if (userHash is null || userHash == string.Empty)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private Response ValidateAppPrincipal(Response response, AppPrincipal? appPrincipal)
     {
         if (appPrincipal == null)
@@ -54,7 +63,7 @@ public class UserFormValidation : IUserFormValidation
             return response;
         }
 
-        if (!appPrincipal.Claims.ContainsKey("RoleName"))
+        if (!appPrincipal.Claims.ContainsKey("Role"))
         {
             response.HasError = true;
             response.ErrorMessage = "Claims must contain the user role";

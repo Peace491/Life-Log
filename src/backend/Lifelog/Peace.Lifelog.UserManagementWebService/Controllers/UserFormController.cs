@@ -2,6 +2,8 @@
 using Peace.Lifelog.UserForm;
 using DomainModels;
 using System.Text.Json;
+using Peace.Lifelog.Security;
+using back_end;
 
 namespace Peace.Lifelog.UserManagementWebService.Controllers;
 
@@ -18,7 +20,6 @@ public sealed class UserFormController : ControllerBase
     }
 
     [HttpPost]
-    [Route("UserForm")]
     public async Task<IActionResult> UserForm([FromBody] CreateUserFormRequest createUserFormRequest)
     {
         var response = new Response();
@@ -39,7 +40,6 @@ public sealed class UserFormController : ControllerBase
     }
 
     [HttpPut]
-    [Route("UserForm")]
     public async Task<IActionResult> UserForm([FromBody] UpdateUserFormRequest updateUserFormRequest)
     {
         var response = new Response();
@@ -57,5 +57,36 @@ public sealed class UserFormController : ControllerBase
         }
 
         return Ok(JsonSerializer.Serialize<Response>(response));
+    }
+
+    [HttpGet]
+    [Route("isUserFormCompleted")]
+    public async Task<IActionResult> UserForm()
+    {
+        if (Request.Headers == null) {
+            return StatusCode(401);
+        }
+
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) {
+            return StatusCode(401);
+        }
+
+        var userHash = jwtToken.Payload.UserHash;
+
+        if (userHash == null) {
+            return StatusCode(401);
+        }
+
+        var isUserFormCompleted = false;
+
+        try {
+            isUserFormCompleted = await userFormService.IsUserFormCompleted(userHash);
+        } catch {
+            return StatusCode(500);
+        }
+
+        return Ok(isUserFormCompleted);
     }
 }

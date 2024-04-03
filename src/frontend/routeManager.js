@@ -4,27 +4,31 @@ import * as homePage from './HomePage/login.js'
 import * as lliPage from './LLIManagementPage/lli.js'
 import * as registrationPage from './RegistrationPage/registration.js'
 import * as calendarPage from './CalendarPage/calendar.js'
+import * as userFormPage from './UserFormPage/userForm.js'
 
 
 export const PAGES = {
     homePage: 'HomePage',
     lliManagementPage: 'LLIManagementPage',
     registrationPage: 'RegistrationPage',
-    calendarPage: 'CalendarPage'
+    calendarPage: 'CalendarPage',
+    userFormPage: 'UserFormPage'
 }
 
 const SCRIPTS = {
     'HomePage': 'login.js',
     'LLIManagementPage': 'lli.js',
     'RegistrationPage': 'registration.js',
-    'CalendarPage': 'calendar.js'
+    'CalendarPage': 'calendar.js',
+    'UserFormPage': 'userForm.js'
 }
 
 const LOAD_FUNCTION = {
     'HomePage': homePage.loadHomePage,
     'LLIManagementPage': lliPage.loadLLIPage,
     'RegistrationPage': registrationPage.loadRegistrationPage,
-    'CalendarPage': calendarPage.loadCalendarPage
+    'CalendarPage': calendarPage.loadCalendarPage,
+    'UserFormPage': userFormPage.loadUserFormPage
 }
 
 export async function loadPage(page) {

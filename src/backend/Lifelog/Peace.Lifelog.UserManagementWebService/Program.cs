@@ -17,6 +17,7 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 
 // Dependency Injection
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();

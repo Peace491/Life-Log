@@ -8,5 +8,6 @@ public class LifelogProfileRequest : IUserProfileRequest
     public (string Type, string Value) UserId { get; set; }
     public (string Type, string Value) DOB { get; set; }
     public (string Type, string Value) ZipCode { get; set; }
+    public (string Type, string Value) IsUserFormCompleted { get; set; } = ("IsUserFormCompleted", "0");
 
 }

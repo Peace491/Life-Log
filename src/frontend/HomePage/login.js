@@ -1,6 +1,7 @@
 'use strict';
 
 import * as routeManager from '../routeManager.js';
+import * as userFormService from '../UserFormPage/userFormServices.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -17,21 +18,22 @@ export function loadHomePage(root, ajaxClient) {
 
     const webServiceUrl = 'http://localhost:8082/authentication';
     const motivationalQuoteServiceUrl = 'http://localhost:8084';
+    const userFormUrl = 'http://localhost:8081/userForm'
 
     function getMotivationalQuote() {
         const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
-    
+
         let request = ajaxClient.get(quoteUrl);
-    
+
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
-            }).then(function (data) { 
+            }).then(function (data) {
                 // Check if data has the Output array and has at least two elements (quote and author)
                 //if (data.Output && data.Output.length >= 2) {
                 const quote = data.Output[0]; // Assuming the first element is the quote
                 const author = data.Output[1]; // Assuming the second element is the author
-                resolve({quote, author});
+                resolve({ quote, author });
                 //} else {
                 //    reject('Quote data is not in the expected format.');
                 //}
@@ -40,7 +42,7 @@ export function loadHomePage(root, ajaxClient) {
             });
         });
     }
-    
+
 
     // NOT exposed to the global object ("Private" functions)
     function getOTPEmail(email) {
@@ -75,18 +77,17 @@ export function loadHomePage(root, ajaxClient) {
                 return response.json();
             }).then(function (jwtToken) {
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
-                routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
                 reject(error);
             });
         });
     }
-    
+
 
     let otpStatus = false;
 
-    function onSubmitRegistrationCredentials() {
+    async function onSubmitRegistrationCredentials() {
         // Get html elements
         let loginContainer = document.getElementById('login-container')
 
@@ -138,14 +139,25 @@ export function loadHomePage(root, ajaxClient) {
         submitButton.removeEventListener('click', onSubmitRegistrationCredentials)
 
         // Make API queries
-        var email = usernameInput.value
-        getOTPEmail(email)
-            .then(function (userHash) {
-                // Change event listener of button
-                submitButton.addEventListener('click', () => {
-                    authenticateOTP(userHash, otpInput.value)
-                });
-            })
+        try {
+            var email = usernameInput.value;
+            var userHash = await getOTPEmail(email);
+    
+            // Change event listener of button
+            submitButton.addEventListener('click', async () => {
+                jwtToken = await authenticateOTP(userHash, otpInput.value);
+                var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
+
+                if (userFormIsCompleted == 'true') {
+                    routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+                } else {
+                    routeManager.loadPage(routeManager.PAGES.userFormPage)
+                }
+            });
+        } catch (error) {
+            // Handle any errors that might occur
+            console.error(error);
+        }
     }
 
     root.myApp = root.myApp || {};
@@ -155,13 +167,13 @@ export function loadHomePage(root, ajaxClient) {
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
-    
+
         if (jwtToken) {
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)
         } else {
             const submitButton = document.getElementById('submit-credential-button');
             submitButton.addEventListener('click', onSubmitRegistrationCredentials);
-    
+
             const registerUserButton = document.getElementById('sign-up-text');
             registerUserButton.addEventListener('click', function () {
                 routeManager.loadPage(routeManager.PAGES.registrationPage)
@@ -174,11 +186,6 @@ export function loadHomePage(root, ajaxClient) {
             //console.log("a");
             const authorElement = document.querySelector('.quote-author h3');
 
-            console.log(quoteData.quote[0]);
-            console.log(quoteData.quote[1]);
-            //console.log(quoteData.author);
-            
-
             if (quoteData.quote) {
                 quoteElement.textContent = quoteData.quote[0];
                 //console.log("b");
@@ -189,7 +196,7 @@ export function loadHomePage(root, ajaxClient) {
             // Handle any errors, e.g., display a default quote or show a message
         });
     }
-    
+
 
     init();
 

@@ -10,7 +10,7 @@ public class UserFormRepoShould : IAsyncLifetime, IDisposable
     private static ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
     private static IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
     private static IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-    private static UserFormRepo userFormRepo = new UserFormRepo(createDataOnlyDAO, updateDataOnlyDAO);
+    private static UserFormRepo userFormRepo = new UserFormRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO);
     
     
     private const string USER_ID = "TestUserFormRepoAccount";
@@ -80,7 +80,7 @@ public class UserFormRepoShould : IAsyncLifetime, IDisposable
         int foodRating = 10;
 
         var readUserFormDataSql = $"SELECT * FROM UserForm WHERE UserHash=\"{USER_HASH}\"";
-        var readAuthenticationSql = $"SELECT IsUserFormCompleted FROM LifelogAuthentication WHERE UserHah=\"{USER_HASH}\"";
+        var readAuthenticationSql = $"SELECT IsUserFormCompleted FROM LifelogProfile WHERE UserHash=\"{USER_HASH}\"";
 
         // Act
         var response = await userFormRepo!.CreateUserFormInDB(USER_HASH, mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating);
