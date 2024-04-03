@@ -27,7 +27,11 @@ import * as userFormService from './UserFormPage/userFormServices.js'
 
         if (!jwtToken) {
             routeManager.loadPage(routeManager.PAGES.homePage)
-        } else {
+        } 
+        else if(window.name) {
+            routeManager.loadPage(window.name)
+        }
+        else {
             var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
 
             if (userFormIsCompleted == 'true') {

@@ -1,9 +1,9 @@
 namespace Peace.Lifelog.PersonalNoteTest;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.PersonalNote;
 using Peace.Lifelog.UserManagement;
-using Peace.Lifelog.UserManagementTest;
 using System.Diagnostics;
 
 public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
@@ -14,8 +14,8 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-
-    private PersonalNoteService personalNoteService = new PersonalNoteService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static IPersonalNoteRepo personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+    private PersonalNoteService personalNoteService = new PersonalNoteService(personalNoteRepo, logging);
 
     private const string USER_ID = "TestPersonalNoteServiceAccount";
     private string USER_HASH = "";

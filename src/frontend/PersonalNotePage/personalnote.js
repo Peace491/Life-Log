@@ -1,8 +1,9 @@
 'use strict';
-import Router from '../routes.js';
+import * as routeManager from '../routeManager.js'
+import * as personalNoteDomManipulator from './personalnote-dom-manipulation.js'
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-(function (root, ajaxClient) {
+export function LoadPersonalNotePage (root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -21,12 +22,15 @@ import Router from '../routes.js';
     LATEST_NOTE_DATE.setDate(LATEST_NOTE_DATE.getDate() + 1);
 
     let jwtToken = ""
-
-    const webServiceUrl = 'http://localhost:8083/personalnote';
+    let webServiceUrl = ""
+    let createUrl = ""
+    let getUrl = ""
+    let updateUrl = ""
+    let deleteUrl = ""
 
     // NOT exposed to the global object ("Private" functions)
     function createNote(options) {
-        let createPersonalNoteUrl = webServiceUrl + '/postPN'
+        let createPersonalNoteUrl = webServiceUrl + createUrl;
 
         let isValidOption = validatePersonalNoteOptions(options)
         if (!isValidOption) {
@@ -54,9 +58,8 @@ import Router from '../routes.js';
 
     // NOT exposed to the global object ("Private" functions)
     function getNote(notedate) {
-        let getUrl = webServiceUrl + '/getPN?notedate=' + notedate;
-
-        let request = ajaxClient.get(getUrl, jwtToken);
+        let get_Url = webServiceUrl + getUrl + notedate;
+        let request = ajaxClient.get(get_Url, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
@@ -75,14 +78,14 @@ import Router from '../routes.js';
     }
 
     function updateNote(options) {
-        let updateLLIUrl = webServiceUrl + '/putPN'
+        let Url = webServiceUrl + updateUrl;
 
         let isValidOption = validatePersonalNoteOptions(options)
         if (!isValidOption) {
             return
         }
 
-        let request = ajaxClient.put(updateLLIUrl, options, jwtToken)
+        let request = ajaxClient.put(Url, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
@@ -102,8 +105,8 @@ import Router from '../routes.js';
     }
 
     function deleteNote(noteid) {
-        let deleteUrl = webServiceUrl + '/deletePN?noteid=' + noteid;
-        let request = ajaxClient.del(deleteUrl, jwtToken);
+        let Url = webServiceUrl + deleteUrl + noteid;
+        let request = ajaxClient.del(Url, jwtToken);
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
@@ -272,7 +275,7 @@ import Router from '../routes.js';
 
         logoutInput.addEventListener('click', function () {
             window.localStorage.clear()
-            location.reload()
+            routeManager.loadPage(routeManager.PAGES.homePage)
         })
     }
 
@@ -290,14 +293,29 @@ import Router from '../routes.js';
             }
         })
     }
+
+    async function fetchConfig() {
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        webServiceUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteWebService;
+        createUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteCreate;
+        getUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteGet;
+        updateUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteUpdate;
+        deleteUrl = data.LifelogUrlConfig.PersonalNote.PersonalNoteDelete;
+    }
+
     root.myApp = root.myApp || {};
 
     // Initialize the current view by setting up data and attaching event handlers 
-    function init() {
+    async function init() {
         jwtToken = localStorage["token-local"]
         if (jwtToken == null) {
-            window.location = '../HomePage/index.html'
+            routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            await fetchConfig();
+            personalNoteDomManipulator.setUp();
+            window.name = routeManager.PAGES.personalNotePage
             // Set up event handlers
             setupCreateNoteSubmit();
             setupDeleteNote();
@@ -307,18 +325,14 @@ import Router from '../routes.js';
             // Get data
             showNote();
             currNote();
-
             //navigate 
-            const router = new Router;
-            router.navigatePages();
+            routeManager.setupHeaderLinks();
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        init();
-    });
+    init()
 
-})(window, window.ajaxClient);
+}
 
 
 

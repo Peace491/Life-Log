@@ -5,6 +5,7 @@ import * as lliPage from './LLIManagementPage/lli.js'
 import * as registrationPage from './RegistrationPage/registration.js'
 import * as calendarPage from './CalendarPage/calendar.js'
 import * as userFormPage from './UserFormPage/userForm.js'
+import * as personalNotePage from './PersonalNotePage/personalnote.js'
 
 
 export const PAGES = {
@@ -12,7 +13,8 @@ export const PAGES = {
     lliManagementPage: 'LLIManagementPage',
     registrationPage: 'RegistrationPage',
     calendarPage: 'CalendarPage',
-    userFormPage: 'UserFormPage'
+    userFormPage: 'UserFormPage',
+    personalNotePage: 'PersonalNotePage'
 }
 
 const SCRIPTS = {
@@ -20,7 +22,8 @@ const SCRIPTS = {
     'LLIManagementPage': 'lli.js',
     'RegistrationPage': 'registration.js',
     'CalendarPage': 'calendar.js',
-    'UserFormPage': 'userForm.js'
+    'UserFormPage': 'userForm.js',
+    'PersonalNotePage': 'personalnote.js'
 }
 
 const LOAD_FUNCTION = {
@@ -28,10 +31,12 @@ const LOAD_FUNCTION = {
     'LLIManagementPage': lliPage.loadLLIPage,
     'RegistrationPage': registrationPage.loadRegistrationPage,
     'CalendarPage': calendarPage.loadCalendarPage,
-    'UserFormPage': userFormPage.loadUserFormPage
+    'UserFormPage': userFormPage.loadUserFormPage,
+    'PersonalNotePage': personalNotePage.LoadPersonalNotePage
 }
 
 export async function loadPage(page) {
+    window.name = ''
     let fetchHtmlResponse = await fetchHtml(window.location.origin + "/" + page + "/index.html")
 
     document.body.innerHTML = fetchHtmlResponse.innerHTML
@@ -45,7 +50,7 @@ export async function loadPage(page) {
     document.body.appendChild(scriptElement);
 
     // Add an onload event listener to ensure the script is loaded before calling init()
-    scriptElement.onload = function() {
+    scriptElement.onload = function () {
         // Call init() function after the script is loaded
         LOAD_FUNCTION[page](window, window.ajaxClient)
     };
@@ -63,6 +68,28 @@ async function fetchHtml(pageRoute) {
         return null;
     }
 }
+
+export function setupHeaderLinks() {
+    let calendarLink = document.getElementById("calendar-link")
+    let personalNotesLink = document.getElementById('notes-view')
+    let lliLink = document.getElementById('lli-view')
+
+    calendarLink.addEventListener('click', function () {
+        loadPage(PAGES.calendarPage)
+
+    })
+
+    personalNotesLink.addEventListener('click', function () {
+        loadPage(PAGES.personalNotePage)
+    })
+
+    lliLink.addEventListener('click', function () {
+        loadPage(PAGES.lliManagementPage)
+    })
+
+
+}
+
 
 
 

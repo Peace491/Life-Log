@@ -1,10 +1,10 @@
 describe('Personal Note Test', () => {
-    
+    let token = '{"Header":{"Alg":"HS256","Typ":"JWT"},"Payload":{"Iss":"localhost","Sub":"myApp","Aud":"myApp","Exp":"638477345117710790","Iat":"638477333117710758","Nbf":null,"Scope":"","UserHash":"TestUser","Claims":{"Role":"Admin"}},"Signature":"lrs50BAplaJBayP3LEUCYscgQjjILbJrBVSOG4V9Jwc"}'
     it('Create a new note', () => {
         //#region Arrange
         cy.visit('http://localhost:3000/');
         window.localStorage.clear()
-        window.localStorage.setItem('token-local', '{"Header":{"Alg":"HS256","Typ":"JWT"},"Payload":{"Iss":"localhost","Sub":"myApp","Aud":"myApp","Exp":638475145483560000,"Iat":638475133483559600,"Nbf":null,"Scope":"","UserHash":"TestUser","Claims":{"Role":"Admin"}},"Signature":"IRlffho8Gs4A3CZySiWdJjEPQFW6XYPnsAmElEhliQ0"}')
+        window.localStorage.setItem('token-local', token)
         // Visit the page
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
@@ -34,7 +34,7 @@ describe('Personal Note Test', () => {
         //#region Arrange
         cy.visit('http://localhost:3000/');
         window.localStorage.clear()
-        window.localStorage.setItem('token-local', '{"Header":{"Alg":"HS256","Typ":"JWT"},"Payload":{"Iss":"localhost","Sub":"myApp","Aud":"myApp","Exp":638475145483560000,"Iat":638475133483559600,"Nbf":null,"Scope":"","UserHash":"TestUser","Claims":{"Role":"Admin"}},"Signature":"IRlffho8Gs4A3CZySiWdJjEPQFW6XYPnsAmElEhliQ0"}')
+        window.localStorage.setItem('token-local', token)
         // Visit the page
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
@@ -63,7 +63,7 @@ describe('Personal Note Test', () => {
         //#region Arrange
         cy.visit('http://localhost:3000/');
         window.localStorage.clear()
-        window.localStorage.setItem('token-local', '{"Header":{"Alg":"HS256","Typ":"JWT"},"Payload":{"Iss":"localhost","Sub":"myApp","Aud":"myApp","Exp":638475145483560000,"Iat":638475133483559600,"Nbf":null,"Scope":"","UserHash":"TestUser","Claims":{"Role":"Admin"}},"Signature":"IRlffho8Gs4A3CZySiWdJjEPQFW6XYPnsAmElEhliQ0"}')
+        window.localStorage.setItem('token-local', token)
         // Visit the page
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
@@ -100,7 +100,7 @@ describe('Personal Note Test', () => {
         //#region Arrange
         cy.visit('http://localhost:3000/');
         window.localStorage.clear()
-        window.localStorage.setItem('token-local', '{"Header":{"Alg":"HS256","Typ":"JWT"},"Payload":{"Iss":"localhost","Sub":"myApp","Aud":"myApp","Exp":638475145483560000,"Iat":638475133483559600,"Nbf":null,"Scope":"","UserHash":"TestUser","Claims":{"Role":"Admin"}},"Signature":"IRlffho8Gs4A3CZySiWdJjEPQFW6XYPnsAmElEhliQ0"}')
+        window.localStorage.setItem('token-local', token)
         // Visit the page
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)

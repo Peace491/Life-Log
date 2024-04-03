@@ -2,32 +2,20 @@ namespace Peace.Lifelog.PersonalNoteWebService;
 
 using back_end;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
-using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.Logging;
 using Peace.Lifelog.PersonalNote;
+using Peace.Lifelog.Security;
 using System.Text.Json;
 
 [ApiController]
 [Route("personalnote")]  // Defines the default parent URL path for all action methods to be the name of controller
 public class PersonalNoteController : ControllerBase
 {
-    private CreateDataOnlyDAO createDataOnlyDAO;
-    private ReadDataOnlyDAO readDataOnlyDAO;
-    private UpdateDataOnlyDAO updateDataOnlyDAO;
-    private DeleteDataOnlyDAO deleteDataOnlyDAO;
-    private LogTarget logTarget;
-    private Logging logging;
-    private PersonalNoteService personalNoteService;
-    public PersonalNoteController()
+    private readonly IPersonalNoteService personalNoteService;
+    private JWTService jwtService;
+    public PersonalNoteController(IPersonalNoteService personalNoteService)
     {
-        this.createDataOnlyDAO = new CreateDataOnlyDAO();
-        this.readDataOnlyDAO = new ReadDataOnlyDAO();
-        this.updateDataOnlyDAO = new UpdateDataOnlyDAO();
-        this.deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-        this.logTarget = new LogTarget(this.createDataOnlyDAO);
-        this.logging = new Logging(this.logTarget);
-        this.personalNoteService = new PersonalNoteService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
-
+        this.personalNoteService = personalNoteService;
+        this.jwtService = new JWTService();
     }
     [HttpPost]
     [Route("postPN")]
@@ -48,6 +36,11 @@ public class PersonalNoteController : ControllerBase
         var userHash = jwtToken.Payload.UserHash;
 
         if (userHash == null)
+        {
+            return StatusCode(401);
+        }
+
+        if (!jwtService.IsJwtValid(jwtToken))
         {
             return StatusCode(401);
         }
@@ -96,6 +89,11 @@ public class PersonalNoteController : ControllerBase
             return StatusCode(401);
         }
 
+        if (!jwtService.IsJwtValid(jwtToken))
+        {
+            return StatusCode(401);
+        }
+
         var personalnote = new PN();
         personalnote.NoteDate = notedate;
 
@@ -107,17 +105,14 @@ public class PersonalNoteController : ControllerBase
         }
         if (response.ErrorMessage!.Contains("UserHash can not be empty"))
         {
-            Console.WriteLine(response.ErrorMessage);
             return StatusCode(400, response.ErrorMessage);
         }
         if (response.ErrorMessage!.Equals("The Date is Invalid"))
         {
-            Console.WriteLine(response.ErrorMessage);
             return StatusCode(400, response.ErrorMessage);
         }
         else
         {
-            Console.WriteLine(response.ErrorMessage);
             return StatusCode(500);
         }
     }
@@ -141,6 +136,11 @@ public class PersonalNoteController : ControllerBase
         var userHash = jwtToken.Payload.UserHash;
 
         if (userHash == null)
+        {
+            return StatusCode(401);
+        }
+
+        if (!jwtService.IsJwtValid(jwtToken))
         {
             return StatusCode(401);
         }
@@ -185,6 +185,11 @@ public class PersonalNoteController : ControllerBase
         var userHash = jwtToken.Payload.UserHash;
 
         if (userHash == null)
+        {
+            return StatusCode(401);
+        }
+
+        if (!jwtService.IsJwtValid(jwtToken))
         {
             return StatusCode(401);
         }
