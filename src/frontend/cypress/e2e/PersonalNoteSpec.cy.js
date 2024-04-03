@@ -6,6 +6,7 @@ describe('Personal Note Test', () => {
         window.localStorage.clear()
         window.localStorage.setItem('token-local', token)
         // Visit the page
+        cy.wait(500)
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
         //#endregion
@@ -26,6 +27,7 @@ describe('Personal Note Test', () => {
         //#endregion
 
         // Clean up 
+        cy.wait(500)
         cy.get('#note-delete-button').click()
         
     })
@@ -36,6 +38,7 @@ describe('Personal Note Test', () => {
         window.localStorage.clear()
         window.localStorage.setItem('token-local', token)
         // Visit the page
+        cy.wait(500)
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
         //#endregion
@@ -65,6 +68,7 @@ describe('Personal Note Test', () => {
         window.localStorage.clear()
         window.localStorage.setItem('token-local', token)
         // Visit the page
+        cy.wait(500)
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
         //#endregion
@@ -91,7 +95,8 @@ describe('Personal Note Test', () => {
         cy.get('#create-paragraph-input').should('contain', 'Test View');
         //#endregion
         
-        // Clean up          
+        // Clean up
+        cy.wait(500)          
         cy.get('#note-delete-button').click()
         
     })
@@ -102,6 +107,7 @@ describe('Personal Note Test', () => {
         window.localStorage.clear()
         window.localStorage.setItem('token-local', token)
         // Visit the page
+        cy.wait(500)
         cy.get('[data-testid = note-view]').click()
         cy.wait(1000)
         //#endregion
@@ -133,7 +139,8 @@ describe('Personal Note Test', () => {
         cy.get('#create-paragraph-input').should('contain', 'Test Edited');
         //#endregion
         
-        // Clean up          
+        // Clean up  
+        cy.wait(500)        
         cy.get('#note-delete-button').click()
         
     })
