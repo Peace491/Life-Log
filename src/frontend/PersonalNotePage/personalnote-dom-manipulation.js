@@ -1,7 +1,7 @@
 export function setUp() {
     // Set today's date for note on bootup
     var date = new Date();
-    date.setDate(date.getDate());
+    date.setDate(date.getDate() - 1);
     document.getElementById('create-date-input').valueAsDate = date;
 
     //#region Done Button
