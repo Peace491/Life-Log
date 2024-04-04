@@ -461,6 +461,7 @@ export function loadLLIPage(root, ajaxClient) {
             setupFilter();
             setupSearch();
             setupLogout();
+            setupHeaderLinks();
             
             // Get data
             showLLI();

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Peace.Lifelog.REDatamartService/Peace.Lifelog.RecSummaryService.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
   </ItemGroup>
 
 </Project>

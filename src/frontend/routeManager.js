@@ -78,11 +78,13 @@ async function fetchHtml(pageRoute) {
     }
 }
 
+
 export function setupHeaderLinks() {
     let calendarLink = document.getElementById("calendar-link")
     let personalNotesLink = document.getElementById('notes-view')
     let lliLink = document.getElementById('lli-view')
-    let recEngineLink = document.getElementById('rec-engine-view')
+    let recEngineLink = document.getElementById('rec-engine-link')
+    let logoutInput = document.getElementById('logout')
 
     calendarLink.addEventListener('click', function () {
         loadPage(PAGES.calendarPage)
@@ -95,6 +97,19 @@ export function setupHeaderLinks() {
     lliLink.addEventListener('click', function () {
         loadPage(PAGES.lliManagementPage)
     })
+
+    recEngineLink.addEventListener('click', function () {
+        loadPage(PAGES.recEnginePage)
+    })
+
+    logoutInput.addEventListener('click', function () {
+        window.localStorage.clear()
+        loadPage(PAGES.homePage)
+    })
+
+
+
+    
 
 
 }

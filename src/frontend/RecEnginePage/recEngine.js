@@ -1,6 +1,7 @@
 "use strict";
 
 import * as validator from "./recEngineInputValidation.js";
+import * as routeManager from "../routeManager.js";
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -88,7 +89,7 @@ export function loadRecEnginePage (root, ajaxClient) {
                 return response.json()
             }).then(function (response) {
                 alert('The LLI is successfully created.')
-                location.reload()
+                // location.reload()
                 resolve(response)
             }).catch(function (error) {
                 alert(error)
@@ -132,7 +133,15 @@ export function loadRecEnginePage (root, ajaxClient) {
         }
         else {
             recurrenceStatus = "On"
-            recurrenceFrequency = recurrence
+            const match = recurrence.match(/\(([^)]+)\)/);
+            
+            if (match) {
+              console.log(match[1]); 
+            } else {
+              console.log("No match found");
+            }
+
+            recurrenceFrequency = match[1];
         }
 
         let options = {
@@ -212,6 +221,8 @@ export function loadRecEnginePage (root, ajaxClient) {
 
   function setupRepopulateAllUserSummary() {
     // Function to setup the repopulate datamart button
+    let container = document.getElementsByClassName("admin-seeding-container")[0];
+    container.classList.remove("hidden");
     let repopulateAllUserSummaryButton = document.getElementById("seedDatabase");
 
     repopulateAllUserSummaryButton.addEventListener("click", function () {
@@ -563,9 +574,15 @@ export function loadRecEnginePage (root, ajaxClient) {
         claims: jwtTokenObject.Payload.Claims,
       };
       console.log(principal);
+      window.name = routeManager.PAGES.recEnginePage;
       setupGetNumRecomendations();
       setupRepopulateUserDatamart();
-      setupRepopulateAllUserSummary();
+      console.log(principal.claims.Role);
+      if (principal.claims.Role ==  "Admin") {
+        console.log("Admin")
+        setupRepopulateAllUserSummary();
+      }
+      routeManager.setupHeaderLinks();
     } 
     
   }
