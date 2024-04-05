@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
+using ZstdSharp.Unsafe;
 
 public class RecEngineRepo : IRecEngineRepo
 {
@@ -59,11 +60,12 @@ public class RecEngineRepo : IRecEngineRepo
             {
                 response.HasError = true;
                 response.ErrorMessage = $"Unable to find {numRecs} recommendations for user {userHash}.";
+                _ = await logger.CreateLog("Logs", userHash, "ERROR", "Data Access", response.ErrorMessage);
             }
         }
         catch (Exception ex)
         {
-            await logger.CreateLog("Logs", userHash, "ERROR", "Data Access", ex.Message);
+            _ = await logger.CreateLog("Logs", userHash, "ERROR", "Data Access", ex.Message);
             response.ErrorMessage = "An error occurred while processing your request.";
         }
         return response;

@@ -16,7 +16,6 @@ builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 builder.Services.AddTransient<IRecEngineRepo, RecEngineRepo>(); 
 builder.Services.AddTransient<IRecEngineService, RecEngineService>();
-builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();

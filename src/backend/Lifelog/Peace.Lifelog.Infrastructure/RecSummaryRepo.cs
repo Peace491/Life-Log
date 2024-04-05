@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 public class RecSummaryRepo : IRecSummaryRepo
 {
-    private readonly string selectAllUserHashQuery = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
     private readonly string tableName = "RecSummary";
     private readonly IReadDataOnlyDAO readDataOnlyDAO;
     private readonly IUpdateDataOnlyDAO updateDataOnlyDAO;
@@ -25,6 +24,7 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
+            string selectAllUserHashQuery = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
             return await readDataOnlyDAO.ReadData(selectAllUserHashQuery);
         }
         catch (Exception ex)
@@ -72,23 +72,6 @@ public class RecSummaryRepo : IRecSummaryRepo
         catch (Exception ex)
         {
             _ = await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
-            return new Response { HasError = true, ErrorMessage = ex.Message };
-        }
-    }
-
-    public async Task<Response> UpdateSystemDataMart(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var res = await GetMostPopularCategory(cancellationToken);
-            // Extract the most popular category from the response. Assuming response parsing is correct.
-            string category = "Art"; // Placeholder for actual extraction logic
-            var query = $"UPDATE {tableName} SET Category1 = '{category}', Category2 = '{category}', SystemMostPopular = '{category}' WHERE UserHash = 'system';";
-            return await updateDataOnlyDAO.UpdateData(query);
-        }
-        catch (Exception ex)
-        {
-            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
             return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }

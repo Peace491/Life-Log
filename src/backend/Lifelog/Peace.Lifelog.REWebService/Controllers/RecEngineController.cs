@@ -16,13 +16,11 @@ public sealed class RecEngineController : ControllerBase
 {
     private readonly IRecEngineService _recEngineService;
     private readonly ILogging _logger;
-    private readonly IJWTService _jwtService;
 
-    public RecEngineController(IRecEngineService recEngineService, ILogging logger, IJWTService jwtService)
+    public RecEngineController(IRecEngineService recEngineService, ILogging logger)
     {
         _recEngineService = recEngineService;
         _logger = logger;
-        _jwtService = jwtService;
     }
 
     [HttpPost("NumRecs")]
@@ -30,8 +28,6 @@ public sealed class RecEngineController : ControllerBase
     {
         try
         {
-            var statusCode = _jwtService.ProcessToken(Request);
-
             if (payload.AppPrincipal == null)
             {
                 return BadRequest("AppPrincipal is null.");
@@ -46,7 +42,7 @@ public sealed class RecEngineController : ControllerBase
 
             if (response.HasError)
             {
-                return BadRequest(response.ErrorMessage);
+                return BadRequest("An error occurred while processing your request.");
             }
 
             if (response.Output == null)

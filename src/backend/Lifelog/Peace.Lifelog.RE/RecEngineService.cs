@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DomainModels;
+using ZstdSharp.Unsafe;
 
 public class RecEngineService : IRecEngineService
 {
@@ -54,6 +55,7 @@ public class RecEngineService : IRecEngineService
             if (!IsUserAuthorized(appPrincipal))
             {
                 response.ErrorMessage = "User is not authorized to access this service";
+                _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Buisness", response.ErrorMessage);
                 return response;
             }
 
@@ -61,6 +63,7 @@ public class RecEngineService : IRecEngineService
             if (!ValidateNumRecs(numRecs))
             {
                 response.ErrorMessage = "Invalid number of recommendations. Number of recommendations must be between 1 and 10";
+                _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Buisness", response.ErrorMessage);
                 return response;
             }
 
@@ -72,6 +75,7 @@ public class RecEngineService : IRecEngineService
             if (!TimeOperation(timer))
             {
                 response.ErrorMessage = "Operation took too long";
+                _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Business", response.ErrorMessage);
                 return response;
             }
 
@@ -83,7 +87,7 @@ public class RecEngineService : IRecEngineService
         catch (Exception ex)
         {
             // Log the exception and set an error message
-            await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Service", ex.Message);
+            _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Service", ex.Message);
             response.ErrorMessage = "An error occurred while processing your request.";
         }
 
