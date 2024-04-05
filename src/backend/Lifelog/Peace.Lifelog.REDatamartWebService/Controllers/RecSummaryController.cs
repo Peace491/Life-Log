@@ -9,7 +9,7 @@ namespace Peace.Lifelog.REDatamartWebService.Controllers;
 
 [ApiController]
 [Route("summary")]
-public class RecSummaryController : ControllerBase
+public sealed class RecSummaryController : ControllerBase
 {
     private IRecSummaryService recSummaryService;
     private readonly ILogging logger;
@@ -22,23 +22,19 @@ public class RecSummaryController : ControllerBase
         this.jwtService = jwtService;
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("UserRecSummary")]
-    public async Task<IActionResult> UpdateRecommendationDataMartForUser()
+    public async Task<IActionResult> UpdateRecommendationDataMartForUser(AppPrincipal principal)
     {
         try
         {
-            Console.WriteLine("hi");
+            Console.WriteLine(principal.UserId);
             if (Request.Headers == null)
             {
                 return StatusCode(401);
             }
 
-            Console.WriteLine("hi");
             var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
-
-            Console.WriteLine(jwtToken);
-            Console.WriteLine("hi");
 
             if (jwtToken == null)
             {
@@ -57,13 +53,15 @@ public class RecSummaryController : ControllerBase
                 return StatusCode(401);
             }
 
-            var response = await recSummaryService.updateUserRecSummary(userHash);
+            var response = await recSummaryService.UpdateUserRecSummary(principal);
 
             // Consider checking response for errors and handling them accordingly
             if (response.HasError)
             {
+                Console.WriteLine(response.ErrorMessage);
                 return BadRequest(response.ErrorMessage);
             }
+        
 
             return Ok(response);
         }
@@ -77,9 +75,9 @@ public class RecSummaryController : ControllerBase
     }
 
     // Update recommendation data mart for ALL users
-    [HttpGet]
+    [HttpPost]
     [Route("AllUserRecSummary")]
-    public async Task<IActionResult> UpdateRecommendationDataMartForAllUsers()
+    public async Task<IActionResult> UpdateRecommendationDataMartForAllUsers(AppPrincipal principal)
     {
         try
         {
@@ -98,21 +96,9 @@ public class RecSummaryController : ControllerBase
                 return StatusCode(401, "Unauthorized");
             }
 
-            // if role is admin or root, do stuff
-            if (jwtToken.Payload.Claims["Role"] is "Admin" or not "Root")
-            {
-                var response = await recSummaryService.updateAllUserRecSummary();
-                if (response.HasError)
-                {
-                    return BadRequest(response.ErrorMessage);
-                }
-                return Ok(response);
-
-            }
-            else
-            {
-                return StatusCode(401, "Unauthorized");
-            }
+            var response = await recSummaryService.UpdateAllUserRecSummary(principal);
+ 
+            return Ok(response);
         }
         catch (Exception ex)
         {

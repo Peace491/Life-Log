@@ -1,19 +1,20 @@
 namespace Peace.Lifelog.RecSummaryService;
 
-using System.Diagnostics;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
-using Peace.Lifelog.UserManagement;
+using Peace.Lifelog.Security;
 
 public class RecSummaryServiceShould
 {   
-    private const string USER_ID = "TestRecSummaryServiceAccount";
-    private const string USER_HASH = "/2Lm1yvAbXcZKRffjcV+f7UFD2Yl/Tn5OF7sKBYRjuQ=";
+    private const string USER_HASH = "TestUser";
 
     [Fact]
     public async Task updateRecommendationDataMartForUser_Should_UpdateUserRecommendationDataMart()
     {
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
         // Arrange
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -25,7 +26,7 @@ public class RecSummaryServiceShould
         var reService = new RecSummaryService(recSummaryRepo, logger);
 
         // Act
-        var result = await reService.updateUserRecSummary(USER_HASH);
+        var result = await reService.UpdateUserRecSummary(principal);
 
         // Assert
         Assert.False(result.HasError);
@@ -52,6 +53,9 @@ public class RecSummaryServiceShould
     [Fact]
     public async Task updateRecommendationDataMartForAllUsers_Should_UpdateAllUserRecommendationDataMart()
     {
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Admin"}};
         // Arrange
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -63,7 +67,7 @@ public class RecSummaryServiceShould
         var reService = new RecSummaryService(recSummaryRepo, logger);
         
         // Act
-        var result = await reService.updateAllUserRecSummary();
+        var result = await reService.UpdateAllUserRecSummary(principal);
 
         // Assert
         Assert.False(result.HasError);
@@ -72,6 +76,9 @@ public class RecSummaryServiceShould
     [Fact]
     public async Task updateUserRecSummary_Should_ReturnAnErrorIfTheUserHashIsInvalid()
     {
+        var principal = new AppPrincipal();
+        principal.UserId = "nope";
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
         // Arrange
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -83,7 +90,7 @@ public class RecSummaryServiceShould
         var reService = new RecSummaryService(recSummaryRepo, logger);
 
         // Act
-        var result = await reService.updateUserRecSummary(USER_HASH + "invalid");
+        var result = await reService.UpdateUserRecSummary(principal);
 
         // Assert
         Assert.True(result.HasError);
@@ -91,7 +98,9 @@ public class RecSummaryServiceShould
     [Fact]
     public async Task updateAllUserRecSummary_Should_ReturnAnErrorIfUserNotAdmin()
     {
-        // Somehow check if the user is an admin
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", "Potato"}};
 
         // Arrange
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
@@ -104,10 +113,10 @@ public class RecSummaryServiceShould
         var reService = new RecSummaryService(recSummaryRepo, logger);
 
         // Act
-        var result = await reService.updateAllUserRecSummary();
+        var result = await reService.UpdateAllUserRecSummary(principal);
 
         // Assert
-        Assert.False(result.HasError);
+        Assert.True(result.HasError);
     }
     
 }

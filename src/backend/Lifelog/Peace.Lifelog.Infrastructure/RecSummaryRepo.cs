@@ -38,7 +38,7 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
-            var query = $"SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking FROM UserForm WHERE UserHash = '{userHash}';";
+            var query = $"SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking FROM UserForm WHERE UserHash = '{userHash}'";
             return await readDataOnlyDAO.ReadData(query);
         }
         catch (Exception ex)

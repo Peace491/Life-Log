@@ -5,6 +5,7 @@ using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using back_end;
+using System.Security;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddTransient<IRecSummaryRepo, RecSummaryRepo>();
 builder.Services.AddTransient<IRecSummaryService, RecSummaryService>();
 builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

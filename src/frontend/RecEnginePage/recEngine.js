@@ -18,9 +18,15 @@ export function loadRecEnginePage (root, ajaxClient) {
   let principal = { };
 
 
-  const webServiceUrl = "http://localhost:8086/re"; 
-  const lliWebServiceUrl = "http://localhost:8080/lli"; 
-  const summaryWebServiceUrl = "http://localhost:8085/summary"; 
+  let recServiceUrl = "";
+  let getRecsUrl = "";
+
+  let lliWebServiceUrl = "";
+  let createLLIUrl = "";
+
+  let summaryWebServiceUrl = "";
+  let updateUserUrl = "";
+  let updateAllUserUrl = "";
 
   root.myApp = root.myApp || {};
 
@@ -30,7 +36,7 @@ export function loadRecEnginePage (root, ajaxClient) {
       return Promise.reject(new Error("Invalid number of recommendations"));
     }
 
-    const url = `${webServiceUrl}/NumRecs`;
+    const url = recServiceUrl +getRecsUrl;
     return ajaxClient
       .post(url, { 
         appPrincipal: principal,
@@ -76,9 +82,9 @@ export function loadRecEnginePage (root, ajaxClient) {
     //   alert("Invalid input");
     //   return Promise.reject(new Error("Invalid input"));
     // }
-    let createLLIUrl = `${lliWebServiceUrl}/postLLI`;
+    let concatCreateLLI = lliWebServiceUrl + createLLIUrl;
 
-    let request = ajaxClient.post(createLLIUrl, options, jwtToken)
+    let request = ajaxClient.post(concatCreateLLI, options, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
@@ -178,9 +184,9 @@ export function loadRecEnginePage (root, ajaxClient) {
   function repopulateUserDatamart() {
     // populate url with the accurate url for the service
     // TODO : Fix with correct url
-    const url = `${summaryWebServiceUrl}/UserRecSummary`;
+    const url = summaryWebServiceUrl + updateUserUrl;
     return ajaxClient
-      .get(url)
+      .post(url, principal , jwtToken)
       .then((response) => response.json())
       .catch((error) => Promise.reject(error));
   }
@@ -206,10 +212,10 @@ export function loadRecEnginePage (root, ajaxClient) {
   function repopulateAllUserSummary() {
     // Preform validation to check if admin.
     // If admin, populate the entire summary tableconst 
-    const url = `${summaryWebServiceUrl}/AllUserRecSummary`;
+    const url = summaryWebServiceUrl + updateAllUserUrl;
     if (true){ // TODO validate user role
       return ajaxClient
-      .get(url)
+      .post(url, principal, jwtToken)
       .then((response) => response.json())
       .catch((error) => Promise.reject(error));
     }
@@ -259,7 +265,7 @@ export function loadRecEnginePage (root, ajaxClient) {
     titleDiv.className = "lli-recommendation-title";
     titleDiv.id = `${idPrefix}-title-div`;
     const titleH2 = document.createElement("h2");
-    titleH2.innerText = recommendation[2];
+    titleH2.innerText = recommendation.Title;
     titleH2.contentEditable = "true";
     titleH2.id = `${idPrefix}-title`;
 
@@ -525,7 +531,7 @@ export function loadRecEnginePage (root, ajaxClient) {
     const costValueSpan = document.createElement("span");
     costValueSpan.id = `${idPrefix}-cost-input`;
     costValueSpan.contentEditable = "true";
-    costValueSpan.innerText = "100";
+    costValueSpan.innerText = cost;
     costHeading.appendChild(document.createTextNode(" $"));
     costHeading.appendChild(costValueSpan);
     // const costHeading = document.createElement("h2");
@@ -558,15 +564,29 @@ export function loadRecEnginePage (root, ajaxClient) {
     return createRecommendationContainer;
   }
   
+  async function fetchConfig() {
+    // fetch all Url's
+    const response = await fetch('../lifelog-config.url.json');
+    const data = await response.json();
+    recServiceUrl = data.LifelogUrlConfig.RecEngine.RecEngineWebService;
+    getRecsUrl = data.LifelogUrlConfig.RecEngine.RecEngineNumRecs;
 
+    lliWebServiceUrl = data.LifelogUrlConfig.LLI.LLIWebService;
+    createLLIUrl = data.LifelogUrlConfig.LLI.LLICreate;
+
+    summaryWebServiceUrl = data.LifelogUrlConfig.RecSummary.RecSummaryWebService;
+    updateUserUrl = data.LifelogUrlConfig.RecSummary.RecSummaryUserUpdate;
+    updateAllUserUrl = data.LifelogUrlConfig.RecSummary.RecSummaryAllUserUpdate;
+}
 
   // Initialize the current view by setting up data and attaching event handlers
-  function init() {
+  async function init() {
     jwtToken = localStorage["token-local"];
 
     if (jwtToken == null) {
       routeManager.loadPage(routeManager.PAGES.homePage)
     } else {
+      await fetchConfig();
       let jwtTokenObject = JSON.parse(jwtToken); 
       console.log(jwtTokenObject);
       principal = {

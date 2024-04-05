@@ -1,7 +1,8 @@
 ﻿namespace Peace.Lifelog.RecSummaryService;
 
 using DomainModels;
+using Peace.Lifelog.Security;
 public interface IUpdateAllUserRecSummary
 {
-    Task<Response> updateAllUserRecSummary();
+    Task<Response> UpdateAllUserRecSummary(AppPrincipal principal);
 }

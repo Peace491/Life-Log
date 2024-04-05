@@ -5,6 +5,7 @@ using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 using ZstdSharp.Unsafe;
 
 public class RecSummaryService : IRecSummaryService
@@ -21,13 +22,14 @@ public class RecSummaryService : IRecSummaryService
     }
 
     // only allow users to do this Y times a day
-    public async Task<Response> updateUserRecSummary(string userHash)
+    public async Task<Response> UpdateUserRecSummary(AppPrincipal principal)
     {
         var response = new Response();
         try
         {
             // Get userform
-            response = await recSummaryRepo.GetUserForm(userHash);
+            Console.WriteLine("Fetching user form for user: " + principal.UserId);
+            response = await recSummaryRepo.GetUserForm(principal.UserId);
 
             if (response.Output == null)
             {
@@ -41,7 +43,7 @@ public class RecSummaryService : IRecSummaryService
             // TODO : Evaluate for biz rules
 
             // Get userLLI
-            response = await recSummaryRepo.GetNumUserLLI(userHash, null);
+            response = await recSummaryRepo.GetNumUserLLI(principal.UserId, null);
             // Update scores with userLLI
             var scoreDict = scoreLLI(userScores, response);
 
@@ -54,7 +56,7 @@ public class RecSummaryService : IRecSummaryService
             response = await recSummaryRepo.GetMostPopularCategory();
 
             // Update the user's data mart with the two highest scoring categories
-            response = await recSummaryRepo.UpdateUserDataMart(userHash, topTwoCategories[0], topTwoCategories[1]);
+            response = await recSummaryRepo.UpdateUserDataMart(principal.UserId, topTwoCategories[0], topTwoCategories[1]);
 
             // TODO : Evaluate for biz rules
         }
@@ -105,11 +107,20 @@ public class RecSummaryService : IRecSummaryService
     }
 
 
-    public async Task<Response> updateAllUserRecSummary()
+    public async Task<Response> UpdateAllUserRecSummary(AppPrincipal principal)
     {
         var response = new Response();
         try
         {
+            if (principal == null || principal.Claims == null || (principal.Claims["Role"] != "Admin" && principal.Claims["Role"] != "Root"))
+            {
+                return new Response
+                {
+                    HasError = true,
+                    ErrorMessage = "Unauthorized"
+                };
+            }
+
             // get all userHashes
             var allUserHashResponse = await recSummaryRepo.GetAllUserHash();
 
@@ -132,7 +143,8 @@ public class RecSummaryService : IRecSummaryService
                     }
                     else
                     {
-                        var updateDataMartResponse = await updateUserRecSummary(currentHash);
+                        principal.UserId = currentHash;
+                        var updateDataMartResponse = await UpdateUserRecSummary(principal);
                     }
                     numUsersProcessed++;
                 }

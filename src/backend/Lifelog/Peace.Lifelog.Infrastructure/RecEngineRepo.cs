@@ -88,51 +88,42 @@ public class RecEngineRepo : IRecEngineRepo
         string tableName = $"{userSummary.UserHash}Recs";
         string query = StartQuery(tableName);
 
-        if (numRecs == 5)
+
+        int current;
+        while (numRecs > 0)
         {
-            query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 2);
-            query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
-            query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
-            query += SelectNewLLINotOfCategories(tableName, userSummary.UserHash, userSummary.Categories, 1);
-        }
-        else
-        {
-            int current;
-            while (numRecs > 0)
+            current = numRecs % 5;
+            if (current == 0)
             {
-                current = numRecs % 5;
-                if (current == 0)
-                {
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 2);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 2);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
-                    numRecs -= 5;
-                }
-                if (current == 4)
-                {
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 2);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
-                    numRecs -= 4;
-                }
-                if (current == 3)
-                {
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 1);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
-                    numRecs -= 3;
-                }
-                if (current == 2)
-                {
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 1);
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
-                    numRecs -= 2;
-                }
-                if (current == 1)
-                {
-                    query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
-                    numRecs--;
-                }
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 2);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 2);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
+                numRecs -= 5;
+            }
+            if (current == 4)
+            {
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 2);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
+                numRecs -= 4;
+            }
+            if (current == 3)
+            {
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 1);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
+                numRecs -= 3;
+            }
+            if (current == 2)
+            {
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[0], 1);
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[1], 1);
+                numRecs -= 2;
+            }
+            if (current == 1)
+            {
+                query += SelectNewLLIWithCategory(tableName, userSummary.UserHash, userSummary.Categories[2], 1);
+                numRecs--;
             }
         }
         query += EndQuery(tableName);
@@ -146,7 +137,7 @@ public class RecEngineRepo : IRecEngineRepo
     /// <returns>The starting portion of the SQL query.</returns>
     private string StartQuery(string tableName)
     {
-        return 
+        return
         $"CREATE TABLE IF NOT EXISTS `{tableName}` (" +
         "LLIId INT," +
         "UNIQUE KEY (LLIId)" +
@@ -161,7 +152,7 @@ public class RecEngineRepo : IRecEngineRepo
     /// <returns>The concluding portion of the SQL query.</returns>
     private string EndQuery(string tableName)
     {
-        return 
+        return
         $"SELECT LLI.* " +
         $"FROM LLI " +
         $"INNER JOIN `{tableName}` ON LLI.LLIId = `{tableName}`.LLIId " +
@@ -178,7 +169,7 @@ public class RecEngineRepo : IRecEngineRepo
     /// <returns>A portion of the SQL query for selecting LLIs within a category.</returns>
     private string SelectNewLLIWithCategory(string tableName, string userHash, string category, int limit)
     {
-        return 
+        return
         $"INSERT INTO `{tableName}` (LLIId) " +
         "SELECT LLIId FROM LLI " +
         $"WHERE ((UserHash != '{userHash}' " +
@@ -208,8 +199,10 @@ public class RecEngineRepo : IRecEngineRepo
         return
             $"INSERT INTO `{tableName}` (LLIId) " +
             "SELECT LLIId FROM LLI " +
-            $"WHERE (UserHash != '{userHash}' " +
+            $"WHERE ((UserHash != '{userHash}' " +
             "AND Visibility = 'Public') " +
+            $"OR (LLI.UserHash = '{userHash}' " +
+            $"AND LLI.Status = 'Completed' AND LLI.CompletionDate < DATE_SUB(CURDATE(), INTERVAL 1 YEAR))) " +
             $"AND LLIId NOT IN (SELECT LLIId FROM `{tableName}`) " +
             $"AND NOT (Category1 = '{category1}' OR Category2 = '{category1}' OR Category3 = '{category1}') " +
             $"AND NOT (Category1 = '{category2}' OR Category2 = '{category2}' OR Category3 = '{category2}') " +

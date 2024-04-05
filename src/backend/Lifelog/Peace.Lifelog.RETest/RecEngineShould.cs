@@ -56,7 +56,7 @@ public class ReServiceShould
     {
         // TODO: make principal with invalid user hash
         var principal = new AppPrincipal();
-        principal.UserId = "InvalidUserHash";
+        principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Claim", "Potato"}};
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
