@@ -1,6 +1,6 @@
 ﻿namespace Peace.Lifelog.RecEngineService;
 
-public interface IRecEngineService : IGetNumRecs
+public interface IRecEngineService : IRecNumLLI
 {
 
 }

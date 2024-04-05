@@ -2,23 +2,33 @@
 
 using DomainModels;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Logging;
+using System;
+using System.Threading.Tasks;
 
 public class RecSummaryRepo : IRecSummaryRepo
 {
-    private string selectAllUserHash = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
-    private string tableName = "RecSummary";
+    private readonly string selectAllUserHashQuery = "SELECT UserHash FROM LifelogDB.LifelogUserHash;";
+    private readonly string tableName = "RecSummary";
+    private readonly IReadDataOnlyDAO readDataOnlyDAO;
+    private readonly IUpdateDataOnlyDAO updateDataOnlyDAO;
+    private readonly ILogging logger;
+
+    public RecSummaryRepo(IReadDataOnlyDAO readDataOnlyDAO, IUpdateDataOnlyDAO updateDataOnlyDAO, ILogging logger)
+    {
+        this.readDataOnlyDAO = readDataOnlyDAO;
+        this.updateDataOnlyDAO = updateDataOnlyDAO;
+        this.logger = logger;
+    }
 
     public async Task<Response> GetAllUserHash(CancellationToken cancellationToken = default)
     {
         try
         {
-            ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-            var response = await readDataOnlyDAO.ReadData(selectAllUserHash, null);
-            return response;
+            return await readDataOnlyDAO.ReadData(selectAllUserHashQuery);
         }
         catch (Exception ex)
         {
-            // Log or handle the exception as needed
             throw;
         }
     }
@@ -27,14 +37,11 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
-            ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-            var query = $"SELECT Category, Rating FROM UserForm WHERE UserHash = '{userHash}' ORDER BY Rating ASC;;";
-            var response = await readDataOnlyDAO.ReadData(query, null);
-            return response;
+            var query = $"SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking FROM UserForm WHERE UserHash = '{userHash}';";
+            return await readDataOnlyDAO.ReadData(query);
         }
         catch (Exception ex)
         {
-            // Log or handle the exception as needed
             throw;
         }
     }
@@ -43,14 +50,11 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
-            ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-            var query = $"SELECT Status, Category1, Category2, Category3  FROM LLI WHERE UserHash = '{userHash}';";
-            var response = await readDataOnlyDAO.ReadData(query, limit);
-            return response;
+            var query = $"SELECT Status, Category1, Category2, Category3 FROM LLI WHERE UserHash = '{userHash}';";
+            return await readDataOnlyDAO.ReadData(query, limit);
         }
         catch (Exception ex)
         {
-            // Log or handle the exception as needed
             throw;
         }
     }
@@ -59,14 +63,11 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
-            UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
             var query = $"UPDATE {tableName} SET Category1 = '{category1}', Category2 = '{category2}', SystemMostPopular = (SELECT Category1 FROM (SELECT Category1 FROM RecSummary WHERE UserHash = 'system') AS derivedTable) WHERE UserHash = '{userHash}';";
-            var response = await updateDataOnlyDAO.UpdateData(query);
-            return response;
+            return await updateDataOnlyDAO.UpdateData(query);
         }
         catch (Exception ex)
         {
-            // Log or handle the exception as needed
             throw;
         }
     }
@@ -75,18 +76,14 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
-            UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-            var res = await GetMostPopularCategory();
-            // get the category from the response
-            //var category = res.Output[0][0].ToString();
-            string category = "Art";
-            var query = $"UPDATE {tableName} SET Category1 = '{category}', Category2 = '{category}', SystemMostPopular = '{category}  WHERE UserHash = 'system';";
-            var response = await updateDataOnlyDAO.UpdateData(query);
-            return response;
+            var res = await GetMostPopularCategory(cancellationToken);
+            // Extract the most popular category from the response. Assuming response parsing is correct.
+            string category = "Art"; // Placeholder for actual extraction logic
+            var query = $"UPDATE {tableName} SET Category1 = '{category}', Category2 = '{category}', SystemMostPopular = '{category}' WHERE UserHash = 'system';";
+            return await updateDataOnlyDAO.UpdateData(query);
         }
         catch (Exception ex)
         {
-            // Log or handle the exception as needed
             throw;
         }
     }
@@ -95,7 +92,6 @@ public class RecSummaryRepo : IRecSummaryRepo
     {
         try
         {
-            ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
             string lliTable = "LLI";
             string query = 
             $"SELECT category, COUNT(*) AS occurrence_count " +
@@ -109,14 +105,12 @@ public class RecSummaryRepo : IRecSummaryRepo
             "GROUP BY category " +
             "ORDER BY occurrence_count DESC " +
             "LIMIT 1;";
-            var response = await readDataOnlyDAO.ReadData(query, null);
-            return response;
+            return await readDataOnlyDAO.ReadData(query, null);
         }
         catch (Exception ex)
         {
-            // Log or handle the exception as needed
+        
             throw;
         }
     }
-
 }

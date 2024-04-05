@@ -104,6 +104,17 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
             return response;
         }
 
+        // Populate RecSummary table
+        var createRecSummaryResponse = await createRecSummaryInDB(userHash);
+
+        if (createRecSummaryResponse.HasError == true)
+        {
+            // TODO: HANDLE ERROR
+            response.HasError = true;
+            response.ErrorMessage = "Failed to create RecSummary table entry";
+            return response;
+        }
+
         // TODO: handle success outcome
         response.HasError = false;
         response.Output = [userHash];
@@ -246,6 +257,17 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         var createLifelogAuthenticationInDBResponse = await createDataOnlyDAO.CreateData(sql);
 
         return createLifelogAuthenticationInDBResponse;
+    }
+
+    private async Task<Response> createRecSummaryInDB(string userHash)
+    {
+        // string sql = $"INSERT INTO RecSummary ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type}, IsUserFormCompleted)" 
+        //  + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\", 0)";
+        string sql = $"INSERT INTO `RecSummary` (`UserHash`, `Category1`, `Category2`, `SystemMostPopular`) VALUES ('{userHash}', 'Mental Health', 'Physical Health', (SELECT Category1 FROM (SELECT Category1 FROM RecSummary WHERE UserHash = 'system') AS derivedTable));";
+
+        var createRecSummaryInDBResponse = await createDataOnlyDAO.CreateData(sql);
+
+        return createRecSummaryInDBResponse;
     }
 
     private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)

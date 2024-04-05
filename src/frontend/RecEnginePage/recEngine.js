@@ -259,7 +259,7 @@ export function loadRecEnginePage (root, ajaxClient) {
     titleDiv.className = "lli-recommendation-title";
     titleDiv.id = `${idPrefix}-title-div`;
     const titleH2 = document.createElement("h2");
-    titleH2.innerText = recommendation.Title;
+    titleH2.innerText = recommendation[2];
     titleH2.contentEditable = "true";
     titleH2.id = `${idPrefix}-title`;
 

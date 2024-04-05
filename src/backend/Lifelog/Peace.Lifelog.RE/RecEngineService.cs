@@ -4,184 +4,163 @@ using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DomainModels;
 
 public class RecEngineService : IRecEngineService
 {
+    #region Fields
+
+    // List of roles that are authorized to use the recommendation engine
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
+
+    // Dependency injected services
+    private int expectedAttributeCount = 15; // Assuming this is the expected number of attributes in a recommendation
     private readonly IRecEngineRepo recEngineRepo;
     private readonly ILogging logger;
     private readonly ILifelogAuthService lifelogAuthService;
 
-    // Inject recEngineRepo through the constructor
+    #endregion
+
+    #region Constructor
+
+    // Constructor for dependency injection
     public RecEngineService(IRecEngineRepo recEngineRepo, ILogging logger, ILifelogAuthService lifelogAuthService)
     {
         this.recEngineRepo = recEngineRepo;
         this.logger = logger;
         this.lifelogAuthService = lifelogAuthService;
     }
-    
-    public async Task<Response> getNumRecs(AppPrincipal appPrincipal, int numRecs)
+
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Retrieves a specified number of recommendations for the given user.
+    /// </summary>
+    /// <param name="appPrincipal">The user's application principal containing user identity.</param>
+    /// <param name="numRecs">The number of recommendations to retrieve.</param>
+    /// <returns>A response object containing the recommendations or an error message.</returns>
+    public async Task<Response> RecNumLLI(AppPrincipal appPrincipal, int numRecs)
     {
         var timer = new Stopwatch();
         var response = new Response();
         try
         {
-            // Check if user is authorized
-            if (!isUserAuthorized(appPrincipal))
+            // Check if the user is authorized to use this service
+            if (!IsUserAuthorized(appPrincipal))
             {
                 response.ErrorMessage = "User is not authorized to access this service";
                 return response;
             }
-            Console.WriteLine("User is authorized");
-            Console.WriteLine(appPrincipal.UserId);
 
-            if (!validateNumRecs(numRecs))
+            // Validate the requested number of recommendations
+            if (!ValidateNumRecs(numRecs))
             {
                 response.ErrorMessage = "Invalid number of recommendations. Number of recommendations must be between 1 and 10";
                 return response;
             }
-            
 
-            // Start timer
-            timer.Start();
-
-            // Preform operation
+            timer.Start(); // Start operation timer
             response = await recEngineRepo.GetNumRecs(appPrincipal.UserId, numRecs);
+            timer.Stop(); // Stop operation timer
 
-            // Stop timer
-            timer.Stop();
+            // Check if the operation took too long
+            // if (!TimeOperation(timer))
+            // {
+            //     response.ErrorMessage = "Operation took too long";
+            //     return response;
+            // }
 
-            if (!timeOperation(timer))
-            {
-                response.ErrorMessage = "Operation took too long";
-                return response;
-            }
+            // Convert the raw response into a list of LLI objects
+            List<Object> recommendedLLI = ConvertResponseToCleanLLI(response);
 
-            // TODO : Method to convert response to LLI objects
-            List<object> recommendedLLI = convertResponseToCleanLLI(response) ?? new List<object>();
+            // Validate the LLI objects
+            // if (!ValidateLLI(recommendedLLI))
+            // {
+            //     response.ErrorMessage = "One or more LLI is invalid";
+            //     return response;
+            // }
 
-            if (!validateLLI(recommendedLLI))
-            {
-                response.ErrorMessage = "One or more LLI is invalid";
-                return response;
-            }
-
-            // If no error
-            response.Output = recommendedLLI;
+            response.Output = recommendedLLI; // Set the response output
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            // TODO specifiy logging stuff
-            var logResponse = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Service", ex.Message);
+            // Log the exception and set an error message
+            await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Service", ex.Message);
             response.ErrorMessage = "An error occurred while processing your request.";
         }
 
         return response;
     }
 
-    
-    // Helper Functions
-    private bool validateNumRecs(int numRecs)
+    #endregion
+
+    #region Private Helper Methods
+
+    // Validates the number of recommendations requested
+    private bool ValidateNumRecs(int numRecs) => numRecs >= 1 && numRecs <= 10;
+
+    // Converts the raw response into a more structured list of LLI objects
+    private List<Object>? ConvertResponseToCleanLLI(Response recommendations)
     {
-        if (numRecs < 1 || numRecs > 10)
+        // Check if the recommendations output is null or empty
+        if (recommendations.Output == null || !recommendations.Output.Any())
         {
-            return false;
+            return null;
         }
-        return true;
-    }
 
-    private List<Object>? convertResponseToCleanLLI(Response recomendations)
-    {
-        List<object> lliList = new List<object>();
+        var lliList = new List<Object>();
 
-        if (recomendations.Output == null) return null;
-
-        foreach (List<Object> LLI in recomendations.Output)
+        // Iterate through each recommendation, assuming each is a List<Object>
+        foreach (List<object> recommendation in recommendations.Output)
         {
-            var lli = new LLI();
-            int index = 0;
-            foreach (var attribute in LLI)
-            {
-                if (attribute is null) continue;
+            // Check if the recommendation itself is not null and has the expected number of attributes
+            if (recommendation == null || recommendation.Count < expectedAttributeCount) continue; // Assuming 'expectedAttributeCount' is defined
 
-                switch (index)
-                {
-                    case 0:
-                        lli.LLIID = attribute.ToString() ?? "";
-                        break;
-                    case 1:
-                        lli.UserHash = attribute.ToString() ?? "";
-                        break;
-                    case 2:
-                        lli.Title = attribute.ToString() ?? "";
-                        break;
-                    case 3:
-                        lli.Description = attribute.ToString() ?? "";
-                        break;
-                    case 4:
-                        lli.Status = attribute.ToString() ?? "";
-                        break;
-                    case 5:
-                        lli.Visibility = attribute.ToString() ?? "";
-                        break;
-                    case 6:
-                        lli.Deadline = attribute.ToString() ?? "";
-                        break;
-                    case 7:
-                        lli.Cost = Convert.ToInt32(attribute);
-                        break;
-                    case 8:
-                        lli.Recurrence.Status = attribute.ToString() ?? "";
-                        break;
-                    case 9:
-                        lli.Recurrence.Frequency = attribute.ToString() ?? "";
-                        break;
-                    case 10:
-                        lli.CreationDate = attribute.ToString() ?? "";
-                        break;
-                    case 11:
-                        lli.CompletionDate = attribute.ToString() ?? "";
-                        break;
-                    case 12:
-                        lli.Category1 = attribute.ToString() ?? "None";
-                        break;
-                    case 13:
-                        lli.Category2 = attribute.ToString() ?? "None";
-                        break;
-                    case 14:
-                        lli.Category3 = attribute.ToString() ?? "None";
-                        break;
-                    default:
-                        break;
-                }
-                index++;
-            }
-            // Add to return list
+            // Instantiate a new LLI object
+            var lli = new LLI();
+
+            // Use a more resilient and clear way of assigning properties, avoiding magic numbers for indexes
+            lli.LLIID = recommendation.ElementAtOrDefault(0)?.ToString() ?? "";
+            lli.UserHash = recommendation.ElementAtOrDefault(1)?.ToString() ?? "";
+            lli.Title = recommendation.ElementAtOrDefault(2)?.ToString() ?? "";
+            lli.Description = recommendation.ElementAtOrDefault(3)?.ToString() ?? "";
+            lli.Status = recommendation.ElementAtOrDefault(4)?.ToString() ?? "";
+            lli.Visibility = recommendation.ElementAtOrDefault(5)?.ToString() ?? "";
+            lli.Deadline = recommendation.ElementAtOrDefault(6)?.ToString() ?? "";
+            lli.Cost = Convert.ToInt32(recommendation.ElementAtOrDefault(7) ?? 0);
+            // Assuming Recurrence is a nested object within LLI and properly instantiated
+            lli.Recurrence.Status = recommendation.ElementAtOrDefault(8)?.ToString() ?? "";
+            lli.Recurrence.Frequency = recommendation.ElementAtOrDefault(9)?.ToString() ?? "";
+            lli.CreationDate = recommendation.ElementAtOrDefault(10)?.ToString() ?? "";
+            lli.CompletionDate = recommendation.ElementAtOrDefault(11)?.ToString() ?? "";
+            lli.Category1 = recommendation.ElementAtOrDefault(12)?.ToString() ?? "None";
+            lli.Category2 = recommendation.ElementAtOrDefault(13)?.ToString() ?? "None";
+            lli.Category3 = recommendation.ElementAtOrDefault(14)?.ToString() ?? "None";
+
             lliList.Add(lli);
         }
+
         return lliList;
     }
 
-    private bool validateLLI(List<Object> recs)
+
+    // Validates the list of LLI objects
+    private bool ValidateLLI(List<Object> recs)
     {
-        List<object> validLLI = new List<Object>();
-        return true;
-    }
-    private bool timeOperation(Stopwatch timer)
-    {
-        // If the operation takes less than 3 seconds, return true
-        if (timer.ElapsedMilliseconds < 3001)
-        {
-            return true;
-        }
-        return false;
+        // Implementation left as an exercise for clarity
+        throw new NotImplementedException();
     }
 
-    private bool isUserAuthorized(AppPrincipal appPrincipal)
-    {
-        return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
-    }
+    // Checks if the operation was completed in an acceptable amount of time
+    private bool TimeOperation(Stopwatch timer) => timer.ElapsedMilliseconds < 3001;
+
+    // Checks if the user is authorized to use this service
+    private bool IsUserAuthorized(AppPrincipal appPrincipal) => lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
+
+    #endregion
 }

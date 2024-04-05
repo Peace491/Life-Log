@@ -3,7 +3,7 @@
 using DomainModels;
 using Peace.Lifelog.Security;
 
-public interface IGetNumRecs
+public interface IRecNumLLI
 {
-    Task<Response> getNumRecs(AppPrincipal appPrincipal, int numRecs);
+    Task<Response> RecNumLLI(AppPrincipal appPrincipal, int numRecs);
 }

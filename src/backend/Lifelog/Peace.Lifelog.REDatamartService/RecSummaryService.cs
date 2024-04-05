@@ -1,17 +1,22 @@
 ﻿namespace Peace.Lifelog.RecSummaryService;
 
+using System.Collections;
 using DomainModels;
+using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.Logging;
 
 public class RecSummaryService : IRecSummaryService
 {
     // Inject summary repo through the constructor
     // Summary repo will need a read only dao
-    private readonly RecSummaryRepo recSummaryRepo;
+    private readonly IRecSummaryRepo recSummaryRepo;
+    private readonly ILogging logger;
 
-    public RecSummaryService(RecSummaryRepo recSummaryRepo)
+    public RecSummaryService(IRecSummaryRepo recSummaryRepo, ILogging logger)
     {
         this.recSummaryRepo = recSummaryRepo;
+        this.logger = logger;
     }
 
     // only allow users to do this Y times a day
@@ -22,7 +27,7 @@ public class RecSummaryService : IRecSummaryService
         {
             // Get userform
             response = await recSummaryRepo.GetUserForm(userHash);
-            
+
             if (response.Output == null)
             {
                 response.HasError = true;
@@ -60,26 +65,35 @@ public class RecSummaryService : IRecSummaryService
         return response;
     }
 
-    public async Task<Response> updateSystemUserRecSummary()
+    public async Task<Response> UpdateSystemUserRecSummary()
     {
-        // This method is horrid right now - need to fix takign a break for the night
-        var mostPopularCategory = await recSummaryRepo.GetMostPopularCategory();
-
-        foreach (List<Object> category in mostPopularCategory.Output)
+        var mostPopularCategoryResponse = await recSummaryRepo.GetMostPopularCategory();
+        if (mostPopularCategoryResponse == null || mostPopularCategoryResponse.Output == null || !mostPopularCategoryResponse.Output.Any())
         {
-            if (category[0] == null)
+            return new Response
             {
-                mostPopularCategory.ErrorMessage = "An error occurred while processing your request.";
-                return mostPopularCategory;
-            }
-            var updateDataMartResponse = await recSummaryRepo.UpdateUserDataMart("System", category[0].ToString(), null);
-            return updateDataMartResponse;
+                ErrorMessage = "No categories found or an error occurred."
+            };
         }
-        return mostPopularCategory;
+
+        // Assuming the intent is to update only the first valid category
+        // Cast firstCategory explicitly to List<object>
+        var firstCategory = mostPopularCategoryResponse.Output.FirstOrDefault() as List<object>;
+        if (firstCategory == null || !firstCategory.Any() || firstCategory[0] == null)
+        {
+            return new Response
+            {
+                ErrorMessage = "First category is invalid or not found."
+            };
+        }
+
+        // Proceed with updating the Data Mart for the first valid category
+        var categoryToUpdate = firstCategory[0].ToString();
+        var updateDataMartResponse = await recSummaryRepo.UpdateUserDataMart("System", categoryToUpdate, categoryToUpdate);
+        return updateDataMartResponse;
     }
 
 
-    // only system admins can do this, and only once a day
     public async Task<Response> updateAllUserRecSummary()
     {
         var response = new Response();
@@ -94,12 +108,12 @@ public class RecSummaryService : IRecSummaryService
 
             // for each userhash, updateRecommendationDatMartForUser(userhash)
 
-            response = await updateSystemUserRecSummary(); // update system first to get most popular category
+            response = await UpdateSystemUserRecSummary(); // update system first to get most popular category
 
             foreach (List<Object> userHash in allUserHashResponse.Output)
             {
                 string currentHash = userHash?[0]?.ToString() ?? string.Empty;
-                if (currentHash == "System")  
+                if (currentHash == "System")
                 {
                     continue;
                 }
@@ -172,62 +186,80 @@ public class RecSummaryService : IRecSummaryService
                 }
             }
         }
-        return scoreDict; 
+        return scoreDict;
     }
 
-    private Dictionary<string, int> scoreInit(Response formResponse)
+    private Dictionary<string, int> scoreInit(Response response)
     {
         Dictionary<string, int> userScores = new Dictionary<string, int>();
-        if (formResponse.Output == null) return userScores;
-        foreach (List<Object> pair in formResponse.Output)
+
+        List<string> categories = new List<string>
+    {
+        "Mental Health",
+        "Physical Health",
+        "Outdoor",
+        "Sport",
+        "Art",
+        "Hobby",
+        "Thrill",
+        "Travel",
+        "Volunteering",
+        "Food"
+    };
+
+        foreach (List<Object> row in response.Output)
         {
-            if (pair[0] == null || pair[1] == null || pair == null)
+            for (int i = 0; i < row.Count; i++)
             {
-                return userScores;
-            }
-            
-            string category = pair[0].ToString();
-            int rank = Convert.ToInt32(pair[1]);
-            switch (rank)
-            // Score categories using f1 scoring system
-            {
-                case 1:
-                    userScores.Add(category, 25);
-                    break;
-                case 2:
-                    userScores.Add(category, 18);
-                    break;
-                case 3:
-                    userScores.Add(category, 15);
-                    break;
-                case 4:
-                    userScores.Add(category, 12);
-                    break;
-                case 5:
-                    userScores.Add(category, 10);
-                    break;
-                case 6:
-                    userScores.Add(category, 8);
-                    break;
-                case 7:
-                    userScores.Add(category, 6);
-                    break;
-                case 8:
-                    userScores.Add(category, 4);
-                    break;
-                case 9:
-                    userScores.Add(category, 2);
-                    break;
-                case 10:
-                    userScores.Add(category, 1);
-                    break;
-                default:
-                    userScores.Add(category, 0);
-                    break;
+                try
+                {
+                    // Assuming ScoreHelper can take an int and does something with it
+                    // Convert row[i] to int before passing to ScoreHelper
+                    int score = Convert.ToInt32(row[i]);
+                    userScores.Add(categories[i], ScoreHelper(score));
+                }
+                catch (Exception ex)
+                {
+                    // Handle or log the exception as needed
+                    // For example, you might want to log conversion errors or continue with default values
+                    Console.WriteLine($"Error converting score for category {categories[i]}: {ex.Message}");
+                }
             }
         }
         return userScores;
     }
+
+
+    private int ScoreHelper(int input)
+    {
+        switch (input)
+        {
+            case 1:
+                return 25;
+            case 2:
+                return 18;
+            case 3:
+                return 15;
+            case 4:
+                return 12;
+            case 5:
+                return 10;
+            case 6:
+                return 8;
+            case 7:
+                return 6;
+            case 8:
+                return 4;
+            case 9:
+                return 2;
+            case 10:
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
+
     private List<string> getTopTwoCategories(Dictionary<string, int> scoreDict)
     {
         // https://stackoverflow.com/questions/22957537/dictionary-getting-top-most-elements

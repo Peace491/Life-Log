@@ -91,8 +91,6 @@ public class JWTService : IJWTService
             return 401;
         }
 
-
-
         var jwtToken = JsonSerializer.Deserialize<Jwt>(request.Headers["Token"]!);
 
         if (jwtToken == null)
@@ -100,11 +98,7 @@ public class JWTService : IJWTService
             return 401;
         }
 
-
-
-        var userHash = jwtToken.Payload.UserHash;
-
-        if (userHash == null)
+        if (jwtToken.Payload.UserHash == null)
         {
             return 401;
         }

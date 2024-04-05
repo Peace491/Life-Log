@@ -1,11 +1,27 @@
-using Peace.Lifelog.RecSummaryWebService;
+using Peace.Lifelog.RecSummaryService;
 using Microsoft.Net.Http.Headers;
+using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
+using back_end;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
+
+builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
+builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
+builder.Services.AddTransient<ILogTarget, LogTarget>();
+builder.Services.AddTransient<ILogging, Logging>();
+builder.Services.AddTransient<IRecSummaryRepo, RecSummaryRepo>(); 
+builder.Services.AddTransient<IRecSummaryService, RecSummaryService>();
+builder.Services.AddTransient<IJWTService, JWTService>();
+builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
