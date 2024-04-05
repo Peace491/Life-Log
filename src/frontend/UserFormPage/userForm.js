@@ -14,7 +14,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction="Create") {
 
     let jwtToken;
 
-    let principal = {}
+    let principal = {};
 
     function setupSubmitUserForm() {
         let submitButton = document.getElementById('submit-ranking-button')

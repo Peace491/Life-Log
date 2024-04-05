@@ -5,6 +5,7 @@ import * as lliPage from './LLIManagementPage/lli.js'
 import * as registrationPage from './RegistrationPage/registration.js'
 import * as calendarPage from './CalendarPage/calendar.js'
 import * as userFormPage from './UserFormPage/userForm.js'
+import * as recEnginePage from './RecEnginePage/recEngine.js'
 import * as personalNotePage from './PersonalNotePage/personalnote.js'
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     registrationPage: 'RegistrationPage',
     calendarPage: 'CalendarPage',
     userFormPage: 'UserFormPage',
+    recEnginePage: 'RecEnginePage',
     personalNotePage: 'PersonalNotePage'
 }
 
@@ -23,6 +25,7 @@ const SCRIPTS = {
     'RegistrationPage': 'registration.js',
     'CalendarPage': 'calendar.js',
     'UserFormPage': 'userForm.js',
+    'RecEnginePage': 'recEngine.js',
     'PersonalNotePage': 'personalnote.js'
 }
 
@@ -32,6 +35,7 @@ const LOAD_FUNCTION = {
     'RegistrationPage': registrationPage.loadRegistrationPage,
     'CalendarPage': calendarPage.loadCalendarPage,
     'UserFormPage': userFormPage.loadUserFormPage,
+    'RecEnginePage': recEnginePage.loadRecEnginePage,
     'PersonalNotePage': personalNotePage.LoadPersonalNotePage
 }
 
@@ -74,14 +78,16 @@ async function fetchHtml(pageRoute) {
     }
 }
 
+
 export function setupHeaderLinks() {
     let calendarLink = document.getElementById("calendar-link")
     let personalNotesLink = document.getElementById('notes-view')
     let lliLink = document.getElementById('lli-view')
+    let recEngineLink = document.getElementById('rec-engine-link')
+    let logoutInput = document.getElementById('logout')
 
     calendarLink.addEventListener('click', function () {
         loadPage(PAGES.calendarPage)
-
     })
 
     personalNotesLink.addEventListener('click', function () {
@@ -91,6 +97,19 @@ export function setupHeaderLinks() {
     lliLink.addEventListener('click', function () {
         loadPage(PAGES.lliManagementPage)
     })
+
+    recEngineLink.addEventListener('click', function () {
+        loadPage(PAGES.recEnginePage)
+    })
+
+    logoutInput.addEventListener('click', function () {
+        window.localStorage.clear()
+        loadPage(PAGES.homePage)
+    })
+
+
+
+    
 
 
 }

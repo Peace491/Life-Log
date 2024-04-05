@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>getrecsbutton</title>
+
+  </head>
+  <body>
+    <link rel="stylesheet" href="./RecEnginePage/styles.css" />
+    <header>
+      <div class="logo-container">
+          <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view"/>
+      </div>
+      <div class="header-contents-container">
+          <div class="page-link-container">
+              <div class="calendar-link-container" id="calendar-link">
+                  <h2>Calendar</h2>
+              </div>
+              <div class="map-link-container">
+                  <h2>Map</h2>
+              </div>
+              <div class="note-link-container" id="notes-view" data-testid = "note-view">
+                  <h2>Notes</h2>
+              </div>
+              <div class="life-tree-link-container">
+                  <h2>Life Tree</h2>
+              </div>
+              <div class="user-form-link-container" id="user-form-link">
+                  <h2>User Form</h2>
+              </div>
+              <div class="rec-link-container" id="rec-engine-link">
+                  <h2>Recommendation Engine</h2>
+              </div>
+          </div>
+          <div class="user-management-container">
+              <div class="setting-container">
+                  <img src="./Assets/setting.svg" alt="">
+              </div>
+              <div class="user-setting-container">
+                  <img src="./Assets/user-setting.svg" alt="">
+              </div>
+              <div class="logout-container" id="logout">
+                  <h2>Log Out</h2>
+              </div>
+          </div>
+      </div>
+  </header>
+    <main>
+      <div class="recommendation-container">
+        
+      </div>
+
+      <div class="recommendation-input-container">
+        <input
+        id="numberRecs"
+        type="text"
+        placeholder="Enter NumRecs range(1-10)"
+        />
+        <button id="getRecommendation" type="button">Get Recommendation</button>
+      </div>
+
+      <div class="seeding-container-wrapper">
+        <div class="recommendation-seeding-container">
+            <p>This button will seed the recommendation engine with initial data. Please use it responsibly.</p>
+            <button id="seedRecommendation" type="button">Seed Recommendation Engine</button>
+        </div>
+
+        <div class="admin-seeding-container hidden">
+            <p>This button will reseed the entire recommendation summary table. Please use this responsibly, as you could restrict lifelog users from using our app.</p>
+            <button id="seedDatabase" type="button">Reseed All Users</button>
+        </div>
+      </div>
+
+
+
+</main>
+
+<!-- Dependencies -->
+<script src="../Resources/Ajax/fetch-ajax.js"></script>
+
+<!-- Page Specific -->
+<script src="re.js" type="module"></script>
+</body>
+</html>
+      
+      
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../Resources/Ajax/fetch-ajax.js"></script>
+
+    <!-- Page Specific -->
+    <script src="re.js" type="module"></script>
+  </body>
+</html>

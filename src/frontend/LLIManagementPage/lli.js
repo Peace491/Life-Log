@@ -413,6 +413,18 @@ export function loadLLIPage(root, ajaxClient) {
         })
     }
 
+    function setupHeaderLinks(){
+        let calendarLink = document.getElementById("calendar-link")
+        let recEngineLink = document.getElementById("rec-engine-link")
+
+        calendarLink.addEventListener('click', function () {
+            routeManager.loadPage(routeManager.PAGES.calendarPage)
+            
+        })
+        recEngineLink.addEventListener('click', function () {
+            routeManager.loadPage(routeManager.PAGES.recEnginePage)
+        })
+    }
 
     function showLLI() {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
@@ -449,12 +461,12 @@ export function loadLLIPage(root, ajaxClient) {
             setupFilter();
             setupSearch();
             setupLogout();
+            setupHeaderLinks();
             
             // Get data
             showLLI();
 
             //navigate 
-            routeManager.setupHeaderLinks();
         }
     }
 
