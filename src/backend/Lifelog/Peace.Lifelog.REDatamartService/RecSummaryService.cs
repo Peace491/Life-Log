@@ -24,7 +24,7 @@ public class RecSummaryService : IRecSummaryService
     // only allow users to do this Y times a day
     public async Task<Response> UpdateUserRecSummary(AppPrincipal principal)
     {
-        var response = new Response();
+        Response response = new Response();
         try
         {
             // Get userform
@@ -39,29 +39,23 @@ public class RecSummaryService : IRecSummaryService
             // Init scoring with userform
             var userScores = scoreInit(response);
 
-            // TODO : Evaluate for biz rules
 
             // Get userLLI
             response = await recSummaryRepo.GetNumUserLLI(principal.UserId, null);
             // Update scores with userLLI
             var scoreDict = scoreLLI(userScores, response);
 
-            // TODO : Evaluate for biz rules
 
             // Get the user's two highest scoring categories
             var topTwoCategories = getTopTwoCategories(scoreDict);
 
-            // Get system most popular category
-            response = await recSummaryRepo.GetMostPopularCategory();
-
             // Update the user's data mart with the two highest scoring categories
             response = await recSummaryRepo.UpdateUserDataMart(principal.UserId, topTwoCategories[0], topTwoCategories[1]);
 
-            // TODO : Evaluate for biz rules
         }
         catch (Exception ex)
         {
-            await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "Buisness", ex.Message);
+            _ = await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "Buisness", ex.Message);
             return new Response { HasError = true, ErrorMessage = ex.Message };
         }
         return response;
@@ -156,7 +150,7 @@ public class RecSummaryService : IRecSummaryService
             _ = await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "System", $"An error occurred while processing your request: {ex.Message}");
             response.ErrorMessage = "An error occurred while processing your request.";
         }
-        _ = await logger.CreateLog("Logs", "RecSummaryService", "INFO", "System", $"Successfully processed users.");
+       
         return response;
     }
 

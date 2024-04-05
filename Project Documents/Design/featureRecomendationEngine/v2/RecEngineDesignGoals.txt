@@ -1,0 +1,11 @@
+Recommendation Engine Design Goals 
+Jack Pickle 4/5/24
+
+Extensibility:
+Take the under of LLI being recommended as some from of input for function, allowing LLI service to generate a varying amount of LLI depending on user input.
+
+Security:
+Evaluate principal to ensure that users are authorized to use the functionality they are attempting to use
+
+Performance: 
+Utilize temporary tables to ensure maximum performance and enforce biz rules.

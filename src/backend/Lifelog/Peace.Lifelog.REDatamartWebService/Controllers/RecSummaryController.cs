@@ -54,13 +54,13 @@ public sealed class RecSummaryController : ControllerBase
 
             var response = await recSummaryService.UpdateUserRecSummary(principal);
 
-            // Consider checking response for errors and handling them accordingly
             if (response.HasError)
             {
-                return BadRequest(response.ErrorMessage);
+                _ = await logger.CreateLog("Logs", "RecSummaryController", "INFO", "System", $"error: {response.ErrorMessage}");
+                return BadRequest("Operation failed. Please try again.");
             }
         
-
+            _ = await logger.CreateLog("Logs", principal.UserId, "INFO", "System", $"Summary data mart updated for user {principal.UserId}");
             return Ok(response);
         }
         catch (Exception ex)
@@ -93,6 +93,8 @@ public sealed class RecSummaryController : ControllerBase
                 return StatusCode(401, "Unauthorized");
             }
 
+            _ = await logger.CreateLog("Logs", "RecSummaryController", "INFO", "System", $"Summary data mart updated for all users");
+            
             var response = await recSummaryService.UpdateAllUserRecSummary(principal);
  
             return Ok(response);
