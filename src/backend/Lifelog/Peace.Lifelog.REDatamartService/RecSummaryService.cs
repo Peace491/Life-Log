@@ -5,6 +5,7 @@ using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
+using ZstdSharp.Unsafe;
 
 public class RecSummaryService : IRecSummaryService
 {
@@ -59,8 +60,8 @@ public class RecSummaryService : IRecSummaryService
         }
         catch (Exception ex)
         {
-            // Log exception details here using your preferred logging framework
-            response.ErrorMessage = "An error occurred while processing your request.";
+            await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "Buisness", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
         return response;
     }
@@ -89,8 +90,18 @@ public class RecSummaryService : IRecSummaryService
 
         // Proceed with updating the Data Mart for the first valid category
         var categoryToUpdate = firstCategory[0].ToString();
-        var updateDataMartResponse = await recSummaryRepo.UpdateUserDataMart("System", categoryToUpdate, categoryToUpdate);
-        return updateDataMartResponse;
+        if (categoryToUpdate != null)
+        {
+            _ = await logger.CreateLog("Logs", "RecSummaryService", "INFO", "Buisness", $"Updating system user with category: {categoryToUpdate}");
+            return await recSummaryRepo.UpdateUserDataMart("System", categoryToUpdate, categoryToUpdate);
+        }
+        else
+        {
+            return new Response
+            {
+                ErrorMessage = "Category to update is invalid."
+            };
+        }
     }
 
 
@@ -103,34 +114,38 @@ public class RecSummaryService : IRecSummaryService
             var allUserHashResponse = await recSummaryRepo.GetAllUserHash();
 
             // Num of users
-            int numUsers = allUserHashResponse.Output.Count;
+            int numUsers = allUserHashResponse.Output?.Count ?? 0;
             int numUsersProcessed = 0;
 
             // for each userhash, updateRecommendationDatMartForUser(userhash)
 
             response = await UpdateSystemUserRecSummary(); // update system first to get most popular category
 
-            foreach (List<Object> userHash in allUserHashResponse.Output)
+            if (allUserHashResponse.Output != null)
             {
-                string currentHash = userHash?[0]?.ToString() ?? string.Empty;
-                if (currentHash == "System")
+                foreach (List<Object> userHash in allUserHashResponse.Output)
                 {
-                    continue;
+                    string currentHash = userHash?[0]?.ToString() ?? string.Empty;
+                    if (currentHash == "System")
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        var updateDataMartResponse = await updateUserRecSummary(currentHash);
+                    }
+                    numUsersProcessed++;
                 }
-                else
-                {
-                    var updateDataMartResponse = await updateUserRecSummary(currentHash);
-                }
-                numUsersProcessed++;
-            }
+            }            
             response.HasError = false;
             response.Output = [numUsersProcessed];
         }
         catch (Exception ex)
         {
-            // Log exception details here using your preferred logging framework
+            _ = await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "System", $"An error occurred while processing your request: {ex.Message}");
             response.ErrorMessage = "An error occurred while processing your request.";
         }
+        _ = await logger.CreateLog("Logs", "RecSummaryService", "INFO", "System", $"Successfully processed users.");
         return response;
     }
 
@@ -207,22 +222,25 @@ public class RecSummaryService : IRecSummaryService
         "Food"
     };
 
-        foreach (List<Object> row in response.Output)
+        if (response.Output != null)
         {
-            for (int i = 0; i < row.Count; i++)
+            foreach (List<Object> row in response.Output)
             {
-                try
+                for (int i = 0; i < row.Count; i++)
                 {
-                    // Assuming ScoreHelper can take an int and does something with it
-                    // Convert row[i] to int before passing to ScoreHelper
-                    int score = Convert.ToInt32(row[i]);
-                    userScores.Add(categories[i], ScoreHelper(score));
-                }
-                catch (Exception ex)
-                {
-                    // Handle or log the exception as needed
-                    // For example, you might want to log conversion errors or continue with default values
-                    Console.WriteLine($"Error converting score for category {categories[i]}: {ex.Message}");
+                    try
+                    {
+                        // Assuming ScoreHelper can take an int and does something with it
+                        // Convert row[i] to int before passing to ScoreHelper
+                        int score = Convert.ToInt32(row[i]);
+                        userScores.Add(categories[i], ScoreHelper(score));
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle or log the exception as needed
+                        // For example, you might want to log conversion errors or continue with default values
+                        Console.WriteLine($"Error converting score for category {categories[i]}: {ex.Message}");
+                    }
                 }
             }
         }

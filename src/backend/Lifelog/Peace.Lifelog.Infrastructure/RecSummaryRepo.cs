@@ -29,7 +29,8 @@ public class RecSummaryRepo : IRecSummaryRepo
         }
         catch (Exception ex)
         {
-            throw;
+            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
 
@@ -42,7 +43,8 @@ public class RecSummaryRepo : IRecSummaryRepo
         }
         catch (Exception ex)
         {
-            throw;
+            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
 
@@ -55,7 +57,8 @@ public class RecSummaryRepo : IRecSummaryRepo
         }
         catch (Exception ex)
         {
-            throw;
+            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
 
@@ -68,7 +71,8 @@ public class RecSummaryRepo : IRecSummaryRepo
         }
         catch (Exception ex)
         {
-            throw;
+            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
 
@@ -84,7 +88,8 @@ public class RecSummaryRepo : IRecSummaryRepo
         }
         catch (Exception ex)
         {
-            throw;
+            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
 
@@ -109,8 +114,8 @@ public class RecSummaryRepo : IRecSummaryRepo
         }
         catch (Exception ex)
         {
-        
-            throw;
+            await logger.CreateLog("Logs", "RecSummaryRepo", "ERROR", "Data", ex.Message);
+            return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
 }

@@ -41,7 +41,7 @@ public sealed class RecEngineController : ControllerBase
 
             if (response == null)
             {
-                return NotFound("Response not found.");
+                return NotFound("Couldn't retrieve recommendations.");
             }
 
             if (response.HasError)
@@ -49,12 +49,16 @@ public sealed class RecEngineController : ControllerBase
                 return BadRequest(response.ErrorMessage);
             }
 
+            if (response.Output == null)
+            {
+                return NotFound("Couldn't retrieve recommendations.");
+            }
+
             return Ok(JsonSerializer.Serialize<ICollection<Object>>(response.Output));
         }
         catch (Exception ex)
         {
-            // TODO fix log
-            await _logger.CreateLog("Logs", "RE", "ERROR", "REController", ex.Message);
+            _ = await _logger.CreateLog("Logs", "RecEngineController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }

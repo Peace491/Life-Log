@@ -24,15 +24,37 @@ public class RecSummaryController : ControllerBase
 
     [HttpGet]
     [Route("UserRecSummary")]
-    public async Task<IActionResult> UpdateRecommendationDataMartForUser(string userHash)
+    public async Task<IActionResult> UpdateRecommendationDataMartForUser()
     {
         try
         {
-            var statusCode = jwtService.ProcessToken(Request);
-
-            if (statusCode == 401)
+            Console.WriteLine("hi");
+            if (Request.Headers == null)
             {
-                return StatusCode(401, "Unauthorized");
+                return StatusCode(401);
+            }
+
+            Console.WriteLine("hi");
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+            Console.WriteLine(jwtToken);
+            Console.WriteLine("hi");
+
+            if (jwtToken == null)
+            {
+                return StatusCode(401);
+            }
+
+            var userHash = jwtToken.Payload.UserHash;
+
+            if (userHash == null)
+            {
+                return StatusCode(401);
+            }
+
+            if (!jwtService.IsJwtValid(jwtToken))
+            {
+                return StatusCode(401);
             }
 
             var response = await recSummaryService.updateUserRecSummary(userHash);
@@ -48,6 +70,7 @@ public class RecSummaryController : ControllerBase
         catch (Exception ex)
         {
             // Log the exception details here
+            Console.WriteLine(ex.Message);
             // Return a generic error message to the client, optionally with a custom error object
             return StatusCode(500, "An error occurred while processing your request.");
         }
@@ -76,7 +99,7 @@ public class RecSummaryController : ControllerBase
             }
 
             // if role is admin or root, do stuff
-            if (jwtToken.Payload.Claims["Role"] == "Admin" || jwtToken.Payload.Claims["Role"] != "Root")
+            if (jwtToken.Payload.Claims["Role"] is "Admin" or not "Root")
             {
                 var response = await recSummaryService.updateAllUserRecSummary();
                 if (response.HasError)
@@ -94,7 +117,7 @@ public class RecSummaryController : ControllerBase
         catch (Exception ex)
         {
             // Log the exception details here
-            // Return a generic error message to the client, optionally with a custom error object
+            _ = await logger.CreateLog("Logs", "RecSummaryController", "INFO", "System", $"error: {ex.Message}");
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }

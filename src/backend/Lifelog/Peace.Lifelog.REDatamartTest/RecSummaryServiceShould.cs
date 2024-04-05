@@ -83,10 +83,10 @@ public class RecSummaryServiceShould
         var reService = new RecSummaryService(recSummaryRepo, logger);
 
         // Act
-        // var result = await reService.updateUserRecSummary(USER_HASH + "invalid");
+        var result = await reService.updateUserRecSummary(USER_HASH + "invalid");
 
         // Assert
-        // Assert.True(result.HasError);
+        Assert.True(result.HasError);
     }
     [Fact]
     public async Task updateAllUserRecSummary_Should_ReturnAnErrorIfUserNotAdmin()

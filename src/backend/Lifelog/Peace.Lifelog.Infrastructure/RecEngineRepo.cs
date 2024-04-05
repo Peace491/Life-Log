@@ -46,9 +46,11 @@ public class RecEngineRepo : IRecEngineRepo
         try
         {
             var userSummaryQuery = GetuserSummaryQuery(userHash);
+
             response = await readDataOnlyDAO.ReadData(userSummaryQuery, null);
 
-            var userSummary = PopulateuserSummary(userHash, response);
+            var userSummary = PopulateUserSummary(userHash, response);
+
             string recommendationQuery = DynamicallyConstructQuery(userSummary, numRecs);
 
             response = await readDataOnlyDAO.ReadData(recommendationQuery, null);
@@ -77,8 +79,12 @@ public class RecEngineRepo : IRecEngineRepo
     /// <param name="userSummary">User data mart containing information for tailoring recommendations.</param>
     /// <param name="numRecs">Number of recommendations to retrieve.</param>
     /// <returns>The SQL query string.</returns>
-    private string DynamicallyConstructQuery(RecSummary userSummary, int numRecs)
+    private string DynamicallyConstructQuery(RecSummary? userSummary, int numRecs)
     {
+        if (userSummary == null)
+        {
+            return $"SELECT * FROM LLI ORDER BY RAND() LIMIT {numRecs};";
+        }
         string tableName = $"{userSummary.UserHash}Recs";
         string query = StartQuery(tableName);
 
@@ -238,7 +244,7 @@ public class RecEngineRepo : IRecEngineRepo
     /// <param name="userHash">The unique identifier for the user.</param>
     /// <param name="dataMartResponse">The response object containing the user's data mart information from the database.</param>
     /// <returns>An instance of REDataMart populated with the user's category preferences. Returns null if the response contains no data.</returns>
-    private RecSummary PopulateuserSummary(string userHash, Response dataMartResponse)
+    private RecSummary? PopulateUserSummary(string userHash, Response dataMartResponse)
     {
         // Check if the response from the database is valid and contains output
         if (dataMartResponse.Output == null || dataMartResponse.Output.Count == 0)
@@ -257,9 +263,10 @@ public class RecEngineRepo : IRecEngineRepo
             foreach (var item in row)
             {
                 // Ensure the item is not null before calling ToString to avoid a potential NullReferenceException
-                if (item != null)
+                string i = item.ToString()!;
+                if (i != null)
                 {
-                    categories.Add(item.ToString());
+                    categories.Add(i);
                 }
             }
         }

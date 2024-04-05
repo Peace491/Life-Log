@@ -76,7 +76,7 @@ public class RecEngineService : IRecEngineService
             // }
 
             // Convert the raw response into a list of LLI objects
-            List<Object> recommendedLLI = ConvertResponseToCleanLLI(response);
+            List<Object>? recommendedLLI = ConvertResponseToCleanLLI(response);
 
             // Validate the LLI objects
             // if (!ValidateLLI(recommendedLLI))
