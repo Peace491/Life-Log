@@ -54,6 +54,7 @@ public sealed class RecEngineController : ControllerBase
                 return NotFound("Couldn't retrieve recommendations.");
             }
 
+            _ = await _logger.CreateLog("Logs", payload.AppPrincipal.UserId, "INFO", "System", "Retrieved recommendations successfully.");
             return Ok(JsonSerializer.Serialize<ICollection<Object>>(response.Output));
         }
         catch (Exception ex)

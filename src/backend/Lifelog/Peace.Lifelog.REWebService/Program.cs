@@ -5,7 +5,6 @@ using Peace.Lifelog.Logging;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Security;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
@@ -21,23 +20,11 @@ builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); 
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 
 // Creation of the WebApplication host object
 var app = builder.Build(); // Only part needed to execute Web API project
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-/* Setup of Middleware Pipeline */
-
-// app.UseHttpsRedirection();
-
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline
 app.Use((httpContext, next) =>
@@ -86,8 +73,6 @@ app.Use((httpContext, next) => {
     return next();
 });
 
-
 app.MapControllers(); // Needed for mapping the routes defined in Controllers
-
 
 app.Run(); // Only part needed to execute Web API project

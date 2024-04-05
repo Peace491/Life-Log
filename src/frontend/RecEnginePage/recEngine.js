@@ -60,18 +60,18 @@ export function loadRecEnginePage (root, ajaxClient) {
           let recommendationContainer = document.getElementsByClassName(
             "recommendation-container"
           )[0];
-          console.log(recommendationContainer);
+          
           recommendationContainer.innerHTML = "";
           for (let recommendation of recommendationList) {
-            console.log(recommendation);
+            
             let result = createLLIDiv(recommendation);
-            console.log(result[0]);
+            
             recommendationContainer.appendChild(result[0]);
             setupPostLLI(result[1]);
           }
         })
         .catch(function (error) {
-          console.log(error);
+        
         });
     });
   }
@@ -105,7 +105,6 @@ export function loadRecEnginePage (root, ajaxClient) {
   }
 
   function setupPostLLI(idPrefix) {
-    console.log(`${idPrefix}-create-recommendation-button`)
       let createRecommendationButton = document.getElementById(
         `${idPrefix}-create-recommendation-button`
       );
@@ -116,7 +115,7 @@ export function loadRecEnginePage (root, ajaxClient) {
         let deadline = document.getElementById(`${idPrefix}-date-input`).value;
         // TODO categories
         let selectedCategories = document.getElementById(`${idPrefix}-categories`).textContent.split(", ");
-        console.log(selectedCategories);
+  
         let description = document.getElementById(
           `${idPrefix}-description-input`
         ).textContent;
@@ -140,12 +139,6 @@ export function loadRecEnginePage (root, ajaxClient) {
         else {
             recurrenceStatus = "On"
             const match = recurrence.match(/\(([^)]+)\)/);
-            
-            if (match) {
-              console.log(match[1]); 
-            } else {
-              console.log("No match found");
-            }
 
             recurrenceFrequency = match[1];
         }
@@ -165,16 +158,14 @@ export function loadRecEnginePage (root, ajaxClient) {
           recurrenceFrequency: recurrenceFrequency
       }
 
-      console.log(options)
       let response = postLLI(options, idPrefix);
 
         response
           .then(() => {
-            console.log("Recommendation has been created");
-            alert("Recommendation has been created");
+            
           })
           .catch(function (error) {
-            console.log(error);
+  
           });
       });
     }
@@ -200,11 +191,9 @@ export function loadRecEnginePage (root, ajaxClient) {
 
       response
         .then(() => {
-          console.log("Recommendations have been repopulated");
           alert("Recommendations have been repopulated");
         })
         .catch(function (error) {
-          console.log(error);
         });
     });
   }
@@ -237,11 +226,9 @@ export function loadRecEnginePage (root, ajaxClient) {
 
       response
         .then(() => {
-          console.log("Recommendations db have been repopulated");
           alert("Recommendations db have been repopulated");
         })
         .catch(function (error) {
-          console.log(error);
         });
     });
   }
@@ -588,18 +575,16 @@ export function loadRecEnginePage (root, ajaxClient) {
     } else {
       await fetchConfig();
       let jwtTokenObject = JSON.parse(jwtToken); 
-      console.log(jwtTokenObject);
       principal = {
         userId: jwtTokenObject.Payload.UserHash,
         claims: jwtTokenObject.Payload.Claims,
       };
-      console.log(principal);
+
       window.name = routeManager.PAGES.recEnginePage;
       setupGetNumRecomendations();
       setupRepopulateUserDatamart();
-      console.log(principal.claims.Role);
-      if (principal.claims.Role ==  "Admin") {
-        console.log("Admin")
+
+      if (principal.claims.Role ==  "Admin" || principal.claims.Role ==  "Root") {
         setupRepopulateAllUserSummary();
       }
       routeManager.setupHeaderLinks();

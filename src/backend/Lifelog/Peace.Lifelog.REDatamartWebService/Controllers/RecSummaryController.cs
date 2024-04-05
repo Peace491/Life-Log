@@ -28,7 +28,6 @@ public sealed class RecSummaryController : ControllerBase
     {
         try
         {
-            Console.WriteLine(principal.UserId);
             if (Request.Headers == null)
             {
                 return StatusCode(401);
@@ -58,7 +57,6 @@ public sealed class RecSummaryController : ControllerBase
             // Consider checking response for errors and handling them accordingly
             if (response.HasError)
             {
-                Console.WriteLine(response.ErrorMessage);
                 return BadRequest(response.ErrorMessage);
             }
         
@@ -68,8 +66,7 @@ public sealed class RecSummaryController : ControllerBase
         catch (Exception ex)
         {
             // Log the exception details here
-            Console.WriteLine(ex.Message);
-            // Return a generic error message to the client, optionally with a custom error object
+            _ = await logger.CreateLog("Logs", "RecSummaryController", "INFO", "System", $"error: {ex.Message}");
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }

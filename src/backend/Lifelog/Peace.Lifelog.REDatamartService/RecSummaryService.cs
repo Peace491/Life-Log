@@ -28,7 +28,6 @@ public class RecSummaryService : IRecSummaryService
         try
         {
             // Get userform
-            Console.WriteLine("Fetching user form for user: " + principal.UserId);
             response = await recSummaryRepo.GetUserForm(principal.UserId);
 
             if (response.Output == null)
@@ -194,8 +193,8 @@ public class RecSummaryService : IRecSummaryService
                 if (currentCategory3 != null && currentCategory3 != "None") nonNoneCategories++;
 
                 int points = 6;
-                if (nonNoneCategories > 1) points = 3; // Adjust points here based on your requirement
-                if (nonNoneCategories > 2) points = 2; // Adjust points here based on your requirement
+                if (nonNoneCategories > 1) points = 3; 
+                if (nonNoneCategories > 2) points = 2; 
 
                 if (currentCategory1 != null && scoreDict.ContainsKey(currentCategory1)) // contains key category
                 {
@@ -240,19 +239,8 @@ public class RecSummaryService : IRecSummaryService
             {
                 for (int i = 0; i < row.Count; i++)
                 {
-                    try
-                    {
-                        // Assuming ScoreHelper can take an int and does something with it
-                        // Convert row[i] to int before passing to ScoreHelper
-                        int score = Convert.ToInt32(row[i]);
-                        userScores.Add(categories[i], ScoreHelper(score));
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle or log the exception as needed
-                        // For example, you might want to log conversion errors or continue with default values
-                        Console.WriteLine($"Error converting score for category {categories[i]}: {ex.Message}");
-                    }
+                    int score = Convert.ToInt32(row[i]);
+                    userScores.Add(categories[i], ScoreHelper(score));
                 }
             }
         }

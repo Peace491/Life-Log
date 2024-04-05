@@ -69,21 +69,14 @@ public class RecEngineService : IRecEngineService
             timer.Stop(); // Stop operation timer
 
             // Check if the operation took too long
-            // if (!TimeOperation(timer))
-            // {
-            //     response.ErrorMessage = "Operation took too long";
-            //     return response;
-            // }
+            if (!TimeOperation(timer))
+            {
+                response.ErrorMessage = "Operation took too long";
+                return response;
+            }
 
             // Convert the raw response into a list of LLI objects
             List<Object>? recommendedLLI = ConvertResponseToCleanLLI(response);
-
-            // Validate the LLI objects
-            // if (!ValidateLLI(recommendedLLI))
-            // {
-            //     response.ErrorMessage = "One or more LLI is invalid";
-            //     return response;
-            // }
 
             response.Output = recommendedLLI; // Set the response output
         }
@@ -146,14 +139,6 @@ public class RecEngineService : IRecEngineService
         }
 
         return lliList;
-    }
-
-
-    // Validates the list of LLI objects
-    private bool ValidateLLI(List<Object> recs)
-    {
-        // Implementation left as an exercise for clarity
-        throw new NotImplementedException();
     }
 
     // Checks if the operation was completed in an acceptable amount of time
