@@ -84,6 +84,7 @@ export function setupHeaderLinks() {
     let personalNotesLink = document.getElementById('notes-view')
     let lliLink = document.getElementById('lli-view')
     let recEngineLink = document.getElementById('rec-engine-link')
+    let userFormLink = document.getElementById('user-form-link')
     let logoutInput = document.getElementById('logout')
 
     calendarLink.addEventListener('click', function () {
@@ -100,6 +101,10 @@ export function setupHeaderLinks() {
 
     recEngineLink.addEventListener('click', function () {
         loadPage(PAGES.recEnginePage)
+    })
+
+    userFormLink.addEventListener('click', function() {
+        loadPage(PAGES.userFormPage, "Update")
     })
 
     logoutInput.addEventListener('click', function () {

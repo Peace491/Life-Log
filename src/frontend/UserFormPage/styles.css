@@ -71,12 +71,11 @@ body {
 
 header {
     display: grid;
-    grid-template-columns: 1fr 5fr ;
+    grid-template-columns: 1fr 5fr;
     align-items: center;
     gap: 5px;
     height: 100px;
     padding: 10px 5px;
-
     box-sizing: border-box;
 }
 
@@ -88,6 +87,56 @@ header {
     display: flex;
     height: 100%;
     width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
 }
 
 main {
@@ -133,6 +182,7 @@ main {
 .submit-button-container {
     height: 100%;
 }
+
 
 .submit-button-container>button {
     height: 80%;

@@ -18,7 +18,8 @@ export function loadHomePage(root, ajaxClient) {
 
     const webServiceUrl = 'http://localhost:8082/authentication';
     const motivationalQuoteServiceUrl = 'http://localhost:8084';
-    const userFormUrl = 'http://localhost:8081/userForm'
+    let userFormCompletionStatusUrl = ""
+
 
     function getMotivationalQuote() {
         const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
@@ -146,7 +147,8 @@ export function loadHomePage(root, ajaxClient) {
             // Change event listener of button
             submitButton.addEventListener('click', async () => {
                 jwtToken = await authenticateOTP(userHash, otpInput.value);
-                var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
+                
+                var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
 
                 if (userFormIsCompleted == 'true') {
                     routeManager.loadPage(routeManager.PAGES.lliManagementPage)
@@ -162,11 +164,20 @@ export function loadHomePage(root, ajaxClient) {
 
     root.myApp = root.myApp || {};
 
+    async function fetchConfig() {
+        const response = await fetch('./lifelog-config.url.json');
+        const data = await response.json();
+        let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
+        userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
+    }
+
     // Initialize the current view by setting up data and attaching event handlers 
-    function init() {
+    async function init() {
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
+
+        await fetchConfig()
 
         if (jwtToken) {
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)

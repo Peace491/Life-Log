@@ -21,7 +21,7 @@ public class UserFormValidation : IUserFormValidation
             return HandleValidationError(response, validateUserFormFieldInputValueResponse.ErrorMessage!);
         }
 
-        var validateUserFormFieldUniquenessResponse = ValidateUserFormFieldUniqueness(response, requestType ,createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
+        var validateUserFormFieldUniquenessResponse = ValidateUserFormFieldUniqueness(response, requestType, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
         if (validateUserFormFieldUniquenessResponse.HasError)
         {
             return HandleValidationError(response, validateUserFormFieldUniquenessResponse.ErrorMessage!);
@@ -31,7 +31,8 @@ public class UserFormValidation : IUserFormValidation
 
     }
 
-    public bool IsValidUserHash(string userHash) {
+    public bool IsValidUserHash(string userHash)
+    {
         if (userHash is null || userHash == string.Empty)
         {
             return false;
@@ -40,7 +41,7 @@ public class UserFormValidation : IUserFormValidation
         return true;
     }
 
-    private Response ValidateAppPrincipal(Response response, AppPrincipal? appPrincipal)
+    public Response ValidateAppPrincipal(Response response, AppPrincipal? appPrincipal)
     {
         if (appPrincipal == null)
         {
@@ -136,7 +137,7 @@ public class UserFormValidation : IUserFormValidation
         // Check if non-zero ratings are unique
         if (uniqueValues.Count != CountNonZeroRatings(mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating))
         {
-            response.HasError = false;
+            response.HasError = true;
             response.ErrorMessage = "The LLI rankings are not unique";
             return response;
         }
@@ -145,14 +146,14 @@ public class UserFormValidation : IUserFormValidation
         if (requestType == UserFormRequestType.Create)
         {
             for (int i = 1; i <= NUM_OF_CATEGORIES; i++)
-        {
-            if (!uniqueValues.Contains(i))
             {
-                response.HasError = true;
-                response.ErrorMessage = "The LLI rankings are incomplete";
-                return response;
+                if (!uniqueValues.Contains(i))
+                {
+                    response.HasError = true;
+                    response.ErrorMessage = "The LLI rankings are incomplete";
+                    return response;
+                }
             }
-        }
         }
 
         // All validations passed

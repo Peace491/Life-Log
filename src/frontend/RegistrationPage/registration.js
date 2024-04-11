@@ -57,7 +57,7 @@ export function loadRegistrationPage(root, ajaxClient) {
                 return response.json();
             }).then(function (jwtToken) {
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
-                routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+                routeManager.loadPage(routeManager.PAGES.userFormPage, "Create")
                 resolve(JSON.stringify(jwtToken));
             }).catch(function (error) {
                 reject(error);
