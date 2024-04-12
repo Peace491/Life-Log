@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenStreetMap Example</title>
+    <style>
+        /* Map container */
+        #map {
+            height: 500px;
+            width: 100%;
+            position: relative; /* Required for absolute positioning of the image */
+        }
+
+        /* Image inside map container */
+        #map img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Map container -->
+    <div id="map"></div>
+
+    <!-- OpenStreetMap tiles -->
+    <script>
+        // Generate random values for zoom level, tile column, and tile row
+        var z = 1;  // Random zoom level between 1 and 19
+        var x = Math.floor(Math.random() * Math.pow(2, z));  // Random tile column within valid range
+        var y = Math.floor(Math.random() * Math.pow(2, z));  // Random tile row within valid range
+
+        // Construct the tile URL using the generated values
+        var tileUrl = 'https://a.tile.openstreetmap.org/' + z + '/' + x + '/' + y + '.png';
+
+        // Create an image element and set its source to the generated tile URL
+        var img = document.createElement('img');
+        img.src = tileUrl;
+        img.alt = 'OpenStreetMap';
+
+        // Append the image element to the map container
+        document.getElementById('map').appendChild(img);
+    </script>
+</body>
+</html>
