@@ -25,7 +25,7 @@ public class LLIController : ControllerBase
         this.readDataOnlyDAO = new ReadDataOnlyDAO();
         this.updateDataOnlyDAO = new UpdateDataOnlyDAO();
         this.deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-        this.logTarget = new LogTarget(this.createDataOnlyDAO);
+        this.logTarget = new LogTarget(this.createDataOnlyDAO, this.readDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
         this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
         this.jwtService = new JWTService();

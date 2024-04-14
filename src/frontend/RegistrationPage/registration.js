@@ -1,6 +1,7 @@
 'use strict';
 
 import * as routeManager from '../routeManager.js';
+import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -34,6 +35,7 @@ export function loadRegistrationPage(root, ajaxClient) {
             request.then(function (response) {
                 return response.json();
             }).then(function (data) {
+                if (data.HasError == true) throw new Error("User Registration Failed")
                 resolve(data);
             }).catch(function (error) {
                 reject(error)
@@ -55,11 +57,15 @@ export function loadRegistrationPage(root, ajaxClient) {
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
-            }).then(function (jwtToken) {
+            }).then(function (response) {
+                if (response.status == 500) throw new Error("Failed to authenticate OTP")
+                let jwtToken = response
+                log.logLogin(userHash, "Success")
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
                 routeManager.loadPage(routeManager.PAGES.userFormPage, "Create")
-                resolve(JSON.stringify(jwtToken));
+                resolve(JSON.stringify(response));
             }).catch(function (error) {
+                log.logLogin(userHash, "Failure")
                 reject(error);
             });
         });
@@ -122,15 +128,21 @@ export function loadRegistrationPage(root, ajaxClient) {
 
         submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
 
-        registerUser(userId, dob, zipCode).then(function(data) {
-            let userHash = data.Output[0]
-
-            submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
-
-            submitCredentialButton.addEventListener('click', function() {
-                authenticateOTP(userHash, otpInput.value)
-            });
-        })
+        try {
+            registerUser(userId, dob, zipCode).then(function(data) {
+                let userHash = data.Output[0]
+    
+                submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
+    
+                submitCredentialButton.addEventListener('click', function() {
+                    authenticateOTP(userHash, otpInput.value)
+                });
+            })
+        } catch (error) {
+            console.error(error)
+            alert(error)
+        }
+        
     }
 
     root.myApp = root.myApp || {};

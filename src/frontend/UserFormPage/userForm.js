@@ -2,6 +2,7 @@
 
 import * as routeManager from '../routeManager.js'
 import * as userFormService from './userFormServices.js'
+import * as log from '../Log/log.js'
 
 export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
     // Dependency check
@@ -96,6 +97,9 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         if (jwtToken == null) { // User not logged in
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            var userHash = JSON.parse(jwtToken).Payload.UserHash
+            log.logPageAccess(userHash, routeManager.PAGES.userFormPage, jwtToken)
+
             let jwtTokenObject = JSON.parse(jwtToken);
             principal = {
                 userId: jwtTokenObject.Payload.UserHash,

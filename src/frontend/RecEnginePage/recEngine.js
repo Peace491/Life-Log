@@ -2,10 +2,11 @@
 
 import * as validator from "./recEngineInputValidation.js";
 import * as routeManager from "../routeManager.js";
+import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-export function loadRecEnginePage (root, ajaxClient) {
+export function loadRecEnginePage(root, ajaxClient) {
   // Dependency check
   const isValid = root && ajaxClient;
 
@@ -15,7 +16,7 @@ export function loadRecEnginePage (root, ajaxClient) {
   }
 
   let jwtToken = "";
-  let principal = { };
+  let principal = {};
 
 
   let recServiceUrl = "";
@@ -36,13 +37,13 @@ export function loadRecEnginePage (root, ajaxClient) {
       return Promise.reject(new Error("Invalid number of recommendations"));
     }
 
-    const url = recServiceUrl +getRecsUrl;
+    const url = recServiceUrl + getRecsUrl;
     return ajaxClient
-      .post(url, { 
+      .post(url, {
         appPrincipal: principal,
-        numRecs: numRecs 
-      }, 
-      jwtToken
+        numRecs: numRecs
+      },
+        jwtToken
       )
       .then((response) => response.json())
       .catch((error) => Promise.reject(error));
@@ -60,18 +61,18 @@ export function loadRecEnginePage (root, ajaxClient) {
           let recommendationContainer = document.getElementsByClassName(
             "recommendation-container"
           )[0];
-          
+
           recommendationContainer.innerHTML = "";
           for (let recommendation of recommendationList) {
-            
+
             let result = createLLIDiv(recommendation);
-            
+
             recommendationContainer.appendChild(result[0]);
             setupPostLLI(result[1]);
           }
         })
         .catch(function (error) {
-        
+
         });
     });
   }
@@ -86,89 +87,89 @@ export function loadRecEnginePage (root, ajaxClient) {
 
     let request = ajaxClient.post(concatCreateLLI, options, jwtToken)
 
-        return new Promise(function (resolve, reject) {
-            request.then(function (response) {
-                if (response.status != 200) {
-                    throw new Error(response.statusText)
-                }
+    return new Promise(function (resolve, reject) {
+      request.then(function (response) {
+        if (response.status != 200) {
+          throw new Error(response.statusText)
+        }
 
-                return response.json()
-            }).then(function (response) {
-                alert('The LLI is successfully created.')
-                // location.reload()
-                resolve(response)
-            }).catch(function (error) {
-                alert(error)
-                reject(error)
-            })
-        })
+        return response.json()
+      }).then(function (response) {
+        alert('The LLI is successfully created.')
+        // location.reload()
+        resolve(response)
+      }).catch(function (error) {
+        alert(error)
+        reject(error)
+      })
+    })
   }
 
   function setupPostLLI(idPrefix) {
-      let createRecommendationButton = document.getElementById(
-        `${idPrefix}-create-recommendation-button`
-      );
+    let createRecommendationButton = document.getElementById(
+      `${idPrefix}-create-recommendation-button`
+    );
 
-      createRecommendationButton.addEventListener("click", function () {
-        // pass in the user hash
-        let title = document.getElementById(`${idPrefix}-title`).textContent;
-        let deadline = document.getElementById(`${idPrefix}-date-input`).value;
-        // TODO categories
-        let selectedCategories = document.getElementById(`${idPrefix}-categories`).textContent.split(", ");
-  
-        let description = document.getElementById(
-          `${idPrefix}-description-input`
-        ).textContent;
-        let status = document.getElementById(`${idPrefix}-status-input`).value;
-        let visibility = document.getElementById(
-          `${idPrefix}-visibility-input`
-        ).value;
-        let cost = document.getElementById(`${idPrefix}-cost-input`).textContent;
-        
-        let recurrence = document.getElementById(
-          `${idPrefix}-recurrence-input`
-        ).value;
+    createRecommendationButton.addEventListener("click", function () {
+      // pass in the user hash
+      let title = document.getElementById(`${idPrefix}-title`).textContent;
+      let deadline = document.getElementById(`${idPrefix}-date-input`).value;
+      // TODO categories
+      let selectedCategories = document.getElementById(`${idPrefix}-categories`).textContent.split(", ");
 
-        let recurrenceStatus;
-        let recurrenceFrequency;
+      let description = document.getElementById(
+        `${idPrefix}-description-input`
+      ).textContent;
+      let status = document.getElementById(`${idPrefix}-status-input`).value;
+      let visibility = document.getElementById(
+        `${idPrefix}-visibility-input`
+      ).value;
+      let cost = document.getElementById(`${idPrefix}-cost-input`).textContent;
 
-        if (recurrence === "Off") {
-          recurrenceStatus = "Off"
-          recurrenceFrequency = "None"
-        }
-        else {
-            recurrenceStatus = "On"
-            const match = recurrence.match(/\(([^)]+)\)/);
+      let recurrence = document.getElementById(
+        `${idPrefix}-recurrence-input`
+      ).value;
 
-            recurrenceFrequency = match[1];
-        }
+      let recurrenceStatus;
+      let recurrenceFrequency;
 
-        let options = {
-          title: title,
-          deadline: deadline,
-          category1: selectedCategories[0],
-          category2: selectedCategories[1],
-          category3: selectedCategories[2],
-          description: description,
-          status: status,
-          visibility: visibility,
-          deadline: deadline,
-          cost: cost,
-          recurrenceStatus: recurrenceStatus,
-          recurrenceFrequency: recurrenceFrequency
+      if (recurrence === "Off") {
+        recurrenceStatus = "Off"
+        recurrenceFrequency = "None"
+      }
+      else {
+        recurrenceStatus = "On"
+        const match = recurrence.match(/\(([^)]+)\)/);
+
+        recurrenceFrequency = match[1];
+      }
+
+      let options = {
+        title: title,
+        deadline: deadline,
+        category1: selectedCategories[0],
+        category2: selectedCategories[1],
+        category3: selectedCategories[2],
+        description: description,
+        status: status,
+        visibility: visibility,
+        deadline: deadline,
+        cost: cost,
+        recurrenceStatus: recurrenceStatus,
+        recurrenceFrequency: recurrenceFrequency
       }
 
       let response = postLLI(options, idPrefix);
 
-        response
-          .then(() => {
-            
-          })
-          .catch(function (error) {
-  
-          });
-      });
-    }
+      response
+        .then(() => {
+
+        })
+        .catch(function (error) {
+
+        });
+    });
+  }
 
 
 
@@ -177,7 +178,7 @@ export function loadRecEnginePage (root, ajaxClient) {
     // TODO : Fix with correct url
     const url = summaryWebServiceUrl + updateUserUrl;
     return ajaxClient
-      .post(url, principal , jwtToken)
+      .post(url, principal, jwtToken)
       .then((response) => response.json())
       .catch((error) => Promise.reject(error));
   }
@@ -202,13 +203,13 @@ export function loadRecEnginePage (root, ajaxClient) {
     // Preform validation to check if admin.
     // If admin, populate the entire summary tableconst 
     const url = summaryWebServiceUrl + updateAllUserUrl;
-    if (true){ // TODO validate user role
+    if (true) { // TODO validate user role
       return ajaxClient
-      .post(url, principal, jwtToken)
-      .then((response) => response.json())
-      .catch((error) => Promise.reject(error));
+        .post(url, principal, jwtToken)
+        .then((response) => response.json())
+        .catch((error) => Promise.reject(error));
     }
-    
+
 
     // If not admin, return an error message
   }
@@ -550,7 +551,7 @@ export function loadRecEnginePage (root, ajaxClient) {
         `;
     return createRecommendationContainer;
   }
-  
+
   async function fetchConfig() {
     // fetch all Url's
     const response = await fetch('../lifelog-config.url.json');
@@ -564,7 +565,7 @@ export function loadRecEnginePage (root, ajaxClient) {
     summaryWebServiceUrl = data.LifelogUrlConfig.RecSummary.RecSummaryWebService;
     updateUserUrl = data.LifelogUrlConfig.RecSummary.RecSummaryUserUpdate;
     updateAllUserUrl = data.LifelogUrlConfig.RecSummary.RecSummaryAllUserUpdate;
-}
+  }
 
   // Initialize the current view by setting up data and attaching event handlers
   async function init() {
@@ -573,8 +574,11 @@ export function loadRecEnginePage (root, ajaxClient) {
     if (jwtToken == null) {
       routeManager.loadPage(routeManager.PAGES.homePage)
     } else {
+      var userHash = JSON.parse(jwtToken).Payload.UserHash
+      log.logPageAccess(userHash, routeManager.PAGES.recEnginePage, jwtToken)
+
       await fetchConfig();
-      let jwtTokenObject = JSON.parse(jwtToken); 
+      let jwtTokenObject = JSON.parse(jwtToken);
       principal = {
         userId: jwtTokenObject.Payload.UserHash,
         claims: jwtTokenObject.Payload.Claims,
@@ -584,12 +588,12 @@ export function loadRecEnginePage (root, ajaxClient) {
       setupGetNumRecomendations();
       setupRepopulateUserDatamart();
 
-      if (principal.claims.Role ==  "Admin" || principal.claims.Role ==  "Root") {
+      if (principal.claims.Role == "Admin" || principal.claims.Role == "Root") {
         setupRepopulateAllUserSummary();
       }
       routeManager.setupHeaderLinks();
-    } 
-    
+    }
+
   }
 
   init();

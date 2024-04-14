@@ -1,6 +1,7 @@
 'use strict';
 import * as routeManager from '../routeManager.js'
 import * as personalNoteDomManipulator from './personalnote-dom-manipulation.js'
+import * as log from '../Log/log.js'
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
 export function LoadPersonalNotePage (root, ajaxClient) {
@@ -313,6 +314,9 @@ export function LoadPersonalNotePage (root, ajaxClient) {
         if (jwtToken == null) {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            var userHash = JSON.parse(jwtToken).Payload.UserHash
+            log.logPageAccess(userHash, routeManager.PAGES.personalNotePage, jwtToken)
+
             await fetchConfig();
             personalNoteDomManipulator.setUp();
             window.name = routeManager.PAGES.personalNotePage

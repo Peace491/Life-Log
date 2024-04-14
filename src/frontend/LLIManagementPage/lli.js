@@ -1,6 +1,7 @@
 'use strict';
 import * as lliDomManip from './lli-dom-manipulation.js'
 import * as routeManager from '../routeManager.js';
+import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -441,6 +442,9 @@ export function loadLLIPage(root, ajaxClient) {
         if (jwtToken == null) {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            var userHash = JSON.parse(jwtToken).Payload.UserHash
+            log.logPageAccess(userHash, routeManager.PAGES.lliManagementPage, jwtToken)
+
             // Set up event handlers
             setupCreateLLITemplate();
             setupCreateLLISubmit();

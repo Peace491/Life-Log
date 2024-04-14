@@ -69,7 +69,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -119,7 +120,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -170,7 +172,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -220,7 +223,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -265,7 +269,8 @@ public class LoggingShould : IDisposable
         string? testLogMessage = null;
 
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
 
 
@@ -298,7 +303,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -346,7 +352,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -394,7 +401,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -442,7 +450,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -491,7 +500,8 @@ public class LoggingShould : IDisposable
 
         // Need to initlaize all types of DAO for checking accuracy and cleanup.
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
         var readOnlyDAO = new ReadDataOnlyDAO();
         var deleteDataDAO = new DeleteDataOnlyDAO(); 
@@ -530,7 +540,8 @@ public class LoggingShould : IDisposable
         string invalidLogCategory = "Carrot";
         string? testLogMessage = null; 
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
 
 
@@ -557,7 +568,8 @@ public class LoggingShould : IDisposable
         string validLogMessage = "Hello, this message is a valid log message!";
 
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
 
         Stopwatch timer = new Stopwatch();
@@ -602,7 +614,8 @@ public class LoggingShould : IDisposable
         "This is quite funny to me, adding more characters. The line above only brought us to 1976 characters. This one will do it.";
 
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         var logger = new Logging(logTarget);
 
         Stopwatch timer = new Stopwatch();
