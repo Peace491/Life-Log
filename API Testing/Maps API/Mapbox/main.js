@@ -1,7 +1,7 @@
 mapboxgl.accessToken = "";
 
 async function fetchConfig() {
-    // fetch all tokens
+    // Fetch all tokens
     const response = await fetch('../lifelog-config.tokens.json');
     const data = await response.json();
     mapboxgl.accessToken = data.LifelogTokenConfig.Maps.Mapbox;
@@ -19,7 +19,7 @@ async function init() {
         .then(data => {
             // Stop the timer when the response has been received
             var endTime = performance.now();
-            console.log("Response time: " + (endTime - startTime) + " milliseconds.");
+            console.log("API Response time: " + (endTime - startTime) + " milliseconds.");
 
             var map = new mapboxgl.Map({
                 container: 'map',
@@ -49,10 +49,16 @@ async function init() {
                 var pinTime = pinEndTime - pinStartTime;
                 totalPinTime += pinTime;
                 console.log("Time taken to place pin " + (i + 1) + ": " + pinTime + " milliseconds.");
-            };
+            }
+
             console.log("The total time it took to place all pins: " + totalPinTime + " milliseconds.")
             var averagePinTime = totalPinTime / pinCount;
             console.log("Average time taken to place all pins: " + averagePinTime + " milliseconds.");
+
+            // Calculate the RPS
+            var totalTimeInSeconds = (endTime - startTime) / 1000; // Convert total time to seconds
+            var rps = pinCount / totalTimeInSeconds;
+            console.log("Number of Requests per Second (RPS): " + rps);
         });
 }
 
