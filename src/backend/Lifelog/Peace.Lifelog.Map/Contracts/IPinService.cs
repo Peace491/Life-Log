@@ -19,7 +19,7 @@ public interface IPinService
     public Task<Response> EditPinLLI(
         EditPinLIIRequest editPinLLIRequest
     );
-    public Task<PinStatus> FetchPinStatus(int LLIId);
+    public Task<Response> FetchPinStatus(string LLIId, string userHash);
     public Task<Response> updateLog(
         UpdateLogRequest updateLogRequest
     );

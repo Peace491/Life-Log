@@ -1,34 +1,42 @@
 ﻿namespace Peace.Lifelog.Map;
 
 using DomainModels;
+using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.LLI;
 using Peace.Lifelog.Security;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 public class PinService : IPinService
 {
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
-
-    private IUserFormRepo userFormRepo;
+    
+    private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
     private PinValidation pinValidation;
     private Logging.ILogging logging;
+    private LLIService lliService;
 
-    public PinService(IUserFormRepo userFormRepo, ILifelogAuthService lifelogAuthService, Logging.ILogging logging)
+    //For LLI 
+    private CreateDataOnlyDAO createDataOnlyDAO;
+    private ReadDataOnlyDAO readDataOnlyDAO;
+    private UpdateDataOnlyDAO updateDataOnlyDAO;
+    private DeleteDataOnlyDAO deleteDataOnlyDAO;
+    private Logging.Logging loggingLLI;
+    public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, Logging.ILogging logging)
     {
-        this.userFormRepo = userFormRepo;
+        this.mapRepo = mapRepo;
+        this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.loggingLLI);
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.pinValidation = new PinValidation();
     }
-
-    public Task<Response> CreatePin(CreatePinRequest createPinRequest)
+    
+    public async Task<Response> CreatePin(CreatePinRequest createPinRequest)
     {
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
-        var timer = new Stopwatch();
-        //timer.Start();
 
         // Validate Input
         var validateCreatePinRequestResponse = this.pinValidation.ValidatePinRequest(response, createPinRequest, PinRequestType.Create);
@@ -45,67 +53,346 @@ public class PinService : IPinService
             return handlePinError(response, createPinRequest.Principal!, errorMessage!);
         }
 
-        // Create User Form in DB
-        var userHash = createPinRequest.Principal!.UserId;
-
-        Response createUserFormInDBResponse;
+        // Create Pin in DB
+        Response createPinInDBResponse;
 
         try
         {
-            createPinInDBResponse = await this.userFormRepo.CreateUserFormInDB(userHash, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
+            createPinInDBResponse = await this.mapRepo.CreatePinInDB(createPinRequest.LLIId, createPinRequest.Address, createPinRequest.Latitude, createPinRequest.Longitude);
         }
         catch (Exception error)
         {
-            return handleUserFormError(response, createUserFormRequest.Principal, error.Message);
+            return handlePinError(response, createPinRequest.Principal!, error.Message);
         }
 
         // Handle Failure Response
-        if (createUserFormInDBResponse.HasError)
+        if (createPinInDBResponse.HasError)
         {
-            errorMessage = "The User Form failed to save to the persistent data store";
-            return handleUserFormError(response, createUserFormRequest.Principal, errorMessage);
+            errorMessage = "The Pin failed to save to the persistent data store";
+            return handlePinError(response, createPinRequest.Principal!, errorMessage);
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "User Form successfully created", createUserFormRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", "Pin creation operation successful", createPinRequest.Principal.UserId, "Info", "Business");
         return response;
     }
 
-    public Task<Response> UpdatePin(UpdatePinRequest updatePinRequest)
+    public async Task<Response> UpdatePin(UpdatePinRequest updatePinRequest)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate Input
+        var validateCreatePinRequestResponse = this.pinValidation.ValidatePinRequest(response, updatePinRequest, PinRequestType.Update);
+        if (validateCreatePinRequestResponse.HasError)
+        {
+            errorMessage = validateCreatePinRequestResponse.ErrorMessage;
+            return handlePinError(response, updatePinRequest.Principal!, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForPin(updatePinRequest.Principal!))
+        {
+            errorMessage = "The User Is Not Authorized To update a Pin";
+            return handlePinError(response, updatePinRequest.Principal!, errorMessage!);
+        }
+
+        // Update Pin in DB
+        Response updatePinInDBResponse;
+
+        try
+        {
+            updatePinInDBResponse = await this.mapRepo.UpdatePinInDB(updatePinRequest.PinId, updatePinRequest.Address, updatePinRequest.Latitude, updatePinRequest.Longitude);
+        }
+        catch (Exception error)
+        {
+            return handlePinError(response, updatePinRequest.Principal!, error.Message);
+        }
+
+        // Handle Failure Response
+        if (updatePinInDBResponse.HasError)
+        {
+            errorMessage = "The Pin location failed to update in the persistent data store";
+            return handlePinError(response, updatePinRequest.Principal!, errorMessage);
+        }
+
+        // Handle Success Response
+        var logResponse = this.logging.CreateLog("Logs", "Pin update operation successful", updatePinRequest.Principal.UserId, "Info", "Business");
+        return response;
     }
 
-    public Task<Response> DeletePin(DeletePinRequest deletePinRequest)
+    public async Task<Response> DeletePin(DeletePinRequest deletePinRequest)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate Input
+        var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, deletePinRequest, PinRequestType.Delete);
+        if (validateDeletePinRequestResponse.HasError)
+        {
+            errorMessage = validateDeletePinRequestResponse.ErrorMessage;
+            return handlePinError(response, deletePinRequest.Principal!, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForPin(deletePinRequest.Principal!))
+        {
+            errorMessage = "The User Is Not Authorized To Delete a Pin";
+            return handlePinError(response, deletePinRequest.Principal!, errorMessage!);
+        }
+
+        // Create Pin in DB
+        Response deletePinInDBResponse;
+
+        try
+        {
+            deletePinInDBResponse = await this.mapRepo.DeletePinInDB(deletePinRequest.PinId);
+        }
+        catch (Exception error)
+        {
+            return handlePinError(response, deletePinRequest.Principal!, error.Message);
+        }
+
+        // Handle Failure Response
+        if (deletePinInDBResponse.HasError)
+        {
+            errorMessage = "The Pin failed to save to the persistent data store";
+            return handlePinError(response, deletePinRequest.Principal!, errorMessage);
+        }
+
+        // Handle Success Response
+        var logResponse = this.logging.CreateLog("Logs", "Pin deletion operation successful", deletePinRequest.Principal.UserId, "Info", "Business");
+        return response;
     }
 
-    public Task<Response> ViewPin(ViewPinRequest viewPinRequest)
+    public async Task<Response> ViewPin(ViewPinRequest viewPinRequest)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate Input
+        var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, viewPinRequest, PinRequestType.View);
+        if (validateDeletePinRequestResponse.HasError)
+        {
+            errorMessage = validateDeletePinRequestResponse.ErrorMessage;
+            return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForPin(viewPinRequest.Principal!))
+        {
+            errorMessage = "The User Is Not Authorized To view a Pin";
+            return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
+        }
+
+        //Read the Pin in DB 
+        Response readPinInDBResponse;
+
+        //Initialize the LLIId
+        string? LLIId = null;
+
+        try
+        {
+            readPinInDBResponse = await this.mapRepo.ReadPinInDB(viewPinRequest.PinId);
+            if (readPinInDBResponse.Output is not null)
+            {
+                List<object> readOutput = (List<object>)readPinInDBResponse.Output;
+                if (readOutput.Count > 1 && readOutput[1] is not null) // Check if index is valid and element is of type int
+                {
+                    LLIId = readOutput[1].ToString();
+                }
+            }
+        }
+        catch (Exception error)
+        {
+            return handlePinError(response, viewPinRequest.Principal!, error.Message);
+        }
+
+
+        // Read the LLI in the DB only if LLIId is not null
+        if (LLIId is not null)
+        {
+            Response readPinLLIInDBResponse;
+            try
+            {
+                readPinLLIInDBResponse = await this.mapRepo.ReadLLIInDB(LLIId);
+            }
+            catch (Exception error)
+            {
+                return handlePinError(response, viewPinRequest.Principal!, error.Message);
+            }
+
+            // Handle Success Response
+            response.Output = readPinLLIInDBResponse.Output;
+            var logResponse = this.logging.CreateLog("Logs", "Pin view operation successful", viewPinRequest.Principal.UserId, "Info", "Business");
+            return response;
+        }
+        else
+        {
+            // Handle the case when LLIId is null
+            return handlePinError(response, viewPinRequest.Principal!, "LLIId is null");
+        }
     }
 
-    public Task<Response> EditPinLLI(EditPinLIIRequest editPinLLIRequest)
+    public async Task<Response> EditPinLLI(EditPinLIIRequest editPinLLIRequest)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate Input
+        var validateCreatePinRequestResponse = this.pinValidation.ValidatePinRequest(response, editPinLLIRequest, PinRequestType.Edit);
+        if (validateCreatePinRequestResponse.HasError)
+        {
+            errorMessage = validateCreatePinRequestResponse.ErrorMessage;
+            return handlePinError(response, editPinLLIRequest.Principal!, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForPin(editPinLLIRequest.Principal!))
+        {
+            errorMessage = "The User Is Not Authorized To edit an LLI";
+            return handlePinError(response, editPinLLIRequest.Principal!, errorMessage!);
+        }
+
+        // Update Pin in DB
+        Response readLLIInDBResponse;
+        var userHash = editPinLLIRequest.Principal!.UserId;
+        LLI? lli = new();
+
+        try
+        {
+            readLLIInDBResponse = await this.mapRepo.ReadLLIInDB(editPinLLIRequest.LLIId);
+
+            if (readLLIInDBResponse.Output is not null)
+            {
+                lli = ConvertDatabaseResponseOutputToLLIObject(readLLIInDBResponse);
+            }
+
+            if (lli != null)
+            {
+                var editLLIResponse = this.lliService.UpdateLLI(userHash, lli);
+            }
+        }
+        catch (Exception error)
+        {
+            return handlePinError(response, editPinLLIRequest.Principal!, error.Message);
+        }
+
+        // Handle Success Response
+        var logResponse = this.logging.CreateLog("Logs", "LLI edit operation performed through pin", editPinLLIRequest.Principal.UserId, "Info", "Persistent Data Store");
+        return response;
     }
 
-    public Task<PinStatus> FetchPinStatus(int LLIId)
+    public async Task<Response> FetchPinStatus(string LLIId, string userHash)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+
+        // Get all Pin for an LLI in DB
+        Response readPinStatusInDBResponse = new(); // Initialize with null
+
+        try
+        {
+            readPinStatusInDBResponse = await this.mapRepo.ReadAllPinForLLIInDB(LLIId);
+
+            if (readPinStatusInDBResponse.Output != null)
+            {
+                var pinStatusOutput = ConvertDatabaseResponseOutputToPinStatusObjectList(readPinStatusInDBResponse);
+                if (pinStatusOutput != null)
+                {
+                    ICollection<object> pinStatusCollection = pinStatusOutput.Cast<object>().ToList();
+                    response.Output = pinStatusCollection;
+                }
+            }
+        }
+        catch (Exception error)
+        {
+            // Convert the Exception object to a string
+            string error_Message = error.ToString();
+
+            var logerrorResponse = this.logging.CreateLog("Logs", error_Message, userHash, "ERROR", "Business");
+        }
+
+
+
+        // Handle Failure Response
+        if (readPinStatusInDBResponse != null && readPinStatusInDBResponse.HasError) // Check if readPinStatusInDBResponse is not null
+        {
+            string? error_Message = readPinStatusInDBResponse.ErrorMessage;
+            var logerrorResponse = this.logging.CreateLog("Logs", error_Message, userHash, "ERROR", "Business");
+        }
+
+        // Handle Success Response
+        var logResponse = this.logging.CreateLog("Logs", "Pin update operation successful", userHash, "Info", "Business");
+        return response;
+
     }
 
-    public Task<Response> updateLog(UpdateLogRequest updateLogRequest)
+    public async Task<Response> updateLog(UpdateLogRequest updateLogRequest)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate Input
+        var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, updateLogRequest, PinRequestType.UpdateLog);
+        if (validateDeletePinRequestResponse.HasError)
+        {
+            errorMessage = validateDeletePinRequestResponse.ErrorMessage;
+            return handlePinError(response, updateLogRequest.Principal!, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForPin(updateLogRequest.Principal!))
+        {
+            errorMessage = "The User Is Not Authorized To view a Pin";
+            return handlePinError(response, updateLogRequest.Principal!, errorMessage!);
+        }
+
+        var logResponse = await this.logging.CreateLog("Logs", "Map view changed to Location Recommendation", updateLogRequest.Principal.UserId, "Info", "View");
+
+        return response;
     }
 
-    public Task<Response> GetAllUserLLI(string userHash)
+    public async Task<Response> GetAllUserLLI(string userHash)
     {
-        throw new NotImplementedException();
+        var response = new Response();
+        response.HasError = false;
+
+        //Authorize #TODO
+
+        //Validate Inpit 
+        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
+        if (!validateRequestResponse)
+        {
+            var errorMessage = "invalid user hash";
+
+            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
+        }
+
+        //Get all user LLI
+        try
+        {
+            response = await this.lliService.GetAllLLIFromUser(userHash);
+        }
+        catch (Exception error)
+        {
+            // Convert the Exception object to a string
+            string errorMessage = error.ToString();
+
+            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
+        }
+
+        return response;
+
     }
 
+
+    #region Helper Functions
     private Response handlePinError(Response response, AppPrincipal principal, string errorMessage)
     {
         response.HasError = true;
@@ -114,159 +401,129 @@ public class PinService : IPinService
         return response;
     }
 
-    /*
-    public async Task<Response> CreateUserForm(CreateUserFormRequest createUserFormRequest)
-    {
-        var response = new Response();
-        response.HasError = false;
-        var errorMessage = "";
-
-        // Validate Input
-        var validateCreateUserFormRequestResponse = this.userFormValidation.ValidateUserFormRequest(response, createUserFormRequest, UserFormRequestType.Create);
-        if (validateCreateUserFormRequestResponse.HasError)
-        {
-            errorMessage = validateCreateUserFormRequestResponse.ErrorMessage;
-            return handleUserFormError(response, createUserFormRequest.Principal!, errorMessage!);
-        }
-
-        // Authorize request
-        if (!IsUserAuthorizedForUserForm(createUserFormRequest.Principal!))
-        {
-            errorMessage = "The User Is Not Authorized To Use The User Form";
-            return handleUserFormError(response, createUserFormRequest.Principal!, errorMessage);
-        }
-
-        // Create User Form in DB
-        var userHash = createUserFormRequest.Principal!.UserId;
-
-        Response createUserFormInDBResponse;
-
-        try
-        {
-            createUserFormInDBResponse = await this.userFormRepo.CreateUserFormInDB(userHash, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
-        }
-        catch (Exception error)
-        {
-            return handleUserFormError(response, createUserFormRequest.Principal, error.Message);
-        }
-
-        // Handle Failure Response
-        if (createUserFormInDBResponse.HasError)
-        {
-            errorMessage = "The User Form failed to save to the persistent data store";
-            return handleUserFormError(response, createUserFormRequest.Principal, errorMessage);
-        }
-
-        // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "User Form successfully created", createUserFormRequest.Principal.UserId, "Info", "Business");
-        return response;
-    }
-
-    public async Task<Response> UpdateUserForm(UpdateUserFormRequest updateUserFormRequest)
-    {
-        var response = new Response();
-        response.HasError = false;
-        var errorMessage = "";
-
-        // Validate Input
-        var validateUpdateUserFormRequestResponse = this.userFormValidation.ValidateUserFormRequest(response, updateUserFormRequest, UserFormRequestType.Update);
-        if (validateUpdateUserFormRequestResponse.HasError)
-        {
-            errorMessage = validateUpdateUserFormRequestResponse.ErrorMessage;
-            return handleUserFormError(response, updateUserFormRequest.Principal!, errorMessage!);
-        }
-
-        // Authorize request
-        if (!IsUserAuthorizedForUserForm(updateUserFormRequest.Principal!))
-        {
-            errorMessage = "The User Is Not Authorized To Use The User Form";
-            return handleUserFormError(response, updateUserFormRequest.Principal!, errorMessage);
-        }
-
-        // Update User Form in DB
-        var userHash = updateUserFormRequest.Principal!.UserId;
-
-        Response updateUserFormInDBResponse;
-
-        try
-        {
-            updateUserFormInDBResponse = await this.userFormRepo.UpdateUserFormInDB(userHash, updateUserFormRequest.MentalHealthRating, updateUserFormRequest.PhysicalHealthRating, updateUserFormRequest.OutdoorRating, updateUserFormRequest.SportRating, updateUserFormRequest.ArtRating, updateUserFormRequest.HobbyRating, updateUserFormRequest.ThrillRating, updateUserFormRequest.TravelRating, updateUserFormRequest.VolunteeringRating, updateUserFormRequest.FoodRating);
-        }
-        catch (Exception error)
-        {
-            return handleUserFormError(response, updateUserFormRequest.Principal, error.Message);
-        }
-
-        // Handle Failure Response
-        if (updateUserFormInDBResponse.HasError)
-        {
-            errorMessage = "The User Form failed to save to the persistent data store";
-            return handleUserFormError(response, updateUserFormRequest.Principal, errorMessage);
-        }
-
-        // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "User Form successfully updated", updateUserFormRequest.Principal.UserId, "Info", "Business");
-        return response;
-    }
-
-    public async Task<bool> IsUserFormCompleted(string userHash)
-    {
-        var response = new Response();
-
-        if (!userFormValidation.IsValidUserHash(userHash))
-        {
-            return false;
-        }
-
-        try
-        {
-            response = await this.userFormRepo.ReadUserFormCompletionStatusInDB(userHash);
-        }
-        catch
-        {
-            return false;
-        }
-
-        if (response.Output == null)
-        {
-            return false;
-        }
-
-        try
-        {
-            foreach (List<Object> output in response.Output)
-            {
-                foreach (bool completionStatus in output)
-                {
-                    return completionStatus;
-                }
-            }
-        }
-        catch
-        {
-            return false;
-        }
-
-        return false;
-    }
-
-
-    private bool IsUserAuthorizedForUserForm(AppPrincipal appPrincipal)
+    private bool IsUserAuthorizedForPin(AppPrincipal appPrincipal)
     {
 
         return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
     }
 
-    private Response handleUserFormError(Response response, AppPrincipal principal, string errorMessage)
+    // convert to PinStatus object 
+    private List<PinStatus>? ConvertDatabaseResponseOutputToPinStatusObjectList(Response readPinResponse)
     {
-        response.HasError = true;
-        response.ErrorMessage = errorMessage;
-        var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
-        return response;
+        List<PinStatus> pinStatusList = new List<PinStatus>();
+
+        if (readPinResponse.Output == null)
+        {
+            return null;
+        }
+
+        foreach (List<object> Pin in readPinResponse.Output)
+        {
+            var pinStatus = new PinStatus();
+            int index = 0;
+
+            foreach (var attribute in Pin)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        pinStatus.LLIId = attribute.ToString() ?? "";
+                        break;
+                    case 1:
+                        pinStatus.count = attribute.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+            }
+
+            pinStatusList.Add(pinStatus);
+        }
+
+        return pinStatusList;
     }
 
-    public Task<UserFormRanking> GetUserFormRanking(string userHash)
+
+    // Convert read response to LLI object
+    private LLI? ConvertDatabaseResponseOutputToLLIObject(Response readLLIResponse)
     {
-        throw new NotImplementedException();
-    }*/
+        if (readLLIResponse.Output == null || !readLLIResponse.Output.Any())
+        {
+            return null;
+        }
+
+        IEnumerable<object>? firstLLI = readLLIResponse.Output.FirstOrDefault() as IEnumerable<object>;
+        if (firstLLI == null)
+        {
+            return null;
+        }
+
+        var lli = new LLI();
+
+        int index = 0;
+
+        foreach (var attribute in firstLLI)
+        {
+            if (attribute is null) continue;
+
+            switch (index)
+            {
+                case 0:
+                    lli.LLIID = attribute?.ToString() ?? "";
+                    break;
+                case 1:
+                    lli.UserHash = attribute?.ToString() ?? "";
+                    break;
+                case 2:
+                    lli.Title = attribute?.ToString() ?? "";
+                    break;
+                case 3:
+                    lli.Description = attribute?.ToString() ?? "";
+                    break;
+                case 4:
+                    lli.Status = attribute?.ToString() ?? "";
+                    break;
+                case 5:
+                    lli.Visibility = attribute?.ToString() ?? "";
+                    break;
+                case 6:
+                    lli.Deadline = attribute?.ToString() ?? "";
+                    break;
+                case 7:
+                    lli.Cost = attribute is int intValue ? intValue : 0;
+                    break;
+                case 8:
+                    lli.Recurrence.Status = attribute?.ToString() ?? "";
+                    break;
+                case 9:
+                    lli.Recurrence.Frequency = attribute?.ToString() ?? "";
+                    break;
+                case 10:
+                    lli.CreationDate = attribute?.ToString() ?? "";
+                    break;
+                case 11:
+                    lli.CompletionDate = attribute?.ToString() ?? "";
+                    break;
+                case 12:
+                    lli.Category1 = attribute?.ToString() ?? "";
+                    break;
+                case 13:
+                    lli.Category2 = attribute?.ToString() ?? "";
+                    break;
+                case 14:
+                    lli.Category3 = attribute?.ToString() ?? "";
+                    break;
+                default:
+                    break;
+            }
+            index++;
+        }
+
+        return lli;
+    }
+    #endregion
+
 }

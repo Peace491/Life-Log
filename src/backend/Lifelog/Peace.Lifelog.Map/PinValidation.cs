@@ -5,26 +5,18 @@ namespace Peace.Lifelog.Map;
 
 public class PinValidation : IPinValidation
 {
-    private const int NUM_OF_CATEGORIES = 10;
-
-    public Response ValidatePinRequest(Response response, IPinRequest createUserFormRequest, string requestType)
+    public Response ValidatePinRequest(Response response, IPinRequest pinRequest, string requestType)
     {
-        var validateAppPrincipalResponse = ValidateAppPrincipal(response, createUserFormRequest.Principal);
+        var validateAppPrincipalResponse = ValidateAppPrincipal(response, pinRequest.Principal);
         if (validateAppPrincipalResponse.HasError)
         {
             return HandleValidationError(response, validateAppPrincipalResponse.ErrorMessage!);
         }
 
-        var validateUserFormFieldInputValueResponse = ValidateUserFormFieldInputValue(response, requestType, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
-        if (validateUserFormFieldInputValueResponse.HasError)
+        var validatePinValueResponse = ValidatePinValue(response, requestType, pinRequest.PinId, pinRequest.LLIId, pinRequest.Address, pinRequest.Latitude, pinRequest.Longitude);
+        if (validatePinValueResponse.HasError)
         {
-            return HandleValidationError(response, validateUserFormFieldInputValueResponse.ErrorMessage!);
-        }
-
-        var validateUserFormFieldUniquenessResponse = ValidateUserFormFieldUniqueness(response, requestType, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
-        if (validateUserFormFieldUniquenessResponse.HasError)
-        {
-            return HandleValidationError(response, validateUserFormFieldUniquenessResponse.ErrorMessage!);
+            return HandleValidationError(response, validatePinValueResponse.ErrorMessage!);
         }
 
         return response;
@@ -74,118 +66,52 @@ public class PinValidation : IPinValidation
         return response;
     }
 
-    private Response ValidateUserFormFieldInputValue(
+    private Response ValidatePinValue(
         Response response,
         string requestType,
-        int mentalHealthRating, int physicalHealthRating, int outdoorRating,
-        int sportRating, int artRating, int hobbyRating,
-        int thrillRating, int travelRating, int volunteeringRating,
-        int foodRating
+        string PinId,
+        string LLIId,
+        string Address,
+        double Latitude,
+        double Longitude
     )
     {
-        int MIN_RANKING = 1;
-        if (requestType == UserFormRequestType.Update)
+        if (requestType == PinRequestType.Create || requestType == PinRequestType.Update)
         {
-            MIN_RANKING = 0;
-        }
-
-        int MAX_RANKING = 10;
-
-        if (
-            mentalHealthRating < MIN_RANKING || mentalHealthRating > MAX_RANKING
-            || physicalHealthRating < MIN_RANKING || physicalHealthRating > MAX_RANKING
-            || outdoorRating < MIN_RANKING || outdoorRating > MAX_RANKING
-            || sportRating < MIN_RANKING || sportRating > MAX_RANKING
-            || artRating < MIN_RANKING || artRating > MAX_RANKING
-            || hobbyRating < MIN_RANKING || hobbyRating > MAX_RANKING
-            || thrillRating < MIN_RANKING || thrillRating > MAX_RANKING
-            || travelRating < MIN_RANKING || travelRating > MAX_RANKING
-            || volunteeringRating < MIN_RANKING || volunteeringRating > MAX_RANKING
-            || foodRating < MIN_RANKING || foodRating > MAX_RANKING
-        )
-        {
-            response.HasError = true;
-            response.ErrorMessage = "The LLI rankings are not in range";
-        }
-
-        return response;
-    }
-
-    private Response ValidateUserFormFieldUniqueness(
-        Response response,
-        string requestType,
-        int mentalHealthRating, int physicalHealthRating, int outdoorRating,
-        int sportRating, int artRating, int hobbyRating,
-        int thrillRating, int travelRating, int volunteeringRating,
-        int foodRating
-    )
-    {
-        HashSet<int> uniqueValues = new HashSet<int>();
-
-        // Add all ratings to the HashSet to check for uniqueness and presence
-        if (mentalHealthRating != 0) uniqueValues.Add(mentalHealthRating);
-        if (physicalHealthRating != 0) uniqueValues.Add(physicalHealthRating);
-        if (outdoorRating != 0) uniqueValues.Add(outdoorRating);
-        if (sportRating != 0) uniqueValues.Add(sportRating);
-        if (artRating != 0) uniqueValues.Add(artRating);
-        if (hobbyRating != 0) uniqueValues.Add(hobbyRating);
-        if (thrillRating != 0) uniqueValues.Add(thrillRating);
-        if (travelRating != 0) uniqueValues.Add(travelRating);
-        if (volunteeringRating != 0) uniqueValues.Add(volunteeringRating);
-        if (foodRating != 0) uniqueValues.Add(foodRating);
-
-        // Check if non-zero ratings are unique
-        if (uniqueValues.Count != CountNonZeroRatings(mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating))
-        {
-            response.HasError = false;
-            response.ErrorMessage = "The LLI rankings are not unique";
-            return response;
-        }
-
-        // Check if all numbers from 1 to 10 are present, if we are validating a create
-        if (requestType == UserFormRequestType.Create)
-        {
-            for (int i = 1; i <= NUM_OF_CATEGORIES; i++)
+            if (LLIId == string.Empty || Address == string.Empty || Latitude == 0 || Longitude == 0)
             {
-                if (!uniqueValues.Contains(i))
-                {
-                    response.HasError = true;
-                    response.ErrorMessage = "The LLI rankings are incomplete";
-                    return response;
-                }
+                response.HasError = true;
+                response.ErrorMessage = "Invalid Field entry";
+            }
+
+        }
+        if (requestType == PinRequestType.Delete)
+        {
+            if (PinId == string.Empty)
+            {
+                response.HasError = true;
+                response.ErrorMessage = "Invalid pin selection";
+            }
+
+        }
+        if (requestType == PinRequestType.Edit)
+        {
+            if (LLIId == string.Empty)
+            {
+                response.HasError = true;
+                response.ErrorMessage = "Invalid LLI";
             }
         }
-
-        // All validations passed
-        return response;
-    }
-
-    // Helper function to count the number of non-zero ratings
-    private int CountNonZeroRatings(
-        int mentalHealthRating, int physicalHealthRating, int outdoorRating,
-        int sportRating, int artRating, int hobbyRating,
-        int thrillRating, int travelRating, int volunteeringRating,
-        int foodRating
-    )
-    {
-        int count = 0;
-        int[] ratings = { mentalHealthRating, physicalHealthRating, outdoorRating, sportRating, artRating, hobbyRating, thrillRating, travelRating, volunteeringRating, foodRating };
-
-        foreach (int rating in ratings)
+        if (requestType == PinRequestType.View)
         {
-            if (rating != 0)
+            if (LLIId == string.Empty || PinId == string.Empty)
             {
-                count++;
+                response.HasError = true;
+                response.ErrorMessage = "Invalid Pin selection";
             }
+
         }
-
-        return count;
-    }
-
-    // Helper function to check if a rating is non-zero
-    private bool IsNonZeroRating(int rating)
-    {
-        return rating != 0;
+        return response;
     }
 
 
@@ -195,4 +121,3 @@ public class PinValidation : IPinValidation
         response.ErrorMessage = errorMessage;
         return response;
     }
-}
