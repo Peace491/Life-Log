@@ -10,7 +10,7 @@ using System.Collections.Generic;
 public class PinService : IPinService
 {
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
-
+    
     private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
     private PinValidation pinValidation;
@@ -31,7 +31,7 @@ public class PinService : IPinService
         this.logging = logging;
         this.pinValidation = new PinValidation();
     }
-
+    
     public async Task<Response> CreatePin(CreatePinRequest createPinRequest)
     {
         var response = new Response();
@@ -400,6 +400,7 @@ public class PinService : IPinService
         var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
         return response;
     }
+
     private bool IsUserAuthorizedForPin(AppPrincipal appPrincipal)
     {
 
