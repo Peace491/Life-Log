@@ -467,6 +467,7 @@ export function loadLLIPage(root, ajaxClient) {
             showLLI();
 
             //navigate 
+            routeManager.setupHeaderLinks();
         }
     }
 
