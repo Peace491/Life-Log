@@ -1,0 +1,6 @@
+@Peace.Lifelog.MapsWebService_HostAddress = http://localhost:5273
+
+GET {{Peace.Lifelog.MapsWebService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
