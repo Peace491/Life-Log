@@ -332,6 +332,40 @@ public class PinService : IPinService
 
     }
 
+    public async Task<Response> GetAllPinFromUser(string userHash)
+    {
+        var response = new Response();
+        response.HasError = false;
+        Response readPinResponse = new();
+
+        //Validate Inpit 
+        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
+        if (!validateRequestResponse)
+        {
+            var errorMessage = "invalid user hash";
+
+            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
+        }
+
+        //Get all user LLI
+        try
+        {
+            readPinResponse = await this.mapRepo.ReadAllUserPinInDB(userHash);
+
+        }
+        catch (Exception error)
+        {
+            // Convert the Exception object to a string
+            string errorMessage = error.ToString();
+
+            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
+        }
+
+
+        var pinOutput = ConvertDatabaseResponseOutputToPinObjectList(readPinResponse);
+        response.Output = pinOutput;
+        return response;
+    }
     public async Task<Response> updateLog(UpdateLogRequest updateLogRequest)
     {
         var response = new Response();
@@ -446,6 +480,60 @@ public class PinService : IPinService
         return pinStatusList;
     }
 
+    // Convert read response to Pin Object 
+    private List<Object>? ConvertDatabaseResponseOutputToPinObjectList(Response readPinResponse)
+    {
+        List<Object> pinList = new List<Object>();
+
+        if (readPinResponse.Output == null)
+        {
+            return null;
+        }
+
+        foreach (List<Object> Pin in readPinResponse.Output)
+        {
+
+            var pin = new Pin();
+
+            int index = 0;
+
+            foreach (var attribute in Pin)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        pin.PinId = attribute?.ToString() ?? "";
+                        break;
+                    case 1:
+                        pin.LLIId = attribute?.ToString() ?? "";
+                        break;
+                    case 2:
+                        pin.UserHash = attribute?.ToString() ?? "";
+                        break;
+                    case 3:
+                        pin.Address = attribute?.ToString() ?? "";
+                        break;
+                    case 4:
+                        pin.Latitude = attribute?.ToString() ?? "";
+                        break;
+                    case 5:
+                        pin.Longitude = attribute?.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            pinList.Add(pin);
+
+        }
+
+        return pinList;
+    }
 
     // Convert read response to LLI object
     private LLI? ConvertDatabaseResponseOutputToLLIObject(Response readLLIResponse)

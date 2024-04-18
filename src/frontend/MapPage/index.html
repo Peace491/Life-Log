@@ -69,7 +69,34 @@
                 
             </div>
 
+            <div class="add-pin-button-container">
+                <img src="./Assets/add.svg" alt="" id="add-pin-button" data-modal-target="#pin-modal">
+            </div>
+
         </div>
+        <div id="pin-modal" class="modal pin-modal">
+            <div class="pin">
+                <div class="pin-options">
+                    <div class="pin-create-container">
+                        <button id="create-pin-btn">Create Pin</button>    
+                    </div>
+                    <div class="lli-container">
+                        <h2><span style="font-weight: 400;">LLI: </span></h2>
+                        <select id="create-status-input" class="status-select" autocomplete="off">
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="pin-input-container">
+                    <div class="pin-input">
+                        <p contenteditable id="create-paragraph-input-pin" data-placeholder="Pin Address?"></p>
+                    </div>
+                    <div class="hold-id"></div>
+                </div>
+            </div>
+        </div>
+        <div id="overlay"></div>
     </main>
 
     <!-- Dependencies -->

@@ -9,5 +9,6 @@ public interface IMapRepo
     public Task<Response> UpdatePinInDB(string PinId, string Address, double Latitude, double Longitude);
     public Task<Response> DeletePinInDB(string PinId);
     public Task<Response> ReadLLIInDB(string LLIId);
+    public Task<Response> ReadAllUserPinInDB(string UserHash);
     public Task<Response> ReadAllPinForLLIInDB(string LLIId);
 }

@@ -51,6 +51,26 @@ public class MapRepo : IMapRepo
         return createPinResponse;
     }
 
+    public async Task<Response> ReadAllUserPinInDB(string UserHash)
+    {
+        var readResponse = new Response();
+
+        string sql = "SELECT *"
+        + $"FROM MapPin Where UserHash=\"{UserHash}\"";
+
+        try
+        {
+            readResponse = await readDataOnlyDAO.ReadData(sql);
+        }
+        catch (Exception error)
+        {
+            readResponse.HasError = true;
+            readResponse.ErrorMessage = error.Message;
+            readResponse.Output = null;
+        }
+
+        return readResponse;
+    }
     public async Task<Response> ReadPinInDB(string PinId)
     {
         var readResponse = new Response();

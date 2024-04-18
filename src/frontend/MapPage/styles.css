@@ -229,46 +229,90 @@ main {
     border-radius: 10px;
 }
 
-.map-options{
+.add-pin-button-container {
+    height: 70px;
+    position: relative;
+    top: 10px;
     display: flex;
-    justify-content: space-between;
-}
-
-.map-date-container{
-    display: flex;
-    gap: 8px;
     flex-direction: row;
-    justify-items: center;
-    border: solid;
-    border-color: black;
-    border-width: 1px;
-    padding: 4px;
-    border-radius: 5px;
-    margin-right: auto;
+    gap: 30px;
 }
 
-.character-indicator{
-    align-self: center;
-    margin-right: 10px;
-    color: grey;
+.add-pin-button-container>img {
+    height: 100%;
+}
+
+button:hover, .add-pin-button-container>img:hover {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
     visibility: hidden;
 }
 
-.map-delete-container{
+/*-------------------------------MODAL STYLING (FOR CREATING MODALS)---------------------------------*/
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    border: 1px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: white;
+    width: 660px;
+    max-width: 80%;
+}
+
+.modal.active {
+    opacity: 1;
+}
+
+#overlay {
+    position: fixed;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+#overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+.pin {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 15px;
+    height: 90%;
+    min-width: 250px;
+    width: 95%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.pin-options {
+    display: flex;
+}
+
+.pin-create-container {
     align-self: center;
-    transform: scale(1.4);
+    transform: scale(1.0);
     margin-right: 6px;
 }
 
-.map-delete-container:hover{
-    cursor: pointer;
-}
-.date-bold-span {
-    font-weight: 600; /* Apply the bold font weight */
-    display: inline-block; /* Ensure the span is inline but can have a width and height */
-}
-
-.map-input-container{
+.pin-input-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -281,54 +325,45 @@ main {
     border-radius: 10px;
 }
 
-.map-input-container div {
+.pin-input-container div {
     display: flex;
     flex-direction: column;
 }
+
+#create-pin-btn{
+    background-color: #EBA755;
+    color: white;
+    font-weight: 400;
+    border-radius: 10px;
+    border-color: white;
+}
+
+/*------------------ Drop down ------------------*/
+.lli-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.status-select, .visibility-select {
+    border: none;
+    width: 80%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    right: 4px;
+    bottom: 2px;
+}
+/*-----------------------------------------------*/
+
+[contenteditable] { 
+    outline: 0px solid transparent; 
+} 
 
 p:empty:not(:focus)::before {
     content: attr(data-placeholder);
 }
 
-#create-paragraph-input:focus {
-    outline: none;
-    background: none;
-}
-#date-input {
-    font-size: 20px;
-    font-family: "Inter", sans-serif;
-}
-
-.map-input{
+.pin-input {
     grid-area: 1 / 1 / 5 / 7;
 }
-
-#submit-map-button {
-    display: none;
-    grid-area: 5 / 6 / 6 / 7;
-    background-color: #EBA755;
-    height: 30px;
-    width: 80px;
-    justify-self: end;
-    align-self: end;
-    text-align: center;
-    padding-top: 10px;
-    border-radius: 15px;
-    font-size: larger;
-    color: white;
-    font-weight: bold;
-}
-
-#submit-map-button:hover {
-    cursor: pointer;
-    background-color: #c79354
-}
-.date-input{
-    border: none;
-}
-
-.hidden {
-    display: none;
-    visibility: hidden;
-}
-
