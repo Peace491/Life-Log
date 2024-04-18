@@ -33,12 +33,9 @@ export function LoadMapPage (root, ajaxClient) {
     let apiKey = ""
    
     // Pin variables
-    let pinStatus;
     var currentMap;
     let pins = { };
-
-    // Define initMap function
-
+    var markers = [ ];
 
     //------------------------PINS----------------------------------------
 
@@ -58,6 +55,8 @@ export function LoadMapPage (root, ajaxClient) {
                         map: currentMap, // Set the map on which to display the marker
                         title: 'Hello World!' // Set a title for the marker
                     });
+                    // append to the array of markers
+                    renderTooltipOnClick(marker, pin)
                 });
             });
         }
@@ -122,7 +121,6 @@ export function LoadMapPage (root, ajaxClient) {
     // On submit render Pin to map
     function renderPinOnSubmit(){
 
-        let option = document.getElementById('create-status-input');
         var lliId = selectElement.options[selectElement.selectedIndex];
         let count = "";
 
@@ -130,7 +128,7 @@ export function LoadMapPage (root, ajaxClient) {
         let addressField = document.getElementById('create-paragraph-input-pin');
 
         let createPinUrl = webServiceUrl + createUrl
-        
+        let statusUrl = webServiceUrl + getPinStatusUrl
 
         // initialize the pin Status
 
@@ -190,9 +188,70 @@ export function LoadMapPage (root, ajaxClient) {
     }
 
     //Render tool tip
-    function renderTooltipOnClick(){
+    function renderTooltipOnClick(marker, pin){
+        let viewPinUrl = webServiceUrl + viewUrl
+
+        let llititle = ""
+        let llideadline = ""
+        let llidescription = ""
+        let llistatus = ""
+        let visibility = ""
+        let cost = 0
+        let cat1 = ""
+        let cat2 = ""
+        let cat3 = ""
+
+        mapService.viewPin(viewPinUrl, {appPrincipal: principal, pinId: pin.pinid}, jwtToken).then(function (LLIList) {
+            if (!LLIList) return
+            let lli = LLIList[0]
+            llititle = lli.title;
+            llideadline = lli.deadline.split(" ")[0]
+            llidescription = lli.description
+            llistatus = lli.status
+            visibility = lli.visibility
+            cost = lli.cost
+            cat1 = lli.category1
+            cat2 = lli.category2
+            cat3 = lli.category3
+
+        });
+        
+        let markerContent = `
+        <div id="container" style="display: flex; flex-direction: column;">
+            <div id="title-date-status-visibility-container" style="display: flex; justify-content: space-between;">
+                <div id="title-date-container" style="display: flex; justify-content: space-between; flex-grow: 2;">
+                    <div id="title-input"><h1>${llititle}</h1></div>
+                    <div id="date-input">${llideadline.split("/")[2]}-${llideadline.split("/")[0]}-${llideadline.split("/")[1]}</div>
+                </div>
+                <div id="status-visibility-container" style="display: flex; justify-content: space-between;">
+                    <div id="status-input">${llistatus}</div>
+                    <div id="visibility-input">${visibility}</div>
+                
+        `;
+
+        if (cost) {
+            content += `<div id="cost-input">${cost}</div>`;
+        }
+
+        content += `
+                </div>
+            </div>
+            <div id="paragraph-input">${llidescription}</div>
+        </div>
+        <div id="category-input">${cat1}, ${cat2}, ${cat3}</div>
+        `;
 
 
+        // Create an InfoWindow
+        var infowindow = new google.maps.InfoWindow({
+            content: markerContent // replace with your content
+        });
+        
+        // Add a 'click' event listener to the marker
+        marker.addListener('click', function() {
+            // Open the InfoWindow
+            infowindow.open(currentMap, marker);
+        });
     }
     //----------------------------------------------------------------------
 

@@ -219,6 +219,8 @@ public class PinService : IPinService
             try
             {
                 readPinLLIInDBResponse = await this.mapRepo.ReadLLIInDB(LLIId);
+                var lliList = ConvertDatabaseResponseOutputToLLIObjectList(readPinLLIInDBResponse);
+                response.Output = lliList;
             }
             catch (Exception error)
             {
@@ -226,7 +228,6 @@ public class PinService : IPinService
             }
 
             // Handle Success Response
-            response.Output = readPinLLIInDBResponse.Output;
             var logResponse = this.logging.CreateLog("Logs", "Pin view operation successful", viewPinRequest.Principal.UserId, "Info", "Business");
             return response;
         }
@@ -261,7 +262,6 @@ public class PinService : IPinService
         // Update Pin in DB
         Response readLLIInDBResponse;
         var userHash = editPinLLIRequest.Principal!.UserId;
-        LLI? lli = new();
 
         try
         {
@@ -269,12 +269,13 @@ public class PinService : IPinService
 
             if (readLLIInDBResponse.Output is not null)
             {
-                lli = ConvertDatabaseResponseOutputToLLIObject(readLLIInDBResponse);
-            }
+                var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(readLLIInDBResponse);
 
-            if (lli != null)
-            {
-                var editLLIResponse = this.lliService.UpdateLLI(userHash, lli);
+                if (lliOutput != null)
+                {
+                    LLI lli = (LLI)lliOutput[0];
+                    var editLLIResponse = this.lliService.UpdateLLI(userHash, lli);
+                }
             }
         }
         catch (Exception error)
@@ -611,6 +612,87 @@ public class PinService : IPinService
         }
 
         return lli;
+    }
+
+    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse)
+    {
+        List<Object> lliList = new List<Object>();
+
+        if (readLLIResponse.Output == null)
+        {
+            return null;
+        }
+
+        foreach (List<Object> LLI in readLLIResponse.Output)
+        {
+
+            var lli = new LLI();
+
+            int index = 0;
+
+            foreach (var attribute in LLI)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        lli.LLIID = attribute.ToString() ?? "";
+                        break;
+                    case 1:
+                        lli.UserHash = attribute.ToString() ?? "";
+                        break;
+                    case 2:
+                        lli.Title = attribute.ToString() ?? "";
+                        break;
+                    case 3:
+                        lli.Description = attribute.ToString() ?? "";
+                        break;
+                    case 4:
+                        lli.Status = attribute.ToString() ?? "";
+                        break;
+                    case 5:
+                        lli.Visibility = attribute.ToString() ?? "";
+                        break;
+                    case 6:
+                        lli.Deadline = attribute.ToString() ?? "";
+                        break;
+                    case 7:
+                        lli.Cost = Convert.ToInt32(attribute);
+                        break;
+                    case 8:
+                        lli.Recurrence.Status = attribute.ToString() ?? "";
+                        break;
+                    case 9:
+                        lli.Recurrence.Frequency = attribute.ToString() ?? "";
+                        break;
+                    case 10:
+                        lli.CreationDate = attribute.ToString() ?? "";
+                        break;
+                    case 11:
+                        lli.CompletionDate = attribute.ToString() ?? "";
+                        break;
+                    case 12:
+                        lli.Category1 = attribute.ToString() ?? "";
+                        break;
+                    case 13:
+                        lli.Category2 = attribute.ToString() ?? "";
+                        break;
+                    case 14:
+                        lli.Category3 = attribute.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            lliList.Add(lli);
+
+        }
+
+        return lliList;
     }
     #endregion
 
