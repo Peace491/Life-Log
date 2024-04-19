@@ -4,34 +4,39 @@ using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LLI;
+using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using System.Collections.Generic;
 
 public class PinService : IPinService
 {
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
-    
+
     private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
     private PinValidation pinValidation;
-    private Logging.ILogging logging;
+    private ILogging logging;
     private LLIService lliService;
 
     //For LLI 
-    private CreateDataOnlyDAO createDataOnlyDAO;
-    private ReadDataOnlyDAO readDataOnlyDAO;
-    private UpdateDataOnlyDAO updateDataOnlyDAO;
-    private DeleteDataOnlyDAO deleteDataOnlyDAO;
-    private Logging.Logging loggingLLI;
-    public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, Logging.ILogging logging)
+    private CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+    private ReadDataOnlyDAO? readDataOnlyDAO = new ReadDataOnlyDAO();
+    private UpdateDataOnlyDAO? updateDataOnlyDAO = new UpdateDataOnlyDAO();
+    private DeleteDataOnlyDAO? deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    private LogTarget? logTarget;
+    private Logging? loggingLLI;
+
+    public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
     {
         this.mapRepo = mapRepo;
-        this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.loggingLLI);
+        this.logTarget = new LogTarget(createDataOnlyDAO);
+        this.loggingLLI = new Logging(logTarget);
+        this.lliService = new LLIService(this.createDataOnlyDAO!, this.readDataOnlyDAO!, this.updateDataOnlyDAO!, this.deleteDataOnlyDAO!, this.loggingLLI!);
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.pinValidation = new PinValidation();
     }
-    
+
     public async Task<Response> CreatePin(CreatePinRequest createPinRequest)
     {
         var response = new Response();
@@ -55,10 +60,11 @@ public class PinService : IPinService
 
         // Create Pin in DB
         Response createPinInDBResponse;
+        var userHash = createPinRequest.Principal!.UserId;
 
         try
         {
-            createPinInDBResponse = await this.mapRepo.CreatePinInDB(createPinRequest.LLIId, createPinRequest.Address, createPinRequest.Latitude, createPinRequest.Longitude);
+            createPinInDBResponse = await this.mapRepo.CreatePinInDB(createPinRequest.LLIId, userHash, createPinRequest.Address, createPinRequest.Latitude, createPinRequest.Longitude);
         }
         catch (Exception error)
         {
@@ -73,7 +79,8 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin creation operation successful", createPinRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", createPinRequest.Principal!.UserId, "Info", "Business", "Pin creation operation successful");
+        response = createPinInDBResponse;
         return response;
     }
 
@@ -118,17 +125,17 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin update operation successful", updatePinRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", updatePinRequest.Principal!.UserId, "Info", "Business", "Pin update operation successful");
         return response;
     }
 
-    public async Task<Response> DeletePin(DeletePinRequest deletePinRequest)
+    public async Task<Response> DeletePin(string pinId, string userHash)
     {
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
 
-        // Validate Input
+        /*// Validate Input
         var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, deletePinRequest, PinRequestType.Delete);
         if (validateDeletePinRequestResponse.HasError)
         {
@@ -141,29 +148,33 @@ public class PinService : IPinService
         {
             errorMessage = "The User Is Not Authorized To Delete a Pin";
             return handlePinError(response, deletePinRequest.Principal!, errorMessage!);
-        }
+        }*/
 
         // Create Pin in DB
         Response deletePinInDBResponse;
 
         try
         {
-            deletePinInDBResponse = await this.mapRepo.DeletePinInDB(deletePinRequest.PinId);
+            deletePinInDBResponse = await this.mapRepo.DeletePinInDB(pinId);
         }
         catch (Exception error)
         {
-            return handlePinError(response, deletePinRequest.Principal!, error.Message);
+            response.HasError = true;
+            response.ErrorMessage = error.Message;
+            return response;
         }
 
         // Handle Failure Response
         if (deletePinInDBResponse.HasError)
         {
             errorMessage = "The Pin failed to save to the persistent data store";
-            return handlePinError(response, deletePinRequest.Principal!, errorMessage);
+            response.HasError = true;
+            response.ErrorMessage = errorMessage;
+            return response;
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin deletion operation successful", deletePinRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Business", "Pin deletion operation successful");
         return response;
     }
 
@@ -171,22 +182,23 @@ public class PinService : IPinService
     {
         var response = new Response();
         response.HasError = false;
-        var errorMessage = "";
 
-        // Validate Input
+        #region TODO
+        /*// Validate Input
         var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, viewPinRequest, PinRequestType.View);
         if (validateDeletePinRequestResponse.HasError)
         {
-            errorMessage = validateDeletePinRequestResponse.ErrorMessage;
+            var errorMessage = validateDeletePinRequestResponse.ErrorMessage;
             return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
-        }
+        }*/
 
         // Authorize request
-        if (!IsUserAuthorizedForPin(viewPinRequest.Principal!))
+        /*if (!IsUserAuthorizedForPin(viewPinRequest.Principal!))
         {
-            errorMessage = "The User Is Not Authorized To view a Pin";
+            var errorMessage = "The User Is Not Authorized To view a Pin";
             return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
-        }
+        }*/
+        #endregion
 
         //Read the Pin in DB 
         Response readPinInDBResponse;
@@ -199,18 +211,22 @@ public class PinService : IPinService
             readPinInDBResponse = await this.mapRepo.ReadPinInDB(viewPinRequest.PinId);
             if (readPinInDBResponse.Output is not null)
             {
-                List<object> readOutput = (List<object>)readPinInDBResponse.Output;
-                if (readOutput.Count > 1 && readOutput[1] is not null) // Check if index is valid and element is of type int
+                foreach (List<object> lliList in readPinInDBResponse.Output)
                 {
-                    LLIId = readOutput[1].ToString();
+                    foreach (Int32 lliId in lliList)
+                    {
+                        LLIId = lliId.ToString();
+                    }
                 }
             }
         }
         catch (Exception error)
         {
-            return handlePinError(response, viewPinRequest.Principal!, error.Message);
+            // handlePinError(response, viewPinRequest.Principal!, error.Message);
+            response.HasError = true;
+            response.ErrorMessage = error.Message;
+            return response;
         }
-
 
         // Read the LLI in the DB only if LLIId is not null
         if (LLIId is not null)
@@ -219,6 +235,8 @@ public class PinService : IPinService
             try
             {
                 readPinLLIInDBResponse = await this.mapRepo.ReadLLIInDB(LLIId);
+                var lliList = ConvertDatabaseResponseOutputToLLIObjectList(readPinLLIInDBResponse);
+                response.Output = lliList;
             }
             catch (Exception error)
             {
@@ -226,8 +244,7 @@ public class PinService : IPinService
             }
 
             // Handle Success Response
-            response.Output = readPinLLIInDBResponse.Output;
-            var logResponse = this.logging.CreateLog("Logs", "Pin view operation successful", viewPinRequest.Principal.UserId, "Info", "Business");
+            //var logResponse = this.logging.CreateLog("Logs", viewPinRequest.Principal!.UserId, "Info", "Business", "Pin view operation successful");
             return response;
         }
         else
@@ -261,7 +278,6 @@ public class PinService : IPinService
         // Update Pin in DB
         Response readLLIInDBResponse;
         var userHash = editPinLLIRequest.Principal!.UserId;
-        LLI? lli = new();
 
         try
         {
@@ -269,12 +285,13 @@ public class PinService : IPinService
 
             if (readLLIInDBResponse.Output is not null)
             {
-                lli = ConvertDatabaseResponseOutputToLLIObject(readLLIInDBResponse);
-            }
+                var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(readLLIInDBResponse);
 
-            if (lli != null)
-            {
-                var editLLIResponse = this.lliService.UpdateLLI(userHash, lli);
+                if (lliOutput != null)
+                {
+                    LLI lli = (LLI)lliOutput[0];
+                    var editLLIResponse = this.lliService.UpdateLLI(userHash, lli);
+                }
             }
         }
         catch (Exception error)
@@ -283,7 +300,7 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "LLI edit operation performed through pin", editPinLLIRequest.Principal.UserId, "Info", "Persistent Data Store");
+        var logResponse = this.logging.CreateLog("Logs", editPinLLIRequest.Principal!.UserId, "Info", "Persistent Data Store", "LLI edit operation performed through pin");
         return response;
     }
 
@@ -314,7 +331,7 @@ public class PinService : IPinService
             // Convert the Exception object to a string
             string error_Message = error.ToString();
 
-            var logerrorResponse = this.logging.CreateLog("Logs", error_Message, userHash, "ERROR", "Business");
+            var logerrorResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Business", error_Message);
         }
 
 
@@ -323,15 +340,49 @@ public class PinService : IPinService
         if (readPinStatusInDBResponse != null && readPinStatusInDBResponse.HasError) // Check if readPinStatusInDBResponse is not null
         {
             string? error_Message = readPinStatusInDBResponse.ErrorMessage;
-            var logerrorResponse = this.logging.CreateLog("Logs", error_Message, userHash, "ERROR", "Business");
+            var logerrorResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Business", error_Message);
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin update operation successful", userHash, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Business", "Pin update operation successful");
         return response;
 
     }
 
+    public async Task<Response> GetAllPinFromUser(string userHash)
+    {
+        var response = new Response();
+        response.HasError = false;
+        Response readPinResponse = new();
+
+        //Validate Inpit 
+        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
+        if (!validateRequestResponse)
+        {
+            var errorMessage = "invalid user hash";
+
+            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
+        }
+
+        //Get all user LLI
+        try
+        {
+            readPinResponse = await this.mapRepo.ReadAllUserPinInDB(userHash);
+
+        }
+        catch (Exception error)
+        {
+            // Convert the Exception object to a string
+            string errorMessage = error.ToString();
+
+            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
+        }
+
+
+        var pinOutput = ConvertDatabaseResponseOutputToPinObjectList(readPinResponse);
+        response.Output = pinOutput;
+        return response;
+    }
     public async Task<Response> updateLog(UpdateLogRequest updateLogRequest)
     {
         var response = new Response();
@@ -353,42 +404,9 @@ public class PinService : IPinService
             return handlePinError(response, updateLogRequest.Principal!, errorMessage!);
         }
 
-        var logResponse = await this.logging.CreateLog("Logs", "Map view changed to Location Recommendation", updateLogRequest.Principal.UserId, "Info", "View");
+        var logResponse = await this.logging.CreateLog("Logs", updateLogRequest.Principal!.UserId, "Info", "View", "Map view changed to Location Recommendation");
 
         return response;
-    }
-
-    public async Task<Response> GetAllUserLLI(string userHash)
-    {
-        var response = new Response();
-        response.HasError = false;
-
-        //Authorize #TODO
-
-        //Validate Inpit 
-        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
-        if (!validateRequestResponse)
-        {
-            var errorMessage = "invalid user hash";
-
-            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
-        }
-
-        //Get all user LLI
-        try
-        {
-            response = await this.lliService.GetAllLLIFromUser(userHash);
-        }
-        catch (Exception error)
-        {
-            // Convert the Exception object to a string
-            string errorMessage = error.ToString();
-
-            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
-        }
-
-        return response;
-
     }
 
 
@@ -397,7 +415,7 @@ public class PinService : IPinService
     {
         response.HasError = true;
         response.ErrorMessage = errorMessage;
-        var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
+        var logResponse = this.logging.CreateLog("Logs", principal.UserId, "ERROR", "Business", errorMessage);
         return response;
     }
 
@@ -446,83 +464,141 @@ public class PinService : IPinService
         return pinStatusList;
     }
 
+    // Convert read response to Pin Object 
+    private List<object>? ConvertDatabaseResponseOutputToPinObjectList(Response readPinResponse)
+    {
+        List<object> pinList = new List<object>();
+
+        if (readPinResponse.Output == null)
+        {
+            return null;
+        }
+
+        foreach (List<object> Pin in readPinResponse.Output)
+        {
+
+            var pin = new Pin();
+
+            int index = 0;
+
+            foreach (var attribute in Pin)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        pin.PinId = attribute?.ToString() ?? "";
+                        break;
+                    case 1:
+                        pin.LLIId = attribute?.ToString() ?? "";
+                        break;
+                    case 2:
+                        pin.UserHash = attribute?.ToString() ?? "";
+                        break;
+                    case 3:
+                        pin.Address = attribute?.ToString() ?? "";
+                        break;
+                    case 4:
+                        pin.Latitude = attribute?.ToString() ?? "";
+                        break;
+                    case 5:
+                        pin.Longitude = attribute?.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            pinList.Add(pin);
+
+        }
+
+        return pinList;
+    }
 
     // Convert read response to LLI object
-    private LLI? ConvertDatabaseResponseOutputToLLIObject(Response readLLIResponse)
+    private List<object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse)
     {
-        if (readLLIResponse.Output == null || !readLLIResponse.Output.Any())
+        List<object> lliList = new List<object>();
+
+        if (readLLIResponse.Output == null)
         {
             return null;
         }
 
-        IEnumerable<object>? firstLLI = readLLIResponse.Output.FirstOrDefault() as IEnumerable<object>;
-        if (firstLLI == null)
+        foreach (List<object> LLI in readLLIResponse.Output)
         {
-            return null;
-        }
 
-        var lli = new LLI();
+            var lli = new LLI();
 
-        int index = 0;
+            int index = 0;
 
-        foreach (var attribute in firstLLI)
-        {
-            if (attribute is null) continue;
-
-            switch (index)
+            foreach (var attribute in LLI)
             {
-                case 0:
-                    lli.LLIID = attribute?.ToString() ?? "";
-                    break;
-                case 1:
-                    lli.UserHash = attribute?.ToString() ?? "";
-                    break;
-                case 2:
-                    lli.Title = attribute?.ToString() ?? "";
-                    break;
-                case 3:
-                    lli.Description = attribute?.ToString() ?? "";
-                    break;
-                case 4:
-                    lli.Status = attribute?.ToString() ?? "";
-                    break;
-                case 5:
-                    lli.Visibility = attribute?.ToString() ?? "";
-                    break;
-                case 6:
-                    lli.Deadline = attribute?.ToString() ?? "";
-                    break;
-                case 7:
-                    lli.Cost = attribute is int intValue ? intValue : 0;
-                    break;
-                case 8:
-                    lli.Recurrence.Status = attribute?.ToString() ?? "";
-                    break;
-                case 9:
-                    lli.Recurrence.Frequency = attribute?.ToString() ?? "";
-                    break;
-                case 10:
-                    lli.CreationDate = attribute?.ToString() ?? "";
-                    break;
-                case 11:
-                    lli.CompletionDate = attribute?.ToString() ?? "";
-                    break;
-                case 12:
-                    lli.Category1 = attribute?.ToString() ?? "";
-                    break;
-                case 13:
-                    lli.Category2 = attribute?.ToString() ?? "";
-                    break;
-                case 14:
-                    lli.Category3 = attribute?.ToString() ?? "";
-                    break;
-                default:
-                    break;
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        lli.LLIID = attribute.ToString() ?? "";
+                        break;
+                    case 1:
+                        lli.UserHash = attribute.ToString() ?? "";
+                        break;
+                    case 2:
+                        lli.Title = attribute.ToString() ?? "";
+                        break;
+                    case 3:
+                        lli.Description = attribute.ToString() ?? "";
+                        break;
+                    case 4:
+                        lli.Status = attribute.ToString() ?? "";
+                        break;
+                    case 5:
+                        lli.Visibility = attribute.ToString() ?? "";
+                        break;
+                    case 6:
+                        lli.Deadline = attribute.ToString() ?? "";
+                        break;
+                    case 7:
+                        lli.Cost = Convert.ToInt32(attribute);
+                        break;
+                    case 8:
+                        lli.Recurrence.Status = attribute.ToString() ?? "";
+                        break;
+                    case 9:
+                        lli.Recurrence.Frequency = attribute.ToString() ?? "";
+                        break;
+                    case 10:
+                        lli.CreationDate = attribute.ToString() ?? "";
+                        break;
+                    case 11:
+                        lli.CompletionDate = attribute.ToString() ?? "";
+                        break;
+                    case 12:
+                        lli.Category1 = attribute.ToString() ?? "";
+                        break;
+                    case 13:
+                        lli.Category2 = attribute.ToString() ?? "";
+                        break;
+                    case 14:
+                        lli.Category3 = attribute.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
             }
-            index++;
+
+            lliList.Add(lli);
+
         }
 
-        return lli;
+        return lliList;
     }
     #endregion
 

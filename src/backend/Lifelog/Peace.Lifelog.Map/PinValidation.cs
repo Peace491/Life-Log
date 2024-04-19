@@ -104,7 +104,7 @@ public class PinValidation : IPinValidation
         }
         if (requestType == PinRequestType.View)
         {
-            if (LLIId == string.Empty || PinId == string.Empty)
+            if (PinId == string.Empty)
             {
                 response.HasError = true;
                 response.ErrorMessage = "Invalid Pin selection";
@@ -121,3 +121,4 @@ public class PinValidation : IPinValidation
         response.ErrorMessage = errorMessage;
         return response;
     }
+}

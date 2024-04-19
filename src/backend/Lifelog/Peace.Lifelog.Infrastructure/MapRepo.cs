@@ -18,16 +18,17 @@ public class MapRepo : IMapRepo
         this.deleteDataOnlyDAO = deleteDataOnlyDAO;
     }
 
-    public async Task<Response> CreatePinInDB(string LLIId, string Address, double Latitude, double Longitude)
+    public async Task<Response> CreatePinInDB(string LLIId, string UserHash, string Address, double Latitude, double Longitude)
     {
         var createPinResponse = new Response();
 
         string sql = "INSERT INTO MapPin "
-        + "(LLId, Address, Latitude, Longitude) "
+        + "(LLIId, UserHash, Address, Latitude, Longitude) "
         + "VALUES "
         + "("
         + $"\"{LLIId}\", "
-        + $"{Address}, "
+        + $"\"{UserHash}\", "
+        + $"\"{Address}\", "
         + $"{Latitude}, "
         + $"{Longitude}"
         + ");";
@@ -51,12 +52,32 @@ public class MapRepo : IMapRepo
         return createPinResponse;
     }
 
+    public async Task<Response> ReadAllUserPinInDB(string UserHash)
+    {
+        var readResponse = new Response();
+
+        string sql = "SELECT *"
+        + $"FROM MapPin Where UserHash=\"{UserHash}\"";
+
+        try
+        {
+            readResponse = await readDataOnlyDAO.ReadData(sql);
+        }
+        catch (Exception error)
+        {
+            readResponse.HasError = true;
+            readResponse.ErrorMessage = error.Message;
+            readResponse.Output = null;
+        }
+
+        return readResponse;
+    }
     public async Task<Response> ReadPinInDB(string PinId)
     {
         var readResponse = new Response();
 
-        string sql = "SELECT PinId, LLIId, Address, Latitude, Longitude"
-        + $"FROM MapPin Where PinId=\"{PinId}\"";
+        string sql = "SELECT LLIId "
+        + $"FROM MapPin Where PinId=\"{PinId}\";";
 
         try
         {
@@ -117,7 +138,6 @@ public class MapRepo : IMapRepo
     {
         var deletePinResponse = new Response();
         string sql = $"DELETE FROM MapPin WHERE PinId = \"{PinId}\";";
-
         try
         {
             deletePinResponse = await deleteDataOnlyDAO.DeleteData(sql); ;

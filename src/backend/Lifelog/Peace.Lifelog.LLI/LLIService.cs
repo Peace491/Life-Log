@@ -1,7 +1,6 @@
-﻿using System.Diagnostics;
-using DomainModels;
+﻿using DomainModels;
 using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.Logging;
+using System.Diagnostics;
 
 namespace Peace.Lifelog.LLI;
 
@@ -20,7 +19,8 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     private DeleteDataOnlyDAO deleteDataOnlyDAO;
     private Logging.Logging logging;
 
-    public LLIService(CreateDataOnlyDAO createDataOnlyDAO, ReadDataOnlyDAO readDataOnlyDAO, UpdateDataOnlyDAO updateDataOnlyDAO, DeleteDataOnlyDAO deleteDataOnlyDAO, Logging.Logging logging) {
+    public LLIService(CreateDataOnlyDAO createDataOnlyDAO, ReadDataOnlyDAO readDataOnlyDAO, UpdateDataOnlyDAO updateDataOnlyDAO, DeleteDataOnlyDAO deleteDataOnlyDAO, Logging.Logging logging)
+    {
         this.createDataOnlyDAO = createDataOnlyDAO;
         this.readDataOnlyDAO = readDataOnlyDAO;
         this.updateDataOnlyDAO = updateDataOnlyDAO;
@@ -155,7 +155,8 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         #region Create LLI in DB
         lli.CompletionDate = "";
-        if (lli.Status == LLIStatus.Completed) {
+        if (lli.Status == LLIStatus.Completed)
+        {
             lli.CompletionDate = DateTime.Today.ToString("yyyy-MM-dd");
         }
 
@@ -175,27 +176,33 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", "
         + $"\"{lli.Category1}\", ";
 
-        if (lli.Category2 != null) {
+        if (lli.Category2 != null)
+        {
             sql += $"\"{lli.Category2}\", ";
         }
-        else {
+        else
+        {
             sql += "null, ";
         }
 
-        if (lli.Category3 != null) {
+        if (lli.Category3 != null)
+        {
             sql += $"\"{lli.Category3}\", ";
         }
-        else {
+        else
+        {
             sql += "null, ";
         }
 
-        if (lli.CompletionDate != "") {
+        if (lli.CompletionDate != "")
+        {
             sql += $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\"";
         }
-        else {
+        else
+        {
             sql += "null";
         }
-        
+
         sql += ");";
 
         createLLIResponse = await this.createDataOnlyDAO.CreateData(sql);
@@ -211,13 +218,17 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                 if (i == 0) lliid = id.ToString();
                 break;
             }
-        } else if (createLLIResponse.Output == null && createLLIResponse.HasError == false) {
+        }
+        else if (createLLIResponse.Output == null && createLLIResponse.HasError == false)
+        {
             createLLIResponse.HasError = true;
             createLLIResponse.ErrorMessage = "The user does not exist";
             var errorMessage = "The was an error with LLI creation";
             var logResponse = this.logging.CreateLog("Logs", userHash, "Warning", "Persistent Data Store", errorMessage);
             return createLLIResponse;
-        } else {
+        }
+        else
+        {
             createLLIResponse.ErrorMessage = "LLI fields are invalid";
             var errorMessage = "LLI fields are invalid";
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", errorMessage);
@@ -231,9 +242,9 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         #region Log
 
-        
+
         var successLogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The LLI is successfully created");
-        
+
 
         if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
         {
@@ -282,7 +293,8 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         readLLIResponse = await this.readDataOnlyDAO.ReadData(readLLISql, count: null);
 
-        if (readLLIResponse.Output == null) {
+        if (readLLIResponse.Output == null)
+        {
             var message = "There is no lli associated with the account";
             var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Persistent Data Store", message);
             return readLLIResponse;
@@ -448,7 +460,8 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var timer = new Stopwatch();
         timer.Start();
 
-        if (lli.Status == LLIStatus.Completed) {
+        if (lli.Status == LLIStatus.Completed)
+        {
             lli.CompletionDate = DateTime.Today.ToString("yyyy-MM-dd");
         }
 
@@ -481,13 +494,13 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         }
 
         timer.Stop();
-        #endregion 
+        #endregion
 
         #region Log
         // Log LLI Creation
-        
+
         var successlogResponse = this.logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "The LLI is successfully edited");
-        
+
 
         if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT_IN_SECOND && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT_IN_SECOND)
         {
@@ -530,14 +543,16 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\" AND LLIId = \"{lli.LLIID}\";";
 
-        
+
         var deleteResponse = await this.deleteDataOnlyDAO.DeleteData(sql);
         timer.Stop();
 
-        if (deleteResponse.Output != null) {
+        if (deleteResponse.Output != null)
+        {
             foreach (int rowsAffected in deleteResponse.Output)
             {
-                if (rowsAffected == 0) {
+                if (rowsAffected == 0)
+                {
                     response.HasError = true;
                     response.ErrorMessage = "Failed to delete LLI";
                     return response;
@@ -584,14 +599,17 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var completionDateCheckSql = "";
 
-        if (lli.LLIID != string.Empty) {
+        if (lli.LLIID != string.Empty)
+        {
             completionDateCheckSql = "SELECT CompletionDate "
             + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\" AND LLIId != {lli.LLIID}";
-        } else {
+        }
+        else
+        {
             completionDateCheckSql = "SELECT CompletionDate "
             + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\"";
         }
-        
+
 
         var completionDateCheckResponse = await this.readDataOnlyDAO.ReadData(completionDateCheckSql);
 
