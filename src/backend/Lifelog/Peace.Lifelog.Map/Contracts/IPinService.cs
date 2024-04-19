@@ -10,9 +10,7 @@ public interface IPinService
     public Task<Response> UpdatePin(
         UpdatePinRequest updatePinRequest
     );
-    public Task<Response> DeletePin(
-        DeletePinRequest deletePinRequest
-    );
+    public Task<Response> DeletePin(string pinId, string userHash);
     public Task<Response> ViewPin(
         ViewPinRequest viewPinRequest
     );

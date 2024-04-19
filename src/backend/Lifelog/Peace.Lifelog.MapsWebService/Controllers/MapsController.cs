@@ -159,7 +159,7 @@ public sealed class MapsController : ControllerBase
     }
 
     [HttpDelete("deletePin")]
-    public async Task<IActionResult> DeletePin([FromBody] DeletePinRequest payload)
+    public async Task<IActionResult> DeletePin(string PinId)
     {
         try
         {
@@ -187,18 +187,8 @@ public sealed class MapsController : ControllerBase
                 return StatusCode(401);
             }
 
-            if (payload.Principal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
-
-            if (payload.Principal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
-
             // need to double check what is being passed in here
-            var response = await _pinService.DeletePin(payload);
+            var response = await _pinService.DeletePin(PinId, userHash);
 
             if (response == null)
             {
@@ -216,7 +206,7 @@ public sealed class MapsController : ControllerBase
             }
 
             /*need to check if this is what you want below*/
-            _ = await _logger.CreateLog("Logs", payload.Principal.UserId, "INFO", "System", "Deleted Pin successfully.");
+            _ = await _logger.CreateLog("Logs", userHash, "INFO", "System", "Deleted Pin successfully.");
             return Ok(response);
         }
         catch (Exception ex)
@@ -282,6 +272,7 @@ public sealed class MapsController : ControllerBase
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }

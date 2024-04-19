@@ -126,13 +126,13 @@ public class PinService : IPinService
         return response;
     }
 
-    public async Task<Response> DeletePin(DeletePinRequest deletePinRequest)
+    public async Task<Response> DeletePin(string pinId, string userHash)
     {
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
 
-        // Validate Input
+        /*// Validate Input
         var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, deletePinRequest, PinRequestType.Delete);
         if (validateDeletePinRequestResponse.HasError)
         {
@@ -145,29 +145,33 @@ public class PinService : IPinService
         {
             errorMessage = "The User Is Not Authorized To Delete a Pin";
             return handlePinError(response, deletePinRequest.Principal!, errorMessage!);
-        }
+        }*/
 
         // Create Pin in DB
         Response deletePinInDBResponse;
 
         try
         {
-            deletePinInDBResponse = await this.mapRepo.DeletePinInDB(deletePinRequest.PinId);
+            deletePinInDBResponse = await this.mapRepo.DeletePinInDB(pinId);
         }
         catch (Exception error)
         {
-            return handlePinError(response, deletePinRequest.Principal!, error.Message);
+            response.HasError = true;
+            response.ErrorMessage = error.Message;
+            return response;
         }
 
         // Handle Failure Response
         if (deletePinInDBResponse.HasError)
         {
             errorMessage = "The Pin failed to save to the persistent data store";
-            return handlePinError(response, deletePinRequest.Principal!, errorMessage);
+            response.HasError = true;
+            response.ErrorMessage = errorMessage;
+            return response;
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", deletePinRequest.Principal!.UserId, "Info", "Business", "Pin deletion operation successful");
+        var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Business", "Pin deletion operation successful");
         return response;
     }
 
@@ -202,12 +206,12 @@ public class PinService : IPinService
             readPinInDBResponse = await this.mapRepo.ReadPinInDB(viewPinRequest.PinId);
             if (readPinInDBResponse.Output is not null)
             {
-                Console.WriteLine("The LLIId: " + readPinInDBResponse.Output);
-                List<object> readOutput = (List<object>)readPinInDBResponse.Output;
-                if (readOutput.Count > 1 && readOutput[1] is not null) // Check if index is valid and element is of type int
+                foreach (List<object> lliList in readPinInDBResponse.Output)
                 {
-                    LLIId = readOutput[1].ToString();
-                    Console.WriteLine("The LLIId: " + LLIId);
+                    foreach (Int32 lliId in lliList)
+                    {
+                        LLIId = lliId.ToString();
+                    }
                 }
             }
         }
@@ -235,7 +239,8 @@ public class PinService : IPinService
             }
 
             // Handle Success Response
-            var logResponse = this.logging.CreateLog("Logs", viewPinRequest.Principal!.UserId, "Info", "Business", "Pin view operation successful");
+            Console.WriteLine("Here");
+            //var logResponse = this.logging.CreateLog("Logs", viewPinRequest.Principal!.UserId, "Info", "Business", "Pin view operation successful");
             return response;
         }
         else
@@ -456,16 +461,16 @@ public class PinService : IPinService
     }
 
     // Convert read response to Pin Object 
-    private List<Object>? ConvertDatabaseResponseOutputToPinObjectList(Response readPinResponse)
+    private List<object>? ConvertDatabaseResponseOutputToPinObjectList(Response readPinResponse)
     {
-        List<Object> pinList = new List<Object>();
+        List<object> pinList = new List<object>();
 
         if (readPinResponse.Output == null)
         {
             return null;
         }
 
-        foreach (List<Object> Pin in readPinResponse.Output)
+        foreach (List<object> Pin in readPinResponse.Output)
         {
 
             var pin = new Pin();
@@ -511,16 +516,16 @@ public class PinService : IPinService
     }
 
     // Convert read response to LLI object
-    private List<Object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse)
+    private List<object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse)
     {
-        List<Object> lliList = new List<Object>();
+        List<object> lliList = new List<object>();
 
         if (readLLIResponse.Output == null)
         {
             return null;
         }
 
-        foreach (List<Object> LLI in readLLIResponse.Output)
+        foreach (List<object> LLI in readLLIResponse.Output)
         {
 
             var lli = new LLI();

@@ -81,8 +81,8 @@ export function getAllLLI(url, jwtToken) {
 
 
 //Delete Pin
-export function deletePin(url, values, jwtToken){
-    let request = ajaxClient.delete(url, values, jwtToken)
+export function deletePin(url, jwtToken){
+    let request = ajaxClient.delete(url, jwtToken)
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {

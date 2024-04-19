@@ -266,6 +266,7 @@ button:hover, .add-pin-button-container>img:hover {
     background-color: white;
     width: 660px;
     max-width: 80%;
+    visibility: hidden;
 }
 
 .modal.active {

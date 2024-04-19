@@ -77,7 +77,7 @@ public class MapRepo : IMapRepo
     {
         var readResponse = new Response();
 
-        string sql = "SELECT PinId, LLIId, Address, Latitude, Longitude "
+        string sql = "SELECT LLIId "
         + $"FROM MapPin Where PinId=\"{PinId}\";";
         Console.WriteLine(sql);
 

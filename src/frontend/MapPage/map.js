@@ -4,7 +4,7 @@ import * as mapService from './mapServices.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
-export function LoadMapPage (root, ajaxClient) {
+export function LoadMapPage(root, ajaxClient) {
     // Dependency check
     const isValid = root && ajaxClient;
 
@@ -16,7 +16,7 @@ export function LoadMapPage (root, ajaxClient) {
     const MAX_PINS = 20
 
     let jwtToken = ""
-    let principal = { };
+    let principal = {};
 
     // Config Variables
     let webServiceUrl = ""
@@ -32,49 +32,53 @@ export function LoadMapPage (root, ajaxClient) {
     let webServiceUrlLLI = ""
 
     let apiKey = ""
-   
+
     // Pin variables
     var currentMap;
-    let pins = { };
-    var markers = [ ];
+    let pins = {};
+    var markers = [];
     let geocoder;
 
     //------------------------PINS----------------------------------------
 
     // Show Pins
-    function showPins(){
+    function showPins() {
         let url = webServiceUrl + getAllPinUrl
 
         //Get all Pins, and render them on map
         if (Object.keys(pins).length === 0) {
-            mapService.getAllPinFromUser(url, jwtToken).then( function(pinList){
+            mapService.getAllPinFromUser(url, jwtToken).then(function (pinList) {
                 if (!pinList) return
                 pinList.reverse().forEach(pin => {
-                    let location = {lat: parseFloat(pin.latitude), lng: parseFloat(pin.longitude)};
+                    let location = { lat: parseFloat(pin.latitude), lng: parseFloat(pin.longitude) };
                     pins = location // Add the pins to the dict
                     var marker = new google.maps.Marker({
                         position: location, // Set the position of the marker to the specified coordinates
-                        map: currentMap, // Set the map on which to display the marker
-                        title: 'Hello World!' // Set a title for the marker
                     });
+                    // Set the markers 
+                    setMapOnAll(currentMap)
+                    //add the markers to the list 
+                    markers.push(marker)
                     // append to the array of markers
                     renderTooltipOnClick(marker, pin)
                 });
             });
         }
-        else
-        {
-            // Render the pins on the map
-            for (var pin in pins)
-            {
-                //renderPins()
-            }
-
+        else {
+            setMapOnAll(currentMap)
         }
     }
-    
+
+    // set the markers
+    function setMapOnAll(map) {
+        for (let i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+        }
+    }
+      
+
     //load pin
-    function createPinComponent(){
+    function createPinComponent() {
         // Open modal when add-pin-button is clicked
         const addPinButton = document.getElementById('add-pin-button');
         // Get a reference to the select element
@@ -112,63 +116,58 @@ export function LoadMapPage (root, ajaxClient) {
 
         //On submit we render the pin 
         let submitButton = document.getElementById('create-pin-btn');
-        submitButton.addEventListener('click' , function(){
+        submitButton.addEventListener('click', function () {
             renderPinOnSubmit(selectElement);
         })
     }
 
     // On submit render Pin to map
-    function renderPinOnSubmit(element){
+    function renderPinOnSubmit(element) {
         var lliId = element.options[element.selectedIndex];
         let count = 0;
         let statusUrl = webServiceUrl + getPinStatusUrl + lliId.value
 
         // initialize the pin Status
 
-        mapService.getPinStatus(statusUrl, jwtToken).then(function(pinStatusCollection) {
+        mapService.getPinStatus(statusUrl, jwtToken).then(function (pinStatusCollection) {
             // Iterate over the pin status collection using forEach
             // Check if pinStatusCollection is not empty
-            if (pinStatusCollection != null)
-            {
+            if (pinStatusCollection != null) {
                 if (pinStatusCollection.length) {
                     // Access the count of the first pin status object and store it
                     console.log(pinStatusCollection)
                     count = parseInt(pinStatusCollection[0].count);
                 }
             }
-            else
-            {
+            else {
                 count = 0
                 console.log(count)
             }
-            
-        })
-        .catch(function(error) {
-            // Handle any errors
-            console.error('Error fetching pin status:', error);
-        });
 
-        if (count < MAX_PINS)
-        {
-            try
-            {
+        })
+            .catch(function (error) {
+                // Handle any errors
+                console.error('Error fetching pin status:', error);
+            });
+
+        if (count < MAX_PINS) {
+            try {
                 // Geocode the Address and Render it 
                 geocodeAddress()
                 count++
             }
-            catch (error){
+            catch (error) {
                 console.log(error)
                 alert("Unable to render pin, please try again")
             }
         }
-        else
-        {
+        else {
             alert("You have reached the maximum limit of " + MAX_PINS + " pins for this LLI");
         }
     }
 
     //Render tool tip
-    function renderTooltipOnClick(marker, pin){
+    function renderTooltipOnClick(marker, pin) {
         let viewPinUrl = webServiceUrl + viewUrl + pin.pinId
 
         let llititle = ""
@@ -195,53 +194,64 @@ export function LoadMapPage (root, ajaxClient) {
             cat2 = lli.category2
             cat3 = lli.category3
 
-        });
-        
-        let markerContent = `
-        <div id="container" style="display: flex; flex-direction: column;">
-            <div id="title-date-status-visibility-container" style="display: flex; justify-content: space-between;">
-                <div id="title-date-container" style="display: flex; justify-content: space-between; flex-grow: 2;">
-                    <div id="title-input"><h1>${llititle}</h1></div>
-                    <div id="date-input">${llideadline.split("/")[2]}-${llideadline.split("/")[0]}-${llideadline.split("/")[1]}</div>
-                </div>
-                <div id="status-visibility-container" style="display: flex; justify-content: space-between;">
-                    <div id="status-input">${llistatus}</div>
-                    <div id="visibility-input">${visibility}</div>
+
+            let markerContent = `
+            <div id="container" style="display: flex; flex-direction: column; width:100%; ">
+                <div id="title-date-status-visibility-container" style="display: flex; justify-content: space-between;">
+                    <div id="title-date-container" style="display: flex; justify-content: space-between; flex-grow: 2; flex-direction: column;">
+                        <div id="title-input" style="font-size: large;font-weight: bold;"><h1 id="firstHeading" class="firstHeading">${llititle}</h1></div>
+                        <div id="date-input">Date: ${llideadline.split("/")[2]}-${llideadline.split("/")[0]}-${llideadline.split("/")[1]}</div>
+                    </div>
+                    <div id="status-visibility-container" style="display: flex; justify-content: space-between; gap: 8px; padding-top: 3px;">
+                        <div id="status-input">${llistatus}</div>
+                        <div id="visibility-input">${visibility}</div>
                 
         `;
 
-        if (cost) {
-            markerContent += `<div id="cost-input">${cost}</div>`;
-        }
+            if (cost) {
+                markerContent += `<div id="cost-input">$${cost}</div>`;
+            }
 
-        markerContent += `
+            markerContent += `
                 </div>
             </div>
-            <div id="paragraph-input">${llidescription}</div>
-        </div>
-        <div id="category-input">${cat1}, ${cat2}, ${cat3}</div>
-        `;
+            <div id="category-input">${cat1}, ${cat2}, ${cat3}</div>
+            <div id="paragraph-input" style="padding-top: 5px;font-size: medium;">${llidescription}</div>
+            <button id="delete-button-pin" style="background-color: #EBA755; color: white;font-weight: 400;border-radius: 10px; border-color: white;">Delete Pin</button>
+            </div>
+            `;
 
 
-        // Create an InfoWindow
-        var infowindow = new google.maps.InfoWindow({
-            content: markerContent // replace with your content
+            // Create an InfoWindow
+            var infowindow = new google.maps.InfoWindow({
+                content: markerContent, // replace with your content
+                maxWidth: 800
+            });
+
+            // Add a 'click' event listener to the marker
+            marker.addListener('click', function () {
+                // Open the InfoWindow
+                infowindow.open(currentMap, marker);
+            });
+
+            // Add a 'click' event listener for deleting pin
+            let deletePinBtn = document.getElementById('delete-button-pin');
+            deletePinBtn.addEventListener('click', function(){
+                removePin(pin.pinId, marker)
+            })
+
         });
-        
-        // Add a 'click' event listener to the marker
-        marker.addListener('click', function() {
-            // Open the InfoWindow
-            infowindow.open(currentMap, marker);
-        });
+
     }
 
-    function renderPin(coordinates){
+    function renderPin(coordinates) {
         var marker = new google.maps.Marker({
             position: { lat: latitude, lng: longitude },
             map: currentMap
         });
     }
-    function renderNewPin(latitude, longitude){
+
+    function renderNewPin(latitude, longitude) {
 
         // Get the lliId
         const selectElement = document.getElementById('create-status-input');
@@ -259,7 +269,7 @@ export function LoadMapPage (root, ajaxClient) {
         // Populate in backend
         let values = {
             AppPrincipal: principal,
-            LLIId: lliId.value, 
+            LLIId: lliId.value,
             Address: addressField.value,
             Latitude: latitude,
             Longitude: longitude
@@ -268,14 +278,31 @@ export function LoadMapPage (root, ajaxClient) {
         mapService.createPin(createPinUrl, values, jwtToken)
 
         //Add Pins
-        if (pins[lliId.value])
-        {
+        if (pins[lliId.value]) {
             pins[lliId.value + "new"] = { lat: latitude, lng: longitude }
         }
-        else
-        {
+        else {
             pins[lliId.value] = { lat: latitude, lng: longitude }
         }
+    }
+
+    function removePin(pinId, marker) {
+        let url = webServiceUrl + deleteUrl + pinId
+        if (!pinId)
+        {
+            try {
+                markers.splice(markers.indexOf(marker), 1);
+                mapService.deletePin(url, jwtToken);
+                setMapOnAll(currentMap)
+            } catch (error) {
+                alert("Unable to delete pin, try again.");
+            }
+        }
+        else 
+        {
+            alert("Invalid action")
+        }
+
     }
     //----------------------------------------------------------------------
 
@@ -283,7 +310,7 @@ export function LoadMapPage (root, ajaxClient) {
     function renderModals() {
         const openModalButtons = document.querySelectorAll('[data-modal-target]');
         const overlay = document.getElementById('overlay');
-    
+
         openModalButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const modalId = button.dataset.modalTarget;
@@ -291,52 +318,54 @@ export function LoadMapPage (root, ajaxClient) {
                 openModal(modal);
             });
         });
-    
+
         overlay.addEventListener('click', () => {
             const modals = document.querySelectorAll('.modal.active');
             modals.forEach(modal => {
                 closeModal(modal);
             });
         });
-    
+
         function openModal(modal) {
             if (modal == null) {
                 return;
             }
+            modal.style.visibility = 'visible';
             modal.classList.add('active');
             overlay.classList.add('active');
         }
-    
+
         function closeModal(modal) {
             if (modal == null) return;
             modal.classList.remove('active');
             overlay.classList.remove('active');
+            modal.style.visibility = "hidden";
+
         }
     }
-    
+
 
     //----------------------------------------------------------------------
-    
-   // Assuming you have a function to create a pin
+
+    // Assuming you have a function to create a pin
     function createPin(lli, address) {
         // Implement pin creation logic here
     }
 
 
     //Validate Pin options
-    function validatePinOptions(options){
+    function validatePinOptions(options) {
         // Input Validation
 
     }
 
     //Switch View to Location Reccomendation
-    function switchView(){
+    function switchView() {
         let locRecViewButton = document.getElementById('loc-rec-view')
         let interMapViewButton = document.getElementById('inter-view')
 
-        if(!interMapViewButton.classList.contains('currentView'))
-        {
-            interMapViewButton.addEventListener('click', function() {
+        if (!interMapViewButton.classList.contains('currentView')) {
+            interMapViewButton.addEventListener('click', function () {
                 initInteractiveMap();
                 interMapViewButton.classList.add('currentView')
             })
@@ -344,9 +373,8 @@ export function LoadMapPage (root, ajaxClient) {
             locRecViewButton.classList.remove('currentView')
         }
 
-        if(!locRecViewButton.classList.contains('currentView'))
-        {
-            locRecViewButton.addEventListener('click', function() {
+        if (!locRecViewButton.classList.contains('currentView')) {
+            locRecViewButton.addEventListener('click', function () {
                 initLocRecMap();
                 locRecViewButton.classList.add('currentView')
             })
@@ -365,19 +393,19 @@ export function LoadMapPage (root, ajaxClient) {
             const data = await response.json();
             apiKey = data.LifelogTokenConfig.Maps.GoogleMaps;
 
-            
+
         } catch (error) {
             console.error("Error fetching:", error);
         }
     }
 
-    function initMap(){
+    function initMap() {
         try {
             // Dynamically create a script tag to load the Google Maps API
             var script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=places`;
             script.defer = true;
-    
+
             // Append the script tag to the document body
             document.body.appendChild(script);
         } catch (error) {
@@ -386,7 +414,7 @@ export function LoadMapPage (root, ajaxClient) {
 
     }
 
-    function initInteractiveMap(){
+    function initInteractiveMap() {
         var interMap = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 51.505, lng: -0.09 },
             zoom: 2 // Set the initial zoom level
@@ -399,7 +427,7 @@ export function LoadMapPage (root, ajaxClient) {
         interMapViewButton.classList.add('currentView')
     }
 
-    function initLocRecMap(){
+    function initLocRecMap() {
         var locRecMap = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 53.505, lng: -0.09 },
             zoom: 4 // Set the initial zoom level
@@ -412,7 +440,7 @@ export function LoadMapPage (root, ajaxClient) {
     }
 
     function attachInitMapAsGloablVar() {
-        window.initMap = function(apiKey) {
+        window.initMap = function (apiKey) {
             initInteractiveMap();
         };
     }
@@ -425,37 +453,37 @@ export function LoadMapPage (root, ajaxClient) {
 
         // Send the HTTP GET request and return the Promise
         return fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            // Check if the request was successful
-            if (data.status === "OK") {
-                // Extract latitude and longitude from the first result
-                const latitude = data.results[0].geometry.location.lat;
-                const longitude = data.results[0].geometry.location.lng;
-                
-                // render the pin
-                renderNewPin(latitude, longitude)
+            .then(response => response.json())
+            .then(data => {
+                // Check if the request was successful
+                if (data.status === "OK") {
+                    // Extract latitude and longitude from the first result
+                    const latitude = data.results[0].geometry.location.lat;
+                    const longitude = data.results[0].geometry.location.lng;
 
-                return 
-            } else {
-            // Handle error cases
-            console.error('Error:', data.status);
-            throw new Error(data.status);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            throw error;
-        });
+                    // render the pin
+                    renderNewPin(latitude, longitude)
+
+                    return
+                } else {
+                    // Handle error cases
+                    console.error('Error:', data.status);
+                    throw new Error(data.status);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                throw error;
+            });
     }
     //-----------------------------------------------------------------------
 
-    
+
     /*
     */
 
-    
-    
+
+
 
     // Fetch URL config
     async function fetchConfig() {
@@ -485,7 +513,7 @@ export function LoadMapPage (root, ajaxClient) {
         } else {
             await fetchConfig();
             await fetchConfigTokens();
-            let jwtTokenObject = JSON.parse(jwtToken); 
+            let jwtTokenObject = JSON.parse(jwtToken);
             principal = {
                 userId: jwtTokenObject.Payload.UserHash,
                 claims: jwtTokenObject.Payload.Claims,
@@ -499,7 +527,7 @@ export function LoadMapPage (root, ajaxClient) {
             switchView();
             createPinComponent();
             // Get data
-            
+
             //navigate 
             routeManager.setupHeaderLinks();
         }
