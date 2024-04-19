@@ -85,6 +85,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.RecSummaryWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.Map", "Peace.Lifelog.Map\Peace.Lifelog.Map.csproj", "{8B402F95-0F2E-480C-9813-5B66B143C2F2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peace.Lifelog.MapsWebService", "Peace.Lifelog.MapsWebService\Peace.Lifelog.MapsWebService.csproj", "{E5D701C1-238C-4DA3-8B5B-FE2413E752EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -255,6 +257,10 @@ Global
 		{8B402F95-0F2E-480C-9813-5B66B143C2F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B402F95-0F2E-480C-9813-5B66B143C2F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B402F95-0F2E-480C-9813-5B66B143C2F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5D701C1-238C-4DA3-8B5B-FE2413E752EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5D701C1-238C-4DA3-8B5B-FE2413E752EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5D701C1-238C-4DA3-8B5B-FE2413E752EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5D701C1-238C-4DA3-8B5B-FE2413E752EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

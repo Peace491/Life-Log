@@ -29,6 +29,7 @@ export function LoadMapPage (root, ajaxClient) {
     let getPinStatusUrl = ""
     let editPinLLIUrl = ""
     let viewChangeUrl = ""
+    let webServiceUrlLLI = ""
 
     let apiKey = ""
    
@@ -36,6 +37,7 @@ export function LoadMapPage (root, ajaxClient) {
     var currentMap;
     let pins = { };
     var markers = [ ];
+    let geocoder;
 
     //------------------------PINS----------------------------------------
 
@@ -45,10 +47,10 @@ export function LoadMapPage (root, ajaxClient) {
 
         //Get all Pins, and render them on map
         if (Object.keys(pins).length === 0) {
-            mapService.getAllPinFromUser(url, {appPrincipal: principal}, jwtToken).then( function(pinList){
+            mapService.getAllPinFromUser(url, jwtToken).then( function(pinList){
                 if (!pinList) return
                 pinList.reverse().forEach(pin => {
-                    let location = {lat: pin.latitude, lng: pin.longitude}
+                    let location = {lat: parseFloat(pin.latitude), lng: parseFloat(pin.longitude)};
                     pins = location // Add the pins to the dict
                     var marker = new google.maps.Marker({
                         position: location, // Set the position of the marker to the specified coordinates
@@ -65,11 +67,7 @@ export function LoadMapPage (root, ajaxClient) {
             // Render the pins on the map
             for (var pin in pins)
             {
-                var marker = new google.maps.Marker({
-                    position: pins[pin], // Set the position of the marker to the specified coordinates
-                    map: currentMap, // Set the map on which to display the marker
-                    title: 'Hello World!' // Set a title for the marker
-                });
+                //renderPins()
             }
 
         }
@@ -79,13 +77,15 @@ export function LoadMapPage (root, ajaxClient) {
     function createPinComponent(){
         // Open modal when add-pin-button is clicked
         const addPinButton = document.getElementById('add-pin-button');
+        // Get a reference to the select element
+        const selectElement = document.getElementById('create-status-input');
+
         addPinButton.addEventListener('click', () => {
             //#region  Populate the Dropdown with the LLI 
-            let getLLIUrl = webServiceUrl + getAllLLIUrl
-            mapService.getAllLLI(getLLIUrl, {appPrincipal: principal}, jwtToken).then(function (completedLLIList) {
+            let getLLIUrl = webServiceUrlLLI + getAllLLIUrl
+
+            mapService.getAllLLI(getLLIUrl, jwtToken).then(function (completedLLIList) {
                 if (!completedLLIList) return
-                // Get a reference to the select element
-                const selectElement = document.getElementById('create-status-input');
 
                 // Clear existing options
                 selectElement.innerHTML = '';
@@ -94,7 +94,6 @@ export function LoadMapPage (root, ajaxClient) {
                 completedLLIList.reverse().forEach(lli => {
                     // Create a new option element
                     const option = document.createElement('option');
-                    
                     // Set the text content of the option to the LLI title
                     option.textContent = lli.title;
 
@@ -109,72 +108,53 @@ export function LoadMapPage (root, ajaxClient) {
 
             //Render the modal
             renderModals();
-
-            //On submit we render the pin 
-            let submitButton = document.getElementById('create-pin-btn');
-            submitButton.addEventListener('click' , function(){
-                renderPinOnSubmit();
-            })
         });
+
+        //On submit we render the pin 
+        let submitButton = document.getElementById('create-pin-btn');
+        submitButton.addEventListener('click' , function(){
+            renderPinOnSubmit(selectElement);
+        })
     }
 
     // On submit render Pin to map
-    function renderPinOnSubmit(){
-
-        var lliId = selectElement.options[selectElement.selectedIndex];
-        let count = "";
-
-        // Get the address
-        let addressField = document.getElementById('create-paragraph-input-pin');
-
-        let createPinUrl = webServiceUrl + createUrl
-        let statusUrl = webServiceUrl + getPinStatusUrl
+    function renderPinOnSubmit(element){
+        var lliId = element.options[element.selectedIndex];
+        let count = 0;
+        let statusUrl = webServiceUrl + getPinStatusUrl + lliId.value
 
         // initialize the pin Status
 
-        mapService.getPinStatus(statusUrl, {appPrincipal: principal, lliId: lliId}, jwtToken).then(function(pinStatusCollection) {
+        mapService.getPinStatus(statusUrl, jwtToken).then(function(pinStatusCollection) {
             // Iterate over the pin status collection using forEach
             // Check if pinStatusCollection is not empty
-            if (pinStatusCollection.length > 0) {
-                // Access the count of the first pin status object and store it
-                count = pinStatusCollection[0].count;
-            } else {
-                return
+            if (pinStatusCollection != null)
+            {
+                if (pinStatusCollection.length) {
+                    // Access the count of the first pin status object and store it
+                    console.log(pinStatusCollection)
+                    count = parseInt(pinStatusCollection[0].count);
+                }
             }
+            else
+            {
+                count = 0
+                console.log(count)
+            }
+            
         })
         .catch(function(error) {
             // Handle any errors
             console.error('Error fetching pin status:', error);
         });
 
-        if (parseInt(count) < MAX_PINS)
+        if (count < MAX_PINS)
         {
             try
             {
-                // Geo code the address
-                let location = geocodeAddress()
-
-                //Populate in backend
-                let values = {
-                    appPrincipal: principal,
-                    LLIId: lliId.text, 
-                    Address: addressField.textContent,
-                    Latitude: location.coordinates.lat,
-                    Longitude: location.coordinates.lng
-                }
-                mapService.createPin(createPinUrl, values, jwtToken)
-
-                //render the pin on the map
-                var marker = new google.maps.Marker({
-                    position: location, // Set the position of the marker to the specified coordinates
-                    map: currentMap, // Set the map on which to display the marker
-                    title: 'Hello World!' // Set a title for the marker
-                });
-
-                //TODO add the pin to the pinStatus and pin
-                pins[lliId.text + "z"] = location
-                showPins()
-
+                // Geocode the Address and Render it 
+                geocodeAddress()
+                count++
             }
             catch (error){
                 console.log(error)
@@ -189,7 +169,7 @@ export function LoadMapPage (root, ajaxClient) {
 
     //Render tool tip
     function renderTooltipOnClick(marker, pin){
-        let viewPinUrl = webServiceUrl + viewUrl
+        let viewPinUrl = webServiceUrl + viewUrl + pin.pinId
 
         let llititle = ""
         let llideadline = ""
@@ -201,7 +181,8 @@ export function LoadMapPage (root, ajaxClient) {
         let cat2 = ""
         let cat3 = ""
 
-        mapService.viewPin(viewPinUrl, {appPrincipal: principal, pinId: pin.pinid}, jwtToken).then(function (LLIList) {
+        mapService.viewPin(viewPinUrl, jwtToken).then(function (LLIList) {
+            console.log("here")
             if (!LLIList) return
             let lli = LLIList[0]
             llititle = lli.title;
@@ -230,10 +211,10 @@ export function LoadMapPage (root, ajaxClient) {
         `;
 
         if (cost) {
-            content += `<div id="cost-input">${cost}</div>`;
+            markerContent += `<div id="cost-input">${cost}</div>`;
         }
 
-        content += `
+        markerContent += `
                 </div>
             </div>
             <div id="paragraph-input">${llidescription}</div>
@@ -252,6 +233,49 @@ export function LoadMapPage (root, ajaxClient) {
             // Open the InfoWindow
             infowindow.open(currentMap, marker);
         });
+    }
+
+    function renderPin(coordinates){
+        var marker = new google.maps.Marker({
+            position: { lat: latitude, lng: longitude },
+            map: currentMap
+        });
+    }
+    function renderNewPin(latitude, longitude){
+
+        // Get the lliId
+        const selectElement = document.getElementById('create-status-input');
+        var lliId = selectElement.options[selectElement.selectedIndex];
+
+        // Get the address
+        let addressField = document.getElementById('create-paragraph-input-pin');
+        let createPinUrl = webServiceUrl + createUrl
+
+        var marker = new google.maps.Marker({
+            position: { lat: latitude, lng: longitude },
+            map: currentMap
+        });
+
+        // Populate in backend
+        let values = {
+            AppPrincipal: principal,
+            LLIId: lliId.value, 
+            Address: addressField.value,
+            Latitude: latitude,
+            Longitude: longitude
+        }
+
+        mapService.createPin(createPinUrl, values, jwtToken)
+
+        //Add Pins
+        if (pins[lliId.value])
+        {
+            pins[lliId.value + "new"] = { lat: latitude, lng: longitude }
+        }
+        else
+        {
+            pins[lliId.value] = { lat: latitude, lng: longitude }
+        }
     }
     //----------------------------------------------------------------------
 
@@ -369,6 +393,7 @@ export function LoadMapPage (root, ajaxClient) {
         });
 
         currentMap = interMap;
+        geocoder = new google.maps.Geocoder();
 
         let interMapViewButton = document.getElementById('inter-view')
         interMapViewButton.classList.add('currentView')
@@ -393,28 +418,34 @@ export function LoadMapPage (root, ajaxClient) {
     }
 
     function geocodeAddress() {
-        // Get the address input value
-        let addressField = document.getElementById('create-paragraph-input-pin').value;
+        const location = document.getElementById('create-paragraph-input-pin').value; // Example location
 
-        // Create a Geocoder object
-        var geocoder = new google.maps.Geocoder();
+        // Construct the URL for the Geocoding API request
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
 
-        // Make a geocoding request
-        geocoder.geocode({ 'address': addressField }, function(results, status) {
-            if (status === 'OK') {
-                // Get the latitude and longitude from the first result
-                var location = results[0].geometry.location;
-                var latitude = location.lat();
-                var longitude = location.lng();
-
-                let coordinates = {lat: latitude, lng: longitude}
+        // Send the HTTP GET request and return the Promise
+        return fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Check if the request was successful
+            if (data.status === "OK") {
+                // Extract latitude and longitude from the first result
+                const latitude = data.results[0].geometry.location.lat;
+                const longitude = data.results[0].geometry.location.lng;
                 
-                // return the latitude and longitude
-                return coordinates
+                // render the pin
+                renderNewPin(latitude, longitude)
+
+                return 
             } else {
-                // Handle any errors
-                alert('Enter an Valid Address');
+            // Handle error cases
+            console.error('Error:', data.status);
+            throw new Error(data.status);
             }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            throw error;
         });
     }
     //-----------------------------------------------------------------------
@@ -431,10 +462,11 @@ export function LoadMapPage (root, ajaxClient) {
         // fetch all Url's
         const response = await fetch('../lifelog-config.url.json');
         const data = await response.json();
-        webServiceUrl = data.LifelogUrlConfig.Map.MapWebservice;
+        webServiceUrl = data.LifelogUrlConfig.Map.MapWebService;
+        webServiceUrlLLI = data.LifelogUrlConfig.LLI.LLIWebService;
         createUrl = data.LifelogUrlConfig.Map.MapPinCreate;
         getAllPinUrl = data.LifelogUrlConfig.Map.MapGetAllPin;
-        getAllLLIUrl = data.LifelogUrlConfig.Map.MapGetAllLLI;
+        getAllLLIUrl = data.LifelogUrlConfig.LLI.GetAllLLI;
         updateUrl = data.LifelogUrlConfig.Map.MapPinUpdate;
         deleteUrl = data.LifelogUrlConfig.Map.MapPinDelete;
         viewUrl = data.LifelogUrlConfig.Map.MapPinView;
@@ -458,9 +490,9 @@ export function LoadMapPage (root, ajaxClient) {
                 userId: jwtTokenObject.Payload.UserHash,
                 claims: jwtTokenObject.Payload.Claims,
             };
-            //initMap();
-            //attachInitMapAsGloablVar();
-            //showPins()
+            initMap();
+            attachInitMapAsGloablVar();
+            showPins()
 
             window.name = routeManager.PAGES.mapPage
             // Set up event handlers

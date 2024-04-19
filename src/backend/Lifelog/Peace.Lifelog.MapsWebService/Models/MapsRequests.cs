@@ -2,21 +2,15 @@ using Peace.Lifelog.Security;
 
 namespace Peace.Lifelog.MapsWebService
 {
-    public class GetAllUserLLIRequest
-    {
-        public AppPrincipal ?AppPrincipal { get; set; }
-        public string userHash { get; set; }
-    }
 
-    public class PostGetAllPinFromUserRequest
+    public class GetAllPinFromUserRequest
     {
-        public AppPrincipal ?AppPrincipal { get; set; }
-        public string userHash { get; set; }
+        public AppPrincipal? AppPrincipal { get; set; }
     }
 
     public class PostCreatePinRequest
     {
-        public AppPrincipal ?AppPrincipal { get; set; }
+        public AppPrincipal? AppPrincipal { get; set; }
         public string PinId { get; set; } = string.Empty;
         public string LLIId { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
@@ -24,9 +18,9 @@ namespace Peace.Lifelog.MapsWebService
         public double Longitude { get; set; } = 0;
     }
 
-    public class PostDeletePinRequest
+    public class PutUpdatePinRequest
     {
-        public AppPrincipal ?AppPrincipal { get; set; }
+        public AppPrincipal? AppPrincipal { get; set; }
         public string PinId { get; set; } = string.Empty;
         public string LLIId { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
@@ -34,9 +28,15 @@ namespace Peace.Lifelog.MapsWebService
         public double Longitude { get; set; } = 0;
     }
 
-    public class PostUpdatePinRequest
+    public class GetPinStatusRequest
     {
-        public AppPrincipal ?AppPrincipal { get; set; }
+        public AppPrincipal? AppPrincipal { get; set; }
+        public string LLIId { get; set; } = string.Empty;
+    }
+
+    public class PutEditPinLIIRequest
+    {
+        public AppPrincipal? AppPrincipal { get; set; }
         public string PinId { get; set; } = string.Empty;
         public string LLIId { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
@@ -44,28 +44,14 @@ namespace Peace.Lifelog.MapsWebService
         public double Longitude { get; set; } = 0;
     }
 
-    public class PostReadPinRequest
+    public class PutUpdateLogRequest
     {
-        public AppPrincipal ?AppPrincipal { get; set; }
-        public string PinId { get; set; } = string.Empty;
-        public string LLIId { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public double Latitude { get; set; } = 0;
-        public double Longitude { get; set; } = 0;
+        public AppPrincipal? AppPrincipal { get; set; }
     }
-
-    public class PostEditPinLIIRequest
+    public class GetViewPinRequest
     {
-        public AppPrincipal? Principal { get; set; }
+        public AppPrincipal? AppPrincipal { get; set; }
         public string PinId { get; set; } = string.Empty;
-        public string LLIId { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public double Latitude { get; set; } = 0;
-        public double Longitude { get; set; } = 0;
-    }
 
-    public class PostUpdateLogRequest
-    {
-        public AppPrincipal? Principal { get; set; }
     }
 }

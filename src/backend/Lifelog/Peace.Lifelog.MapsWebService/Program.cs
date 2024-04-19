@@ -1,10 +1,9 @@
 using Microsoft.Net.Http.Headers;
 using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.Security;
 using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.Logging;
 using Peace.Lifelog.Map;
-using Peace.Lifelog.PinService;
-using Peace.Lifelog.LocationRecommendationService;
+using Peace.Lifelog.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +17,9 @@ builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
-builder.Services.AddTransient<IMapRepo, MapRepo>(); 
+builder.Services.AddTransient<IMapRepo, MapRepo>();
 builder.Services.AddTransient<IPinService, PinService>();
-builder.Services.AddTransient<ILocationRecommendationService, LocationRecommendationService>();
+//builder.Services.AddTransient<ILocationRecommendationService, LocationRecommendationService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();

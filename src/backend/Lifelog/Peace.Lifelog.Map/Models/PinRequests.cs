@@ -7,6 +7,7 @@ public class CreatePinRequest : IPinRequest
     public AppPrincipal? Principal { get; set; }
     public string PinId { get; set; } = string.Empty;
     public string LLIId { get; set; } = string.Empty;
+    public string UserHash { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public double Latitude { get; set; } = 0;
     public double Longitude { get; set; } = 0;

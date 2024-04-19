@@ -18,20 +18,22 @@ public class MapRepo : IMapRepo
         this.deleteDataOnlyDAO = deleteDataOnlyDAO;
     }
 
-    public async Task<Response> CreatePinInDB(string LLIId, string Address, double Latitude, double Longitude)
+    public async Task<Response> CreatePinInDB(string LLIId, string UserHash, string Address, double Latitude, double Longitude)
     {
         var createPinResponse = new Response();
 
         string sql = "INSERT INTO MapPin "
-        + "(LLId, Address, Latitude, Longitude) "
+        + "(LLIId, UserHash, Address, Latitude, Longitude) "
         + "VALUES "
         + "("
         + $"\"{LLIId}\", "
-        + $"{Address}, "
+        + $"\"{UserHash}\", "
+        + $"\"{Address}\", "
         + $"{Latitude}, "
         + $"{Longitude}"
         + ");";
 
+        Console.WriteLine(sql);
         try
         {
             createPinResponse = await this.createDataOnlyDAO.CreateData(sql);
@@ -75,8 +77,9 @@ public class MapRepo : IMapRepo
     {
         var readResponse = new Response();
 
-        string sql = "SELECT PinId, LLIId, Address, Latitude, Longitude"
-        + $"FROM MapPin Where PinId=\"{PinId}\"";
+        string sql = "SELECT PinId, LLIId, Address, Latitude, Longitude "
+        + $"FROM MapPin Where PinId=\"{PinId}\";";
+        Console.WriteLine(sql);
 
         try
         {

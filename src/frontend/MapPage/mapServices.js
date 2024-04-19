@@ -4,9 +4,15 @@ export function createPin(url, values, jwtToken) {
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {
+            if (response.status != 200) {
+                throw new Error(response.statusText)
+            }
+
             return response.json()
         }).then(function (response) {
-            alert('The User Form is successfully created.')
+            alert('The Pin is successfully created.')
+            location.reload()
+            resolve(response)
         }).catch(function (error) {
             alert(error)
             reject(error)
@@ -33,8 +39,10 @@ export function getPinStatus(url, values, jwtToken){
     });
 }
 //Get All Pins for the User
-export function getAllPinFromUser(url, values, jwtToken){
-    let request = ajaxClient.get(url, values, jwtToken)
+export function getAllPinFromUser(url, jwtToken){
+    console.log(url)
+    console.log(jwtToken)
+    let request = ajaxClient.get(url, jwtToken)
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {
@@ -52,15 +60,14 @@ export function getAllPinFromUser(url, values, jwtToken){
     });
 }
 //Get All LLI
-export function getAllLLI(url, values, jwtToken) {
-    let request = ajaxClient.get(url, values, jwtToken);
+export function getAllLLI(url, jwtToken) {
+    let request = ajaxClient.get(url, jwtToken);
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {
             if (response.status != 200) {
                 throw new Error(response.statusText)
             }
-
             return response.json();
         }).then(function (data) {
             let output = data.output;
@@ -71,6 +78,7 @@ export function getAllLLI(url, values, jwtToken) {
         });
     });
 }
+
 
 //Delete Pin
 export function deletePin(url, values, jwtToken){
@@ -92,9 +100,9 @@ export function deletePin(url, values, jwtToken){
     });
 }
 //View Pin
-export function viewPin(url, values, jwtToken){
-    let request = ajaxClient.get(url, values, jwtToken)
-
+export function viewPin(url,jwtToken){
+    let request = ajaxClient.get(url, jwtToken)
+    console.log("works")
     return new Promise((resolve, reject) => {
         request.then(function (response) {
             if (response.status != 200) {

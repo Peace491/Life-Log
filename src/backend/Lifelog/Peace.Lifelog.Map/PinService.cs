@@ -23,6 +23,8 @@ public class PinService : IPinService
     private UpdateDataOnlyDAO updateDataOnlyDAO;
     private DeleteDataOnlyDAO deleteDataOnlyDAO;
     private Logging.Logging loggingLLI;
+    private object console;
+
     public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, Logging.ILogging logging)
     {
         this.mapRepo = mapRepo;
@@ -55,10 +57,11 @@ public class PinService : IPinService
 
         // Create Pin in DB
         Response createPinInDBResponse;
+        var userHash = createPinRequest.Principal!.UserId;
 
         try
         {
-            createPinInDBResponse = await this.mapRepo.CreatePinInDB(createPinRequest.LLIId, createPinRequest.Address, createPinRequest.Latitude, createPinRequest.Longitude);
+            createPinInDBResponse = await this.mapRepo.CreatePinInDB(createPinRequest.LLIId, userHash, createPinRequest.Address, createPinRequest.Latitude, createPinRequest.Longitude);
         }
         catch (Exception error)
         {
@@ -73,7 +76,8 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin creation operation successful", createPinRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", createPinRequest.Principal!.UserId, "Info", "Business", "Pin creation operation successful");
+        response = createPinInDBResponse;
         return response;
     }
 
@@ -118,7 +122,7 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin update operation successful", updatePinRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", updatePinRequest.Principal!.UserId, "Info", "Business", "Pin update operation successful");
         return response;
     }
 
@@ -163,7 +167,7 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin deletion operation successful", deletePinRequest.Principal.UserId, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", deletePinRequest.Principal!.UserId, "Info", "Business", "Pin deletion operation successful");
         return response;
     }
 
@@ -171,22 +175,21 @@ public class PinService : IPinService
     {
         var response = new Response();
         response.HasError = false;
-        var errorMessage = "";
 
-        // Validate Input
+        /*// Validate Input
         var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, viewPinRequest, PinRequestType.View);
         if (validateDeletePinRequestResponse.HasError)
         {
-            errorMessage = validateDeletePinRequestResponse.ErrorMessage;
+            var errorMessage = validateDeletePinRequestResponse.ErrorMessage;
             return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
-        }
+        }*/
 
         // Authorize request
-        if (!IsUserAuthorizedForPin(viewPinRequest.Principal!))
+        /*if (!IsUserAuthorizedForPin(viewPinRequest.Principal!))
         {
-            errorMessage = "The User Is Not Authorized To view a Pin";
+            var errorMessage = "The User Is Not Authorized To view a Pin";
             return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
-        }
+        }*/
 
         //Read the Pin in DB 
         Response readPinInDBResponse;
@@ -199,18 +202,22 @@ public class PinService : IPinService
             readPinInDBResponse = await this.mapRepo.ReadPinInDB(viewPinRequest.PinId);
             if (readPinInDBResponse.Output is not null)
             {
+                Console.WriteLine("The LLIId: " + readPinInDBResponse.Output);
                 List<object> readOutput = (List<object>)readPinInDBResponse.Output;
                 if (readOutput.Count > 1 && readOutput[1] is not null) // Check if index is valid and element is of type int
                 {
                     LLIId = readOutput[1].ToString();
+                    Console.WriteLine("The LLIId: " + LLIId);
                 }
             }
         }
         catch (Exception error)
         {
-            return handlePinError(response, viewPinRequest.Principal!, error.Message);
+            // handlePinError(response, viewPinRequest.Principal!, error.Message);
+            response.HasError = true;
+            response.ErrorMessage = error.Message;
+            return response;
         }
-
 
         // Read the LLI in the DB only if LLIId is not null
         if (LLIId is not null)
@@ -228,7 +235,7 @@ public class PinService : IPinService
             }
 
             // Handle Success Response
-            var logResponse = this.logging.CreateLog("Logs", "Pin view operation successful", viewPinRequest.Principal.UserId, "Info", "Business");
+            var logResponse = this.logging.CreateLog("Logs", viewPinRequest.Principal!.UserId, "Info", "Business", "Pin view operation successful");
             return response;
         }
         else
@@ -284,7 +291,7 @@ public class PinService : IPinService
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "LLI edit operation performed through pin", editPinLLIRequest.Principal.UserId, "Info", "Persistent Data Store");
+        var logResponse = this.logging.CreateLog("Logs", editPinLLIRequest.Principal!.UserId, "Info", "Persistent Data Store", "LLI edit operation performed through pin");
         return response;
     }
 
@@ -315,7 +322,7 @@ public class PinService : IPinService
             // Convert the Exception object to a string
             string error_Message = error.ToString();
 
-            var logerrorResponse = this.logging.CreateLog("Logs", error_Message, userHash, "ERROR", "Business");
+            var logerrorResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Business", error_Message);
         }
 
 
@@ -324,11 +331,11 @@ public class PinService : IPinService
         if (readPinStatusInDBResponse != null && readPinStatusInDBResponse.HasError) // Check if readPinStatusInDBResponse is not null
         {
             string? error_Message = readPinStatusInDBResponse.ErrorMessage;
-            var logerrorResponse = this.logging.CreateLog("Logs", error_Message, userHash, "ERROR", "Business");
+            var logerrorResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Business", error_Message);
         }
 
         // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", "Pin update operation successful", userHash, "Info", "Business");
+        var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Business", "Pin update operation successful");
         return response;
 
     }
@@ -345,7 +352,7 @@ public class PinService : IPinService
         {
             var errorMessage = "invalid user hash";
 
-            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
+            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
         }
 
         //Get all user LLI
@@ -359,7 +366,7 @@ public class PinService : IPinService
             // Convert the Exception object to a string
             string errorMessage = error.ToString();
 
-            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
+            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
         }
 
 
@@ -388,42 +395,9 @@ public class PinService : IPinService
             return handlePinError(response, updateLogRequest.Principal!, errorMessage!);
         }
 
-        var logResponse = await this.logging.CreateLog("Logs", "Map view changed to Location Recommendation", updateLogRequest.Principal.UserId, "Info", "View");
+        var logResponse = await this.logging.CreateLog("Logs", updateLogRequest.Principal!.UserId, "Info", "View", "Map view changed to Location Recommendation");
 
         return response;
-    }
-
-    public async Task<Response> GetAllUserLLI(string userHash)
-    {
-        var response = new Response();
-        response.HasError = false;
-
-        //Authorize #TODO
-
-        //Validate Inpit 
-        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
-        if (!validateRequestResponse)
-        {
-            var errorMessage = "invalid user hash";
-
-            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
-        }
-
-        //Get all user LLI
-        try
-        {
-            response = await this.lliService.GetAllLLIFromUser(userHash);
-        }
-        catch (Exception error)
-        {
-            // Convert the Exception object to a string
-            string errorMessage = error.ToString();
-
-            return await this.logging.CreateLog("Logs", errorMessage, userHash, "ERROR", "Business");
-        }
-
-        return response;
-
     }
 
 
@@ -432,7 +406,7 @@ public class PinService : IPinService
     {
         response.HasError = true;
         response.ErrorMessage = errorMessage;
-        var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
+        var logResponse = this.logging.CreateLog("Logs", principal.UserId, "ERROR", "Business", errorMessage);
         return response;
     }
 

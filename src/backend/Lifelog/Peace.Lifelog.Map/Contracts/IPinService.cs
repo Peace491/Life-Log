@@ -24,5 +24,4 @@ public interface IPinService
     public Task<Response> updateLog(
         UpdateLogRequest updateLogRequest
     );
-    public Task<Response> GetAllUserLLI(string userHash);
 }
