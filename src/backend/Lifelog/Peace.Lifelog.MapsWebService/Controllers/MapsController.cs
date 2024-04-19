@@ -186,7 +186,6 @@ public sealed class MapsController : ControllerBase
             {
                 return StatusCode(401);
             }
-
             // need to double check what is being passed in here
             var response = await _pinService.DeletePin(PinId, userHash);
 
@@ -198,11 +197,6 @@ public sealed class MapsController : ControllerBase
             if (response.HasError)
             {
                 return StatusCode(400, "An error occurred while processing your request.");
-            }
-
-            if (response.Output == null)
-            {
-                return StatusCode(404, "Couldn't delete a Pin.");
             }
 
             /*need to check if this is what you want below*/
@@ -272,7 +266,6 @@ public sealed class MapsController : ControllerBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
             _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }

@@ -1,8 +1,12 @@
 namespace Peace.Lifelog.MapTest;
+
+using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Map;
 using Peace.Lifelog.Security;
+using Peace.Lifelog.UserManagement;
 using System.Diagnostics;
 
 public class PinServiceShould : IAsyncLifetime, IDisposable
@@ -11,9 +15,9 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     private static ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
     private static UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-    private static LogTarget logTarget = new LogTarget();
+    private static LogTarget logTarget = new LogTarget(createDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-    private static ILifelogAuthService lifelogAuthService = new lifelogAuthService();
+    private static ILifelogAuthService lifelogAuthService = new LifelogAuthService();
     private static IMapRepo mapRepo = new MapRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
     private PinService pinService = new PinService(mapRepo, lifelogAuthService, logging);
     private const string USER_ID = "TestMapServiceAccount";
@@ -23,7 +27,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     private string DOB = DateTime.Today.ToString("yyyy-MM-dd");
     private const string ZIP_CODE = "90701";
     //double check principal declratoin
-    private AppPrincipal? PRINCIPAL = "Normal";
+    private AppPrincipal? PRINCIPAL = new AppPrincipal();
     private string PINID = "TestPinID";
     private string LLIID = "TestLLIID";
     private string ADDRESS = "Test address";
@@ -83,7 +87,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testPin.Address = ADDRESS;
         testPin.Latitude = LATITUDE;
         testPin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
@@ -120,7 +124,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testPin.Address = ADDRESS;
         testPin.Latitude = LATITUDE;
         testPin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
@@ -168,16 +172,17 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testPin.Address = ADDRESS;
         testPin.Latitude = LATITUDE;
         testPin.Longitude = LONGITUDE;
-        
+
         var pin = "0";
+        var createPinResponse = new Response();
 
         // Act
-        for(int pinNum = 0; pinNum < 22; pinNum++)
-        {   
+        for (int pinNum = 0; pinNum < 22; pinNum++)
+        {
             pin = pinNum.ToString();
-            testPin.PinId = pin;   
-            var createPinResponse = await pinService.CreatePin(testPin);
-        }        
+            testPin.PinId = pin;
+            createPinResponse = await pinService.CreatePin(testPin);
+        }
         timer.Stop();
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readPinSql = $"SELECT LLIId, COUNT(*) AS count_of_pins FROM MapPin WHERE LLIId = '{LLIID}' GROUP BY LLIId;"; //double check this
@@ -217,12 +222,12 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testDeletePin.Address = ADDRESS;
         testDeletePin.Latitude = LATITUDE;
         testDeletePin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
         var createPinResponse = await pinService.CreatePin(testCreatePin);
-        var deletePinResponse = await pinService.DeletePin(testDeletePin);
+        var deletePinResponse = await pinService.DeletePin(testDeletePin.PinId, USER_HASH);
         timer.Stop();
         var readDataOnlyDAO = new ReadDataOnlyDAO();
         var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
@@ -255,12 +260,12 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testDeletePin.Address = ADDRESS;
         testDeletePin.Latitude = LATITUDE;
         testDeletePin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
         var createPinResponse = await pinService.CreatePin(testCreatePin);
-        var deletePinResponse = await pinService.DeletePin(testDeletePin);
+        var deletePinResponse = await pinService.DeletePin(testDeletePin.PinId, USER_HASH);
         var additionalTime = TimeSpan.FromSeconds(5);
         var newElapsed = timer.Elapsed + additionalTime;
         timer.Restart();
@@ -280,9 +285,9 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     #endregion
 
     #region Implement here
-    
+
     //second test can be done here or prefereablly in front end
-    
+
     #endregion
 
     #region View Pin Details Tests
@@ -298,7 +303,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testCreatePin.Address = ADDRESS;
         testCreatePin.Latitude = LATITUDE;
         testCreatePin.Longitude = LONGITUDE;
-        
+
         var testViewPin = new ViewPinRequest();
         testViewPin.Principal = PRINCIPAL;
         testViewPin.PinId = PINID;
@@ -306,7 +311,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testViewPin.Address = ADDRESS;
         testViewPin.Latitude = LATITUDE;
         testViewPin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
@@ -340,7 +345,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testCreatePin.Address = ADDRESS;
         testCreatePin.Latitude = LATITUDE;
         testCreatePin.Longitude = LONGITUDE;
-        
+
         var failPin = "wrongPin";
         var testViewPin = new ViewPinRequest();
         testViewPin.Principal = PRINCIPAL;
@@ -349,7 +354,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testViewPin.Address = ADDRESS;
         testViewPin.Latitude = LATITUDE;
         testViewPin.Longitude = LONGITUDE;
-        
+
 
         // Act
         var createPinResponse = await pinService.CreatePin(testCreatePin);
@@ -358,7 +363,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         // Assert
         Assert.True(viewPinResponse.HasError == true);
         Assert.Null(viewPinResponse.Output);
-        Assert.True(viewPinResponse.Output.Count == 0);
+        Assert.True(viewPinResponse.Output!.Count == 0);
 
         // Cleanup
         var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
@@ -380,7 +385,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testCreatePin.Address = ADDRESS;
         testCreatePin.Latitude = LATITUDE;
         testCreatePin.Longitude = LONGITUDE;
-        
+
         var testViewPin = new ViewPinRequest();
         testViewPin.Principal = PRINCIPAL;
         testViewPin.PinId = PINID;
@@ -388,7 +393,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testViewPin.Address = ADDRESS;
         testViewPin.Latitude = LATITUDE;
         testViewPin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
@@ -429,7 +434,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testCreatePin.Address = ADDRESS;
         testCreatePin.Latitude = LATITUDE;
         testCreatePin.Longitude = LONGITUDE;
-        
+
         var newLat = 200.00002;
         var testUpdatePin = new UpdatePinRequest();
         testUpdatePin.Principal = PRINCIPAL;
@@ -438,7 +443,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testUpdatePin.Address = ADDRESS;
         testUpdatePin.Latitude = newLat;
         testUpdatePin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
@@ -475,7 +480,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testCreatePin.Address = ADDRESS;
         testCreatePin.Latitude = LATITUDE;
         testCreatePin.Longitude = LONGITUDE;
-        
+
         var newLat = 200.000000000002;
         var testUpdatePin = new UpdatePinRequest();
         testUpdatePin.Principal = PRINCIPAL;
@@ -484,7 +489,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testUpdatePin.Address = ADDRESS;
         testUpdatePin.Latitude = newLat;
         testUpdatePin.Longitude = LONGITUDE;
-        
+
 
         // Act
         var createPinResponse = await pinService.CreatePin(testCreatePin);
@@ -493,7 +498,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         // Assert
         Assert.True(updatePinResponse.HasError == true);
         Assert.Null(updatePinResponse.Output);
-        Assert.True(updatePinResponse.Output.Count == 0);
+        Assert.True(updatePinResponse.Output!.Count == 0);
 
         // Cleanup
         var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
@@ -519,7 +524,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testCreatePin.Address = ADDRESS;
         testCreatePin.Latitude = LATITUDE;
         testCreatePin.Longitude = LONGITUDE;
-        
+
         var newLat = 200.00002;
         var testUpdatePin = new UpdatePinRequest();
         testUpdatePin.Principal = PRINCIPAL;
@@ -528,7 +533,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testUpdatePin.Address = ADDRESS;
         testUpdatePin.Latitude = newLat;
         testUpdatePin.Longitude = LONGITUDE;
-        
+
 
         // Act
         timer.Start();
@@ -557,5 +562,4 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     }
     #endregion
 
-    #region Edit LLI Tests
 }

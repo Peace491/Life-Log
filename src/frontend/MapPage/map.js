@@ -16,6 +16,7 @@ export function LoadMapPage(root, ajaxClient) {
     const MAX_PINS = 20
 
     let jwtToken = ""
+    let apiKey = ""
     let principal = {};
 
     // Config Variables
@@ -30,8 +31,6 @@ export function LoadMapPage(root, ajaxClient) {
     let editPinLLIUrl = ""
     let viewChangeUrl = ""
     let webServiceUrlLLI = ""
-
-    let apiKey = ""
 
     // Pin variables
     var currentMap;
@@ -51,7 +50,7 @@ export function LoadMapPage(root, ajaxClient) {
                 if (!pinList) return
                 pinList.reverse().forEach(pin => {
                     let location = { lat: parseFloat(pin.latitude), lng: parseFloat(pin.longitude) };
-                    pins = location // Add the pins to the dict
+                    pins[pin.pinId] = location // Add the pins to the dict
                     var marker = new google.maps.Marker({
                         position: location, // Set the position of the marker to the specified coordinates
                     });
@@ -74,6 +73,7 @@ export function LoadMapPage(root, ajaxClient) {
         for (let i = 0; i < markers.length; i++) {
           markers[i].setMap(map);
         }
+
     }
       
 
@@ -135,13 +135,11 @@ export function LoadMapPage(root, ajaxClient) {
             if (pinStatusCollection != null) {
                 if (pinStatusCollection.length) {
                     // Access the count of the first pin status object and store it
-                    console.log(pinStatusCollection)
                     count = parseInt(pinStatusCollection[0].count);
                 }
             }
             else {
                 count = 0
-                console.log(count)
             }
 
         })
@@ -157,7 +155,6 @@ export function LoadMapPage(root, ajaxClient) {
                 count++
             }
             catch (error) {
-                console.log(error)
                 alert("Unable to render pin, please try again")
             }
         }
@@ -168,7 +165,7 @@ export function LoadMapPage(root, ajaxClient) {
 
     //Render tool tip
     function renderTooltipOnClick(marker, pin) {
-        let viewPinUrl = webServiceUrl + viewUrl + pin.pinId
+        let viewPinUrl = webServiceUrl + viewUrl + pin.pinId;
 
         let llititle = ""
         let llideadline = ""
@@ -181,7 +178,6 @@ export function LoadMapPage(root, ajaxClient) {
         let cat3 = ""
 
         mapService.viewPin(viewPinUrl, jwtToken).then(function (LLIList) {
-            console.log("here")
             if (!LLIList) return
             let lli = LLIList[0]
             llititle = lli.title;
@@ -232,15 +228,26 @@ export function LoadMapPage(root, ajaxClient) {
             marker.addListener('click', function () {
                 // Open the InfoWindow
                 infowindow.open(currentMap, marker);
-                // Add a 'click' event listener for deleting pin
-                let deletePinBtn = document.getElementById('delete-button-pin');
-                deletePinBtn.addEventListener('click', function(){
-                    removePin(pin.pinId, marker)
-                })
+                attachDeleteButtonListener(pin, marker)
             });
 
         });
 
+    }
+
+    // Function to attach event listener to delete button
+    function attachDeleteButtonListener(pin, marker) {
+        let deletePinBtn = document.getElementById('delete-button-pin');
+        if (deletePinBtn) {
+            deletePinBtn.addEventListener('click', function(){
+                removePin(pin.pinId, marker);
+            });
+        } else {
+            // Button not found in DOM, wait and try again
+            setTimeout(function() {
+                attachDeleteButtonListener(pin, marker);
+            }, 100);
+        }
     }
 
     function renderPin(coordinates) {
@@ -289,12 +296,14 @@ export function LoadMapPage(root, ajaxClient) {
 
     function removePin(pinId, marker) {
         let url = webServiceUrl + deleteUrl + pinId
-        if (!pinId)
+        if (pinId)
         {
             try {
                 markers.splice(markers.indexOf(marker), 1);
                 mapService.deletePin(url, jwtToken);
+                pins[pinId] = 0
                 setMapOnAll(currentMap)
+                showPins()
             } catch (error) {
                 alert("Unable to delete pin, try again.");
             }
@@ -305,7 +314,6 @@ export function LoadMapPage(root, ajaxClient) {
         }
 
     }
-    //----------------------------------------------------------------------
 
     //-----------------------Modal------------------------------------------
     function renderModals() {
@@ -347,17 +355,11 @@ export function LoadMapPage(root, ajaxClient) {
 
 
     //----------------------------------------------------------------------
-
-    // Assuming you have a function to create a pin
-    function createPin(lli, address) {
-        // Implement pin creation logic here
-    }
-
-
+    
     //Validate Pin options
     function validatePinOptions(options) {
         // Input Validation
-
+        //TODO
     }
 
     //Switch View to Location Reccomendation
@@ -481,12 +483,7 @@ export function LoadMapPage(root, ajaxClient) {
     //-----------------------------------------------------------------------
 
 
-    /*
-    */
-
-
-
-
+    //---------------------------Config--------------------------------------
     // Fetch URL config
     async function fetchConfig() {
         // fetch all Url's

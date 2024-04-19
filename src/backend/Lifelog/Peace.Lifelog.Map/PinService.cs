@@ -4,6 +4,7 @@ using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LLI;
+using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using System.Collections.Generic;
 
@@ -14,21 +15,23 @@ public class PinService : IPinService
     private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
     private PinValidation pinValidation;
-    private Logging.ILogging logging;
+    private ILogging logging;
     private LLIService lliService;
 
     //For LLI 
-    private CreateDataOnlyDAO createDataOnlyDAO;
-    private ReadDataOnlyDAO readDataOnlyDAO;
-    private UpdateDataOnlyDAO updateDataOnlyDAO;
-    private DeleteDataOnlyDAO deleteDataOnlyDAO;
-    private Logging.Logging loggingLLI;
-    private object console;
+    private CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+    private ReadDataOnlyDAO? readDataOnlyDAO = new ReadDataOnlyDAO();
+    private UpdateDataOnlyDAO? updateDataOnlyDAO = new UpdateDataOnlyDAO();
+    private DeleteDataOnlyDAO? deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    private LogTarget? logTarget;
+    private Logging? loggingLLI;
 
-    public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, Logging.ILogging logging)
+    public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
     {
         this.mapRepo = mapRepo;
-        this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.loggingLLI);
+        this.logTarget = new LogTarget(createDataOnlyDAO);
+        this.loggingLLI = new Logging(logTarget);
+        this.lliService = new LLIService(this.createDataOnlyDAO!, this.readDataOnlyDAO!, this.updateDataOnlyDAO!, this.deleteDataOnlyDAO!, this.loggingLLI!);
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.pinValidation = new PinValidation();

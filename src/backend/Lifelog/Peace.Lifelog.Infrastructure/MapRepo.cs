@@ -138,7 +138,6 @@ public class MapRepo : IMapRepo
     {
         var deletePinResponse = new Response();
         string sql = $"DELETE FROM MapPin WHERE PinId = \"{PinId}\";";
-
         try
         {
             deletePinResponse = await deleteDataOnlyDAO.DeleteData(sql); ;

@@ -40,8 +40,6 @@ export function getPinStatus(url, values, jwtToken){
 }
 //Get All Pins for the User
 export function getAllPinFromUser(url, jwtToken){
-    console.log(url)
-    console.log(jwtToken)
     let request = ajaxClient.get(url, jwtToken)
 
     return new Promise((resolve, reject) => {
@@ -82,7 +80,7 @@ export function getAllLLI(url, jwtToken) {
 
 //Delete Pin
 export function deletePin(url, jwtToken){
-    let request = ajaxClient.delete(url, jwtToken)
+    let request = ajaxClient.del(url, jwtToken)
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {
@@ -91,6 +89,8 @@ export function deletePin(url, jwtToken){
             }
             return response.json();
         }).then(function (data) {
+            alert('The Pin is successfully deleted.')
+            location.reload()
             let output = data.output;
             resolve(output);
         }).catch(function (error) {
@@ -102,7 +102,6 @@ export function deletePin(url, jwtToken){
 //View Pin
 export function viewPin(url,jwtToken){
     let request = ajaxClient.get(url, jwtToken)
-    console.log("works")
     return new Promise((resolve, reject) => {
         request.then(function (response) {
             if (response.status != 200) {
