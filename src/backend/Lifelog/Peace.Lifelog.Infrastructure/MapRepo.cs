@@ -33,7 +33,6 @@ public class MapRepo : IMapRepo
         + $"{Longitude}"
         + ");";
 
-        Console.WriteLine(sql);
         try
         {
             createPinResponse = await this.createDataOnlyDAO.CreateData(sql);
@@ -79,7 +78,6 @@ public class MapRepo : IMapRepo
 
         string sql = "SELECT LLIId "
         + $"FROM MapPin Where PinId=\"{PinId}\";";
-        Console.WriteLine(sql);
 
         try
         {

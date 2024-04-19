@@ -55,10 +55,10 @@ export function LoadMapPage(root, ajaxClient) {
                     var marker = new google.maps.Marker({
                         position: location, // Set the position of the marker to the specified coordinates
                     });
-                    // Set the markers 
-                    setMapOnAll(currentMap)
                     //add the markers to the list 
                     markers.push(marker)
+                    // Set the markers 
+                    setMapOnAll(currentMap)
                     // append to the array of markers
                     renderTooltipOnClick(marker, pin)
                 });
@@ -232,13 +232,12 @@ export function LoadMapPage(root, ajaxClient) {
             marker.addListener('click', function () {
                 // Open the InfoWindow
                 infowindow.open(currentMap, marker);
+                // Add a 'click' event listener for deleting pin
+                let deletePinBtn = document.getElementById('delete-button-pin');
+                deletePinBtn.addEventListener('click', function(){
+                    removePin(pin.pinId, marker)
+                })
             });
-
-            // Add a 'click' event listener for deleting pin
-            let deletePinBtn = document.getElementById('delete-button-pin');
-            deletePinBtn.addEventListener('click', function(){
-                removePin(pin.pinId, marker)
-            })
 
         });
 
@@ -265,6 +264,8 @@ export function LoadMapPage(root, ajaxClient) {
             position: { lat: latitude, lng: longitude },
             map: currentMap
         });
+        // Add pins to the marker list
+        markers.push(marker)
 
         // Populate in backend
         let values = {
@@ -367,6 +368,7 @@ export function LoadMapPage(root, ajaxClient) {
         if (!interMapViewButton.classList.contains('currentView')) {
             interMapViewButton.addEventListener('click', function () {
                 initInteractiveMap();
+                showPins()
                 interMapViewButton.classList.add('currentView')
             })
 

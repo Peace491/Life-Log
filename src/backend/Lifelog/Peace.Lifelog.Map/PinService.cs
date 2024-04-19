@@ -180,6 +180,7 @@ public class PinService : IPinService
         var response = new Response();
         response.HasError = false;
 
+        #region TODO
         /*// Validate Input
         var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, viewPinRequest, PinRequestType.View);
         if (validateDeletePinRequestResponse.HasError)
@@ -194,6 +195,7 @@ public class PinService : IPinService
             var errorMessage = "The User Is Not Authorized To view a Pin";
             return handlePinError(response, viewPinRequest.Principal!, errorMessage!);
         }*/
+        #endregion
 
         //Read the Pin in DB 
         Response readPinInDBResponse;
@@ -239,7 +241,6 @@ public class PinService : IPinService
             }
 
             // Handle Success Response
-            Console.WriteLine("Here");
             //var logResponse = this.logging.CreateLog("Logs", viewPinRequest.Principal!.UserId, "Info", "Business", "Pin view operation successful");
             return response;
         }
