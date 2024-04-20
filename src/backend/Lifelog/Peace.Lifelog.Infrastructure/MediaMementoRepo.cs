@@ -19,13 +19,18 @@ public class MediaMementoRepo : IMediaMementoRepo
     }
 
 
-    public async Task<Response> UploadMediaMemento(int lliId, string binary)
-    {
-        // Subsitute in values for the query 
-        var updatedUploadQuery = uploadQuery.Replace("@lliId", lliId.ToString()).Replace("@binary", binary);
-        // Run and return the query results
-        return await _updateDataOnlyDAO.UpdateData(updatedUploadQuery);
-    }
+    public async Task<Response> UploadMediaMemento(int lliId, byte[] binary)
+{
+    // Convert the byte array to a hexadecimal string
+    var hexString = "0x" + BitConverter.ToString(binary).Replace("-", "");
+
+    // Substitute in values for the query 
+    var updatedUploadQuery = $"UPDATE LLI SET MediaMemento = {hexString} WHERE LLIId = {lliId};";
+
+    // Run and return the query results
+    return await _updateDataOnlyDAO.UpdateData(updatedUploadQuery);
+}
+
 
     public async Task<Response> DeleteMediaMemento(int lliId)
     {

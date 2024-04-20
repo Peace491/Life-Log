@@ -17,7 +17,7 @@ public class MediaMementoService : IMediaMementoService
         _logger = logger;
     }
 
-    public async Task<Response> UploadMediaMemento(string userhash, int lliId, string binary)
+    public async Task<Response> UploadMediaMemento(string userhash, int lliId, byte[] binary)
     {
         try
         {

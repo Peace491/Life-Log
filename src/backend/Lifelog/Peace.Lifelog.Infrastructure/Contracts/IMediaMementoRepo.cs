@@ -4,6 +4,6 @@ using DomainModels;
 
 public interface IMediaMementoRepo
 {
-    Task<Response> UploadMediaMemento(int lliId, string binary);
+    Task<Response> UploadMediaMemento(int lliId, byte[] binary);
     Task<Response> DeleteMediaMemento(int lliId);
 }

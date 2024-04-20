@@ -10,7 +10,7 @@ public class MediaMementoRepoShould
     {
         // Arrange
         var lliId = 1;
-        var binary = "binary";
+        var binary = new byte[] { 0x48, 0x69 }; // 'Hi' in ASCII
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO);
 
@@ -20,20 +20,19 @@ public class MediaMementoRepoShould
         // Assert
         Assert.True(response.HasError == false);
     }
-    // [Fact]
-    // public async Task DeleteMediaMemento()
-    // {
-    //     // Arrange
-    //     var lliId = 1;
-    //     var response = new Response { Status = "Success" };
-    //     var mediaMementoRepo = new Mock<IMediaMementoRepo>();
-    //     mediaMementoRepo.Setup(x => x.DeleteMediaMemento(lliId)).ReturnsAsync(response);
-    //     var mediaMementoService = new MediaMementoService.MediaMementoService(mediaMementoRepo.Object);
 
-    //     // Act
-    //     var result = await mediaMementoService.DeleteMediaMemento("userhash", lliId);
+    [Fact]
+    public async Task DeleteMediaMemento()
+    {
+        // Arrange
+        var lliId = 1;
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO);
 
-    //     // Assert
-    //     Assert.Equal(response, result);
-    // }
+        // Act
+        var response = await mediaMementoRepo.DeleteMediaMemento(lliId);
+
+        // Assert
+        Assert.True(response.HasError == false);
+    }
 }
