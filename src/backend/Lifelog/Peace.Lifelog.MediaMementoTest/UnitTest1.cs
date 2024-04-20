@@ -1,0 +1,10 @@
+namespace Peace.Lifelog.MediaMementoTest;
+
+public class UnitTest1
+{
+    [Fact]
+    public void Test1()
+    {
+
+    }
+}
