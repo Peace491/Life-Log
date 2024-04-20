@@ -1,0 +1,370 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+html, body, #root {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-image: url("../Assets/lli-management-background.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    box-sizing: border-box;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    align-items: center;
+    gap: 5px;
+    height: 100px;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    height: 90px;
+}
+
+.logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.header-contents-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 40px;
+}
+
+.logout-container {
+    padding: 5px;
+    background-color: rgb(255, 190, 190);
+    border-radius: 4px;
+}
+
+.logout-container:hover {
+    cursor: pointer;
+}
+
+.logout-container > h2 {
+    color: rgb(255, 98, 98);
+    
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 10%;
+    align-items: center;
+}
+
+.user-management-container {
+    gap: 3%;
+    justify-content: right;
+    align-items: center;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
+}
+
+main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    padding: 2% 5%;
+}
+
+.map-link-container:hover {
+    cursor: pointer;
+}
+
+.map-container {
+    height: 34rem;
+    width: 100%;
+    min-height: 100px;
+    background-color: rgba(141, 141, 141, 0.3);
+
+    border-radius: 20px;
+
+    padding: 10px 20px 30px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.map-header-container {
+    display: grid;
+    grid-template-columns: repeat(4, auto); /* Adjust the number of columns as needed */
+    grid-column-gap: 5px; /* Reduce the gap between columns */
+    margin-right: auto;
+}
+
+.map-header-title-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: fit-content;
+    padding: 5px;
+    position: relative;
+    bottom: 25px;
+
+    background-color: #EBA755;
+    border-radius: 10px;
+}
+
+.map-header-title-container>h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.rec-map-header-title-container {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: fit-content;
+    padding: 5px;
+    position: relative;
+    bottom: 25px;
+
+    background-color: #EBA755;
+    border-radius: 10px;
+}
+
+.rec-map-header-title-container>h2 {
+    color: white;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.map{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 15px;
+    height: 90%;
+    min-width: 250px;
+    width: 95%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.add-pin-button-container {
+    height: 70px;
+    position: relative;
+    top: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.add-pin-button-container>img {
+    height: 100%;
+}
+
+button:hover, .add-pin-button-container>img:hover {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+/*-------------------------------MODAL STYLING (FOR CREATING MODALS)---------------------------------*/
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    border: 1px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: white;
+    width: 660px;
+    max-width: 80%;
+    visibility: hidden;
+}
+
+.modal.active {
+    opacity: 1;
+}
+
+#overlay {
+    position: fixed;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+#overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+.pin {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 15px;
+    height: 90%;
+    min-width: 250px;
+    width: 95%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.pin-options {
+    display: flex;
+}
+
+.pin-create-container {
+    align-self: center;
+    transform: scale(1.0);
+    margin-right: 6px;
+}
+
+.pin-input-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    border: solid;
+    border-color: #EEEEEE;
+    height: 100%;
+    padding: 11px 11px 11px 11px;
+    border-radius: 10px;
+}
+
+.pin-input-container div {
+    display: flex;
+    flex-direction: column;
+}
+
+#create-pin-btn{
+    background-color: #EBA755;
+    color: white;
+    font-weight: 400;
+    border-radius: 10px;
+    border-color: white;
+}
+
+/*------------------ Drop down ------------------*/
+.lli-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.status-select, .visibility-select {
+    border: none;
+    width: 80%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    right: 4px;
+    bottom: 2px;
+}
+/*-----------------------------------------------*/
+
+[contenteditable] { 
+    outline: 0px solid transparent; 
+} 
+
+p:empty:not(:focus)::before {
+    content: attr(data-placeholder);
+}
+
+.pin-input {
+    grid-area: 1 / 1 / 5 / 7;
+}
