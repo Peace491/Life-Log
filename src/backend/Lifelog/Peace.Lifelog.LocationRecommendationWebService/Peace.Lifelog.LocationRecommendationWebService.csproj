@@ -11,4 +11,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.LocationRecommendation\Peace.Lifelog.LocationRecommendation.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" /> 
+  </ItemGroup>
+
 </Project>
