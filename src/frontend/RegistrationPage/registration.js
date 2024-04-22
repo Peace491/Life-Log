@@ -66,6 +66,7 @@ export function loadRegistrationPage(root, ajaxClient) {
     }
 
     function onSubmitRegistrationCredentials(){
+        console.log("in reg credentials")
         // Get html elements
         let registrationFormContainer = document.getElementById('registration-form-container')
     
@@ -121,6 +122,7 @@ export function loadRegistrationPage(root, ajaxClient) {
         let zipCode = zipcodeInput.value
 
         submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
+        
 
         registerUser(userId, dob, zipCode).then(function(data) {
             let userHash = data.Output[0]
