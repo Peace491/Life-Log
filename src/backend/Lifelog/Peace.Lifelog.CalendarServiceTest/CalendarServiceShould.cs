@@ -22,7 +22,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
     private static ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
     private static UpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-    private static LogTarget logTarget = new LogTarget(createDataOnlyDAO);
+    private static LogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
     private LLIService LLIService = new LLIService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
     private static IPersonalNoteRepo personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);

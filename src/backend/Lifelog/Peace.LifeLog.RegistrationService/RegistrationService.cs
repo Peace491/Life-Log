@@ -4,7 +4,7 @@ using DomainModels;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.UserManagementTest;
 using Peace.Lifelog.DataAccess;
-using System.Diagnostics; 
+using System.Diagnostics;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using System;
@@ -26,7 +26,8 @@ public class RegistrationService()
         var response = new Response();
 
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging(logTarget);
         /*var readDataOnlyDAO = new ReadDataOnlyDAO();
         var userHashResponse = await readDataOnlyDAO.ReadData($"SELECT UserHash FROM lifelogaccount WHERE UserID = \"System\"");*/
@@ -43,31 +44,30 @@ public class RegistrationService()
 
             /*Log Level: Warning
             Log Category: Data
-            Log Message: “The birth date is invalid.”*/
+            Log Message: ï¿½The birth date is invalid.ï¿½*/
             response.HasError = true;
             response.ErrorMessage = "The birth date is invalid.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
 
 
-        
+
 
         // #3
         string threeCharsPattern = @"^.{1,3}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
         if (Regex.IsMatch(email, threeCharsPattern))
         {
-
             /*Log Level: Warning
             Log Category: Data
-            Log Message: “The email is not in the correct format.”*/
+            Log Message: ï¿½The email is not in the correct format.ï¿½*/
             response.HasError = true;
             response.ErrorMessage = "The email is too short.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -81,11 +81,11 @@ public class RegistrationService()
 
             /* Log Level: Warning
              Log Category: Data
-             Log Message: “The email is too short.”*/
+             Log Message: ï¿½The email is too short.ï¿½*/
             response.HasError = true;
             response.ErrorMessage = "The email is not alphanumeric.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -93,19 +93,20 @@ public class RegistrationService()
         // valid email using regex #1
         string validEmailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
-        if(!Regex.IsMatch(email, validEmailPattern)){
+        if (!Regex.IsMatch(email, validEmailPattern))
+        {
 
             /*// log: Log Level: Warning
             Log Category: Data
-            Log Message: “The email is not in the correct format.”*/
+            Log Message: ï¿½The email is not in the correct format.ï¿½*/
             response.HasError = true;
             response.ErrorMessage = "The email is not in the correct format.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", response.ErrorMessage);
+            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
-        
+
         // return response 
         response.HasError = false;
         return response;
@@ -143,30 +144,34 @@ public class RegistrationService()
 
     }*/
 
-    
 
-    public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode){
+
+    public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode)
+    {
         var response = await RegisterUser(email, DOB, zipCode, "Normal");
         return response;
 
     }
 
-    public async Task<Response> RegisterAdminUser(string email, string DOB, string zipCode){
-        var response  = await RegisterUser(email, DOB, zipCode, "Admin");
+    public async Task<Response> RegisterAdminUser(string email, string DOB, string zipCode)
+    {
+        var response = await RegisterUser(email, DOB, zipCode, "Admin");
         return response;
 
     }
 
 
-    public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole){
-
-        // TODO: Check OTP before doing register user
+    public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole)
+    {
         var response = new Response();
-        
+        var createDataOnlyDAO = new CreateDataOnlyDAO();
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        var logging = new Logging(logTarget);
 
-        string userID = email;  
-        
-        
+        string userID = email;
+
+
         // uses usermanagementtest
         var accountRequest = new LifelogAccountRequest();
         var profileRequest = new LifelogProfileRequest();
@@ -180,18 +185,23 @@ public class RegistrationService()
         var userManagementService = new LifelogUserManagementService();
         var createLifelogUserResponse = await userManagementService.CreateLifelogUser(accountRequest, profileRequest);
 
+        if (createLifelogUserResponse.HasError == true)
+        {
+            response.HasError = true;
+            response.ErrorMessage = createLifelogUserResponse.ErrorMessage;
+
+            await logging.CreateLog("Logs", "System", "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+
+            return response;
+        }
+
         // add success log 
         /*Timestamp
         Log Level: Info
         Log Category: Persistent Data Store
-        Log Message: “User registration successful.”*/
+        Log Message: ï¿½User registration successful.ï¿½*/
         response.HasError = createLifelogUserResponse.HasError;
         response.Output = createLifelogUserResponse.Output;
-       
-
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
-        var logging = new Logging(logTarget);
 
         string userHash = "";
         if (createLifelogUserResponse.Output is not null)
@@ -203,11 +213,11 @@ public class RegistrationService()
         }
 
 
-        await logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful.");
+        await logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful");
 
         return response;
 
-        
+
     }
 
 }

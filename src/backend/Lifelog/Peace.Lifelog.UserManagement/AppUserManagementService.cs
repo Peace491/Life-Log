@@ -59,7 +59,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         response = createResponse;
 
         // Log Account Creation
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)
@@ -124,7 +125,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         response = createResponse;
 
         // Log Account Creation
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)
@@ -151,7 +153,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var response = await createDataOnlyDAO.CreateData(createUserHashSql);
 
         // Log Account Creation
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)
@@ -209,7 +212,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         // Log Account recovery
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)
@@ -275,7 +278,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         // Log Account recovery
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)
@@ -382,7 +386,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         // Log Profile modification
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)
@@ -447,7 +452,8 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         // Log Account deletion
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging.Logging(logTarget);
 
         if (response.HasError)

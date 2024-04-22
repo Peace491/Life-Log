@@ -1,6 +1,7 @@
 'use strict';
 import * as lliDomManip from './lli-dom-manipulation.js'
 import * as routeManager from '../routeManager.js';
+import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -413,19 +414,6 @@ export function loadLLIPage(root, ajaxClient) {
         })
     }
 
-    function setupHeaderLinks(){
-        let calendarLink = document.getElementById("calendar-link")
-        let recEngineLink = document.getElementById("rec-engine-link")
-
-        calendarLink.addEventListener('click', function () {
-            routeManager.loadPage(routeManager.PAGES.calendarPage)
-            
-        })
-        recEngineLink.addEventListener('click', function () {
-            routeManager.loadPage(routeManager.PAGES.recEnginePage)
-        })
-    }
-
     function showLLI() {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
@@ -454,19 +442,21 @@ export function loadLLIPage(root, ajaxClient) {
         if (jwtToken == null) {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            var userHash = JSON.parse(jwtToken).Payload.UserHash
+            log.logPageAccess(userHash, routeManager.PAGES.lliManagementPage, jwtToken)
+
             // Set up event handlers
             setupCreateLLITemplate();
             setupCreateLLISubmit();
             // setupFilterSelect();
             setupFilter();
             setupSearch();
-            setupLogout();
-            setupHeaderLinks();
+
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);
             
             // Get data
             showLLI();
-
-            //navigate 
         }
     }
 

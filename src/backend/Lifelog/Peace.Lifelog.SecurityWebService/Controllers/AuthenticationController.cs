@@ -15,30 +15,49 @@ public class AuthenticationController : ControllerBase
 {
     [HttpGet]
     [Route("getOTPEmail")]
-    public async Task<IActionResult> GetOTPEmail(string userId) {
-        var lifelogUserManagementService = new LifelogUserManagementService();
+    public async Task<IActionResult> GetOTPEmail(string userId)
+    {
+        try
+        {
+            var lifelogUserManagementService = new LifelogUserManagementService();
 
-        var userHash = await lifelogUserManagementService.getUserHashFromUserId(userId);
+            var userHash = await lifelogUserManagementService.getUserHashFromUserId(userId);
 
-        var emailService = new EmailService();
+            var emailService = new EmailService();
 
-        // Act
-        var emailResponse = await emailService.SendOTPEmail(userHash);
-        
-        return Ok(JsonSerializer.Serialize<string>(userHash));
+            // Act
+            var emailResponse = await emailService.SendOTPEmail(userHash);
+
+            return Ok(JsonSerializer.Serialize<string>(userHash));
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+
     }
 
     [HttpPost]
     [Route("authenticateOTP")]
-    public async Task<IActionResult> AuthenticateOTP([FromBody]AuthenticationRequest authenticationRequest){
+    public async Task<IActionResult> AuthenticateOTP([FromBody] AuthenticationRequest authenticationRequest)
+    {
         var lifelogAuthService = new LifelogAuthService();
-        var appPrincipal = await lifelogAuthService.AuthenticateLifelogUser(authenticationRequest.UserHash, authenticationRequest.OTP)!;
+        try
+        {
+            var appPrincipal = await lifelogAuthService.AuthenticateLifelogUser(authenticationRequest.UserHash, authenticationRequest.OTP)!;
 
-        var jwtService = new JWTService();
+            var jwtService = new JWTService();
 
-        var jwt = jwtService.createJWT(Request, appPrincipal, authenticationRequest.UserHash);
+            var jwt = jwtService.createJWT(Request, appPrincipal, authenticationRequest.UserHash);
 
-        return Ok(JsonSerializer.Serialize<Jwt>(jwt));
+            return Ok(JsonSerializer.Serialize<Jwt>(jwt));
+        }
+        catch
+        {
+            return StatusCode(500);
+        }
+
+
     }
 
 }
