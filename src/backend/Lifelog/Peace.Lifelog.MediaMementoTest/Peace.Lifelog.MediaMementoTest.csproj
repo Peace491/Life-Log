@@ -22,4 +22,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.MediaMementoService\Peace.Lifelog.MediaMementoService.csproj" />
+  </ItemGroup>
+
 </Project>

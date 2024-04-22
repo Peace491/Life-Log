@@ -10,6 +10,8 @@ public class MediaMementoService : IMediaMementoService
     private readonly ILogging _logger;
     private string fiftyMB = "52428800";
     private string oneGB = "1073741824";
+    private Response validDeleteMediaResponse = new Response { HasError = false, ErrorMessage = null };
+    private Response validUploadMediaResponse = new Response { HasError = false, ErrorMessage = null };
 
     public MediaMementoService(IMediaMementoRepo mediaMementoRepository, ILogging logger)
     {
@@ -42,7 +44,7 @@ public class MediaMementoService : IMediaMementoService
         }
     }
 
-    public async Task<Response> DeleteMediaMemento(string userhash, int lliId)
+    public async Task<Response> DeleteMediaMemento(int lliId)
     {
         try
         {
@@ -82,6 +84,7 @@ public class MediaMementoService : IMediaMementoService
     }
     private bool ValidateUploadMediaResponse(Response response)
     {
+        // Check fields of example response objects against actual object
         throw new NotImplementedException();
     }
     private bool ValidateDeleteMediaResponse(Response response)
@@ -90,6 +93,10 @@ public class MediaMementoService : IMediaMementoService
     }
     private bool TimeOperation(Stopwatch timer)
     {
-        throw new NotImplementedException();
+        if (timer.Elapsed.TotalSeconds < 3)
+        {
+            return true;
+        }
+        return false;
     }
 }
