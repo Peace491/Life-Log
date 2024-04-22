@@ -7,17 +7,17 @@ using Peace.Lifelog.Security;
 
 public class LocationRecommendationCluster : IClusterRequest
 {
-    public Response Cluster(Response response)
+    public Cluster ClusterRequest(Response response)
     {
-        double[][] data = ExtractDataFromResponse(response.Output[4], response.Output[5], response);
+        double[][] data = ExtractDataFromResponse(response);
         int numberOfClusters = DetermineNumberOfClusters(data);  // This should be adjusted based on data.
 
         var clusterResults = ClusterAlgorithm(data, numberOfClusters);
         var topClusters = SelectTopClusters(clusterResults.Clusters, 3);
         clusterResults.Clusters = topClusters;
 
-        response.Data = clusterResults;  // Assuming Response has a Data property to store results
-        return response;
+        //response.Output = clusterResults;  // Assuming Response has a Data property to store results
+        return clusterResults;
     }
 
     private static Cluster ClusterAlgorithm(double[][] data, int numberOfClusters)
@@ -127,26 +127,25 @@ public class LocationRecommendationCluster : IClusterRequest
         return Math.Sqrt(sum);
     }
 
-    private double[][] ExtractDataFromResponse(List<object> lat, List<object> lng, Response response)
+    private double[][] ExtractDataFromResponse(Response response)
     {
         // Assuming response.Data is in a suitable format
-        /*
-        List<double[]> list1 = new List<double[]>();
-        List<double[]> list2 = new List<double[]>();
+        
+        List<string> lat = new List<string>();
+        List<string> lng = new List<string>();
         if(response.Output != null)
         {
-            foreach(List<object> output in lat)
+            foreach(List<object> output in response.Output)
             {
-                list1.Add(new double[] {double.Parse(output[])});
+                lat.Add(output[4].ToString());
+                lng.Add(output[5].ToString());
             }
         }
-        return response.Data as double[][];
-        */
         double[][] result = new double[lat.Count][];
 
         for (int i = 0; i < lat.Count; i++)
         {
-            result[i] = new double[] { (double)lat[i], (double)lng[i] };
+            result[i] = new double[] { (Double.Parse(lat[i])), (Double.Parse(lng[i])) };
         }
 
         return result;

@@ -29,7 +29,7 @@ public sealed class LocationRecommendationController : ControllerBase
     }
 
     [HttpGet("getLocationRecommendation")]
-    public async Task<IActionResult> GetLocationRecommendation()
+    public async Task<IActionResult> GetLocationRecommendation(AppPrincipal appPrincipal)
     {
         try
         {
@@ -56,9 +56,15 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
-
+            if (appPrincipal == null)
+            {
+                return StatusCode(400, "AppPrincipal is null.");
+            }
+            GetRecommendationRequest getRecommendationPayload = new GetRecommendationRequest();
+            getRecommendationPayload.Principal = appPrincipal;
+            getRecommendationPayload.UserHash = userHash;
             // need to double check what is being passed in here
-            var response = await _locationRecommendationService.GetLocationRecommendation();
+            var response = await _locationRecommendationService.GetRecommendation(getRecommendationPayload);
 
             if (response == null)
             {
@@ -76,14 +82,13 @@ public sealed class LocationRecommendationController : ControllerBase
         }
         catch (Exception ex)
         {
-            _ = await _logger.CreateLog("Logs", "LocationRecommendationController
-        ", "ERROR", "System", ex.Message);
+            _ = await _logger.CreateLog("Logs", "LocationRecommendationController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 
     [HttpGet("viewLocationRecommendation")]
-    public async Task<IActionResult> ViewLocationRecommendation([FromBody])
+    public async Task<IActionResult> ViewLocationRecommendation(AppPrincipal appPrincipal)
     {
         try
         {
@@ -111,13 +116,16 @@ public sealed class LocationRecommendationController : ControllerBase
                 return StatusCode(401);
             }
 
-            if (payload.AppPrincipal == null)
+            if (appPrincipal == null)
             {
                 return StatusCode(400, "AppPrincipal is null.");
             }
+            ViewRecommendationRequest viewRecommendationPayload = new ViewRecommendationRequest();
+            viewRecommendationPayload.Principal = appPrincipal;
+            viewRecommendationPayload.UserHash = userHash;
 
             // need to double check what is being passed in here
-            var response = await _locationRecommendationService.ViewLocationRecommendation();
+            var response = await _locationRecommendationService.ViewRecommendation(viewRecommendationPayload);
 
             if (response == null)
             {
@@ -135,7 +143,7 @@ public sealed class LocationRecommendationController : ControllerBase
             }
 
             /*need to check if this is what you want below*/
-            _ = await _logger.CreateLog("Logs", payload.AppPrincipal.UserId, "INFO", "System", "Created Pin successfully.");
+            _ = await _logger.CreateLog("Logs", userHash, "INFO", "System", "Created Pin successfully.");
             return Ok(response);
         }
         catch (Exception ex)
@@ -245,7 +253,7 @@ public sealed class LocationRecommendationController : ControllerBase
                 return StatusCode(400, "AppPrincipal is null.");
             }
 
-            UpdateLogRequest updateLogRequest = new();
+            /*UpdateLogRequest updateLogRequest = new();
             updateLogRequest.Principal = payload.AppPrincipal;
             // need to double check what is being passed in here
             var response = await _locationRecommendationService.updateLog(updateLogRequest);
@@ -263,11 +271,11 @@ public sealed class LocationRecommendationController : ControllerBase
             if (response.Output == null)
             {
                 return StatusCode(404, "Couldn't Update Log.");
-            }
+            }*/
 
             /*need to check if this is what you want below*/
             _ = await _logger.CreateLog("Logs", payload.AppPrincipal.UserId, "INFO", "System", "Update Log successfully.");
-            return Ok(response);
+            return Ok();
         }
         catch (Exception ex)
         {

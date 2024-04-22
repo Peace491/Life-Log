@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using DomainModels;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Security;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.LLI;
 
 public class LocationRecommendationService : ILocationRecommendationService
 {
@@ -12,6 +14,7 @@ public class LocationRecommendationService : ILocationRecommendationService
     private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
     private LocationRecommendationValidation locationRecommendationValidation;
+    private LocationRecommendationCluster locationRecommendationCluster;
     private ILogging logging;
 
     public LocationRecommendationService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
@@ -20,6 +23,7 @@ public class LocationRecommendationService : ILocationRecommendationService
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.locationRecommendationValidation = new LocationRecommendationValidation();
+        this.locationRecommendationCluster = new LocationRecommendationCluster();
     }
 
     #region Get Recommendation
@@ -28,9 +32,10 @@ public class LocationRecommendationService : ILocationRecommendationService
         var response = new Response();
         response.HasError = false;
         Response readPinResponse = new();
+        var userHash = getRecommendationRequest.UserHash;
 
         //Validate Inpit 
-        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
+        var validateRequestResponse = this.locationRecommendationValidation.IsValidUserHash(userHash);
         if (!validateRequestResponse)
         {
             var errorMessage = "invalid user hash";
@@ -55,14 +60,14 @@ public class LocationRecommendationService : ILocationRecommendationService
 
         var pinOutput = ConvertDatabaseResponseOutputToPinObjectList(readPinResponse);
         response.Output = pinOutput;
-        var clusterDataResponse = locationRecommendationValidation.Cluster(response);
+        var clusterDataResponse = locationRecommendationCluster.ClusterRequest(response);
         return response;
     }
     #endregion
     #region View Recommendation
     public async Task<Response> ViewRecommendation(ViewRecommendationRequest viewRecommendationRequest)
     {
-
+        return await this.logging.CreateLog("Logs", "userHash", "ERROR", "Business", "errorMessage");
     }
     #endregion
     #region View Pin
@@ -123,14 +128,15 @@ public class LocationRecommendationService : ILocationRecommendationService
     }
     #endregion
     #region Switching Views
-    public async Task<Response> UpdateLog(UpdateLogRequest updateLogRequest)
+    //might be unnessecary
+    /*public async Task<Response> UpdateLog(UpdateLogRequest updateLogRequest)
     {
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
 
         // Validate Input
-        var validateDeletePinRequestResponse = this.pinValidation.ValidatePinRequest(response, updateLogRequest, PinRequestType.UpdateLog);
+        var validateDeletePinRequestResponse = this.locationRecommendationValidation.ValidatePinRequest(response, updateLogRequest, PinRequestType.UpdateLog);
         if (validateDeletePinRequestResponse.HasError)
         {
             errorMessage = validateDeletePinRequestResponse.ErrorMessage;
@@ -138,7 +144,7 @@ public class LocationRecommendationService : ILocationRecommendationService
         }
 
         // Authorize request
-        if (!IsUserAuthorizedForPin(updateLogRequest.Principal!))
+        if (!IsUserAuthorizedForLocationRecommendation(updateLogRequest.Principal!))
         {
             errorMessage = "The User Is Not Authorized To view a Pin";
             return LoggingError(response, updateLogRequest.Principal!, errorMessage!);
@@ -147,7 +153,7 @@ public class LocationRecommendationService : ILocationRecommendationService
         var logResponse = await this.logging.CreateLog("Logs", updateLogRequest.Principal!.UserId, "Info", "View", "Map view changed to Location Recommendation");
 
         return response;
-    }
+    }*/
     #endregion
     #region Helper Functions
     private Response LoggingError(Response response, AppPrincipal principal, string errorMessage)
@@ -216,6 +222,87 @@ public class LocationRecommendationService : ILocationRecommendationService
         }
 
         return pinList;
+    }
+
+    private List<object>? ConvertDatabaseResponseOutputToLLIObjectList(Response readLLIResponse)
+    {
+        List<object> lliList = new List<object>();
+
+        if (readLLIResponse.Output == null)
+        {
+            return null;
+        }
+
+        foreach (List<object> LLI in readLLIResponse.Output)
+        {
+
+            var lli = new LLI();
+
+            int index = 0;
+
+            foreach (var attribute in LLI)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        lli.LLIID = attribute.ToString() ?? "";
+                        break;
+                    case 1:
+                        lli.UserHash = attribute.ToString() ?? "";
+                        break;
+                    case 2:
+                        lli.Title = attribute.ToString() ?? "";
+                        break;
+                    case 3:
+                        lli.Description = attribute.ToString() ?? "";
+                        break;
+                    case 4:
+                        lli.Status = attribute.ToString() ?? "";
+                        break;
+                    case 5:
+                        lli.Visibility = attribute.ToString() ?? "";
+                        break;
+                    case 6:
+                        lli.Deadline = attribute.ToString() ?? "";
+                        break;
+                    case 7:
+                        lli.Cost = Convert.ToInt32(attribute);
+                        break;
+                    case 8:
+                        lli.Recurrence.Status = attribute.ToString() ?? "";
+                        break;
+                    case 9:
+                        lli.Recurrence.Frequency = attribute.ToString() ?? "";
+                        break;
+                    case 10:
+                        lli.CreationDate = attribute.ToString() ?? "";
+                        break;
+                    case 11:
+                        lli.CompletionDate = attribute.ToString() ?? "";
+                        break;
+                    case 12:
+                        lli.Category1 = attribute.ToString() ?? "";
+                        break;
+                    case 13:
+                        lli.Category2 = attribute.ToString() ?? "";
+                        break;
+                    case 14:
+                        lli.Category3 = attribute.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            lliList.Add(lli);
+
+        }
+
+        return lliList;
     }
     #endregion
 }
