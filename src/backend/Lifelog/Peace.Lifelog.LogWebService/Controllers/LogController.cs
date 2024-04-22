@@ -58,7 +58,7 @@ public sealed class LogController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getTopNVisitedPage")]
+    [Route("topNVisitedPage")]
     public async Task<IActionResult> GetTopNVisitedPage(int numOfPage, int periodInMonth)
     {
         // var processTokenResponseStatus = ProcessJwtToken();
@@ -69,6 +69,14 @@ public sealed class LogController : ControllerBase
 
         try
         {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
+
             var response = await logging.ReadTopNMostVisitedPage("Logs", numOfPage, periodInMonth);
 
             return Ok(response);
@@ -80,7 +88,7 @@ public sealed class LogController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getTopNLongestPageVisit")]
+    [Route("topNLongestPageVisit")]
     public async Task<IActionResult> GetTopNLongestPageVisit(int numOfPage, int periodInMonth)
     {
         // var processTokenResponseStatus = ProcessJwtToken();
@@ -91,6 +99,13 @@ public sealed class LogController : ControllerBase
 
         try
         {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
             var response = await logging.ReadTopNLongestPageVisit("Logs", numOfPage, periodInMonth);
 
             return Ok(response);
@@ -103,12 +118,19 @@ public sealed class LogController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getLoginLogsCount")]
-    public async Task<IActionResult> GetLoginLogsCount(string type)
+    [Route("loginLogsCount")]
+    public async Task<IActionResult> GetLoginLogsCount(string type, int period)
     {
         try
         {
-            var response = await logging.ReadLoginLogsCount("Logs", type);
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
+            var response = await logging.ReadLoginLogsCount("Logs", type, period);
             return Ok(response);
         } catch (Exception error) 
         {
@@ -117,12 +139,19 @@ public sealed class LogController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getRegLogsCount")]
-    public async Task<IActionResult> GetRegLogsCount(string type)
+    [Route("regLogsCount")]
+    public async Task<IActionResult> GetRegLogsCount(string type, int period)
     {
         try
         {
-            var response = await logging.ReadRegLogsCount("Logs", type);
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
+            var response = await logging.ReadRegLogsCount("Logs", type, period);
             return Ok(response);
         } catch (Exception error) 
         {
@@ -148,5 +177,20 @@ public sealed class LogController : ControllerBase
         }
 
         return 200;
+    }
+
+    private bool IsUserAuthenticatedForUADApiPoints() {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) return false;
+        if (jwtToken.Payload.Claims == null) return false;
+
+        var userRole = jwtToken.Payload.Claims["Role"]!;
+
+        if (userRole == "Admin" || userRole == "Root") {
+            return true;
+        }
+
+        return false;
     }
 }

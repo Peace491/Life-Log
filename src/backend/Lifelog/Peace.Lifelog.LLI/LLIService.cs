@@ -336,7 +336,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         return readLLIResponse;
     }
 
-    public async Task<Response> GetMostCommonLLICategory()
+    public async Task<Response> GetMostCommonLLICategory(int period)
     {
         var sql = "SELECT "
             + "Category1 AS Most_Common_Category "
@@ -352,13 +352,15 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         return response;
     }
 
-    public async Task<Response> GetMostExpensiveLLI()
+    public async Task<Response> GetMostExpensiveLLI(int period)
     {
         var sql = "SELECT "
             + "Title AS Title_With_Highest_Cost, "
             + "Cost AS Highest_Cost "
         + "FROM "
             + "LLI "
+        + "WHERE "
+            + $"CreationDate >= DATE_SUB(NOW(), INTERVAL {period} MONTH) "
         + "ORDER BY "
             + "Cost DESC ";
 

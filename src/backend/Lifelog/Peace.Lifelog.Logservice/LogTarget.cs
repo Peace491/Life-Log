@@ -14,7 +14,7 @@ public class LogTarget : ILogTarget
         this.readDataOnlyDAO = readDataOnlyDAO;
     }
 
-    public async Task<Response> ReadLoginLogsCount(string table, string type)
+    public async Task<Response> ReadLoginLogsCount(string table, string type, int period)
     {
         var logMessage = "";
         if (type == "Success")
@@ -26,14 +26,14 @@ public class LogTarget : ILogTarget
             logMessage = "failed to";
         }
 
-        string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage} log in%'";
+        string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage} log in%' AND Timestamp >= DATE_SUB(NOW(), INTERVAL {period} MONTH)";
 
         var response = await readDataOnlyDAO.ReadData(sql);
 
         return response;
     }
 
-    public async Task<Response> ReadRegLogsCount(string table, string type)
+    public async Task<Response> ReadRegLogsCount(string table, string type, int period)
     {
         var logMessage = "";
         if (type == "Success")
@@ -45,7 +45,7 @@ public class LogTarget : ILogTarget
             logMessage = "User registration failed";
         }
 
-        string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage}%'";
+        string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage}%' AND Timestamp >= DATE_SUB(NOW(), INTERVAL {period} MONTH)";
 
         var response = await readDataOnlyDAO.ReadData(sql);
 

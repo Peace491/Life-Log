@@ -60,7 +60,7 @@ public class Logging : ILogging
         return response;
     }
 
-    public async Task<Response> ReadLoginLogsCount(string table, string type)
+    public async Task<Response> ReadLoginLogsCount(string table, string type, int period)
     {
         var response = new Response();
 
@@ -83,13 +83,13 @@ public class Logging : ILogging
             return response;
         }
 
-        response = await _logTarget.ReadLoginLogsCount(table, type);
+        response = await _logTarget.ReadLoginLogsCount(table, type, period);
 
         return response;
 
     }
 
-    public async Task<Response> ReadRegLogsCount(string table, string type)
+    public async Task<Response> ReadRegLogsCount(string table, string type, int period)
     {
         var response = new Response();
 
@@ -112,7 +112,7 @@ public class Logging : ILogging
             return response;
         }
 
-        response = await _logTarget.ReadRegLogsCount(table, type);
+        response = await _logTarget.ReadRegLogsCount(table, type, period);
 
         return response;
     }

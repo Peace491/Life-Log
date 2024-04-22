@@ -135,12 +135,20 @@ public class LLIController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getMostCommonLLICategory")]
-    public async Task<IActionResult> GetMostCommonLLICategory()
+    [Route("mostCommonLLICategory")]
+    public async Task<IActionResult> GetMostCommonLLICategory(int period)
     {
         try
         {
-            var response = await lliService.GetMostCommonLLICategory();
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
+
+            var response = await lliService.GetMostCommonLLICategory(period);
             return Ok(response);
         }
         catch (Exception error)
@@ -150,12 +158,20 @@ public class LLIController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getMostExpensiveLLI")]
-    public async Task<IActionResult> GetMostExpensiveLLI()
+    [Route("mostExpensiveLLI")]
+    public async Task<IActionResult> GetMostExpensiveLLI(int period)
     {
         try
         {
-            var response = await lliService.GetMostExpensiveLLI();
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
+
+            var response = await lliService.GetMostExpensiveLLI(period);
             return Ok(response);
         }
         catch (Exception error)
@@ -267,6 +283,40 @@ public class LLIController : ControllerBase
         {
             return StatusCode(500);
         }
+    }
+
+    private int ProcessJwtToken()
+    {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null)
+        {
+            return 401;
+        }
+
+        var statusCode = jwtService.ProcessToken(Request);
+
+        if (statusCode != 200)
+        {
+            return statusCode;
+        }
+
+        return 200;
+    }
+
+    private bool IsUserAuthenticatedForUADApiPoints() {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null) return false;
+        if (jwtToken.Payload.Claims == null) return false;
+
+        var userRole = jwtToken.Payload.Claims["Role"]!;
+
+        if (userRole == "Admin" || userRole == "Root") {
+            return true;
+        }
+
+        return false;
     }
 
 

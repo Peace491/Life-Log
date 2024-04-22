@@ -8,6 +8,7 @@ import * as userFormPage from './UserFormPage/userForm.js'
 import * as recEnginePage from './RecEnginePage/recEngine.js'
 import * as personalNotePage from './PersonalNotePage/personalnote.js'
 import * as mapPage from './MapPage/map.js'
+import * as uadPage from './UsageAnalysisDashboardPage/uad.js'
 
 import * as log from './Log/log.js'
 
@@ -19,7 +20,8 @@ export const PAGES = {
     userFormPage: 'UserFormPage',
     recEnginePage: 'RecEnginePage',
     personalNotePage: 'PersonalNotePage',
-    mapPage: 'MapPage'
+    mapPage: 'MapPage',
+    uadPage: 'UsageAnalysisDashboardPage'
 }
 
 const SCRIPTS = {
@@ -30,7 +32,8 @@ const SCRIPTS = {
     'UserFormPage': 'userForm.js',
     'RecEnginePage': 'recEngine.js',
     'PersonalNotePage': 'personalnote.js',
-    'MapPage': 'map.js'
+    'MapPage': 'map.js',
+    'UsageAnalysisDashboardPage': 'uad.js'
 }
 
 const LOAD_FUNCTION = {
@@ -41,13 +44,14 @@ const LOAD_FUNCTION = {
     'UserFormPage': userFormPage.loadUserFormPage,
     'RecEnginePage': recEnginePage.loadRecEnginePage,
     'PersonalNotePage': personalNotePage.LoadPersonalNotePage,
-    'MapPage': mapPage.LoadMapPage
+    'MapPage': mapPage.LoadMapPage,
+    'UsageAnalysisDashboardPage': uadPage.loadUADPage
 }
 
 export async function loadPage(page, state = null, currPage = null, timeVisited = null, jwtToken = null) {
     if (currPage != null && timeVisited != null && jwtToken != null) {
         let userHash = JSON.parse(jwtToken).Payload.UserHash;
-        logPageVisitTime(currPage, timeVisited, userHash, jwtToken)    
+        logPageVisitTime(currPage, timeVisited, userHash, jwtToken)
     }
 
     window.name = ''
@@ -71,7 +75,7 @@ export async function loadPage(page, state = null, currPage = null, timeVisited 
         } else {
             LOAD_FUNCTION[page](window, window.ajaxClient, state)
         }
-        
+
     };
 
 }
@@ -89,7 +93,7 @@ async function fetchHtml(pageRoute) {
 }
 
 function logPageVisitTime(page, timeVisited, userHash, jwtToken) {
-    timeVisited = Math.round((performance.now() - timeVisited)/1000) // Round from miliseconds to seconds
+    timeVisited = Math.round((performance.now() - timeVisited) / 1000) // Round from miliseconds to seconds
 
     log.log(userHash, "Info", "Business", `${userHash} was on ${page} for ${timeVisited} seconds`, jwtToken)
 }
@@ -124,7 +128,7 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
         loadPage(PAGES.recEnginePage, null, currPage, timeVisited, jwtToken)
     })
 
-    userFormLink.addEventListener('click', function() {
+    userFormLink.addEventListener('click', function () {
         loadPage(PAGES.userFormPage, "Update", currPage, timeVisited, jwtToken)
     })
 
@@ -132,6 +136,34 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
         window.localStorage.clear()
         loadPage(PAGES.homePage, null, currPage, timeVisited, jwtToken)
     })
+
+    if (jwtToken != null) {
+        let jwtTokenJson = JSON.parse(jwtToken)
+
+        let role = jwtTokenJson.Payload.Claims.Role
+        if (role == "Admin" || role == "Root") {
+            var divContainer = document.createElement("div");
+            divContainer.className = "uad-link-container";
+            divContainer.id = "uad-link";
+
+            // Create an h2 element
+            var h2Element = document.createElement("h2");
+            h2Element.textContent = "Usage Analysis Dashboard";
+
+            // Append the h2 element to the div container
+            divContainer.appendChild(h2Element);
+
+            let pageLinkContainer = document.getElementsByClassName("page-link-container")[0]
+            pageLinkContainer.appendChild(divContainer)
+
+            let uadLink = document.getElementById('uad-link')
+
+            uadLink.addEventListener('click', function () {
+                loadPage(PAGES.uadPage, null, currPage, timeVisited, jwtToken)
+            })
+        }
+
+    }
 
 }
 

@@ -8,7 +8,7 @@ public interface ILogging
 
     Task<Response> ReadTopNMostVisitedPage(string table, int numOfPage, int period);
 
-    Task<Response> ReadLoginLogsCount(string table, string type);
-    Task<Response> ReadRegLogsCount(string table, string type);
+    Task<Response> ReadLoginLogsCount(string table, string type, int period);
+    Task<Response> ReadRegLogsCount(string table, string type, int period);
     Task<Response> ReadTopNLongestPageVisit(string table, int numOfPage, int period);
 }
