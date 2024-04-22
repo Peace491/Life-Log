@@ -591,7 +591,8 @@ export function loadRecEnginePage(root, ajaxClient) {
       if (principal.claims.Role == "Admin" || principal.claims.Role == "Root") {
         setupRepopulateAllUserSummary();
       }
-      routeManager.setupHeaderLinks();
+      let timeAccessed = performance.now()
+      routeManager.setupHeaderLinks(routeManager.PAGES.recEnginePage, timeAccessed, jwtToken);
     }
 
   }

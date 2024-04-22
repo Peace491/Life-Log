@@ -695,7 +695,8 @@ export function loadCalendarPage(root, ajaxClient) {
             calendarDomManipulation.renderCalendar(showCalendarLLI)
             calendarDomManipulation.renderModals()
 
-            setupLogout();
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.calendarPage, timeAccessed, jwtToken);
 
         }
     }

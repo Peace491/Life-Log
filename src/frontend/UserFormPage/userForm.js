@@ -23,7 +23,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
     async function setupUserFormRanking() {
         let userFormRankingResponse
         try {
-            userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal)
+            userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
         } catch (error) {
             alert(error)
         }
@@ -106,12 +106,14 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                 claims: jwtTokenObject.Payload.Claims,
             };
             window.name = routeManager.PAGES.userFormPage
-            routeManager.setupHeaderLinks()
             await fetchConfig()
             if (userFormAction == "Update") {
                 await setupUserFormRanking()    
             }
             setupSubmitUserForm()
+
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.userFormPage, timeAccessed, jwtToken);
         }
     }
 

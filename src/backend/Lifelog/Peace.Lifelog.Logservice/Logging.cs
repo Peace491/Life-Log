@@ -89,7 +89,35 @@ public class Logging : ILogging
 
     }
 
-    public async Task<Response> ReadTopNMostVisitedPage(string table, int numOfLog, int periodInMonth)
+    public async Task<Response> ReadRegLogsCount(string table, string type)
+    {
+        var response = new Response();
+
+        HashSet<string> REG_LOG_TYPES = new HashSet<string>
+        {
+            "Success",
+            "Failure",
+        };
+
+        if (table == null || table == string.Empty)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Table must not be null or empty";
+            return response;
+        }
+
+        if  (!REG_LOG_TYPES.Contains(type)) {
+            response.HasError = true;
+            response.ErrorMessage = "The type must be either 'Success' or 'Failure'";
+            return response;
+        }
+
+        response = await _logTarget.ReadRegLogsCount(table, type);
+
+        return response;
+    }
+
+    public async Task<Response> ReadTopNLongestPageVisit(string table, int numOfPage, int periodInMonth)
     {
         var response = new Response();
 
@@ -100,7 +128,7 @@ public class Logging : ILogging
             return response;
         }
 
-        if (numOfLog < 1)
+        if (numOfPage < 1)
         {
             response.HasError = true;
             response.ErrorMessage = "Must select at least 1 log";
@@ -114,7 +142,36 @@ public class Logging : ILogging
             return response;
         }
 
-        response = await _logTarget.ReadTopNMostVisitedPage(table, numOfLog, periodInMonth);
+        response = await _logTarget.ReadTopNLongestPageVisit(table, numOfPage, periodInMonth);
+        return response;
+    }
+
+    public async Task<Response> ReadTopNMostVisitedPage(string table, int numOfPage, int periodInMonth)
+    {
+        var response = new Response();
+
+        if (table == null || table == string.Empty)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Table must not be null or empty";
+            return response;
+        }
+
+        if (numOfPage < 1)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must select at least 1 log";
+            return response;
+        }
+
+        if (periodInMonth < 1)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must select logs from at least the past 1 month";
+            return response;
+        }
+
+        response = await _logTarget.ReadTopNMostVisitedPage(table, numOfPage, periodInMonth);
         return response;
     }
 }

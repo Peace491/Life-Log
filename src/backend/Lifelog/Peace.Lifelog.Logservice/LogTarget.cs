@@ -17,9 +17,12 @@ public class LogTarget : ILogTarget
     public async Task<Response> ReadLoginLogsCount(string table, string type)
     {
         var logMessage = "";
-        if (type == "Success") {
+        if (type == "Success")
+        {
             logMessage = "successfully";
-        } else {
+        }
+        else
+        {
             logMessage = "failed to";
         }
 
@@ -33,20 +36,43 @@ public class LogTarget : ILogTarget
     public async Task<Response> ReadRegLogsCount(string table, string type)
     {
         var logMessage = "";
-        if (type == "Success") {
+        if (type == "Success")
+        {
             logMessage = "User registration successful";
-        } else {
+        }
+        else
+        {
             logMessage = "User registration failed";
         }
 
-        string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage} log in%'";
+        string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage}%'";
 
         var response = await readDataOnlyDAO.ReadData(sql);
 
         return response;
     }
 
-    public Task<Response> ReadTopNMostVisitedPage(string table, int numOfLog, int period = 6)
+    public async Task<Response> ReadTopNLongestPageVisit(string table, int numOfPage, int period)
+    {
+        string sql = "SELECT "
+        + "SUBSTRING_INDEX(SUBSTRING_INDEX(Message, ' was on ', -1), ' for ', 1) AS Page, "
+            + "MAX(CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(Message, ' for ', -1), ' seconds', 1) AS UNSIGNED)) AS Longest_Visit_Seconds "
+        + "FROM "
+            + $"{table} "
+        + "WHERE "
+            + "Message LIKE '% was on % for % seconds%' "
+            + $"AND Timestamp >= DATE_SUB(NOW(), INTERVAL {period} MONTH) "
+        + "GROUP BY "
+            + "Page "
+        + "ORDER BY "
+            + "Longest_Visit_Seconds DESC ";
+
+        var response = await readDataOnlyDAO.ReadData(sql, count: numOfPage);
+
+        return response;
+    }
+
+    public Task<Response> ReadTopNMostVisitedPage(string table, int numOfPage, int period = 6)
     {
         string sql = "SELECT "
         + "REPLACE(SUBSTRING(Message, POSITION('accessed' IN Message) + 9), '\"', '') AS Page, "
@@ -61,7 +87,7 @@ public class LogTarget : ILogTarget
         + "ORDER BY "
             + "Visit_Count DESC ";
 
-        var response = readDataOnlyDAO.ReadData(sql, count: numOfLog);
+        var response = readDataOnlyDAO.ReadData(sql, count: numOfPage);
 
         return response;
     }

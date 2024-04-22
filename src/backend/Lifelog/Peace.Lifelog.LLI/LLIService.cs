@@ -336,6 +336,37 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         return readLLIResponse;
     }
 
+    public async Task<Response> GetMostCommonLLICategory()
+    {
+        var sql = "SELECT "
+            + "Category1 AS Most_Common_Category "
+        + "FROM "
+            + "RecSummary "
+        + "GROUP BY "
+            + "Category1 "
+        + "ORDER BY "
+            + "COUNT(*) DESC";
+
+        var response = await readDataOnlyDAO.ReadData(sql, count: 1);
+
+        return response;
+    }
+
+    public async Task<Response> GetMostExpensiveLLI()
+    {
+        var sql = "SELECT "
+            + "Title AS Title_With_Highest_Cost, "
+            + "Cost AS Highest_Cost "
+        + "FROM "
+            + "LLI "
+        + "ORDER BY "
+            + "Cost DESC ";
+
+        var response = await readDataOnlyDAO.ReadData(sql, count: 1);
+
+        return response;
+    }
+
     public async Task<Response> UpdateLLI(string userHash, LLI lli)
     {
         var updateLLIResponse = new Response();

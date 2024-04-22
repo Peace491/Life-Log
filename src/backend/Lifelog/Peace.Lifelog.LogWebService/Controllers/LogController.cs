@@ -59,7 +59,7 @@ public sealed class LogController : ControllerBase
 
     [HttpGet]
     [Route("getTopNVisitedPage")]
-    public async Task<IActionResult> Log(int numOfLog, int periodInMonth)
+    public async Task<IActionResult> GetTopNVisitedPage(int numOfPage, int periodInMonth)
     {
         // var processTokenResponseStatus = ProcessJwtToken();
         // if (processTokenResponseStatus != 200)
@@ -69,7 +69,29 @@ public sealed class LogController : ControllerBase
 
         try
         {
-            var response = await logging.ReadTopNMostVisitedPage("Logs", numOfLog, periodInMonth);
+            var response = await logging.ReadTopNMostVisitedPage("Logs", numOfPage, periodInMonth);
+
+            return Ok(response);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("getTopNLongestPageVisit")]
+    public async Task<IActionResult> GetTopNLongestPageVisit(int numOfPage, int periodInMonth)
+    {
+        // var processTokenResponseStatus = ProcessJwtToken();
+        // if (processTokenResponseStatus != 200)
+        // {
+        //     return StatusCode(processTokenResponseStatus);
+        // }
+
+        try
+        {
+            var response = await logging.ReadTopNLongestPageVisit("Logs", numOfPage, periodInMonth);
 
             return Ok(response);
         }
@@ -82,7 +104,7 @@ public sealed class LogController : ControllerBase
 
     [HttpGet]
     [Route("getLoginLogsCount")]
-    public async Task<IActionResult> Log(string type)
+    public async Task<IActionResult> GetLoginLogsCount(string type)
     {
         try
         {
@@ -93,6 +115,21 @@ public sealed class LogController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
+
+    [HttpGet]
+    [Route("getRegLogsCount")]
+    public async Task<IActionResult> GetRegLogsCount(string type)
+    {
+        try
+        {
+            var response = await logging.ReadRegLogsCount("Logs", type);
+            return Ok(response);
+        } catch (Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+
 
     private int ProcessJwtToken()
     {

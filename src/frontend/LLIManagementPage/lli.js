@@ -451,13 +451,12 @@ export function loadLLIPage(root, ajaxClient) {
             // setupFilterSelect();
             setupFilter();
             setupSearch();
-            routeManager.setupHeaderLinks();
+
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);
             
             // Get data
             showLLI();
-
-            //navigate 
-            routeManager.setupHeaderLinks();
         }
     }
 

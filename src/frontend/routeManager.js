@@ -9,6 +9,8 @@ import * as recEnginePage from './RecEnginePage/recEngine.js'
 import * as personalNotePage from './PersonalNotePage/personalnote.js'
 import * as mapPage from './MapPage/map.js'
 
+import * as log from './Log/log.js'
+
 export const PAGES = {
     homePage: 'HomePage',
     lliManagementPage: 'LLIManagementPage',
@@ -42,7 +44,12 @@ const LOAD_FUNCTION = {
     'MapPage': mapPage.LoadMapPage
 }
 
-export async function loadPage(page, state = null) {
+export async function loadPage(page, state = null, currPage = null, timeVisited = null, jwtToken = null) {
+    if (currPage != null && timeVisited != null && jwtToken != null) {
+        let userHash = JSON.parse(jwtToken).Payload.UserHash;
+        logPageVisitTime(currPage, timeVisited, userHash, jwtToken)    
+    }
+
     window.name = ''
     let fetchHtmlResponse = await fetchHtml(window.location.origin + "/" + page + "/index.html")
 
@@ -81,10 +88,16 @@ async function fetchHtml(pageRoute) {
     }
 }
 
+function logPageVisitTime(page, timeVisited, userHash, jwtToken) {
+    timeVisited = Math.round((performance.now() - timeVisited)/1000) // Round from miliseconds to seconds
 
-export function setupHeaderLinks() {
+    log.log(userHash, "Info", "Business", `${userHash} was on ${page} for ${timeVisited} seconds`, jwtToken)
+}
+
+
+export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken = null) {
     let calendarLink = document.getElementById("calendar-link")
-    let personalNotesLink = document.getElementById('notes-view')
+    let personalNotesLink = document.getElementById('note-link')
     let lliLink = document.getElementById('lli-view')
     let recEngineLink = document.getElementById('rec-engine-link')
     let userFormLink = document.getElementById('user-form-link')
@@ -92,38 +105,33 @@ export function setupHeaderLinks() {
     let mapLink = document.getElementById('map-link')
 
     calendarLink.addEventListener('click', function () {
-        loadPage(PAGES.calendarPage)
+        loadPage(PAGES.calendarPage, null, currPage, timeVisited, jwtToken)
     })
 
     personalNotesLink.addEventListener('click', function () {
-        loadPage(PAGES.personalNotePage)
+        loadPage(PAGES.personalNotePage, null, currPage, timeVisited, jwtToken)
     })
 
     mapLink.addEventListener('click', function () {
-        loadPage(PAGES.mapPage)
+        loadPage(PAGES.mapPage, null, currPage, timeVisited, jwtToken)
     })
 
     lliLink.addEventListener('click', function () {
-        loadPage(PAGES.lliManagementPage)
+        loadPage(PAGES.lliManagementPage, null, currPage, timeVisited, jwtToken)
     })
 
     recEngineLink.addEventListener('click', function () {
-        loadPage(PAGES.recEnginePage)
+        loadPage(PAGES.recEnginePage, null, currPage, timeVisited, jwtToken)
     })
 
     userFormLink.addEventListener('click', function() {
-        loadPage(PAGES.userFormPage, "Update")
+        loadPage(PAGES.userFormPage, "Update", currPage, timeVisited, jwtToken)
     })
 
     logoutInput.addEventListener('click', function () {
         window.localStorage.clear()
-        loadPage(PAGES.homePage)
+        loadPage(PAGES.homePage, null, currPage, timeVisited, jwtToken)
     })
-
-
-
-    
-
 
 }
 

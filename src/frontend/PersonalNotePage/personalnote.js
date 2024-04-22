@@ -330,7 +330,8 @@ export function LoadPersonalNotePage (root, ajaxClient) {
             showNote();
             currNote();
             //navigate 
-            routeManager.setupHeaderLinks();
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.personalNotePage, timeAccessed, jwtToken);
         }
     }
 
