@@ -1,34 +1,37 @@
 namespace Peace.Lifelog.LocationRecommendation;
 
+using System.Collections.Generic;
 using DomainModels;
-using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Security;
-using System.Collections.Generic;
 
-public class LocationRecommendation : ILoR
+public class LocationRecommendationService : ILocationRecommendationService
 {
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
-    
+
     private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
     private Logging.ILogging logging;
 
-    public async Task<Response> GetRecommendation(GetRecommendationPayload getRecommendationPayload)
+    #region Get Recommendation
+    public async Task<Response> GetRecommendation(GetRecommendationRequest getRecommendationRequest)
     {
-        if (getRecommendationPayload == null)
+        if (getRecommendationRequest == null) ;
     }
-    public async Task<Response> ViewRecommendation(ViewRecommendationPayload viewRecommendationPayload)
+    #endregion
+    #region View Recommendation
+    public async Task<Response> ViewRecommendation(ViewRecommendationRequest viewRecommendationRequest)
     {
 
     }
+    #endregion
     #region View Pin
-    public Task<Response> ViewPin(ViewPinRequest viewPinRequest)
+    public async Task<Response> ViewPin(ViewPinRequest viewPinRequest)
     {
         var response = new Response();
         response.HasError = false;
 
-         Response readPinInDBResponse;
+        Response readPinInDBResponse;
 
         //Initialize the LLIId
         string? LLIId = null;
@@ -49,7 +52,6 @@ public class LocationRecommendation : ILoR
         }
         catch (Exception error)
         {
-            // handlePinError(response, viewPinRequest.Principal!, error.Message);
             response.HasError = true;
             response.ErrorMessage = error.Message;
             return response;
@@ -62,27 +64,26 @@ public class LocationRecommendation : ILoR
             try
             {
                 readPinLLIInDBResponse = await this.mapRepo.ReadLLIInDB(LLIId);
-                var lliList = ConvertDatabaseResponseOutputToLLIObjectList(readPinLLIInDBResponse);
+                var lliList = ConvertDatabaseResponseOutputToLLIObjectList(readPinLLIInDBResponse);//change
                 response.Output = lliList;
             }
             catch (Exception error)
             {
-                return handlePinError(response, viewPinRequest.Principal!, error.Message);
+                return LoggingError(response, viewPinRequest.Principal!, error.Message);
             }
 
             // Handle Success Response
-            //var logResponse = this.logging.CreateLog("Logs", viewPinRequest.Principal!.UserId, "Info", "Business", "Pin view operation successful");
             return response;
         }
         else
         {
             // Handle the case when LLIId is null
-            return handlePinError(response, viewPinRequest.Principal!, "LLIId is null");
+            return LoggingError(response, viewPinRequest.Principal!, "LLIId is null");
         }
     }
     #endregion
     #region Switching Views
-    public async Task<Response> updateLog(UpdateLogRequest updateLogRequest)
+    public async Task<Response> UpdateLog(UpdateLogRequest updateLogRequest)
     {
         var response = new Response();
         response.HasError = false;
@@ -93,14 +94,14 @@ public class LocationRecommendation : ILoR
         if (validateDeletePinRequestResponse.HasError)
         {
             errorMessage = validateDeletePinRequestResponse.ErrorMessage;
-            return handlePinError(response, updateLogRequest.Principal!, errorMessage!);
+            return LoggingError(response, updateLogRequest.Principal!, errorMessage!);
         }
 
         // Authorize request
         if (!IsUserAuthorizedForPin(updateLogRequest.Principal!))
         {
             errorMessage = "The User Is Not Authorized To view a Pin";
-            return handlePinError(response, updateLogRequest.Principal!, errorMessage!);
+            return LoggingError(response, updateLogRequest.Principal!, errorMessage!);
         }
 
         var logResponse = await this.logging.CreateLog("Logs", updateLogRequest.Principal!.UserId, "Info", "View", "Map view changed to Location Recommendation");
@@ -109,7 +110,7 @@ public class LocationRecommendation : ILoR
     }
     #endregion
     #region Helper Functions
-    private Response loggingError(Response response, AppPrincipal principal, string errorMessage)
+    private Response LoggingError(Response response, AppPrincipal principal, string errorMessage)
     {
         response.HasError = true;
         response.ErrorMessage = errorMessage;

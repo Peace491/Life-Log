@@ -1,4 +1,4 @@
-﻿namespace Peace.Lifelog.Map;
+﻿namespace Peace.Lifelog.LocationRecommendation;
 public class Pin
 {
     public string PinId { get; set; } = string.Empty;

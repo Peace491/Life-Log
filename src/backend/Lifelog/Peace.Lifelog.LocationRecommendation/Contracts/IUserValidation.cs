@@ -1,8 +1,9 @@
 using DomainModels;
+using Peace.Lifelog.Security;
 
 namespace Peace.Lifelog.LocationRecommendation;
 
 public interface IUserValidation
 {
-    public response ValidateUser(Response response, AppPrincipal? principal);
+    public Response ValidateUser(Response response, AppPrincipal appPrincipal);
 }
