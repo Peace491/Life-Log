@@ -9,6 +9,7 @@ import * as recEnginePage from './RecEnginePage/recEngine.js'
 import * as personalNotePage from './PersonalNotePage/personalnote.js'
 import * as mapPage from './MapPage/map.js'
 import * as uadPage from './UsageAnalysisDashboardPage/uad.js'
+import * as umPage from './UserManagementPage/um.js'
 
 import * as log from './Log/log.js'
 
@@ -21,7 +22,8 @@ export const PAGES = {
     recEnginePage: 'RecEnginePage',
     personalNotePage: 'PersonalNotePage',
     mapPage: 'MapPage',
-    uadPage: 'UsageAnalysisDashboardPage'
+    uadPage: 'UsageAnalysisDashboardPage',
+    umPage: 'UserManagementPage'
 }
 
 const SCRIPTS = {
@@ -33,7 +35,8 @@ const SCRIPTS = {
     'RecEnginePage': 'recEngine.js',
     'PersonalNotePage': 'personalnote.js',
     'MapPage': 'map.js',
-    'UsageAnalysisDashboardPage': 'uad.js'
+    'UsageAnalysisDashboardPage': 'uad.js',
+    'UserManagementPage': 'um.js'
 }
 
 const LOAD_FUNCTION = {
@@ -45,7 +48,8 @@ const LOAD_FUNCTION = {
     'RecEnginePage': recEnginePage.loadRecEnginePage,
     'PersonalNotePage': personalNotePage.LoadPersonalNotePage,
     'MapPage': mapPage.LoadMapPage,
-    'UsageAnalysisDashboardPage': uadPage.loadUADPage
+    'UsageAnalysisDashboardPage': uadPage.loadUADPage,
+    'UserManagementPage': umPage.loadUMPage
 }
 
 export async function loadPage(page, state = null, currPage = null, timeVisited = null, jwtToken = null) {
@@ -106,6 +110,7 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
     let recEngineLink = document.getElementById('rec-engine-link')
     let userFormLink = document.getElementById('user-form-link')
     let logoutInput = document.getElementById('logout')
+    let userManagementLink = document.getElementById("user-setting")
     let mapLink = document.getElementById('map-link')
 
     calendarLink.addEventListener('click', function () {
@@ -130,6 +135,10 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
 
     userFormLink.addEventListener('click', function () {
         loadPage(PAGES.userFormPage, "Update", currPage, timeVisited, jwtToken)
+    })
+
+    userManagementLink.addEventListener('click', function() {
+        loadPage(PAGES.umPage, null, currPage, timeVisited, jwtToken)
     })
 
     logoutInput.addEventListener('click', function () {
