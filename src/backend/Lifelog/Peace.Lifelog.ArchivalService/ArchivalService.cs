@@ -26,7 +26,8 @@ public class ArchivalService : IArchive
         var deleteDAO = new DeleteDataOnlyDAO();
 
         // Init Logger keep having logger init issues
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logger = new Logging.Logging(logTarget);
 
         // Init SQL 

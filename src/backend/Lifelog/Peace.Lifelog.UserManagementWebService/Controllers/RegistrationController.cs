@@ -30,6 +30,9 @@ public class RegistrationController : ControllerBase
         {
             registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
         }
+        else {
+            return BadRequest();
+        }
 
         if (registerUserResponse.HasError == false)
         {

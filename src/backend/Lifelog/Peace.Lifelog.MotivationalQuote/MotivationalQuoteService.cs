@@ -236,7 +236,8 @@ public class MotivationalQuoteService : IGetPhrase
     private void MotivationalLogger(string issueType, string logType, string errorMessage)
     {
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging(logTarget);
         var logResponse = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", issueType, logType, errorMessage);
     }

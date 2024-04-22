@@ -30,7 +30,7 @@ public class ReServiceShould
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
@@ -58,7 +58,7 @@ public class ReServiceShould
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
@@ -83,7 +83,7 @@ public class ReServiceShould
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
@@ -110,7 +110,7 @@ public class ReServiceShould
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 

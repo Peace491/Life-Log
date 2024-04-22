@@ -55,7 +55,8 @@ public class LogTargetShould : IDisposable
     {
         // Arrange
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO);
         int FIRSTLISTITEM = LOG_ID_INDEX; 
 
         // DAO needed for test
@@ -116,7 +117,8 @@ public class LogTargetShould : IDisposable
     public async void LogTargetShould_BeImmutable()
     {
         var createOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createOnlyDAO); 
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createOnlyDAO, readDataOnlyDAO); 
         Stopwatch timer = new Stopwatch();
 
 

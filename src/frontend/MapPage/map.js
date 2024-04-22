@@ -528,7 +528,8 @@ export function LoadMapPage(root, ajaxClient) {
             // Get data
 
             //navigate 
-            routeManager.setupHeaderLinks();
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.mapPage, timeAccessed, jwtToken);
         }
     }
 

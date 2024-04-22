@@ -29,7 +29,7 @@ public class PinService : IPinService
     public PinService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
     {
         this.mapRepo = mapRepo;
-        this.logTarget = new LogTarget(createDataOnlyDAO);
+        this.logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         this.loggingLLI = new Logging(logTarget);
         this.lliService = new LLIService(this.createDataOnlyDAO!, this.readDataOnlyDAO!, this.updateDataOnlyDAO!, this.deleteDataOnlyDAO!, this.loggingLLI!);
         this.lifelogAuthService = lifelogAuthService;
