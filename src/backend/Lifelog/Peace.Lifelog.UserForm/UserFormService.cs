@@ -1,7 +1,6 @@
 ﻿namespace Peace.Lifelog.UserForm;
 
 using DomainModels;
-using Microsoft.AspNetCore.Mvc;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Security;
 
@@ -195,12 +194,14 @@ public class UserFormService : IUserFormService
         {
             foreach (List<Object> output in response.Output)
             {
-                foreach (bool completionStatus in output) {
+                foreach (bool completionStatus in output)
+                {
                     return completionStatus;
                 }
             }
         }
-        catch {
+        catch
+        {
             return false;
         }
 

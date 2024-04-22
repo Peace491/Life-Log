@@ -7,7 +7,7 @@ import * as calendarPage from './CalendarPage/calendar.js'
 import * as userFormPage from './UserFormPage/userForm.js'
 import * as recEnginePage from './RecEnginePage/recEngine.js'
 import * as personalNotePage from './PersonalNotePage/personalnote.js'
-
+import * as mapPage from './MapPage/map.js'
 
 export const PAGES = {
     homePage: 'HomePage',
@@ -16,7 +16,8 @@ export const PAGES = {
     calendarPage: 'CalendarPage',
     userFormPage: 'UserFormPage',
     recEnginePage: 'RecEnginePage',
-    personalNotePage: 'PersonalNotePage'
+    personalNotePage: 'PersonalNotePage',
+    mapPage: 'MapPage'
 }
 
 const SCRIPTS = {
@@ -26,7 +27,8 @@ const SCRIPTS = {
     'CalendarPage': 'calendar.js',
     'UserFormPage': 'userForm.js',
     'RecEnginePage': 'recEngine.js',
-    'PersonalNotePage': 'personalnote.js'
+    'PersonalNotePage': 'personalnote.js',
+    'MapPage': 'map.js'
 }
 
 const LOAD_FUNCTION = {
@@ -36,7 +38,8 @@ const LOAD_FUNCTION = {
     'CalendarPage': calendarPage.loadCalendarPage,
     'UserFormPage': userFormPage.loadUserFormPage,
     'RecEnginePage': recEnginePage.loadRecEnginePage,
-    'PersonalNotePage': personalNotePage.LoadPersonalNotePage
+    'PersonalNotePage': personalNotePage.LoadPersonalNotePage,
+    'MapPage': mapPage.LoadMapPage
 }
 
 export async function loadPage(page, state = null) {
@@ -86,6 +89,7 @@ export function setupHeaderLinks() {
     let recEngineLink = document.getElementById('rec-engine-link')
     let userFormLink = document.getElementById('user-form-link')
     let logoutInput = document.getElementById('logout')
+    let mapLink = document.getElementById('map-link')
 
     calendarLink.addEventListener('click', function () {
         loadPage(PAGES.calendarPage)
@@ -93,6 +97,10 @@ export function setupHeaderLinks() {
 
     personalNotesLink.addEventListener('click', function () {
         loadPage(PAGES.personalNotePage)
+    })
+
+    mapLink.addEventListener('click', function () {
+        loadPage(PAGES.mapPage)
     })
 
     lliLink.addEventListener('click', function () {
