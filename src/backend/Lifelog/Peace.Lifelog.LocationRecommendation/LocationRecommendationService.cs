@@ -11,12 +11,52 @@ public class LocationRecommendationService : ILocationRecommendationService
 
     private IMapRepo mapRepo;
     private ILifelogAuthService lifelogAuthService;
-    private Logging.ILogging logging;
+    private LocationRecommendationValidation locationRecommendationValidation;
+    private ILogging logging;
+
+    public LocationRecommendationService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
+    {
+        this.mapRepo = mapRepo;
+        this.lifelogAuthService = lifelogAuthService;
+        this.logging = logging;
+        this.locationRecommendationValidation = new LocationRecommendationValidation();
+    }
 
     #region Get Recommendation
     public async Task<Response> GetRecommendation(GetRecommendationRequest getRecommendationRequest)
     {
-        if (getRecommendationRequest == null) ;
+        var response = new Response();
+        response.HasError = false;
+        Response readPinResponse = new();
+
+        //Validate Inpit 
+        var validateRequestResponse = this.pinValidation.IsValidUserHash(userHash);
+        if (!validateRequestResponse)
+        {
+            var errorMessage = "invalid user hash";
+
+            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
+        }
+
+        //Get all user LLI
+        try
+        {
+            readPinResponse = await this.mapRepo.ReadAllUserPinInDB(userHash);
+
+        }
+        catch (Exception error)
+        {
+            // Convert the Exception object to a string
+            string errorMessage = error.ToString();
+
+            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
+        }
+
+
+        var pinOutput = ConvertDatabaseResponseOutputToPinObjectList(readPinResponse);
+        response.Output = pinOutput;
+        var clusterDataResponse = locationRecommendationValidation.Cluster(response);
+        return response;
     }
     #endregion
     #region View Recommendation
@@ -118,10 +158,64 @@ public class LocationRecommendationService : ILocationRecommendationService
         return response;
     }
 
-    private bool IsUserAuthorizedForPin(AppPrincipal appPrincipal)
+    private bool IsUserAuthorizedForLocationRecommendation(AppPrincipal appPrincipal)
     {
 
         return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
+    }
+
+    private List<object>? ConvertDatabaseResponseOutputToPinObjectList(Response readPinResponse)
+    {
+        List<object> pinList = new List<object>();
+
+        if (readPinResponse.Output == null)
+        {
+            return null;
+        }
+
+        foreach (List<object> Pin in readPinResponse.Output)
+        {
+
+            var pin = new Pin();
+
+            int index = 0;
+
+            foreach (var attribute in Pin)
+            {
+                if (attribute is null) continue;
+
+                switch (index)
+                {
+                    case 0:
+                        pin.PinId = attribute?.ToString() ?? "";
+                        break;
+                    case 1:
+                        pin.LLIId = attribute?.ToString() ?? "";
+                        break;
+                    case 2:
+                        pin.UserHash = attribute?.ToString() ?? "";
+                        break;
+                    case 3:
+                        pin.Address = attribute?.ToString() ?? "";
+                        break;
+                    case 4:
+                        pin.Latitude = attribute?.ToString() ?? "";
+                        break;
+                    case 5:
+                        pin.Longitude = attribute?.ToString() ?? "";
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+
+            }
+
+            pinList.Add(pin);
+
+        }
+
+        return pinList;
     }
     #endregion
 }

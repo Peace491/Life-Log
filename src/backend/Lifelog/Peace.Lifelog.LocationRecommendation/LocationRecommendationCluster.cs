@@ -9,7 +9,7 @@ public class LocationRecommendationCluster : IClusterRequest
 {
     public Response Cluster(Response response)
     {
-        double[][] data = ExtractDataFromResponse(response);
+        double[][] data = ExtractDataFromResponse(response.Output[4], response.Output[5], response);
         int numberOfClusters = DetermineNumberOfClusters(data);  // This should be adjusted based on data.
 
         var clusterResults = ClusterAlgorithm(data, numberOfClusters);
@@ -127,18 +127,29 @@ public class LocationRecommendationCluster : IClusterRequest
         return Math.Sqrt(sum);
     }
 
-    private double[][] ExtractDataFromResponse(Response response)
+    private double[][] ExtractDataFromResponse(List<object> lat, List<object> lng, Response response)
     {
         // Assuming response.Data is in a suitable format
-        List<double[]> dataList = new List<double[]>();
+        /*
+        List<double[]> list1 = new List<double[]>();
+        List<double[]> list2 = new List<double[]>();
         if(response.Output != null)
         {
-            foreach(List<object> output in response.Output)
+            foreach(List<object> output in lat)
             {
-                dataList.Add(new double[] {double.Parse(output)});
+                list1.Add(new double[] {double.Parse(output[])});
             }
         }
         return response.Data as double[][];
+        */
+        double[][] result = new double[lat.Count][];
+
+        for (int i = 0; i < lat.Count; i++)
+        {
+            result[i] = new double[] { (double)lat[i], (double)lng[i] };
+        }
+
+        return result;
     }
 
     private int DetermineNumberOfClusters(double[][] data)
