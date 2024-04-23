@@ -716,6 +716,10 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
                     case 14:
                         lli.Category3 = attribute.ToString() ?? "";
                         break;
+                    case 15:
+                        lli.MediaMemento = attribute as byte[] ?? null;
+
+                        break;
                     default:
                         break;
                 }
