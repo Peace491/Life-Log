@@ -314,5 +314,27 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         return userHash;
     }
 
+    public async Task<string> getUserIdFromUserHash(string userHash) {
+        if (userHash == string.Empty) return "";
+
+        string userId = "";
+
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
+        string sql = $"SELECT UserId FROM LifelogUserHash WHERE UserHash=\"{userHash}\"";
+
+        var response = await readDataOnlyDAO.ReadData(sql);
+
+        if (response.Output != null) {
+            foreach (List<Object> output in response.Output) {
+                foreach (string userIdOutput in output) {
+                    userId = userIdOutput;
+                }
+            }
+        }
+
+        return userId;
+    }
+
     #endregion
 }

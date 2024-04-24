@@ -31,7 +31,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         this.readDataOnlyDAO = new ReadDataOnlyDAO();
         this.updateDataOnlyDAO = new UpdateDataOnlyDAO();
         this.deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-        this.logTarget = new LogTarget(this.createDataOnlyDAO);
+        this.logTarget = new LogTarget(this.createDataOnlyDAO, readDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
         this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
         this.personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);

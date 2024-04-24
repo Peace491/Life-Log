@@ -68,6 +68,58 @@ public class UserFormService : IUserFormService
         return response;
     }
 
+    public async Task<Response> GetUserFormRanking(AppPrincipal principal)
+    {
+        var response = new Response();
+        response.HasError = false;
+        var errorMessage = "";
+
+        // Validate App Principal
+        var validateAppPrincipalResponse = this.userFormValidation.ValidateAppPrincipal(response, principal);
+        if (validateAppPrincipalResponse.HasError)
+        {
+            errorMessage = validateAppPrincipalResponse.ErrorMessage;
+            return handleUserFormError(response, principal, errorMessage!);
+        }
+
+        // Authorize request
+        if (!IsUserAuthorizedForUserForm(principal!))
+        {
+            errorMessage = "The User Is Not Authorized To Use The User Form";
+            return handleUserFormError(response, principal, errorMessage);
+        }
+
+        // Get User Form in DB
+        var userHash = principal.UserId;
+
+        Response getUserFormRankingFromDBResponse;
+
+        try
+        {
+            getUserFormRankingFromDBResponse = await this.userFormRepo.ReadUserFormCategoriesRankingInDB(userHash);
+
+            var userFormRanking = ConvertUserFormRankingDBOutputToUserRankingObject(getUserFormRankingFromDBResponse);
+
+            response.Output = [userFormRanking];
+
+        }
+        catch (Exception error)
+        {
+            return handleUserFormError(response, principal, error.Message);
+        }
+
+        // Handle Failure Response
+        if (getUserFormRankingFromDBResponse.HasError)
+        {
+            errorMessage = "The User Form failed to save to the persistent data store";
+            return handleUserFormError(response, principal, errorMessage);
+        }
+
+        // Handle Success Response
+        var logResponse = this.logging.CreateLog("Logs", "User Form successfully created", userHash, "Info", "Business");
+        return response;
+    }
+
     public async Task<Response> UpdateUserForm(UpdateUserFormRequest updateUserFormRequest)
     {
         var response = new Response();
@@ -156,6 +208,7 @@ public class UserFormService : IUserFormService
         return false;
     }
 
+    // Helper Functions
 
     private bool IsUserAuthorizedForUserForm(AppPrincipal appPrincipal)
     {
@@ -171,8 +224,55 @@ public class UserFormService : IUserFormService
         return response;
     }
 
-    public Task<UserFormRanking> GetUserFormRanking(string userHash)
+    private UserFormRanking ConvertUserFormRankingDBOutputToUserRankingObject(Response response)
     {
-        throw new NotImplementedException();
+        var userFormRanking = new UserFormRanking();
+
+        foreach (List<Object> rankings in response.Output!)
+        {
+            int index = 0;
+
+            foreach (var ranking in rankings)
+            {
+                switch (index)
+                {
+                    case 0:
+                        userFormRanking.MentalHealthRating = Convert.ToInt32(ranking);
+                        break;
+                    case 1:
+                        userFormRanking.PhysicalHealthRating = Convert.ToInt32(ranking);
+                        break;
+                    case 2:
+                        userFormRanking.OutdoorRating = Convert.ToInt32(ranking);
+                        break;
+                    case 3:
+                        userFormRanking.SportRating = Convert.ToInt32(ranking);
+                        break;
+                    case 4:
+                        userFormRanking.ArtRating = Convert.ToInt32(ranking);
+                        break;
+                    case 5:
+                        userFormRanking.HobbyRating = Convert.ToInt32(ranking);
+                        break;
+                    case 6:
+                        userFormRanking.ThrillRating = Convert.ToInt32(ranking);
+                        break;
+                    case 7:
+                        userFormRanking.TravelRating = Convert.ToInt32(ranking);
+                        break;
+                    case 8:
+                        userFormRanking.VolunteeringRating = Convert.ToInt32(ranking);
+                        break;
+                    case 9:
+                        userFormRanking.FoodRating = Convert.ToInt32(ranking);
+                        break;
+                }
+                index++;
+
+            }
+
+        }
+
+        return userFormRanking;
     }
 }

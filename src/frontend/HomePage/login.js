@@ -2,6 +2,7 @@
 
 import * as routeManager from '../routeManager.js';
 import * as userFormService from '../UserFormPage/userFormServices.js'
+import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -18,7 +19,8 @@ export function loadHomePage(root, ajaxClient) {
 
     const webServiceUrl = 'http://localhost:8082/authentication';
     const motivationalQuoteServiceUrl = 'http://localhost:8084';
-    const userFormUrl = 'http://localhost:8081/userForm'
+    let userFormCompletionStatusUrl = ""
+
 
     function getMotivationalQuote() {
         const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
@@ -75,10 +77,14 @@ export function loadHomePage(root, ajaxClient) {
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
-            }).then(function (jwtToken) {
+            }).then(function (response) {
+                if (response.status == 500) throw new Error("Failed to authenticate OTP")
+                let jwtToken = response
+                log.logLogin(userHash, "Success")
                 localStorage.setItem("token-local", JSON.stringify(jwtToken));
-                resolve(JSON.stringify(jwtToken));
+                resolve(JSON.stringify(response));
             }).catch(function (error) {
+                log.logLogin(userHash, "Failure")
                 reject(error);
             });
         });
@@ -145,9 +151,17 @@ export function loadHomePage(root, ajaxClient) {
     
             // Change event listener of button
             submitButton.addEventListener('click', async () => {
-                jwtToken = await authenticateOTP(userHash, otpInput.value);
-                var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
 
+                try {
+                    jwtToken = await authenticateOTP(userHash, otpInput.value);
+                    var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+                } catch (error)
+                {
+                    console.error(error)
+                    alert(error)
+                    return
+                }
+                
                 if (userFormIsCompleted == 'true') {
                     routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 } else {
@@ -162,11 +176,20 @@ export function loadHomePage(root, ajaxClient) {
 
     root.myApp = root.myApp || {};
 
+    async function fetchConfig() {
+        const response = await fetch('./lifelog-config.url.json');
+        const data = await response.json();
+        let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
+        userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
+    }
+
     // Initialize the current view by setting up data and attaching event handlers 
-    function init() {
+    async function init() {
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
+
+        await fetchConfig()
 
         if (jwtToken) {
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)
