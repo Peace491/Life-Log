@@ -3,27 +3,29 @@ namespace Peace.Lifelog.LocationRecommendation;
 using System.Collections.Generic;
 using DomainModels;
 using Peace.Lifelog.Infrastructure;
-using Peace.Lifelog.Security;
-using Peace.Lifelog.Logging;
 using Peace.Lifelog.LLI;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 
 public class LocationRecommendationService : ILocationRecommendationService
 {
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
 
-    private IMapRepo mapRepo;
+    private ILocationRecommendationRepo locationRecommendationRepo;
     private ILifelogAuthService lifelogAuthService;
     private LocationRecommendationValidation locationRecommendationValidation;
     private LocationRecommendationCluster locationRecommendationCluster;
+    //private PinService pinService;
     private ILogging logging;
 
-    public LocationRecommendationService(IMapRepo mapRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
+    public LocationRecommendationService(ILocationRecommendationRepo locationRecommendationRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
     {
-        this.mapRepo = mapRepo;
+        this.locationRecommendationRepo = locationRecommendationRepo;
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.locationRecommendationValidation = new LocationRecommendationValidation();
         this.locationRecommendationCluster = new LocationRecommendationCluster();
+        //this.pinService = new PinService(mapRepo, lifelogAuthService, logging);
     }
 
     #region Get Recommendation
@@ -31,129 +33,74 @@ public class LocationRecommendationService : ILocationRecommendationService
     {
         var response = new Response();
         response.HasError = false;
-        Response readPinResponse = new();
-        var userHash = getRecommendationRequest.UserHash;
+        //string userHash = getRecommendationRequest.UserHash; 
+        var userHash = "FrZ8KyeBMVPj2H+khuLszU8F95bwHUPhmWBJ1nUKJxs=";
 
-        //Validate Inpit 
-        var validateRequestResponse = this.locationRecommendationValidation.IsValidUserHash(userHash);
-        if (!validateRequestResponse)
-        {
-            var errorMessage = "invalid user hash";
-
-            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
-        }
-
-        //Get all user LLI
-        try
-        {
-            readPinResponse = await this.mapRepo.ReadAllUserPinInDB(userHash);
-
-        }
-        catch (Exception error)
-        {
-            // Convert the Exception object to a string
-            string errorMessage = error.ToString();
-
-            return await this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
-        }
-
-
-        var pinOutput = ConvertDatabaseResponseOutputToPinObjectList(readPinResponse);
-        response.Output = pinOutput;
-        var clusterDataResponse = locationRecommendationCluster.ClusterRequest(response);
+        //var readPinResponse = await pinService.GetAllPinFromUser(userHash);
+        //var readDataOnlyDAO = new ReadDataOnlyDAO();
+        //var getAllCoord = $"SELECT Latitude, Longitude FROM mappin WHERE UserHash = 'FrZ8KyeBMVPj2H+khuLszU8F95bwHUPhmWBJ1nUKJxs='";
+        //var coordResponse = await readDataOnlyDAO.ReadData(getAllCoord);
+        //var pinOutput = ConvertDatabaseResponseOutputToPinObjectList(readPinResponse);
+        //response.Output = pinOutput;
+        var coordResponse = await this.locationRecommendationRepo.ReadAllUserPinInDB(userHash);
+        var clusterDataResponse = locationRecommendationCluster.ClusterRecommendation(coordResponse);
+        //var retrievePinIdResponse = GetPinId(clusterDataResponse);
+        response.Output = clusterDataResponse.Output;
         return response;
     }
     #endregion
     #region View Recommendation
     public async Task<Response> ViewRecommendation(ViewRecommendationRequest viewRecommendationRequest)
     {
-        return await this.logging.CreateLog("Logs", "userHash", "ERROR", "Business", "errorMessage");
-    }
-    #endregion
-    #region View Pin
-    public async Task<Response> ViewPin(ViewPinRequest viewPinRequest)
-    {
         var response = new Response();
         response.HasError = false;
-
-        Response readPinInDBResponse;
-
-        //Initialize the LLIId
-        string? LLIId = null;
-
-        try
+        //var userHash = viewRecommendationRequest.UserHash;
+        var userHash = "FrZ8KyeBMVPj2H+khuLszU8F95bwHUPhmWBJ1nUKJxs=";
+        //var readPinResponse = await pinService.GetAllPinFromUser(userHash);
+        var coordResponse = await this.locationRecommendationRepo.ReadAllUserPinInDB(userHash);
+        var clusterDataResponse = locationRecommendationCluster.ClusterMarkerCoordinates(coordResponse);
+        var retrievePinIdResponse = GetPinId(clusterDataResponse);
+        //response = retrievePinIdResponse;
+        return response;
+        //return await this.logging.CreateLog("Logs", "userHash", "ERROR", "Business", "errorMessage");
+    }
+    public async Task<Response> GetPinId(Response response)
+    {
+        var retrievePinIdResponse = new Response();
+        List<object> pinIdList = new List<object>();
+        //ICollection<object> firstLevel = response.Output!;
+        //ICollection<object> secondLevel = firstLevel.ElementAtOrDefault(0) as ICollection<object> ?? new List<object>();
+        //ICollection<object> thirdLevel = secondLevel.ElementAtOrDefault(0) as ICollection<object> ?? new List<object>();
+        if (response.Output != null)
         {
-            readPinInDBResponse = await this.mapRepo.ReadPinInDB(viewPinRequest.PinId);
-            if (readPinInDBResponse.Output is not null)
+            foreach (var Object in response.Output)
             {
-                foreach (List<object> lliList in readPinInDBResponse.Output)
+                if (Object is List<object> innerList)
                 {
-                    foreach (Int32 lliId in lliList)
+                    foreach (List<object> list in innerList)
                     {
-                        LLIId = lliId.ToString();
+                        foreach (List<double[]> last in list)
+                        {
+                            var lat = last.ElementAtOrDefault(0);
+                            var lng = last.ElementAtOrDefault(1);
+                            retrievePinIdResponse = await this.locationRecommendationRepo.GetPinId(lat!, lng!);
+                            foreach (List<object> pin in retrievePinIdResponse.Output!)
+                            {
+                                pinIdList.Add(pin);
+                            }
+                        }
                     }
                 }
             }
         }
-        catch (Exception error)
-        {
-            response.HasError = true;
-            response.ErrorMessage = error.Message;
-            return response;
-        }
-
-        // Read the LLI in the DB only if LLIId is not null
-        if (LLIId is not null)
-        {
-            Response readPinLLIInDBResponse;
-            try
-            {
-                readPinLLIInDBResponse = await this.mapRepo.ReadLLIInDB(LLIId);
-                var lliList = ConvertDatabaseResponseOutputToLLIObjectList(readPinLLIInDBResponse);//change
-                response.Output = lliList;
-            }
-            catch (Exception error)
-            {
-                return LoggingError(response, viewPinRequest.Principal!, error.Message);
-            }
-
-            // Handle Success Response
-            return response;
-        }
-        else
-        {
-            // Handle the case when LLIId is null
-            return LoggingError(response, viewPinRequest.Principal!, "LLIId is null");
-        }
+        response = retrievePinIdResponse;
+        response.Output = pinIdList;
+        return response;
     }
     #endregion
+    #region View Pin
+    #endregion
     #region Switching Views
-    //might be unnessecary
-    /*public async Task<Response> UpdateLog(UpdateLogRequest updateLogRequest)
-    {
-        var response = new Response();
-        response.HasError = false;
-        var errorMessage = "";
-
-        // Validate Input
-        var validateDeletePinRequestResponse = this.locationRecommendationValidation.ValidatePinRequest(response, updateLogRequest, PinRequestType.UpdateLog);
-        if (validateDeletePinRequestResponse.HasError)
-        {
-            errorMessage = validateDeletePinRequestResponse.ErrorMessage;
-            return LoggingError(response, updateLogRequest.Principal!, errorMessage!);
-        }
-
-        // Authorize request
-        if (!IsUserAuthorizedForLocationRecommendation(updateLogRequest.Principal!))
-        {
-            errorMessage = "The User Is Not Authorized To view a Pin";
-            return LoggingError(response, updateLogRequest.Principal!, errorMessage!);
-        }
-
-        var logResponse = await this.logging.CreateLog("Logs", updateLogRequest.Principal!.UserId, "Info", "View", "Map view changed to Location Recommendation");
-
-        return response;
-    }*/
     #endregion
     #region Helper Functions
     private Response LoggingError(Response response, AppPrincipal principal, string errorMessage)

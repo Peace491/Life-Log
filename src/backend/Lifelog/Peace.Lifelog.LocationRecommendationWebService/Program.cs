@@ -1,8 +1,8 @@
 using Microsoft.Net.Http.Headers;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
-using Peace.Lifelog.Logging;
 using Peace.Lifelog.LocationRecommendation;
+using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +23,7 @@ builder.Services.AddTransient<ILocationRecommendationService, LocationRecommenda
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 
@@ -32,6 +33,11 @@ var app = builder.Build(); // Only part needed to execute Web API project
 /* Setup of Middleware Pipeline */
 
 // app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline
