@@ -28,7 +28,7 @@ public sealed class LocationRecommendationController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("getLocationRecommendation")]
+    [HttpPost("getLocationRecommendation")]
     public async Task<IActionResult> GetLocationRecommendation(AppPrincipal appPrincipal)
     {
         try

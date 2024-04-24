@@ -48,7 +48,7 @@ public class LocationRecommendationCluster : IClusterRequest
 
     private static Cluster ClusterAlgorithm(double[][] data, int numberOfClusters)
     {
-        Random random = new Random();
+        Random random = new Random(42);
         List<double[]> centers = InitializeCenters(data, numberOfClusters, random);
         bool changed;
         int[] assignments = new int[data.Length];
@@ -211,7 +211,7 @@ public class LocationRecommendationCluster : IClusterRequest
         {
             return null;
         }
-        foreach(List<double[]> element in cluster.Clusters!)
+        foreach (List<double[]> element in cluster.Clusters!)
         {
             objectList.Add(element);
         }

@@ -17,7 +17,7 @@ builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
-builder.Services.AddTransient<IMapRepo, MapRepo>(); // need to change
+builder.Services.AddTransient<ILocationRecommendationRepo, LocationRecommendationRepo>(); // need to change
 builder.Services.AddTransient<ILocationRecommendationService, LocationRecommendationService>();
 //builder.Services.AddTransient<ILocationRecommendationService, LocationRecommendationService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();

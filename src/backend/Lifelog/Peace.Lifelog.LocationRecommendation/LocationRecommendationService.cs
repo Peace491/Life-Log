@@ -56,38 +56,53 @@ public class LocationRecommendationService : ILocationRecommendationService
         response.HasError = false;
         //var userHash = viewRecommendationRequest.UserHash;
         var userHash = "FrZ8KyeBMVPj2H+khuLszU8F95bwHUPhmWBJ1nUKJxs=";
-        //var readPinResponse = await pinService.GetAllPinFromUser(userHash);
         var coordResponse = await this.locationRecommendationRepo.ReadAllUserPinInDB(userHash);
         var clusterDataResponse = locationRecommendationCluster.ClusterMarkerCoordinates(coordResponse);
-        var retrievePinIdResponse = GetPinId(clusterDataResponse);
-        //response = retrievePinIdResponse;
+        var retrievePinIdResponse = new Response();
+        List<object> pinIdList = new List<object>();
+        if (clusterDataResponse.Output != null)
+        {
+            foreach (var Object in clusterDataResponse.Output)
+            {
+                if (Object is List<double[]> innerList)
+                {
+                    foreach (double[] coordinate in innerList)
+                    {
+                        var lat = coordinate.ElementAtOrDefault(0);
+                        var lng = coordinate.ElementAtOrDefault(1);
+                        retrievePinIdResponse = await this.locationRecommendationRepo.GetPinId(lat!, lng!);
+                        foreach (List<object> pin in retrievePinIdResponse.Output!)
+                        {
+                            pinIdList.Add(pin);
+                        }
+                    }
+                }
+            }
+        }
+        response = retrievePinIdResponse;
+        response.Output = pinIdList;
+        //var retrievePinIdResponse = GetPinId(clusterDataResponse);
         return response;
         //return await this.logging.CreateLog("Logs", "userHash", "ERROR", "Business", "errorMessage");
     }
-    public async Task<Response> GetPinId(Response response)
+    /*public async Task<Response> GetPinId(Response response)
     {
         var retrievePinIdResponse = new Response();
         List<object> pinIdList = new List<object>();
-        //ICollection<object> firstLevel = response.Output!;
-        //ICollection<object> secondLevel = firstLevel.ElementAtOrDefault(0) as ICollection<object> ?? new List<object>();
-        //ICollection<object> thirdLevel = secondLevel.ElementAtOrDefault(0) as ICollection<object> ?? new List<object>();
         if (response.Output != null)
         {
             foreach (var Object in response.Output)
             {
-                if (Object is List<object> innerList)
+                if (Object is List<double[]> innerList)
                 {
-                    foreach (List<object> list in innerList)
+                    foreach (double[] coordinate in innerList)
                     {
-                        foreach (List<double[]> last in list)
+                        var lat = coordinate.ElementAtOrDefault(0);
+                        var lng = coordinate.ElementAtOrDefault(1);
+                        retrievePinIdResponse = await this.locationRecommendationRepo.GetPinId(lat!, lng!);
+                        foreach (List<object> pin in retrievePinIdResponse.Output!)
                         {
-                            var lat = last.ElementAtOrDefault(0);
-                            var lng = last.ElementAtOrDefault(1);
-                            retrievePinIdResponse = await this.locationRecommendationRepo.GetPinId(lat!, lng!);
-                            foreach (List<object> pin in retrievePinIdResponse.Output!)
-                            {
-                                pinIdList.Add(pin);
-                            }
+                            pinIdList.Add(pin);
                         }
                     }
                 }
@@ -96,7 +111,7 @@ public class LocationRecommendationService : ILocationRecommendationService
         response = retrievePinIdResponse;
         response.Output = pinIdList;
         return response;
-    }
+    }*/
     #endregion
     #region View Pin
     #endregion

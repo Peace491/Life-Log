@@ -1,6 +1,7 @@
 'use strict';
 import * as routeManager from '../routeManager.js'
 import * as mapService from './mapServices.js'
+import * as locationRecommendationService from './locationRecommendationService.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -31,6 +32,10 @@ export function LoadMapPage(root, ajaxClient) {
     let editPinLLIUrl = ""
     let viewChangeUrl = ""
     let webServiceUrlLLI = ""
+    let webServiceUrlLocRec = ""
+    let getRecommendationUrl = ""
+    let viewRecommendationUrl = ""
+    let updateLogUrl = ""
 
     // Pin variables
     var currentMap;
@@ -315,6 +320,39 @@ export function LoadMapPage(root, ajaxClient) {
 
     }
 
+    //----------------------------------------------------------------------
+
+    function getRecommendation(){
+        let url = webServiceUrlLocRec + getRecommendationUrl
+        try {
+            locationRecommendationService.getLocationRecommendation(url, jwtToken);
+            setMapOnAll(currentMap)
+            showPins()
+        } catch (error) {
+            alert("Unable to retrieve Recommendation, try again.");
+        }
+    }
+    function viewRecommendation(){
+        let url = webServiceUrlLocRec + viewRecommendationUrl
+        try {
+            locationRecommendationService.viewLocationRecommendation(url, jwtToken);
+            setMapOnAll(currentMap)
+            showPins()
+        } catch (error) {
+            alert("Unable to retrieve Recommendation, try again.");
+        }
+    }
+    function updateLog(){
+        let url = webServiceUrlLocRec + updateLogUrl
+        try {
+            locationRecommendationService.updateLog(url, jwtToken);
+            setMapOnAll(currentMap)
+            showPins()
+        } catch (error) {
+            alert("Unable to log switching view, try again.");
+        }
+    }
+
     //-----------------------Modal------------------------------------------
     function renderModals() {
         const openModalButtons = document.querySelectorAll('[data-modal-target]');
@@ -371,6 +409,7 @@ export function LoadMapPage(root, ajaxClient) {
             interMapViewButton.addEventListener('click', function () {
                 initInteractiveMap();
                 showPins()
+                updateLog()
                 interMapViewButton.classList.add('currentView')
             })
 
@@ -380,6 +419,9 @@ export function LoadMapPage(root, ajaxClient) {
         if (!locRecViewButton.classList.contains('currentView')) {
             locRecViewButton.addEventListener('click', function () {
                 initLocRecMap();
+                getRecommendation()
+                viewRecommendation()
+                showPins()
                 locRecViewButton.classList.add('currentView')
             })
 
@@ -500,6 +542,11 @@ export function LoadMapPage(root, ajaxClient) {
         getPinStatusUrl = data.LifelogUrlConfig.Map.MapPinStatusGet;
         editPinLLIUrl = data.LifelogUrlConfig.Map.MapPinLLIEdit;
         viewChangeUrl = data.LifelogUrlConfig.Map.MapViewUpdate;
+
+        webServiceUrlLocRec = data.LifelogUrlConfig.LocationRecommendation.LocRecWebService;
+        getRecommendationUrl = data.LifelogUrlConfig.LocationRecommendation.GetLocationRecommendation;
+        viewRecommendationUrl = data.LifelogUrlConfig.LocationRecommendation.ViewLocationRecommendation;
+        updateLogUrl = data.LifelogUrlConfig.LocationRecommendation.UpdateLog;
     }
 
     root.myApp = root.myApp || {};
@@ -524,6 +571,7 @@ export function LoadMapPage(root, ajaxClient) {
             window.name = routeManager.PAGES.mapPage
             // Set up event handlers
             switchView();
+            showPins();
             createPinComponent();
             // Get data
 
