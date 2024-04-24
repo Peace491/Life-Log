@@ -148,6 +148,10 @@ main {
     padding: 2% 5%;
 }
 
+.map-link-container:hover {
+    cursor: pointer;
+}
+
 .lli-container {
     height: 500px;
     width: 100%;
