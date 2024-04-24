@@ -19,7 +19,7 @@ public class RecSummaryServiceShould
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ILogTarget logTarget = new LogTarget(createDataOnlyDAO);
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
 
         var recSummaryRepo = new RecSummaryRepo(readDataOnlyDAO, updateDataOnlyDAO, logger);
@@ -38,7 +38,7 @@ public class RecSummaryServiceShould
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ILogTarget logTarget = new LogTarget(createDataOnlyDAO);
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
 
         var recSummaryRepo = new RecSummaryRepo(readDataOnlyDAO, updateDataOnlyDAO, logger);
@@ -60,7 +60,7 @@ public class RecSummaryServiceShould
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ILogTarget logTarget = new LogTarget(createDataOnlyDAO);
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
 
         var recSummaryRepo = new RecSummaryRepo(readDataOnlyDAO, updateDataOnlyDAO, logger);
@@ -83,7 +83,7 @@ public class RecSummaryServiceShould
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ILogTarget logTarget = new LogTarget(createDataOnlyDAO);
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
 
         var recSummaryRepo = new RecSummaryRepo(readDataOnlyDAO, updateDataOnlyDAO, logger);
@@ -106,7 +106,7 @@ public class RecSummaryServiceShould
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ILogTarget logTarget = new LogTarget(createDataOnlyDAO);
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
 
         var recSummaryRepo = new RecSummaryRepo(readDataOnlyDAO, updateDataOnlyDAO, logger);

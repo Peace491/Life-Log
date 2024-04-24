@@ -23,7 +23,10 @@ builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
+builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<IUserFormService, UserFormService>();
+
+var config = LifelogConfig.LoadConfiguration();
 
 // Creation of the WebApplication host object
 var app = builder.Build(); // Only part needed to execute Web API project
@@ -56,7 +59,7 @@ app.Use((httpContext, next) =>
 
         httpContext.Response.StatusCode = 204;
 
-        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, config.HostURL);
         httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
         httpContext.Response.Headers.AccessControlAllowCredentials = "true";
@@ -80,7 +83,7 @@ app.Use((httpContext, next) => {
         HttpMethods.Delete
     };
 
-    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, config.HostURL);
     httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
     httpContext.Response.Headers.AccessControlAllowHeaders = "*";
     httpContext.Response.Headers.AccessControlAllowCredentials = "true";

@@ -14,20 +14,30 @@ namespace Peace.Lifelog.UserManagementWebService.Controllers;
 public sealed class UserFormController : ControllerBase
 {
     private readonly IUserFormService userFormService;
-    public UserFormController(IUserFormService userFormService) 
+    private readonly IJWTService jwtService;
+    public UserFormController(IUserFormService userFormService, IJWTService jwtService)
     {
         this.userFormService = userFormService;
+        this.jwtService = jwtService;
     }
 
     [HttpPost]
     public async Task<IActionResult> UserForm([FromBody] CreateUserFormRequest createUserFormRequest)
     {
+        var processTokenResponseStatus = ProcessJwtToken();
+        if (processTokenResponseStatus != 200)
+        {
+            return StatusCode(processTokenResponseStatus);
+        }
+
         var response = new Response();
 
-        try {
+        try
+        {
             response = await userFormService.CreateUserForm(createUserFormRequest);
         }
-        catch (Exception error){
+        catch (Exception error)
+        {
             return StatusCode(500, error);
         }
 
@@ -39,15 +49,52 @@ public sealed class UserFormController : ControllerBase
         return Ok(JsonSerializer.Serialize<Response>(response));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> UserForm(string userHash, string role)
+    {
+        var processTokenResponseStatus = ProcessJwtToken();
+        if (processTokenResponseStatus != 200)
+        {
+            return StatusCode(processTokenResponseStatus);
+        }
+        var response = new Response();
+
+        var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
+
+        try
+        {
+            response = await userFormService.GetUserFormRanking(appPrincipal);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error);
+        }
+
+        if (response.HasError == true)
+        {
+            return StatusCode(400, response.ErrorMessage);
+        }
+
+        return Ok(JsonSerializer.Serialize<Response>(response));
+
+    }
+
     [HttpPut]
     public async Task<IActionResult> UserForm([FromBody] UpdateUserFormRequest updateUserFormRequest)
     {
+        var processTokenResponseStatus = ProcessJwtToken();
+        if (processTokenResponseStatus != 200)
+        {
+            return StatusCode(processTokenResponseStatus);
+        }
         var response = new Response();
 
-        try {
+        try
+        {
             response = await userFormService.UpdateUserForm(updateUserFormRequest);
         }
-        catch (Exception error){
+        catch (Exception error)
+        {
             return StatusCode(500, error);
         }
 
@@ -61,32 +108,51 @@ public sealed class UserFormController : ControllerBase
 
     [HttpGet]
     [Route("isUserFormCompleted")]
-    public async Task<IActionResult> UserForm()
+    public async Task<IActionResult> UserForm(string userHash)
     {
-        if (Request.Headers == null) {
-            return StatusCode(401);
+        var processTokenResponseStatus = ProcessJwtToken();
+        if (processTokenResponseStatus != 200)
+        {
+            return StatusCode(processTokenResponseStatus);
         }
 
-        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
-
-        if (jwtToken == null) {
-            return StatusCode(401);
-        }
-
-        var userHash = jwtToken.Payload.UserHash;
-
-        if (userHash == null) {
+        if (userHash == null)
+        {
             return StatusCode(401);
         }
 
         var isUserFormCompleted = false;
 
-        try {
+        try
+        {
             isUserFormCompleted = await userFormService.IsUserFormCompleted(userHash);
-        } catch {
+        }
+        catch
+        {
             return StatusCode(500);
         }
 
         return Ok(isUserFormCompleted);
+    }
+
+    // Helper Functions
+
+    private int ProcessJwtToken()
+    {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null)
+        {
+            return 401;
+        }
+
+        var statusCode = jwtService.ProcessToken(Request);
+
+        if (statusCode != 200)
+        {
+            return statusCode;
+        }
+
+        return 200;
     }
 }

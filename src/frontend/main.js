@@ -16,8 +16,17 @@ import * as userFormService from './UserFormPage/userFormServices.js'
         alert("Missing dependencies");
     }
 
-    root.myApp = root.myApp || {};
+     // Urls
+     let userFormCompletionStatusUrl = ""
+ 
+     async function fetchConfig() {
+         const response = await fetch('./lifelog-config.url.json');
+         const data = await response.json();
+         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
+         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
+     }
 
+    root.myApp = root.myApp || {};
 
     // Initialize the current view by setting up data and attaching event handlers 
     async function init() {
@@ -29,15 +38,25 @@ import * as userFormService from './UserFormPage/userFormServices.js'
             routeManager.loadPage(routeManager.PAGES.homePage)
         } 
         else if(window.name) {
-            routeManager.loadPage(window.name)
+            if (window.name == routeManager.PAGES.userFormPage) {
+                routeManager.loadPage(window.name, "Update")
+            }
+            else {
+                routeManager.loadPage(window.name)
+            }
         }
         else {
-            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(jwtToken);
+            await fetchConfig()
+
+            var userHash = JSON.parse(jwtToken).Payload.UserHash; 
+
+
+            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)
             } else {
-                routeManager.loadPage(routeManager.PAGES.userFormPage)
+                routeManager.loadPage(routeManager.PAGES.userFormPage, "Create")
             }
         }
     }

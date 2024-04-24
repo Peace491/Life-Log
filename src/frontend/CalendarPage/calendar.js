@@ -2,7 +2,7 @@
 
 import * as routeManager from '../routeManager.js'
 import * as calendarDomManipulation from './calendar-dom-manipulation.js'
-
+import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -671,6 +671,8 @@ export function loadCalendarPage(root, ajaxClient) {
             alert("Unauthorized User In View")
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            var userHash = JSON.parse(jwtToken).Payload.UserHash
+            log.logPageAccess(userHash, routeManager.PAGES.calendarPage, jwtToken)
 
             // call functions here 
             let editLLIBtn = document.getElementById("edit-lli-button")
@@ -693,7 +695,8 @@ export function loadCalendarPage(root, ajaxClient) {
             calendarDomManipulation.renderCalendar(showCalendarLLI)
             calendarDomManipulation.renderModals()
 
-            setupLogout();
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.calendarPage, timeAccessed, jwtToken);
 
         }
     }
