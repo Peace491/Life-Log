@@ -5,20 +5,23 @@ namespace Peace.Lifelog.LocationRecommendation;
 
 public class LocationRecommendationValidation : IUserValidation
 {
-    public Response ValidateUser(Response response, AppPrincipal principal)
+    public Response ValidateUser(Response response, AppPrincipal principal, string userHash)
     {
-        var validateAppPrincipalResponse = ValidateAppPrincipal(response, principal);
-        return response;
+        var validateUserResponse = ValidateAppPrincipal(response, principal);
+        validateUserResponse = IsValidUserHash(validateUserResponse, userHash);
+        return validateUserResponse;
     }
 
-    public bool IsValidUserHash(string userHash)
+    private Response IsValidUserHash(Response response, string userHash)
     {
         if (userHash is null || userHash == string.Empty)
         {
-            return false;
+            response.HasError = true;
+            response.ErrorMessage = "User Hash must not be empty";
+            return response;
         }
 
-        return true;
+        return response;
     }
 
     private Response ValidateAppPrincipal(Response response, AppPrincipal? principal)

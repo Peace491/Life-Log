@@ -13,7 +13,7 @@ public class LocationRecommendationCluster : IClusterRequest
         var clusterResults = ClusterRequest(response);
         newResponse.Output = ConvertClusterOutputToResponseObjectList(clusterResults);
 
-        //response.Output = clusterResults;  // Assuming Response has a Data property to store results
+          // Assuming Response has a Data property to store results
         return newResponse;
     }
     public Response ClusterMarkerCoordinates(Response response)
@@ -21,29 +21,24 @@ public class LocationRecommendationCluster : IClusterRequest
         var newResponse = new Response();
 
         var clusterResults = ClusterRequest(response);
-        //clusterResults.Centers = null;
-        //clusterResults.Radii = null;
-        newResponse.Output = Convert(clusterResults);
+        newResponse.Output = ConvertClustersToListOfObjects(clusterResults);
 
-        //response.Output = clusterResults;  // Assuming Response has a Data property to store results
+          // Assuming Response has a Data property to store results
         return newResponse;
     }
 
 
     public Cluster ClusterRequest(Response response)
     {
-        //var newResponse = new Response();
         double[][] data = ExtractDataFromResponse(response);
         int numberOfClusters = DetermineNumberOfClusters(data);  // This should be adjusted based on data.
 
         var clusterResults = ClusterAlgorithm(data, numberOfClusters);
         var topClusters = SelectTopClusters(clusterResults.Clusters!, 3);
         clusterResults.Clusters = topClusters;
-        //newResponse.Output = ConvertClusterOutputToResponseObjectList(clusterResults);
 
-        //response.Output = clusterResults;   Assuming Response has a Data property to store results
+        //   Assuming Response has a Data property to store results
         return clusterResults;
-        //return newResponse;
     }
 
     private static Cluster ClusterAlgorithm(double[][] data, int numberOfClusters)
@@ -197,13 +192,11 @@ public class LocationRecommendationCluster : IClusterRequest
             objectList.Add(cluster.Centers!);
             objectList.Add(cluster.Radii!);
         }
-        //objectList.Add(cluster.Centers!);
-        //objectList.Add(cluster.Radii!);
 
         return objectList;
     }
 
-    private List<object>? Convert(Cluster cluster)
+    private List<object>? ConvertClustersToListOfObjects(Cluster cluster)
     {
         List<object> objectList = new List<object>();
 
