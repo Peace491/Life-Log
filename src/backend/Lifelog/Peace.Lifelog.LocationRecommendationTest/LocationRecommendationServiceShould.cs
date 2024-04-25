@@ -22,7 +22,7 @@ public class LocationRecommendationServiceShould
     {
         GetRecommendationRequest getRecommendationRequest = new GetRecommendationRequest();
         getRecommendationRequest.Principal = null;
-        getRecommendationRequest.UserHash = "FrZ8KyeBMVPj2H+khuLszU8F95bwHUPhmWBJ1nUKJxs=";
+        getRecommendationRequest.UserHash = "TestUser";
         var locationResponse = await locationRecommendationService.GetRecommendation(getRecommendationRequest);
         //var pass = true;
 
@@ -34,7 +34,7 @@ public class LocationRecommendationServiceShould
     {
         ViewRecommendationRequest viewRecommendationRequest = new ViewRecommendationRequest();
         viewRecommendationRequest.Principal = null;
-        viewRecommendationRequest.UserHash = "FrZ8KyeBMVPj2H+khuLszU8F95bwHUPhmWBJ1nUKJxs=";
+        viewRecommendationRequest.UserHash = "TestUser";
         var locationResponse = await locationRecommendationService.ViewRecommendation(viewRecommendationRequest);
         //var pass = true;
 
