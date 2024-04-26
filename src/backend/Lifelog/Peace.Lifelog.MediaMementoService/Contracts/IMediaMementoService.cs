@@ -1,6 +1,6 @@
 ﻿namespace Peace.Lifelog.MediaMementoService;
 
-public interface IMediaMementoService : IUploadMedia, IDeleteMedia
+public interface IMediaMementoService : IUploadMedia, IDeleteMedia, IGetAllUserImages
 {
 
 }

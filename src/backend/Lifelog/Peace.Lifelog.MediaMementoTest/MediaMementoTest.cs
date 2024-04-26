@@ -18,10 +18,10 @@ public class MediaMementoServiceShould
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO);
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
@@ -40,10 +40,10 @@ public class MediaMementoServiceShould
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO);
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
@@ -55,6 +55,27 @@ public class MediaMementoServiceShould
 
         // Assert
         Assert.NotNull(result);
+    }
+    [Fact]
+    public void GetAllUserLLIShould_GetAllUserLLI()
+    {
+        // Arrange
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+
+        // Act
+        var result = mediaMementoService.GetAllUserImages(userHash);
+
+        // Assert
+        Assert.NotNull(result);
+
     }
     [Fact]
     public void UploadMediaMementoShould_ReturnErrorMessage_WhenMediaUploadFails()

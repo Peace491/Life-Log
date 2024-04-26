@@ -22,7 +22,7 @@ public class MediaMementoController : ControllerBase
         _mediaMementoService = mediaMementoService;
         _logger = logger;
     }
-    
+
     [HttpPost("UploadMedia")]
     public async Task<IActionResult> UploadMediaMemento([FromBody] UploadMediaMementoRequest payload)
     {

@@ -164,6 +164,51 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     // Image that acts as the upload button and will display the uploaded image
     const mediaImg = document.createElement('img');
     mediaImg.src = lli.media || './Assets/default-pic.svg'; // Default image source
+    // Base64 string from lli.mediaMemento
+    if(lli.mediaMemento != null) {
+        const base64String = lli.mediaMemento;
+
+        // Create Data URL
+        const imageDataUrl = `data:image/png;base64,${base64String}`;
+
+        // Set the Data URL as the image source
+        mediaImg.src = imageDataUrl;
+        // Set the Data URL as the image source
+        mediaImg.src = imageDataUrl;
+        mediaImg.alt = 'Uploaded Image';
+        mediaImg.style.display = 'block'; // Ensures the image does not leave space at the bottom
+        mediaImg.style.width = '25%'; // Adjust this to control image size
+        mediaImg.style.height = 'auto'; // Maintain aspect ratio
+        mediaContainer.appendChild(mediaImg);
+
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.style.position = 'center';
+        deleteButton.style.background = 'red';
+        deleteButton.style.color = 'white';
+        deleteButton.style.border = 'none';
+        deleteButton.style.cursor = 'pointer';
+        deleteButton.style.opacity = '0.8';
+        deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
+        deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
+
+
+        deleteButton.onclick = function() {
+            mediaImg.src = './Assets/default-pic.svg';
+            deleteLLIImage(lli.lliid);
+
+            // Optional: Add your code here to handle further deletion (e.g., update server or database)
+        };
+
+    // Append the delete button to the container
+    // Append the image to the media container
+    mediaContainer.appendChild(deleteButton);
+    mediaContainer.appendChild(mediaImg);
+    
+    }
+
+    
     mediaImg.alt = 'Upload Image';
     mediaImg.style.cursor = 'pointer'; // Make cursor indicate clickable area
     mediaImg.style.transition = 'opacity 0.3s ease'; // Smooth transition for visual feedback
@@ -201,25 +246,36 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             mediaImg.style.maxHeight = '200px';
             // Optional: Update a hidden input with the base64 of the image, if needed
             document.getElementById('imageBase64').value = e.target.result.split(',')[1];
-            updateLLIImage(e.target.result.split(',')[1])
-            console.log(e.target.result.split(',')[1])
+            console.log(lli);
+            updateLLIImage(lli.lliid, lli.userHash, e.target.result.split(',')[1])
         };
         reader.readAsDataURL(file);
     }
 
-    function updateLLIImage(image) {
+    function updateLLIImage(lliid, UserHash, image) {
+        console.log(lliid);
         let url = "http://localhost:8091/mediaMemento/UploadMedia"
-        const MediaMementoRequest = {
-            UserHash: "System", 
-            LLiId: 93,
+        const UploadMediaMementoRequest = {
+            UserHash: UserHash, 
+            LLiId: lliid,
             Binary: image
         }
-        console.log(MediaMementoRequest)
         return ajaxClient
-        .post(url, MediaMementoRequest)
+        .post(url, UploadMediaMementoRequest)
         .then((response) => response.json())
         .catch((error) => Promise.reject(error));
         }
+    
+    function deleteLLIImage(lliid){
+        let deleteurl = "http://localhost:8091/mediaMemento/DeleteMedia"
+        const DeleteMediaMementoRequest = {
+            LLiId: lliid
+        }
+        return ajaxClient
+        .post(deleteurl, DeleteMediaMementoRequest)
+        .then((response) => response.json())
+        .catch((error) => Promise.reject(error));
+    }
 
     // Optional: Input to store the base64 value of the image (if used in your original function)
     const imageBase64 = document.createElement('input');
@@ -229,8 +285,6 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
     // Append the media container to your existing DOM (as needed)
     document.body.appendChild(mediaContainer); // Adjust this to append where you need it in your DOM
-
-
 
     // Append button, hidden fields, and media containers to hidden content div
     hiddenContentDiv.appendChild(buttonContainer);
@@ -656,8 +710,3 @@ export function filterLLI(filterOption, filterContainer) {
 
 }
 
-// export {
-//     createLLIComponents,
-//     convertLLIToEditMode,
-//     filterLLI   
-// }
