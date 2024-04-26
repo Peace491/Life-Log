@@ -19,7 +19,7 @@ public class MediaMementoServiceShould
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
@@ -41,7 +41,7 @@ public class MediaMementoServiceShould
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO);
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
