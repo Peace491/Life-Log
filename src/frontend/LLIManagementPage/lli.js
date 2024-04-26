@@ -106,6 +106,8 @@ export function loadLLIPage(root, ajaxClient) {
         });
     }
 
+
+
     function updateLLI(options) {
         let updateLLIUrl = webServiceUrl + '/putLLI'
 
@@ -420,6 +422,7 @@ export function loadLLIPage(root, ajaxClient) {
 
         // Get initial lli
         getAllLLI().then(function (completedLLIList) {
+            console.log(completedLLIList)
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
                 let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);

@@ -160,10 +160,77 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     // Media container
     const mediaContainer = document.createElement('div');
     mediaContainer.classList.add('lli-media-container');
+
+    // Image that acts as the upload button and will display the uploaded image
     const mediaImg = document.createElement('img');
-    mediaImg.src = lli.media || './Assets/default-pic.svg';
-    mediaImg.alt = '';
+    mediaImg.src = lli.media || './Assets/default-pic.svg'; // Default image source
+    mediaImg.alt = 'Upload Image';
+    mediaImg.style.cursor = 'pointer'; // Make cursor indicate clickable area
+    mediaImg.style.transition = 'opacity 0.3s ease'; // Smooth transition for visual feedback
+    mediaImg.addEventListener('click', () => {
+        fileInput.click(); // Simulate click on file input when image is clicked
+    });
     mediaContainer.appendChild(mediaImg);
+
+    // Hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'file-input';
+    fileInput.style.display = 'none'; // Hide the file input element
+    fileInput.addEventListener('change', handleImageUpload); // Updated to use your upload and preview function
+
+    // Append file input to the container (could also be elsewhere in the DOM)
+    mediaContainer.appendChild(fileInput);
+
+    // Function to handle image upload and preview
+    function handleImageUpload(event) {
+        var file = event.target.files[0];
+        if (!file) {
+            alert('No file selected.');
+            return;
+        }
+        if (file.size > 5242880) {
+            alert('The file is too large. Please select a file smaller than 5MB.');
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // Update the src of the mediaImg with the loaded image
+            mediaImg.src = e.target.result;
+            mediaImg.style.maxWidth = '200px';
+            mediaImg.style.maxHeight = '200px';
+            // Optional: Update a hidden input with the base64 of the image, if needed
+            document.getElementById('imageBase64').value = e.target.result.split(',')[1];
+            updateLLIImage(e.target.result.split(',')[1])
+            console.log(e.target.result.split(',')[1])
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function updateLLIImage(image) {
+        let url = "http://localhost:8091/mediaMemento/UploadMedia"
+        const MediaMementoRequest = {
+            UserHash: "System", 
+            LLiId: 93,
+            Binary: image
+        }
+        console.log(MediaMementoRequest)
+        return ajaxClient
+        .post(url, MediaMementoRequest)
+        .then((response) => response.json())
+        .catch((error) => Promise.reject(error));
+        }
+
+    // Optional: Input to store the base64 value of the image (if used in your original function)
+    const imageBase64 = document.createElement('input');
+    imageBase64.type = 'hidden';
+    imageBase64.id = 'imageBase64';
+    mediaContainer.appendChild(imageBase64);
+
+    // Append the media container to your existing DOM (as needed)
+    document.body.appendChild(mediaContainer); // Adjust this to append where you need it in your DOM
+
+
 
     // Append button, hidden fields, and media containers to hidden content div
     hiddenContentDiv.appendChild(buttonContainer);

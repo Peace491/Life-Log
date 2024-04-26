@@ -7,9 +7,12 @@ using Peace.Lifelog.Logging;
 
 public class MediaMementoServiceShould
 {
-    private int lliId = 1;
+    private int lliId = 100;
     private string userHash = "System";
-    private string hexString = "89 50 4E 47 0D 0A 1A 0A 00 00 00 0D 49 48 44 52 00 00 01 F8 00 00 03 80 08 02 00 00 00 59 A4 F6";
+    // private string hexString = "89 50 4E 47 0D 0A 1A 0A 00 00 00 0D 49 48 44 52 00 00 01 F8 00 00 03 80 08 02 00 00 00 59 A4 F6";
+
+    private byte[] hexString = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+
     [Fact]
     public void UploadMediaMementoShould_UploadMediaToDB()
     {
@@ -24,10 +27,10 @@ public class MediaMementoServiceShould
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
-        var mediaData = HexStringToByteArray(hexString);
+        // var mediaData = HexStringToByteArray(hexString);
 
         // Act
-        var result = mediaMementoService.UploadMediaMemento(userHash, lliId, mediaData);
+        var result = mediaMementoService.UploadMediaMemento(userHash, lliId, hexString);
 
         // Assert
         Assert.NotNull(result);
@@ -59,7 +62,42 @@ public class MediaMementoServiceShould
 
     }
     [Fact]
+    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsNull()
+    {
+
+    }
+    [Fact]
+    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsEmpty()
+    {
+
+    }
+    [Fact]
+    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoBiggerThan50mbs()
+    {
+
+    }
+    [Fact]
+    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsNotImage()
+    {
+
+    }
+    [Fact]
+    public void UploadMediaMementoShould_ReturnErrorMessage_IfUserHasTooMuchMediaUploaded()
+    {
+
+    }
+    [Fact]
     public void DeleteMediaMementoShould_ReturnErrorMessage_WhenMediaDeleteFails()
+    {
+
+    }
+    [Fact]
+    public void DeleteMediaMementoShould_ReturnErrorMessage_IfLLIIDDoesntExistOnDb()
+    {
+
+    }
+    [Fact]
+    public void DeleteMediaMementoShould_ReturnErrorMessage_IfLLIIDIsNull()
     {
 
     }
