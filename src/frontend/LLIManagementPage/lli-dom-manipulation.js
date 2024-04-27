@@ -160,10 +160,13 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     // Media container
     const mediaContainer = document.createElement('div');
     mediaContainer.classList.add('lli-media-container');
+    mediaContainer.style.position = 'relative'; // Required for absolute positioning of delete button
+    mediaContainer.style.height = 'fit-content';
+    mediaContainer.style.width = '100%';
 
     // Image that acts as the upload button and will display the uploaded image
     const mediaImg = document.createElement('img');
-    mediaImg.src = lli.media || './Assets/default-pic.svg'; // Default image source
+    mediaImg.src = './Assets/default-pic.svg'; // Default image source
     // Base64 string from lli.mediaMemento
     if(lli.mediaMemento != null) {
         const base64String = lli.mediaMemento;
@@ -176,15 +179,19 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         // Set the Data URL as the image source
         mediaImg.src = imageDataUrl;
         mediaImg.alt = 'Uploaded Image';
+        mediaImg.style.maxHeight = '190px'; // Adjust this to control image size
         mediaImg.style.display = 'block'; // Ensures the image does not leave space at the bottom
-        mediaImg.style.width = '25%'; // Adjust this to control image size
+        mediaImg.style.width = 'auto'; // Adjust this to control image size
         mediaImg.style.height = 'auto'; // Maintain aspect ratio
         mediaContainer.appendChild(mediaImg);
 
         // Create delete button
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
-        deleteButton.style.position = 'center';
+        deleteButton.style.position = 'absolute';
+        deleteButton.style.top = '1px';
+        deleteButton.style.right = '1px';
+        deleteButton.style.alignContent = 'top-right';
         deleteButton.style.background = 'red';
         deleteButton.style.color = 'white';
         deleteButton.style.border = 'none';
@@ -203,9 +210,8 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
     // Append the delete button to the container
     // Append the image to the media container
-    mediaContainer.appendChild(deleteButton);
     mediaContainer.appendChild(mediaImg);
-    
+    mediaContainer.appendChild(deleteButton);
     }
 
     
@@ -247,16 +253,15 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             // Optional: Update a hidden input with the base64 of the image, if needed
             document.getElementById('imageBase64').value = e.target.result.split(',')[1];
             console.log(lli);
-            updateLLIImage(lli.lliid, lli.userHash, e.target.result.split(',')[1])
+            updateLLIImage(lli.lliid, e.target.result.split(',')[1])
         };
         reader.readAsDataURL(file);
     }
 
-    function updateLLIImage(lliid, UserHash, image) {
+    function updateLLIImage(lliid, image) {
         console.log(lliid);
         let url = "http://localhost:8091/mediaMemento/UploadMedia"
         const UploadMediaMementoRequest = {
-            UserHash: UserHash, 
             LLiId: lliid,
             Binary: image
         }

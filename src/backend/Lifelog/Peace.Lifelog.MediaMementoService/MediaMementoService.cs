@@ -32,7 +32,7 @@ public class MediaMementoService : IMediaMementoService
 
             var allUserImages = await _mediaMementoRepository.GetAllUserImages(userhash);
 
-            if(ValidateUserHasStorageSpace(allUserImages) == false)
+            if(ValidateUserHasStorageSpace(allUserImages, binary.Length) == false)
             {
                 return new Response { HasError = true, ErrorMessage = "User does not have enough storage space, Storing this would store more than 1 gb." };
             }
@@ -67,6 +67,11 @@ public class MediaMementoService : IMediaMementoService
             var response = await _mediaMementoRepository.DeleteMediaMemento(lliId);
             timer.Stop();
 
+            if (ValidateOperationResponse(response) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "Invalid response object." };
+            }
+
             if (TimeOperation(timer) == false)
             {
                 return new Response { HasError = true, ErrorMessage = "Delete operation took longer than 3 seconds." };
@@ -95,7 +100,15 @@ public class MediaMementoService : IMediaMementoService
     {
         try
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             var response = await _mediaMementoRepository.GetAllUserImages(userhash);
+            timer.Stop();
+
+            if (TimeOperation(timer) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "Get all user images operation took longer than 3 seconds." };
+            }
 
             if (response == null)
             {
@@ -125,22 +138,19 @@ public class MediaMementoService : IMediaMementoService
         }
         return false;
     }
-    private bool ValidateUserHasStorageSpace(Response response)
+    private bool ValidateUserHasStorageSpace(Response response, int binaryLength)
     {
-        int total = 0;
+        int total = binaryLength;
         foreach (List<Object> image in response.Output)
         {
             byte[] temp = (byte[])image[0];
             total += temp.Length;
-            // total += image.Length;
         }
         if (total < oneGB)
         {
             return true;
         }
         return false;
-
-        throw new NotImplementedException();
     }
     private bool ValidateOperationResponse(Response response)
     {
