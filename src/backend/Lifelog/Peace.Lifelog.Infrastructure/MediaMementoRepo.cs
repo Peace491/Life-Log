@@ -12,7 +12,7 @@ public class MediaMementoRepo : IMediaMementoRepo
     // TODO : update and delete sql queries
     private string uploadQuery = "UPDATE LLI SET MediaMemento = @binary WHERE LLIId = @lliId;";
     private string deleteQuery = "UPDATE LLI SET MediaMemento = NULL WHERE LLIId = @lliId;";
-    private string getAllUserImagesQuery = "SELECT MediaMemento FROM LLI WHERE UserHash = @userhash  AND MediaMemento IS NOT NULL;";
+    // private string getAllUserImagesQuery = "SELECT MediaMemento FROM LLI WHERE UserHash = @userhash  AND MediaMemento IS NOT NULL;";
 
     public MediaMementoRepo(IUpdateDataOnlyDAO updateDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO)
     {

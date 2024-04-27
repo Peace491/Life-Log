@@ -2,6 +2,7 @@
 using System.Numerics;
 using DomainModels;
 using Org.BouncyCastle.Bcpg.Attr;
+using Org.BouncyCastle.Security;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 namespace Peace.Lifelog.MediaMementoService;
@@ -27,7 +28,7 @@ public class MediaMementoService : IMediaMementoService
         {
             if(ValidateFileSize(binary) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "File size is greater than 50 mb." };
+                return new Response { HasError = true, ErrorMessage = "File size is greater than 50 mb or empty." };
             }
 
             var allUserImages = await _mediaMementoRepository.GetAllUserImages(userhash);
@@ -87,7 +88,21 @@ public class MediaMementoService : IMediaMementoService
                 return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
             }
 
-            return new Response { HasError = false, ErrorMessage = "Media memento deleted successfully." };
+            if (response.Output == null)
+            {
+                return new Response { HasError = true, ErrorMessage = "No media memento found to delete from." };
+            }
+
+            foreach (int result in response.Output)
+            {
+                if (result == 0)
+                {
+                    return new Response { HasError = true, ErrorMessage = "No media memento found to delete from." };
+                }
+            }
+            
+
+            return response;
         }
         catch (Exception ex)
         {
@@ -130,6 +145,26 @@ public class MediaMementoService : IMediaMementoService
     }
 
     // Helper funcs
+    private static bool IsJpeg(byte[] byteArray)
+    {
+        return byteArray.Length >= 3 &&
+            byteArray[0] == 0xFF &&
+            byteArray[1] == 0xD8 &&
+            byteArray[2] == 0xFF;
+    }
+
+    private static bool IsPng(byte[] byteArray)
+    {
+        return byteArray.Length >= 8 &&
+            byteArray[0] == 0x89 &&
+            byteArray[1] == 0x50 &&
+            byteArray[2] == 0x4E &&
+            byteArray[3] == 0x47 &&
+            byteArray[4] == 0x0D &&
+            byteArray[5] == 0x0A &&
+            byteArray[6] == 0x1A &&
+            byteArray[7] == 0x0A;
+    }
     public bool ValidateFileSize(byte[] binary)
     {
         if (binary.Length > 0 && binary.Length < fiftyMB)
@@ -141,10 +176,13 @@ public class MediaMementoService : IMediaMementoService
     private bool ValidateUserHasStorageSpace(Response response, int binaryLength)
     {
         int total = binaryLength;
-        foreach (List<Object> image in response.Output)
+        if (response.Output != null)
         {
-            byte[] temp = (byte[])image[0];
-            total += temp.Length;
+            foreach (List<Object> image in response.Output)
+            {
+                byte[] temp = (byte[])image[0];
+                total += temp.Length;
+            }
         }
         if (total < oneGB)
         {
