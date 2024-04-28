@@ -416,7 +416,7 @@ export function loadLLIPage(root, ajaxClient) {
         })
     }
 
-    function showLLI() {
+    function showLLI(jwtToken) {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
 
@@ -425,7 +425,7 @@ export function loadLLIPage(root, ajaxClient) {
             console.log(completedLLIList)
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
+                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -434,6 +434,39 @@ export function loadLLIPage(root, ajaxClient) {
                 }
             });
         });
+    }
+
+    function bulkUploadMediaFunction() {
+        let bulkUploadMediaButton = document.getElementById('bulk-upload-media-button')
+        bulkUploadMediaButton.addEventListener('click', function () {
+            let bulkUploadMediaInput = document.getElementById('bulk-upload-media-input')
+            bulkUploadMediaInput.click()
+        })
+
+        let bulkUploadMediaInput = document.getElementById('bulk-upload-media-input')
+        bulkUploadMediaInput.addEventListener('change', function () {
+            let files = bulkUploadMediaInput.files
+            let formData = new FormData()
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i])
+            }
+
+            let bulkUploadMediaUrl = webServiceUrl + '/bulkUploadMedia'
+            let request = ajaxClient.post(bulkUploadMediaUrl, formData, jwtToken)
+
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response.statusText)
+                }
+
+                return response.json()
+            }).then(function (response) {
+                alert('The media is successfully uploaded.')
+                location.reload()
+            }).catch(function (error) {
+                alert(error)
+            })
+        })
     }
 
     root.myApp = root.myApp || {};
@@ -459,7 +492,7 @@ export function loadLLIPage(root, ajaxClient) {
             routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);
             
             // Get data
-            showLLI();
+            showLLI(jwtToken);
         }
     }
 

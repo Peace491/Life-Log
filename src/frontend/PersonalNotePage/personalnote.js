@@ -36,7 +36,7 @@ export function LoadPersonalNotePage (root, ajaxClient) {
         let isValidOption = validatePersonalNoteOptions(options)
         if (!isValidOption) {
             return
-        }
+        } 
 
         let request = ajaxClient.post(createPersonalNoteUrl, options, jwtToken)
 

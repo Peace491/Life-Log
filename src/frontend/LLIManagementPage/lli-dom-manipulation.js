@@ -1,4 +1,4 @@
-export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
+export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -227,6 +227,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.id = 'file-input';
+    fileInput.accept = 'image/png, image/jpeg';
     fileInput.style.display = 'none'; // Hide the file input element
     fileInput.addEventListener('change', handleImageUpload); // Updated to use your upload and preview function
 
@@ -253,31 +254,35 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             // Optional: Update a hidden input with the base64 of the image, if needed
             document.getElementById('imageBase64').value = e.target.result.split(',')[1];
             console.log(lli);
-            updateLLIImage(lli.lliid, e.target.result.split(',')[1])
+            updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken)
         };
         reader.readAsDataURL(file);
     }
 
-    function updateLLIImage(lliid, image) {
+    function updateLLIImage(lliid, image, jwtToken) {
         console.log(lliid);
         let url = "http://localhost:8091/mediaMemento/UploadMedia"
         const UploadMediaMementoRequest = {
             LLiId: lliid,
             Binary: image
         }
+        console.log(image);
         return ajaxClient
-        .post(url, UploadMediaMementoRequest)
+        .post(url, UploadMediaMementoRequest, jwtToken)
         .then((response) => response.json())
         .catch((error) => Promise.reject(error));
         }
     
-    function deleteLLIImage(lliid){
+        
+    function deleteLLIImage(lliid, jwtToken){
+        jwtToken = localStorage["token-local"]
         let deleteurl = "http://localhost:8091/mediaMemento/DeleteMedia"
         const DeleteMediaMementoRequest = {
             LLiId: lliid
         }
+        
         return ajaxClient
-        .post(deleteurl, DeleteMediaMementoRequest)
+        .post(deleteurl, DeleteMediaMementoRequest, jwtToken)
         .then((response) => response.json())
         .catch((error) => Promise.reject(error));
     }

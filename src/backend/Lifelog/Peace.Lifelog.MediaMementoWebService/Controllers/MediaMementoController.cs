@@ -32,17 +32,20 @@ public class MediaMementoController : ControllerBase
     {
         try
         {
+            Console.WriteLine("Payload: " + payload.LliId + " " + payload.Binary.Length);
             if (Request.Headers == null)
             {
                 return StatusCode(401);
             }
-
+            Console.WriteLine("Request.Headers: " + Request.Headers["Token"]);
             var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
-
+            
             if (jwtToken == null)
             {
                 return StatusCode(401);
             }
+
+            Console.WriteLine("JWT Token: " + jwtToken.Payload.UserHash);
 
             var userHash = jwtToken.Payload.UserHash;
 
@@ -50,6 +53,7 @@ public class MediaMementoController : ControllerBase
             {
                 return StatusCode(401);
             }
+            Console.WriteLine("UserHash: " + userHash);
 
             if (!jwtService.IsJwtValid(jwtToken))
             {
@@ -57,18 +61,21 @@ public class MediaMementoController : ControllerBase
             }
 
             var response = await _mediaMementoService.UploadMediaMemento(userHash, payload.LliId, payload.Binary);
+
+            Console.WriteLine("Response: " + response);
     
             return Ok(response);
         }
         catch (Exception ex)
         {
+            Console.WriteLine("Exception: " + ex.Message);
             _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
 
     [HttpPost("DeleteMedia")]
-    public async Task<IActionResult> UploadMediaMemento([FromBody] DeleteMediaMementoRequest payload)
+    public async Task<IActionResult> DeleteMediaMemento([FromBody] DeleteMediaMementoRequest payload)
     {
         try
         {
@@ -97,6 +104,45 @@ public class MediaMementoController : ControllerBase
             }
 
             var response = await _mediaMementoService.DeleteMediaMemento(payload.LliId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
+    [HttpPost("UploadMediaMementosFromCSV")]
+    public async Task<IActionResult> UploadMediaMementosFromCSV([FromBody] UploadMediaMementosFromCSVRequest payload)
+    {
+        try
+        {
+            if (Request.Headers == null)
+            {
+                return StatusCode(401);
+            }
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+            if (jwtToken == null)
+            {
+                return StatusCode(401);
+            }
+
+            var userHash = jwtToken.Payload.UserHash;
+
+            if (userHash == null)
+            {
+                return StatusCode(401);
+            }
+
+            if (!jwtService.IsJwtValid(jwtToken))
+            {
+                return StatusCode(401);
+            }
+
+            var response = await _mediaMementoService.UploadMediaMementosFromCSV(userHash, payload.CSVContent);
             return Ok(response);
         }
         catch (Exception ex)
