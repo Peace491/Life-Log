@@ -2,6 +2,7 @@
 using Peace.Lifelog.Logging;
 using DomainModels;
 
+
 namespace Peace.Lifelog.Infrastructure;
 
 public class MediaMementoRepo : IMediaMementoRepo
@@ -12,6 +13,7 @@ public class MediaMementoRepo : IMediaMementoRepo
     // TODO : update and delete sql queries
     private string uploadQuery = "UPDATE LLI SET MediaMemento = @binary WHERE LLIId = @lliId;";
     private string deleteQuery = "UPDATE LLI SET MediaMemento = NULL WHERE LLIId = @lliId;";
+    private string blukUploadQuery = "UPDATE LLI SET MediaMemento = @binary WHERE Title = @title;";
     // private string getAllUserImagesQuery = "SELECT MediaMemento FROM LLI WHERE UserHash = @userhash  AND MediaMemento IS NOT NULL;";
 
     public MediaMementoRepo(IUpdateDataOnlyDAO updateDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO)
@@ -46,5 +48,39 @@ public class MediaMementoRepo : IMediaMementoRepo
         var updatedGetAllUserImagesQuery = $"SELECT MediaMemento FROM LLI WHERE UserHash = '{userhash}' AND MediaMemento IS NOT NULL;";
 
         return await _readDataOnlyDAO.ReadData(updatedGetAllUserImagesQuery, null);
+    }
+
+    public async Task<Response> UploadMediaMementosFromCSV(string csvContent)
+    {
+        bool isFirstLine = true; // Flag to skip the first line
+        try
+        {
+            string[] lines = csvContent.Split('\n');
+            foreach (var line in lines)
+            {
+                if (isFirstLine)
+                {
+                    isFirstLine = false; // Set flag to false after the first line
+                    continue; // Skip the first line
+                }
+
+                if (!string.IsNullOrEmpty(line))
+                {
+                    string[] columns = line.Split(',');
+                    if (columns.Length >= 2)
+                    {
+                        string title = columns[0].Trim();
+                        string binaryData = columns[1].Trim();
+                        string myquery = $"UPDATE LLI SET MediaMemento = '{binaryData}' WHERE Title = '{title}'";
+                        _ = await _updateDataOnlyDAO.UpdateData(myquery);
+                    }
+                }
+            }
+            return new Response { HasError = false, ErrorMessage = null };
+        }
+        catch (Exception ex)
+        {
+            return new Response { HasError = true, ErrorMessage = ex.Message };
+        }
     }
 }

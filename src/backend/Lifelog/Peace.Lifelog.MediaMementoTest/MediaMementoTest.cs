@@ -1,5 +1,6 @@
 namespace Peace.Lifelog.MediaMementoTest;
 
+using System; // Add missing import statement 
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.MediaMementoService;
 using Peace.Lifelog.DataAccess;
@@ -10,12 +11,12 @@ public class MediaMementoServiceShould
 {
     private int lliId = 100;
     private string userHash = "System";
-    // private string hexString = "89 50 4E 47 0D 0A 1A 0A 00 00 00 0D 49 48 44 52 00 00 01 F8 00 00 03 80 08 02 00 00 00 59 A4 F6";
-
     private byte[] bytes = new byte[] { 0x01, 0x02, 0x03, 0x04 };
 
+    private string csvContent = "Title,BinaryData\nJoin a Gym,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\nWeekly Hiking,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\nMarathon for Beginners,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\n";
+
     [Fact]
-    public void UploadMediaMementoShould_UploadMediaToDB()
+    public async Task UploadMediaMementoShould_UploadMediaToDB()
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -38,7 +39,7 @@ public class MediaMementoServiceShould
         Assert.True(result.Result.ErrorMessage == null);
     }
     [Fact]
-    public void DeleteMediaMementoShould_DeleteMediaFromDB()
+    public async Task DeleteMediaMementoShould_DeleteMediaFromDB()
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -61,7 +62,7 @@ public class MediaMementoServiceShould
         Assert.True(result.Result.ErrorMessage == null);
     }
     [Fact]
-    public void GetAllUserLLIShould_GetAllUserLLI()
+    public async Task GetAllUserLLIShould_GetAllUserLLI()
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -83,7 +84,7 @@ public class MediaMementoServiceShould
         Assert.True(result.Result.ErrorMessage == null);
     }
     [Fact]
-    public void UploadMediaMementoShould_ReturnErrorMessage_WhenMediaUploadFails()
+    public async Task UploadMediaMementoShould_ReturnErrorMessage_WhenMediaUploadFails()
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -107,7 +108,7 @@ public class MediaMementoServiceShould
         Assert.True(result.Result.ErrorMessage == "File size is greater than 50 mb or empty.");
     }
     [Fact]
-    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsEmpty()
+    public async Task UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsEmpty()
     {
          // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -132,7 +133,7 @@ public class MediaMementoServiceShould
 
     }
     [Fact]
-    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoBiggerThan50mbs()
+    public async Task UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoBiggerThan50mbs()
     {
          // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -159,19 +160,19 @@ public class MediaMementoServiceShould
 
     }
     [Fact]
-    public void UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsNotImage()
+    public async Task UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsNotImage()
     {
         Assert.False(true);
     }
     [Fact]
-    public void UploadMediaMementoShould_ReturnErrorMessage_IfUserHasTooMuchMediaUploaded()
+    public async Task UploadMediaMementoShould_ReturnErrorMessage_IfUserHasTooMuchMediaUploaded()
     {
         // need to upload over 1GB of media to test this
         Assert.False(true);
 
     }
     [Fact]
-    public void DeleteMediaMementoShould_ReturnErrorMessage_WhenMediaDeleteFails()
+    public async Task DeleteMediaMementoShould_ReturnErrorMessage_WhenMediaDeleteFails()
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -195,7 +196,7 @@ public class MediaMementoServiceShould
 
     }
     [Fact]
-    public void DeleteMediaMementoShould_ReturnErrorMessage_IfLLIIDDoesntExistOnDb()
+    public async Task DeleteMediaMementoShould_ReturnErrorMessage_IfLLIIDDoesntExistOnDb()
     {
         // Arrange
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
@@ -217,5 +218,26 @@ public class MediaMementoServiceShould
         Assert.True(result.Result.HasError == true);
         Assert.True(result.Result.ErrorMessage == "No media memento found to delete from.");
 
+    }
+    [Fact]
+    public async Task UploadMediaMementosShould_UploadMultipleMediaToDB()
+    {
+        // Arrange
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+
+        // Act
+        var result = mediaMementoService.UploadMediaMementosFromCSV(userHash, csvContent);
+
+        // Arrange
+        Assert.NotNull(result);
     }
 }

@@ -13,8 +13,7 @@ public class MediaMementoService : IMediaMementoService
     private readonly ILogging _logger;
     private int fiftyMB = 52428800;
     private int oneGB = 1073741824;
-    private Response validDeleteMediaResponse = new Response { HasError = false, ErrorMessage = null };
-    private Response validUploadMediaResponse = new Response { HasError = false, ErrorMessage = null };
+    private Response validMediaResponse = new Response { HasError = false, ErrorMessage = null };
 
     public MediaMementoService(IMediaMementoRepo mediaMementoRepository, ILogging logger)
     {
@@ -26,7 +25,7 @@ public class MediaMementoService : IMediaMementoService
     {
         try
         {
-            if(ValidateFileSize(binary) == false)
+            if(ValidateFileSize(binary.Length) == false)
             {
                 return new Response { HasError = true, ErrorMessage = "File size is greater than 50 mb or empty." };
             }
@@ -143,6 +142,50 @@ public class MediaMementoService : IMediaMementoService
             return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
         }
     }
+    public async Task<Response> UploadMediaMementosFromCSV(string userHash, string csv)
+    {
+        try
+        {
+            int totalLength = ValidateTotalLengthOfSecondColumns(csv);
+            if (totalLength == -1)
+            {
+                return new Response { HasError = true, ErrorMessage = "A files size is greater than 50 mb or empty." };
+            }
+            var allUserImages = await _mediaMementoRepository.GetAllUserImages(userHash);
+            
+            if (ValidateUserHasStorageSpace(allUserImages, totalLength) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "User does not have enough storage space, Storing this would store more than 1 gb." };
+            }
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            var response = await _mediaMementoRepository.UploadMediaMementosFromCSV(csv);
+            timer.Stop();
+
+            if (TimeOperation(timer) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "Upload media mementos from csv operation took longer than 3 seconds." };
+            }
+
+            if (response == null)
+            {
+                return new Response { HasError = true, ErrorMessage = "Couldn't upload media mementos from csv." };
+            }
+
+            if (response.HasError)
+            {
+                return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
+            }
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _ = await _logger.CreateLog("Logs", "MediaMementoService", "ERROR", "System", ex.Message);
+            return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
+        }
+    }
 
     // Helper funcs
     private static bool IsJpeg(byte[] byteArray)
@@ -165,17 +208,17 @@ public class MediaMementoService : IMediaMementoService
             byteArray[6] == 0x1A &&
             byteArray[7] == 0x0A;
     }
-    public bool ValidateFileSize(byte[] binary)
+    public bool ValidateFileSize(int binary)
     {
-        if (binary.Length > 0 && binary.Length < fiftyMB)
+        if (binary > 0 && binary < fiftyMB)
         {
             return true;
         }
         return false;
     }
-    private bool ValidateUserHasStorageSpace(Response response, int binaryLength)
+    private bool ValidateUserHasStorageSpace(Response response, int CurrentFileSize)
     {
-        int total = binaryLength;
+        int total = CurrentFileSize;
         if (response.Output != null)
         {
             foreach (List<Object> image in response.Output)
@@ -190,10 +233,40 @@ public class MediaMementoService : IMediaMementoService
         }
         return false;
     }
+    private int ValidateTotalLengthOfSecondColumns(string csvContent)
+    {
+        int totalLength = 0;
+        bool isFirstLine = true; // Flag to skip the first line
+
+        string[] lines = csvContent.Split('\n');
+        foreach (var line in lines)
+        {
+            if (isFirstLine)
+            {
+                isFirstLine = false; // Skip the first line
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(line))
+            {
+                string[] columns = line.Split(',');
+                if (columns.Length >= 2)
+                {
+                    if (ValidateFileSize(columns[1].Trim().Length) == false)
+                    {
+                        return -1;
+                    }
+                    totalLength += columns[1].Trim().Length; // Add the length of the second column
+                }
+            }
+        }
+        return totalLength;
+    }
+
     private bool ValidateOperationResponse(Response response)
     {
         // Check fields of example response objects against actual object
-        if (response.HasError == validDeleteMediaResponse.HasError && response.ErrorMessage == validDeleteMediaResponse.ErrorMessage)
+        if (response.HasError == validMediaResponse.HasError && response.ErrorMessage == validMediaResponse.ErrorMessage)
         {
             return true;
         }
