@@ -47,11 +47,11 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         bool hasError = false;
         string? errorMessage = null;
 
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+
         try // Library should protect against failure 
         {
             // Step 1: Validate auth request (Go to database to see if it match up)
-            var readDataOnlyDAO = new ReadDataOnlyDAO();
-
             var getClaimsSql = 
             $"SELECT {authRequest.Claims.Type} "
             + $"FROM {authRequest.ModelName} "
@@ -89,7 +89,7 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         }
 
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging(logTarget);
 
         if (hasError) {
@@ -137,7 +137,8 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         }
 
         var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO);
+        var readDataOnlyDAO = new ReadDataOnlyDAO();
+        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         var logging = new Logging(logTarget);
 
         if (isAuthorize)
