@@ -5,37 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Form</title>
+    <link rel="stylesheet" href="./UserFormPage/styles.css">
 </head>
 
 <body>
-    <link rel="stylesheet" href="./UserFormPage/styles.css">
-
     <header>
         <div class="logo-container">
             <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view" />
         </div>
         <div class="header-contents-container">
             <div class="page-link-container">
-                <div class="calendar-link-container" id="calendar-link">
-                    <h2>Calendar</h2>
-                </div>
-                <div class="map-link-container" id="map-link">
-                    <h2>Map</h2>
-                </div>
-                <div class="note-link-container" id="note-link" data-testid = "note-view">
-                    <h2>Notes</h2>
-                </div>
-                <div class="life-tree-link-container">
-                    <h2>Life Tree</h2>
-                </div>
-                <div class="user-form-link-container" id="user-form-link">
-                    <h2>User Form</h2>
-                </div>
-                <div class="rec-link-container" id="rec-engine-link">
-                    <h2>Recommendation Engine</h2>
-                </div>
+                <!-- Page links -->
+                <div class="calendar-link-container" id="calendar-link"><h2>Calendar</h2></div>
+                <div class="map-link-container" id="map-link"><h2>Map</h2></div>
+                <div class="note-link-container" id="note-link" data-testid="note-view"><h2>Notes</h2></div>
+                <div class="life-tree-link-container"><h2>Life Tree</h2></div>
+                <div class="user-form-link-container" id="user-form-link"><h2>User Form</h2></div>
+                <div class="rec-link-container" id="rec-engine-link"><h2>Recommendation Engine</h2></div>
             </div>
             <div class="user-management-container">
+                <!-- Existing user management links -->
                 <div class="setting-container">
                     <img src="./Assets/setting.svg" alt="">
                 </div>
@@ -45,6 +34,25 @@
                 <div class="logout-container" id="logout">
                     <h2>Log Out</h2>
                 </div>
+                <!-- Added form -->
+                <form id="selectionForm" action="#" method="put">
+                    <h1 class="form-title">Lifelog Reminder</h1>
+                    <div>
+                        <label for="content">Email Content:</label>
+                        <select id="content" name="content">
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="frequency">Email Frequency:</label>
+                        <select id="frequency" name="frequency">
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
             </div>
         </div>
     </header>
@@ -53,9 +61,7 @@
         <div class="delete-user-container">
             <button id="delete-user">Delete User</button>
         </div>
-
     </main>
 
 </body>
-
 </html>
