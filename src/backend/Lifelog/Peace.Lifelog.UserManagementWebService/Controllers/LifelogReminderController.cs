@@ -13,16 +13,16 @@ namespace Peace.Lifelog.UserManagementWebService.Controllers;
 [Route("lifelogReminder")]
 public sealed class LifelogReminderController : ControllerBase
 {
-    private readonly ILifelogReminderService lifelogReminderService;
+    private readonly ILifelogReminderService _lifelogReminderService;
     private readonly IJWTService jwtService;
     public LifelogReminderController(ILifelogReminderService lifelogReminderService, IJWTService jwtService)
     {
-        this.lifelogReminderService = lifelogReminderService;
+        this._lifelogReminderService = lifelogReminderService;
         this.jwtService = jwtService;
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateLifelogReminder([FromBody] ReminderFormData reminderFormData)
+    public async Task<IActionResult> UpdateLifelogReminder([FromBody] ReminderFormData reminderFormData) //string content, string frequency, string userHash
     {
         var processTokenResponseStatus = ProcessJwtToken();
         if (processTokenResponseStatus != 200)
@@ -31,11 +31,15 @@ public sealed class LifelogReminderController : ControllerBase
         }
         var response = new Response();
         
-        var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
+        //var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
+        ReminderFormData submitFormData= new ReminderFormData();
+        submitFormData.Content = reminderFormData.Content;
+        submitFormData.Frequency = reminderFormData.Frequency;
+        submitFormData.UserHash = reminderFormData.UserHash;
 
         try
         {
-            response = await lifelogReminderService.UpdateReminderConfiguration(reminderFormData);
+            response = await this._lifelogReminderService.UpdateReminderConfiguration(submitFormData);
         }
         catch (Exception error)
         {
@@ -60,14 +64,20 @@ public sealed class LifelogReminderController : ControllerBase
         }
         var response = new Response();
 
-        var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
+        ReminderFormData sendReminderEmail = new ReminderFormData();
+        sendReminderEmail.UserHash = userHash;
+        sendReminderEmail.Content = null!;
+        sendReminderEmail.Frequency = null!;
+
+        //var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
 
         try
         {
-            response = await lifelogReminderService.SendReminderEmail(appPrincipal);
+            response = await this._lifelogReminderService.SendReminderEmail(sendReminderEmail);
         }
         catch (Exception error)
         {
+            Console.WriteLine(error.Message);
             return StatusCode(500, error);
         }
 

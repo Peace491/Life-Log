@@ -1,55 +1,56 @@
-namespace Peace.Lifelog.LifelogReminderService;
+namespace Peace.Lifelog.LifelogReminder;
 
-using MimeKit;
-using MailKit.Net.Smtp;
 using DomainModels;
-using Peace.Lifelog.Security;
-using Peace.Lifelog.DataAccess;
+using MailKit.Net.Smtp;
+using MimeKit;
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 public class LifelogReminderService : ILifelogReminderService
 {
-    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration(); 
+    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
     private ILifelogReminderRepo lifelogReminderRepo;
     private ILifelogAuthService lifelogAuthService;
     private ILogging logging;
 
-    public LocationRecommendationService(ILifelogReminderRepo lifelogReminderRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
+    public LifelogReminderService(ILifelogReminderRepo lifelogReminderRepo, ILifelogAuthService lifelogAuthService, ILogging logging)
     {
         this.lifelogReminderRepo = lifelogReminderRepo;
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
     }
     #region Update Reminder Config
-    public async Task<Response> UpdateReminderConfiguration(ReminderFormData form, string userHash)
+    public async Task<Response> UpdateReminderConfiguration(ReminderFormData form)
     {
         Response response = new Response();
         response.HasError = false;
-        
+        string userHash = form.UserHash;
+
         response = IsUserHashValid(response, userHash);
-        if(response.HasError)
+        if (response.HasError)
         {
             return response;
         }
-        
+
         string content = form.Content;
         string frequency = form.Frequency;
-        response = CheckIfUserHashInDB(response, userHash);
-        if(response.HasError)
+        response = await CheckIfUserHashInDB(response, userHash);
+        if (response.HasError)
         {
             response.HasError = true;
-            response.errorMessage = "Error in SQL or DB";
+            response.ErrorMessage = "Error in SQL or DB";
             response = Logging(response, userHash, "Error", "Persistant Database");
             return response;
         }
-        Response addContentAndFrequencyToDB = new Response()
+        Response addContentAndFrequencyToDB = new Response();
         try
         {
             addContentAndFrequencyToDB = await this.lifelogReminderRepo.UpdateContentAndFrequency(userHash, content, frequency);
         }
-        catch (exception error)
+        catch (Exception error)
         {
             response.HasError = true;
-            response.errorMessage = "SQL or input is invalid";
+            response.ErrorMessage = error.ToString();
             response = Logging(response, userHash, "Error", "persistant data store");
         }
         response = addContentAndFrequencyToDB;
@@ -57,22 +58,25 @@ public class LifelogReminderService : ILifelogReminderService
     }
     #endregion
     #region Send Email
-    public async Task<Response> SendReminderEmail(string userHash)
+    public async Task<Response> SendReminderEmail(ReminderFormData form)
     {
         Response response = new Response();
         response.HasError = false;
+        string userHash = form.UserHash;
+        form.Content = null!;
+        form.Frequency = null!;
         // validates the user hash
         response = IsUserHashValid(response, userHash);
-        if(response.HasError)
+        if (response.HasError)
         {
             return response;
         }
         // checks if the user is already instantiated in the database
-        response = CheckIfUserHashInDB(response, userHash);
-        if(response.HasError)
+        response = await CheckIfUserHashInDB(response, userHash);
+        if (response.HasError)
         {
             response.HasError = true;
-            response.errorMessage = "Error in SQL or DB";
+            response.ErrorMessage = "Error in SQL or DB";
             response = Logging(response, userHash, "Error", "Persistant Database");
             return response;
         }
@@ -82,10 +86,10 @@ public class LifelogReminderService : ILifelogReminderService
         {
             getContentAndFrequency = await this.lifelogReminderRepo.GetContentAndFrequency(userHash);
         }
-        catch(exception error)
+        catch (Exception error)
         {
             response.HasError = true;
-            response.errorMessage = "SQL or input is invalid";
+            response.ErrorMessage = error.ToString();
             response = Logging(response, userHash, "Error", "persistant data store");
             return response;
         }
@@ -93,11 +97,18 @@ public class LifelogReminderService : ILifelogReminderService
         int days = 0;
         string frequency = "";
         string content = "";
-        foreach(List<object> Object in getContentAndFrequency.Output)
+        foreach (List<object> Object in getContentAndFrequency.Output!)
         {
-            string frequency = Object[0];
-            days = int.Parse(frequency);
-            content = Object[1];
+            content = Object[0].ToString()!;
+            frequency = Object[1].ToString()!;
+        }
+        if (frequency == "Weekly")
+        {
+            days = 7;
+        }
+        else
+        {
+            days = 30;
         }
         //checks if an email has already been sent out in this timeframe
         Response checkCurrentReminderResponse = new Response();
@@ -105,16 +116,16 @@ public class LifelogReminderService : ILifelogReminderService
         {
             checkCurrentReminderResponse = await this.lifelogReminderRepo.CheckCurrentReminder(userHash, days);
         }
-        catch(exception error)
+        catch (Exception error)
         {
             response.HasError = true;
-            response.errorMessage = "SQL or input is invalid";
+            response.ErrorMessage = error.ToString();
             response = Logging(response, userHash, "Error", "persistant data store");
             return response;
         }
-        if(checkCurrentReminderResponse.Output.Count > 0)
+        if (checkCurrentReminderResponse.Output?.Count != null)
         {
-            response.errorMessage = "Email has already been sent";
+            response.ErrorMessage = "Email has already been sent";
             response = Logging(response, userHash, "info", "business");
             return response;
         }
@@ -127,24 +138,24 @@ public class LifelogReminderService : ILifelogReminderService
         Response getUserIdResponse;
         try
         {
-            getUserIdResponse = await this.lifelogReminderRepo.GetUserID(userHash)
+            getUserIdResponse = await this.lifelogReminderRepo.GetUserID(userHash);
         }
         catch (Exception error)
         {
             response.HasError = true;
-            response.errorMessage = "SQL or input is invalid";
+            response.ErrorMessage = error.ToString();
             response = Logging(response, userHash, "Error", "persistant data store");
             return response;
         }
         string userId = "";
-        foreach(List<object> Object in getUserIdResponse.Output)
+        foreach (List<object> Object in getUserIdResponse.Output!)
         {
-            userId = Object[0].ToString();
+            userId = Object[0].ToString()!;
         }
         reminder.To.Add(new MailboxAddress("", userId));
-        reminder.Subject = "Come on Back to Lifelog! Your LLI Item's are Waiting For You!"
+        reminder.Subject = "Come on Back to Lifelog! Your LLI Item's are Waiting For You!";
         var body = new BodyBuilder();
-        if(content == "Active")
+        if (content == "Active")
         {
             body.HtmlBody = "<h1>Hey there!</h1>" +
                  "<p>We noticed you haven't been active on Lifelog for more than a " + frequency + ". " +
@@ -165,13 +176,14 @@ public class LifelogReminderService : ILifelogReminderService
         {
             var emailResponse = SendEmail(reminder);
         }
-        catch(Exception error)
+        catch (Exception error)
         {
-            response.HasError= true;
-            response.errorMessage = "Error sending email";
+            response.HasError = true;
+            response.ErrorMessage = error.ToString();
             response = Logging(response, userHash, "Error", "API");
             return response;
         }
+
 
         // update the date in the database
         Response updateDate;
@@ -179,26 +191,27 @@ public class LifelogReminderService : ILifelogReminderService
         {
             updateDate = await this.lifelogReminderRepo.UpdateCurrentDate(userHash);
         }
-        catch(exception error)
+        catch (Exception error)
         {
-            response.HasError= true;
-            response.errorMessage = "SQL or input is invalid";
+            response.HasError = true;
+            response.ErrorMessage = error.ToString();
             response = Logging(response, userHash, "Error", "persistant data store");
             return response;
         }
-        response.Output = "Email Sent Successfully";
+        string output = "Email Sent Successfully";
+        response.Output = ConvertStringOutputToResponseOutput(output);
         response.ErrorMessage = "Email Sent Successfully";
-        Logging(response, userHash, "info", "business")
-        response.Error = null;
+        Logging(response, userHash, "info", "business");
+        response.ErrorMessage = null;
         return response;
     }
-#endregion
+    #endregion
 
     #region Helper Functions
-    public async Response CheckIfUserHashInDB(Response response, string userHash)
+    public async Task<Response> CheckIfUserHashInDB(Response response, string userHash)
     {
         Response addUserToDBResponse = new Response();
-        Response checkIfUserInDBResponse= new Response();
+        Response checkIfUserInDBResponse = new Response();
         try
         {
             checkIfUserInDBResponse = await this.lifelogReminderRepo.CheckIfUserHashInDB(userHash);
@@ -206,16 +219,18 @@ public class LifelogReminderService : ILifelogReminderService
         catch (Exception error)
         {
             response.HasError = true;
+            response.ErrorMessage = error.ToString();
         }
-        if(checkIfUserInDBResponse.Output.Count == 0)
+        if (checkIfUserInDBResponse.Output?.Count == null)
         {
             try
             {
                 addUserToDBResponse = await this.lifelogReminderRepo.AddUserHashAndDate(userHash);
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 response.HasError = true;
+                response.ErrorMessage = error.ToString();
             }
             response = addUserToDBResponse;
         }
@@ -227,8 +242,8 @@ public class LifelogReminderService : ILifelogReminderService
         return response;
     }
     private Response SendEmail(MimeMessage email)
-        
-        {
+
+    {
         var response = new Response();
         using (var client = new SmtpClient())
         {
@@ -248,22 +263,28 @@ public class LifelogReminderService : ILifelogReminderService
         }
         return response;
     }
-    
-    private response IsUserHashValid(Response response, string userHash)
+
+    private Response IsUserHashValid(Response response, string userHash)
     {
-        if(userHash == null)
+        if (userHash == null)
         {
             response.HasError = true;
-            response.errorMessage = "User Hash is Invalid";
-            response = Logging(response, userHash, "info", "business");
+            response.ErrorMessage = "User Hash is Invalid";
+            response = Logging(response, userHash!, "info", "business");
             return response;
         }
         return response;
     }
     private Response Logging(Response response, string userHash, string logtype, string logfield)
     {
-        var logResponse = this.logging.CreateLog("Logs", userHash, logtype, logfield, response.errorMessage);
+        var logResponse = this.logging.CreateLog("Logs", userHash, logtype, logfield, response.ErrorMessage);
         return response;
+    }
+    private List<object>? ConvertStringOutputToResponseOutput(string message)
+    {
+        List<object> output = new List<object>();
+        output.Add(message);
+        return output;
     }
     #endregion
 }

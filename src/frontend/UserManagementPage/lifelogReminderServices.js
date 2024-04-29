@@ -6,9 +6,16 @@ import * as routeManager from '../routeManager.js'
 export function submitReminderForm(url, userHash, jwtToken, formData) {
     const content = formData.content;
     const frequency = formData.frequency;
-    const requestBody = JSON.stringify({ content, frequency });
+    let requestBody = 
+    {
+        UserHash: userHash,
+        Content: content,
+        Frequency: frequency
+    }
+    //const requestBody = JSON.stringify({ content, frequency, userHash, jwtToken});
 
-    let request = ajaxClient.put(url, userHash, requestBody, jwtToken)
+    //let request = ajaxClient.put(url, userHash, requestBody, jwtToken)
+    let request = ajaxClient.put(url, requestBody, jwtToken)
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {
@@ -29,8 +36,9 @@ export function submitReminderForm(url, userHash, jwtToken, formData) {
 }
 
 export function sendEmailToUser(url, userHash, jwtToken) {
-
-    let request = ajaxClient.get(url, userHash, jwtToken)
+    let getUrl = url + "?userHash=" + userHash
+    let request = ajaxClient.get(getUrl, jwtToken)
+    //let request = ajaxClient.get(url, userHash, jwtToken)
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {

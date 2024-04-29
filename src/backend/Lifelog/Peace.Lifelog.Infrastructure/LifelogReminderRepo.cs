@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 
@@ -20,23 +19,21 @@ public class LifelogReminderRepo : ILifelogReminderRepo
     }
 
     public async Task<Response> CheckIfUserHashInDB(string userHash)
-    {   
-        checkUserHashResponse checkTodayDateResponse = new Response();
+    {
         var checkUserHash = $"SELECT UserHash FROM LifelogReminder WHERE UserHash = '{userHash}'";
         var checkUserHashResponse = await readDataOnlyDAO.ReadData(checkUserHash);
         return checkUserHashResponse;
     }
     public async Task<Response> AddUserHashAndDate(string userHash)
-    {   
-        checkUserHashResponse checkTodayDateResponse = new Response();
-        var writeUserHashAndDate = $"INSERT INTO LifelogReminder(Date) VALUES(DATE_SUB(CURRENT_DATE(), INTERVAL 31 DAY)) WHERE UserHash = '{userHash}'";
-        writeUserHashAndDateResponse = await createDataOnlyDAO.CreateData(writeUserHashAndDate);
+    {
+        var writeUserHashAndDate = $"INSERT INTO LifelogReminder(UserHash, Content, Frequency, Date) VALUES('{userHash}', 'Active', 'Weekly', DATE_SUB(CURRENT_DATE(), INTERVAL 32 DAY))";
+        var writeUserHashAndDateResponse = await createDataOnlyDAO.CreateData(writeUserHashAndDate);
         return writeUserHashAndDateResponse;
     }
     public async Task<Response> UpdateCurrentDate(string userHash)
     {
-        var updateDate = $"UPDATE LifelogReminder SET Date = CURRENT_DATE WHERE UserHash = '{userHash}'"
-        var updateDateResponse = await updateDataOnlyDAO.UpdateData(writeDate);
+        var updateDate = $"UPDATE LifelogReminder SET Date = CURRENT_DATE WHERE UserHash = '{userHash}'";
+        var updateDateResponse = await updateDataOnlyDAO.UpdateData(updateDate);
         return updateDateResponse;
     }
     public async Task<Response> UpdateContentAndFrequency(string userHash, string content, string frequency)
@@ -47,24 +44,21 @@ public class LifelogReminderRepo : ILifelogReminderRepo
     }
     public async Task<Response> CheckCurrentReminder(string userHash, int days)
     {
-        Response response = new Response();
-        var checkTodayDate = $"SELECT Date From LifelogReminder WHERE Date < DATE_SUB(CURRENT_DATE, INTERVAL '{days}' DAY) AND UserHash = '{userHash}'";
+        var checkTodayDate = $"SELECT Date From LifelogReminder WHERE Date > DATE_SUB(CURRENT_DATE, INTERVAL '{days}' DAY) AND UserHash = '{userHash}'";
         var checkTodayDateResponse = await readDataOnlyDAO.ReadData(checkTodayDate);
         return checkTodayDateResponse;
     }
 
     public async Task<Response> GetContentAndFrequency(string userHash)
     {
-        Response response = new Response();
         var checkTodayDate = $"SELECT Content, Frequency From LifelogReminder WHERE UserHash = '{userHash}'";
         var checkTodayDateResponse = await readDataOnlyDAO.ReadData(checkTodayDate);
         return checkTodayDateResponse;
     }
-    public Task<Response> GetUserID(string userHash)
+    public async Task<Response> GetUserID(string userHash)
     {
-        Response response = new Response();
-        string selectEmailSql = $"SELECT UserId FROM LifelogAccount WHERE UserHash = \"{userHash}\""; 
-        var selectEmailSqlResponse = await readDataOnlyDao.ReadData(selectEmailSql);
+        string selectEmailSql = $"SELECT UserId FROM LifelogAccount WHERE UserHash = \"{userHash}\"";
+        var selectEmailSqlResponse = await readDataOnlyDAO.ReadData(selectEmailSql);
         return selectEmailSqlResponse;
     }
 }

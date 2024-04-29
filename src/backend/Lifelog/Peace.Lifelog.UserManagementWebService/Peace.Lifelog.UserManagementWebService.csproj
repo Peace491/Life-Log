@@ -14,11 +14,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Peace.Lifelog.Email\Peace.Lifelog.Email.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.LifelogReminder\Peace.Lifelog.LifelogReminder.csproj" />
     <ProjectReference Include="..\Peace.LifeLog.RegistrationService\Peace.LifeLog.RegistrationService.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.UserForm\Peace.Lifelog.UserForm.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.LifelogReminder\Peace.Lifelog.LifelogReminder.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
+    <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
