@@ -16,6 +16,7 @@ using Peace.Lifelog.MediaMementoService;
 [Route("mediaMemento")]
 public class MediaMementoController : ControllerBase
 {
+    #region Constructor
     private readonly IMediaMementoService _mediaMementoService;
     private readonly ILogging _logger;
     private JWTService jwtService;
@@ -26,7 +27,9 @@ public class MediaMementoController : ControllerBase
         this.jwtService = new JWTService();
         _logger = logger;
     }
+    #endregion
 
+    #region API Entry Points
     [HttpPost("UploadMedia")]
     public async Task<IActionResult> UploadMediaMemento([FromBody] UploadMediaMementoRequest payload)
     {
@@ -56,19 +59,18 @@ public class MediaMementoController : ControllerBase
             {
                 return StatusCode(401);
             }
-            Console.WriteLine("Payload: " + payload);
-            Console.WriteLine("Payload.LliId: " + payload.LliId);
-            Console.WriteLine("Payload.Binary: " + payload.Binary);
-            Console.WriteLine("Payload.AppPrincipal: " + payload.AppPrincipal);
 
             if (payload.AppPrincipal == null)
             {
                 return StatusCode(400, "AppPrincipal is null.");
             }
 
-            
             var response = await _mediaMementoService.UploadMediaMemento(userHash, payload.LliId, payload.Binary, payload.AppPrincipal);
 
+            if (response.HasError)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
     
             return Ok(response);
         }
@@ -109,6 +111,12 @@ public class MediaMementoController : ControllerBase
             }
 
             var response = await _mediaMementoService.DeleteMediaMemento(payload.LliId, payload.AppPrincipal);
+
+            if (response.HasError)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+
             return Ok(response);
         }
         catch (Exception ex)
@@ -148,15 +156,19 @@ public class MediaMementoController : ControllerBase
             }
 
             var response = await _mediaMementoService.UploadMediaMementosFromCSV(userHash, payload.CSVMatrix, payload.AppPrincipal);
+
+            if (response.HasError)
+            {
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+
             return Ok(response);
         }
         catch (Exception ex)
         {
-            Console.WriteLine(payload.CSVMatrix);
-            Console.WriteLine("Exception: " + ex.Message);
             _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-
+    #endregion
 }

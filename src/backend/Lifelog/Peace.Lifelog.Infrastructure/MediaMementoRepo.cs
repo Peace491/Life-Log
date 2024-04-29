@@ -7,22 +7,21 @@ namespace Peace.Lifelog.Infrastructure;
 
 public class MediaMementoRepo : IMediaMementoRepo
 {
+    #region Arrangment
     private readonly IUpdateDataOnlyDAO _updateDataOnlyDAO;
     private readonly IReadDataOnlyDAO _readDataOnlyDAO;
 
-    // TODO : update and delete sql queries
     private string uploadQuery = "UPDATE LLI SET MediaMemento = @binary WHERE LLIId = @lliId;";
     private string deleteQuery = "UPDATE LLI SET MediaMemento = NULL WHERE LLIId = @lliId;";
-    private string blukUploadQuery = "UPDATE LLI SET MediaMemento = @binary WHERE Title = @title;";
-    // private string getAllUserImagesQuery = "SELECT MediaMemento FROM LLI WHERE UserHash = @userhash  AND MediaMemento IS NOT NULL;";
 
     public MediaMementoRepo(IUpdateDataOnlyDAO updateDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO)
     {
         _updateDataOnlyDAO = updateDataOnlyDAO;
         _readDataOnlyDAO = readDataOnlyDAO;
     }
+    #endregion
 
-
+    #region Repo Public Methods
     public async Task<Response> UploadMediaMemento(int lliId, byte[] binary)
     {
         // Convert the byte array to a hexadecimal string
@@ -56,11 +55,8 @@ public class MediaMementoRepo : IMediaMementoRepo
 
         try
         {
-            Console.WriteLine("Trying upload");
-            Console.WriteLine("csvContent: " + csvContent.Count);
             foreach (var row in csvContent)
             {
-                Console.WriteLine("For loop");
                 if (isFirstLine)
                 {
                     isFirstLine = false; // Skip the header row
@@ -81,7 +77,11 @@ public class MediaMementoRepo : IMediaMementoRepo
 
                     // Execute the query
                     var res = await _updateDataOnlyDAO.UpdateData(myquery);
-                    Console.WriteLine("res: " + res.HasError);
+                    if (res.HasError)
+                    {
+                        res.ErrorMessage = $"An error occurred while processing the row with title '{title}': {res.ErrorMessage}";
+                        return res;
+                    }
                 }
             }
 
@@ -89,8 +89,8 @@ public class MediaMementoRepo : IMediaMementoRepo
         }
         catch (Exception ex)
         {
-            Console.WriteLine("upload fails");
             return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }
+    #endregion
 }

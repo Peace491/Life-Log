@@ -217,7 +217,6 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             mediaImg.src = './Assets/default-pic.svg';
             deleteLLIImage(lli.lliid, jwtToken, principal);
             mediaContainer.removeChild(deleteButton);
-            // Optional: Add your code here to handle further deletion (e.g., update server or database)
         };
 
     // Append the delete button to the container
@@ -225,7 +224,6 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     mediaContainer.appendChild(mediaImg);
     mediaContainer.appendChild(deleteButton);
     }
-
     
     mediaImg.alt = 'Upload Image';
     mediaImg.style.cursor = 'pointer'; // Make cursor indicate clickable area
@@ -246,7 +244,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     // Append file input to the container (could also be elsewhere in the DOM)
     mediaContainer.appendChild(fileInput);
 
-    // Function to handle image upload and preview
+    // Function to handle image upload and preview (instant show of image after selection)
     function handleImageUpload(event) {
         var file = event.target.files[0];
         if (!file) {
@@ -263,7 +261,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             mediaImg.src = e.target.result;
             mediaImg.style.maxWidth = '200px';
             mediaImg.style.maxHeight = '200px';
-            // Optional: Update a hidden input with the base64 of the image, if needed
+    
             document.getElementById('imageBase64').value = e.target.result.split(',')[1];
             updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken, principal)
         };
@@ -273,8 +271,6 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         deleteButton.id = 'delete-button' + lli.lliid;
         deleteButton.className = 'delete-button';
         deleteButton.textContent = 'X';
-        deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
-        deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
 
         var deleteButtonId = 'delete-button' + lli.lliid;
         var existingDeleteButton = document.getElementById(deleteButtonId);
@@ -284,8 +280,6 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             deleteButton.id = deleteButtonId;
             deleteButton.className = 'delete-button';
             deleteButton.textContent = 'X';
-            deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
-            deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
             deleteButton.onclick = function() {
                 mediaImg.src = './Assets/default-pic.svg';
                 deleteLLIImage(lli.lliid, jwtToken, principal);
@@ -297,7 +291,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
     function updateLLIImage(lliid, image, jwtToken, principal) {
         let url = "http://localhost:8091/mediaMemento/UploadMedia"
-        console.log(principal)
+
         const UploadMediaMementoRequest = {
             LLiId: lliid,
             Binary: image,
@@ -305,13 +299,19 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         }
         return ajaxClient
         .post(url, UploadMediaMementoRequest, jwtToken)
-        .then(() => showAlert('Image uploaded successfully'))
+        .then(response => {
+            // Check if the response has an error
+            if (response.ok) {
+                showAlert('The media was successfully uploaded.');
+            } else {
+                showAlert('Upload failed: ' + response.statusText);
+            }
+        })
         .catch((error) => Promise.reject(error), showAlert('Image upload failed'));
         }
     
         
     function deleteLLIImage(lliid, jwtToken, principal){
-        jwtToken = localStorage["token-local"]
         let deleteurl = "http://localhost:8091/mediaMemento/DeleteMedia"
         const DeleteMediaMementoRequest = {
             LLiId: lliid,
@@ -320,18 +320,24 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         
         return ajaxClient
         .post(deleteurl, DeleteMediaMementoRequest, jwtToken)
-        .then(() => showAlert('Image deleted successfully'))
+        .then(response => {
+            // Check if the response has an error
+            if (response.ok) {
+                showAlert('The media was successfully deleted uploaded.');
+            } else {
+                showAlert('Delete failed: ' + response.statusText);
+            }
+        })
         .catch((error) => Promise.reject(error), showAlert('Image deletion failed'));
     }
 
-    // Optional: Input to store the base64 value of the image (if used in your original function)
     const imageBase64 = document.createElement('input');
     imageBase64.type = 'hidden';
     imageBase64.id = 'imageBase64';
     mediaContainer.appendChild(imageBase64);
 
     // Append the media container to your existing DOM (as needed)
-    document.body.appendChild(mediaContainer); // Adjust this to append where you need it in your DOM
+    document.body.appendChild(mediaContainer);
 
     // Append button, hidden fields, and media containers to hidden content div
     hiddenContentDiv.appendChild(buttonContainer);

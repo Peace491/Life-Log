@@ -455,33 +455,32 @@ export function loadLLIPage(root, ajaxClient) {
             let reader = new FileReader();
             reader.onload = function (e) {
                 let content = e.target.result;
-                // Prepare an array to hold the parsed CSV data
                 let csvData = [];
     
                 // Parse CSV content
-                const allRows = content.split(/\r?\n/).filter(row => row.length); // Split by new line and filter out any empty lines
-                allRows.forEach((row, index) => {
-                    const columns = row.split(',');
-                    // Store parsed data into csvData array
-                    csvData.push(columns);
+                const allRows = content.split(/\r?\n/).filter(row => row.length);
+                allRows.forEach(row => {
+                    csvData.push(row.split(','));
                 });
     
-                // Now csvData holds all the parsed CSV as an array of arrays
-    
+                // Post the CSV data to the server
                 ajaxClient.post('http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV', { CSVMatrix: csvData, AppPrincipal: principal }, jwtToken)
                     .then(response => {
-                        showAlert('The media was successfully bulk uploaded uploaded.');
-                    }
-                    )
+                        // Check if the response has an error
+                        if (response.ok) {
+                            showAlert('The media was successfully bulk uploaded.');
+                        } else {
+                            showAlert('Upload failed: ' + response.statusText);
+                        }
+                    })
                     .catch(error => {
                         showAlert('Error: ' + error.message);
                     });
             };
     
             reader.onerror = function () {
-                alert('Failed to read file!');
+                showAlert('Failed to read file!');
             };
-    
             reader.readAsText(file); // Read the file as text
         });
     }
@@ -492,13 +491,13 @@ export function loadLLIPage(root, ajaxClient) {
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
 
-    // Function to open the modal
+    // new alert with modal
     function showAlert(message) {
         document.getElementById('modalText').innerText = message;
         modal.style.display = "block";
     }
 
-    // When the user clicks on <span> (x), close the modal
+    // close modal
     span.onclick = function() {
         modal.style.display = "none";
     }
@@ -509,7 +508,6 @@ export function loadLLIPage(root, ajaxClient) {
             modal.style.display = "none";
         }
     }
-
 
     root.myApp = root.myApp || {};
 
@@ -528,7 +526,6 @@ export function loadLLIPage(root, ajaxClient) {
                 claims: JSON.parse(jwtToken).Payload.Claims,
             };
 
-            console.log("Principal: ", principal);
             // Set up event handlers
             setupCreateLLITemplate();
             setupCreateLLISubmit();

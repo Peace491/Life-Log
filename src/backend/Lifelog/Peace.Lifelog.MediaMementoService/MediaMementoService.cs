@@ -1,13 +1,10 @@
-﻿using System.Diagnostics;
-using System.Numerics;
-using DomainModels;
-using Org.BouncyCastle.Bcpg.Attr;
-using Org.BouncyCastle.Security;
+﻿using DomainModels;
+
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 namespace Peace.Lifelog.MediaMementoService;
 using System;
-using System.IO;
+
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
@@ -15,6 +12,7 @@ using Peace.Lifelog.Security;
 
 public class MediaMementoService : IMediaMementoService
 {
+    #region Arrangement
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
     private readonly IMediaMementoRepo _mediaMementoRepository;
     private readonly ILogging _logger;
@@ -29,41 +27,56 @@ public class MediaMementoService : IMediaMementoService
         _logger = logger;
         _lifelogAuthService = lifelogAuthService;
     }
+    #endregion
 
+    #region MediaMementoService Public Methods
     public async Task<Response> UploadMediaMemento(string userhash, int lliId, byte[] binary, AppPrincipal? appPrincipal)
     {
         try
         {
+            Response response = new Response();
+
             if (appPrincipal == null)
             {
-                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+                response.ErrorMessage = "AppPrincipal is null.";
+                return response;
             }
+
             if (IsUserAuthorizedForMedia(appPrincipal) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+                response.ErrorMessage = "User is not authorized for this operation.";
+                return response;
             }
+
             if(ValidateFileSize(binary.Length) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "File size is greater than 50 mb or empty." };
+                response.ErrorMessage = "File size is greater than 50 mb or empty.";
+                return response;
             }
 
             var allUserImages = await _mediaMementoRepository.GetAllUserImages(userhash);
 
             if(ValidateUserHasStorageSpace(allUserImages, binary.Length) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "User does not have enough storage space, Storing this would store more than 1 gb." };
+                response.ErrorMessage = "User does not have enough storage space, Storing this would store more than 1 gb.";
+                return response;
             }
 
-            var response = await _mediaMementoRepository.UploadMediaMemento(lliId, binary);
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            response = await _mediaMementoRepository.UploadMediaMemento(lliId, binary);
+            timer.Stop();
 
-            if (response == null)
+            if (ValidateOperationResponse(response) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "Couldn't upload media memento." };
+                response.ErrorMessage = "Invalid Operation Response.";
+                return response;
             }
 
-            if (response.HasError)
+            if (TimeOperation(timer) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
+                response.ErrorMessage = "Upload media memento operation took longer than 3 seconds.";
+                return response;
             }
             
             return response;
@@ -79,52 +92,49 @@ public class MediaMementoService : IMediaMementoService
     {
         try
         {
+            Response response = new Response();
+
             if (appPrincipal == null)
             {
-                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+                response.ErrorMessage = "AppPrincipal is null.";
+                return response;
             }
+
             if (IsUserAuthorizedForMedia(appPrincipal) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+                response.ErrorMessage = "User is not authorized for this operation.";
+                return response;
             }
+
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            var response = await _mediaMementoRepository.DeleteMediaMemento(lliId);
+            response = await _mediaMementoRepository.DeleteMediaMemento(lliId);
             timer.Stop();
 
             if (ValidateOperationResponse(response) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "Invalid response object." };
+                response.ErrorMessage = "Invalid Operation Response.";
+                return response;
             }
 
             if (TimeOperation(timer) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "Delete operation took longer than 3 seconds." };
+                response.ErrorMessage = "Upload media memento operation took longer than 3 seconds.";
+                return response;
             }
 
-            if (response == null)
+            if (response.Output != null)
             {
-                return new Response { HasError = true, ErrorMessage = "Couldn't delete media memento." };
-            }
-
-            if (response.HasError)
-            {
-                return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
-            }
-
-            if (response.Output == null)
-            {
-                return new Response { HasError = true, ErrorMessage = "No media memento found to delete from." };
-            }
-
-            foreach (int result in response.Output)
-            {
-                if (result == 0)
+                foreach (int result in response.Output)
                 {
-                    return new Response { HasError = true, ErrorMessage = "No media memento found to delete from." };
+                    if (result == 0)
+                    {
+                        response.ErrorMessage = "No media memento found to delete from.";
+                        response.HasError = true;
+                        return response;
+                    }
                 }
             }
-            
 
             return response;
         }
@@ -139,32 +149,48 @@ public class MediaMementoService : IMediaMementoService
     {
         try
         {
+            Response response = new Response();
+
             if (appPrincipal == null)
             {
-                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+                response.ErrorMessage = "AppPrincipal is null.";
+                return response;
             }
+
             if (IsUserAuthorizedForMedia(appPrincipal) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+                response.ErrorMessage = "User is not authorized for this operation.";
+                return response;
             }
+
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            var response = await _mediaMementoRepository.GetAllUserImages(userhash);
+            response = await _mediaMementoRepository.GetAllUserImages(userhash);
             timer.Stop();
+
+            if (ValidateOperationResponse(response) == false)
+            {
+                response.ErrorMessage = "Invalid Operation Response.";
+                return response;
+            }
 
             if (TimeOperation(timer) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "Get all user images operation took longer than 3 seconds." };
+                response.ErrorMessage = "Upload media memento operation took longer than 3 seconds.";
+                return response;
             }
 
-            if (response == null)
+            if (response.Output != null)
             {
-                return new Response { HasError = true, ErrorMessage = "Couldn't get all user images." };
-            }
-
-            if (response.HasError)
-            {
-                return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
+                foreach (int result in response.Output)
+                {
+                    if (result == 0)
+                    {
+                        response.ErrorMessage = "No media memento found to delete from.";
+                        response.HasError = true;
+                        return response;
+                    }
+                }
             }
 
             return response;
@@ -179,18 +205,27 @@ public class MediaMementoService : IMediaMementoService
     {
         try
         {
+            Response response = new Response();
+
             if (appPrincipal == null)
             {
-                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+                response.ErrorMessage = "AppPrincipal is null.";
+                return response;
             }
+
             if (IsUserAuthorizedForMedia(appPrincipal) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+                response.ErrorMessage = "User is not authorized for this operation.";
+                return response;
             }
+            
             if (ContainsSQLInjection(CSVMatrix))
             {
-                return new Response { HasError = true, ErrorMessage = "SQL injection detected." };
+                response.ErrorMessage = "SQL injection detected.";
+                response.HasError = true;
+                return response;
             }
+            
             int totalLength = ValidateTotalLengthOfSecondColumns(CSVMatrix);
             if (totalLength == -1)
             {
@@ -203,27 +238,23 @@ public class MediaMementoService : IMediaMementoService
                 return new Response { HasError = true, ErrorMessage = "User does not have enough storage space, Storing this would store more than 1 gb." };
             }
 
-
-
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            var response = await _mediaMementoRepository.UploadMediaMementosFromCSV(CSVMatrix);
+            response = await _mediaMementoRepository.UploadMediaMementosFromCSV(CSVMatrix);
             timer.Stop();
+
+            if (ValidateOperationResponse(response) == false)
+            {
+                response.ErrorMessage = "Invalid Operation Response.";
+                return response;
+            }
 
             if (TimeOperation(timer) == false)
             {
-                return new Response { HasError = true, ErrorMessage = "Upload media mementos from csv operation took longer than 3 seconds." };
+                response.ErrorMessage = "Upload media memento operation took longer than 3 seconds.";
+                return response;
             }
 
-            if (response == null)
-            {
-                return new Response { HasError = true, ErrorMessage = "Couldn't upload media mementos from csv." };
-            }
-
-            if (response.HasError)
-            {
-                return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
-            }
             return response;
         }
         catch (Exception ex)
@@ -232,28 +263,11 @@ public class MediaMementoService : IMediaMementoService
             return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
         }
     }
+    #endregion
+
+    #region MediaMementoService Private Methods
 
     // Helper funcs
-    private static bool IsJpeg(byte[] byteArray)
-    {
-        return byteArray.Length >= 3 &&
-            byteArray[0] == 0xFF &&
-            byteArray[1] == 0xD8 &&
-            byteArray[2] == 0xFF;
-    }
-
-    private static bool IsPng(byte[] byteArray)
-    {
-        return byteArray.Length >= 8 &&
-            byteArray[0] == 0x89 &&
-            byteArray[1] == 0x50 &&
-            byteArray[2] == 0x4E &&
-            byteArray[3] == 0x47 &&
-            byteArray[4] == 0x0D &&
-            byteArray[5] == 0x0A &&
-            byteArray[6] == 0x1A &&
-            byteArray[7] == 0x0A;
-    }
     public bool ValidateFileSize(int binary)
     {
         if (binary > 0 && binary < fiftyMB)
@@ -281,12 +295,11 @@ public class MediaMementoService : IMediaMementoService
     }
     private bool IsUserAuthorizedForMedia(AppPrincipal appPrincipal)
     {
-
         return _lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
     }
     public static bool ContainsSQLInjection(List<List<string>> csvContent)
     {
-        // Define a regular expression to detect suspicious SQL characters and keywords
+        // Regular expression to check for sql injection
         string pattern = @"('|;|--|\b(ALTER|CREATE|DELETE|DROP|EXEC|EXECUTE|INSERT|MERGE|SELECT|UPDATE|UNION|ALTER|GRANT|REVOKE)\b)";
         Regex sqlCheckRegex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -296,12 +309,10 @@ public class MediaMementoService : IMediaMementoService
             {
                 if (sqlCheckRegex.IsMatch(column))
                 {
-                    Console.WriteLine($"Potential SQL injection found in data: {column}");
                     return true; // Return true if a potential SQL injection attempt is detected
                 }
             }
         }
-
         return false; // No SQL injection pattern found
     }
     private int ValidateTotalLengthOfSecondColumns(List<List<string>> csvContent)
@@ -353,4 +364,5 @@ public class MediaMementoService : IMediaMementoService
         }
         return false;
     }
+    #endregion
 }
