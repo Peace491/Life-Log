@@ -27,3 +27,25 @@ export function submitReminderForm(url, userHash, jwtToken, formData) {
         })
     })
 }
+
+export function sendEmailToUser(url, userHash, jwtToken) {
+
+    let request = ajaxClient.get(url, userHash, jwtToken)
+
+    return new Promise(function (resolve, reject) {
+        request.then(function (response) {
+            if (response.status != 200) {
+                throw new Error(response)
+            }
+            return response.json()
+        }).then(function (response) {
+            // Move to lli page
+            alert("Successfully Sent a Reminder to the User")
+            window.localStorage.clear()
+            routeManager.loadPage(routeManager.PAGES.homePage);
+            resolve(response)
+        }).catch(function (error) {
+            reject(error)
+        })
+    })
+}

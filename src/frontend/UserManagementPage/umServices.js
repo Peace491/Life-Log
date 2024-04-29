@@ -2,7 +2,7 @@
 
 import * as routeManager from '../routeManager.js'
 
-function deleteUser(url, values, jwtToken) {
+export function deleteUser(url, userHash, jwtToken) {
         let request = ajaxClient.del(url + `?userHash=${userHash}`, jwtToken)
 
         return new Promise(function (resolve, reject) {

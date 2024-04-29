@@ -34,25 +34,6 @@
                 <div class="logout-container" id="logout">
                     <h2>Log Out</h2>
                 </div>
-                <!-- Added form -->
-                <form id="selectionForm" action="#" method="put">
-                    <h1 class="form-title">Lifelog Reminder</h1>
-                    <div>
-                        <label for="content">Email Content:</label>
-                        <select id="content" name="content">
-                            <option value="active">Active</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="frequency">Email Frequency:</label>
-                        <select id="frequency" name="frequency">
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                        </select>
-                    </div>
-                    <button type="submit">Submit</button>
-                </form>
             </div>
         </div>
     </header>
@@ -61,6 +42,25 @@
         <div class="delete-user-container">
             <button id="delete-user">Delete User</button>
         </div>
+        <!-- Added form -->
+        <form id="selectionForm" action="#" method="put">
+            <h1 class="form-title">Lifelog Reminder</h1>
+            <div>
+                <label for="content">Email Content:</label>
+                <select id="content" name="content">
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div>
+                <label for="frequency">Email Frequency:</label>
+                <select id="frequency" name="frequency">
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
     </main>
 
 </body>
