@@ -75,7 +75,7 @@ describe('Media Memento E2E Test', () => {
         cy.get('#delete-button93').click();
     
         // Assert
-        cy.get('#modalText').should('contain', 'The media was successfully deleted uploaded.');
+        cy.get('#modalText').should('contain', 'The media was successfully deleted.');
   })
   it('Has Image Template If No Media Uploaded', () => {
     // Arrange

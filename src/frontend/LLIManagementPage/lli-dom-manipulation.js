@@ -327,10 +327,10 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             // Check if the response has an error
             if (response.ok) {
                 showAlert('The media was successfully deleted.');
-                log.log(userHash, "Info", "View", `Media deleted for LLI ${lliid}`, jwtToken)
+                log.log(principal.userId, "Info", "View", `Media deleted for LLI ${lliid}`, jwtToken)
             } else {
                 showAlert('Delete failed: ' + response.statusText);
-                log.log(userHash, "ERROR", "View", `Media failed to be deleted for LLI ${lliid}`, jwtToken)
+                log.log(principal.userId, "ERROR", "View", `Media failed to be deleted for LLI ${lliid}`, jwtToken)
             }
         })
         .catch((error) => Promise.reject(error), showAlert('Image deletion failed'));
