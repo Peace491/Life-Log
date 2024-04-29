@@ -304,10 +304,10 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             // Check if the response has an error
             if (response.ok) {
                 showAlert('The media was successfully uploaded.');
-                log.log(userHash, "Info", "View", `Media uploaded for LLI ${lliid}`, jwtToken)
+                log.log(principal.userId, "Info", "View", `Media uploaded for LLI ${lliid}`, jwtToken)
             } else {
                 showAlert('Upload failed: ' + response.statusText);
-                log.log(userHash, "ERROR", "View", `Media failed to be uploaded for LLI ${lliid}`, jwtToken)
+                log.log(principal.userId, "ERROR", "View", `Media failed to be uploaded for LLI ${lliid}`, jwtToken)
             }
         })
         .catch((error) => Promise.reject(error), showAlert('Image upload failed'));
