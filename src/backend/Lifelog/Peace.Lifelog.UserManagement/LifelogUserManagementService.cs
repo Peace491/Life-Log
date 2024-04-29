@@ -175,42 +175,42 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         return response;
     }
 
-    public async Task<Response> DeletePersonalIdentifiableInformation(string userHash)
-    {
-        throw new NotImplementedException();
-        // var response = new Response();
+    // public async Task<Response> DeletePersonalIdentifiableInformation(string userHash)
+    // {
+    //     throw new NotImplementedException();
+    //     // var response = new Response();
 
-        // var deletePersonalIdentifiableInformationResponse = await appUserManagementService.DeletePersonalIdentifiableInformation(userHash);
+    //     // var deletePersonalIdentifiableInformationResponse = await appUserManagementService.DeletePersonalIdentifiableInformation(userHash);
 
-        // if (deletePersonalIdentifiableInformationResponse.HasError == true)
-        // {
-        //     response.HasError = true;
-        //     response.ErrorMessage = "Failed to delete personal identifiable information.";
-        //     return response;
-        // }
+    //     // if (deletePersonalIdentifiableInformationResponse.HasError == true)
+    //     // {
+    //     //     response.HasError = true;
+    //     //     response.ErrorMessage = "Failed to delete personal identifiable information.";
+    //     //     return response;
+    //     // }
 
-        // response.HasError = false;
-        // response.Output = deletePersonalIdentifiableInformationResponse.Output;
-        // return response;
-    }
-    public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
-    {
-        throw new NotImplementedException();
-        // var response = new Response();
+    //     // response.HasError = false;
+    //     // response.Output = deletePersonalIdentifiableInformationResponse.Output;
+    //     // return response;
+    // }
+    // public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
+    // {
+    //     throw new NotImplementedException();
+    //     // var response = new Response();
 
-        // var viewPersonalIdentifiableInformationResponse = await appUserManagementService.ViewPersonalIdentifiableInformation(userHash);
+    //     // var viewPersonalIdentifiableInformationResponse = await appUserManagementService.ViewPersonalIdentifiableInformation(userHash);
 
-        // if (viewPersonalIdentifiableInformationResponse.HasError == true)
-        // {
-        //     response.HasError = true;
-        //     response.ErrorMessage = "Failed to view personal identifiable information.";
-        //     return response;
-        // }
+    //     // if (viewPersonalIdentifiableInformationResponse.HasError == true)
+    //     // {
+    //     //     response.HasError = true;
+    //     //     response.ErrorMessage = "Failed to view personal identifiable information.";
+    //     //     return response;
+    //     // }
 
-        // response.HasError = false;
-        // response.Output = viewPersonalIdentifiableInformationResponse.Output;
-        // return response;
-    }
+    //     // response.HasError = false;
+    //     // response.Output = viewPersonalIdentifiableInformationResponse.Output;
+    //     // return response;
+    // }
     // Helper functions
     // Some should be moved to infrastructure
     #region Helper Functions

@@ -54,6 +54,12 @@ export function loadLLIPage(root, ajaxClient) {
 
     let jwtToken = ""
 
+    // Jack Pickle
+    let MediaMementoWebService = "";
+    let MediaMementoUpload =  "";
+    let MediaMementoDelete = "";
+    let MediaMementoUploadFromCSV = "";
+
     const webServiceUrl = 'http://localhost:8080/lli';
 
     // NOT exposed to the global object ("Private" functions)
@@ -417,7 +423,7 @@ export function loadLLIPage(root, ajaxClient) {
         })
     }
 
-    function showLLI(jwtToken) {
+    function showLLI(jwtToken, principal, uploadUrl, deleteUrl) {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
 
@@ -425,7 +431,7 @@ export function loadLLIPage(root, ajaxClient) {
         getAllLLI().then(function (completedLLIList) {
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal);
+                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal, uploadUrl, deleteUrl);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -437,7 +443,7 @@ export function loadLLIPage(root, ajaxClient) {
     }
 
     // Jack Pickle
-    function bulkUploadMediaFunction(principal) {
+    function bulkUploadMediaFunction(principal, url) {
         document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
             let files = this.files;
             if (files.length === 0) {
@@ -464,7 +470,7 @@ export function loadLLIPage(root, ajaxClient) {
                 });
     
                 // Post the CSV data to the server
-                ajaxClient.post('http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV', { CSVMatrix: csvData, AppPrincipal: principal }, jwtToken)
+                ajaxClient.post(url, { CSVMatrix: csvData, AppPrincipal: principal }, jwtToken)
                     .then(response => {
                         // Check if the response has an error
                         if (response.ok) {
@@ -511,15 +517,28 @@ export function loadLLIPage(root, ajaxClient) {
 
     root.myApp = root.myApp || {};
 
+    async function fetchConfig() {
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
+        MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
+        MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;
+        MediaMementoUploadFromCSV = data.LifelogUrlConfig.MediaMemento.MediaMementoUploadFromCSV;
+      }
+
     // Initialize the current view by setting up data and attaching event handlers 
-    function init() {
+    async function init() {
         jwtToken = localStorage["token-local"]
 
         if (jwtToken == null) {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+
             var userHash = JSON.parse(jwtToken).Payload.UserHash
             log.logPageAccess(userHash, routeManager.PAGES.lliManagementPage, jwtToken)
+
+            await fetchConfig();
 
             principal = {
                 userId: JSON.parse(jwtToken).Payload.UserHash,
@@ -532,13 +551,15 @@ export function loadLLIPage(root, ajaxClient) {
             // setupFilterSelect();
             setupFilter();
             setupSearch();
-            bulkUploadMediaFunction(principal);
+            bulkUploadMediaFunction(principal, MediaMementoWebService + MediaMementoUploadFromCSV);
 
             let timeAccessed = performance.now()
             routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);
             
+            let uploadURL = MediaMementoWebService + MediaMementoUpload;
+            let deleteURL = MediaMementoWebService + MediaMementoDelete;
             // Get data
-            showLLI(jwtToken, principal);
+            showLLI(jwtToken, principal, uploadURL, deleteURL);
         }
     }
 

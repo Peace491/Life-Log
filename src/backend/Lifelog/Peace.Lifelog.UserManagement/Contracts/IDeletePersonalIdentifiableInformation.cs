@@ -3,5 +3,5 @@ using DomainModels;
 
 public interface IDeletePersonalIdentifiableInformation
 {
-    public Task<Response> DeletePersonalIdentifiableInformation(string userHash);
+    // public Task<Response> DeletePersonalIdentifiableInformation(string userHash);
 }

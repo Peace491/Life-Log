@@ -1,4 +1,4 @@
-export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal) {
+export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal, uploadURL, deleteURL) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -215,7 +215,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
         deleteButton.onclick = function() {
             mediaImg.src = './Assets/default-pic.svg';
-            deleteLLIImage(lli.lliid, jwtToken, principal);
+            deleteLLIImage(lli.lliid, jwtToken, principal, deleteURL);
             mediaContainer.removeChild(deleteButton);
         };
 
@@ -263,7 +263,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             mediaImg.style.maxHeight = '200px';
     
             document.getElementById('imageBase64').value = e.target.result.split(',')[1];
-            updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken, principal)
+            updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken, principal, uploadURL)
         };
         reader.readAsDataURL(file);
         // Create delete button
@@ -282,15 +282,15 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             deleteButton.textContent = 'X';
             deleteButton.onclick = function() {
                 mediaImg.src = './Assets/default-pic.svg';
-                deleteLLIImage(lli.lliid, jwtToken, principal);
+                deleteLLIImage(lli.lliid, jwtToken, principal, deleteURL);
                 mediaContainer.removeChild(deleteButton);
             }
             mediaContainer.appendChild(deleteButton);
         }
     }
 
-    function updateLLIImage(lliid, image, jwtToken, principal) {
-        let url = "http://localhost:8091/mediaMemento/UploadMedia"
+    function updateLLIImage(lliid, image, jwtToken, principal, uploadURL) {
+        let url = uploadURL;
 
         const UploadMediaMementoRequest = {
             LLiId: lliid,

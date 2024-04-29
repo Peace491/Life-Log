@@ -272,7 +272,7 @@ public class MediaMementoServiceShould
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
-        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "1" }, new List<string> { "Yoga Session", "2" } };
+        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "SGVsbG8sIHdvcmxkIQ==" }, new List<string> { "Yoga Session", "SGVsbG8sIHdvcmxkIQ==" } };
 
         // Act
         var result = await mediaMementoService.UploadMediaMementosFromCSV(USER_HASH, csvContent, principal);
@@ -301,7 +301,7 @@ public class MediaMementoServiceShould
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
-        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "1" }, new List<string> { "Yoga Session", "John'; DROP TABLE users; --" } };
+        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "SGVsbG8sIHdvcmxkIQ==" }, new List<string> { "Yoga Session", "John'; DROP TABLE users; --" } };
 
         // Act
         var result = await mediaMementoService.UploadMediaMementosFromCSV(USER_HASH, csvContent, principal);
