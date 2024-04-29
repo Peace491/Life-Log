@@ -10,12 +10,10 @@ using DomainModels;
 
 public class MediaMementoServiceShould
 {
-    private int lliId = 100;
+    private int lliId = 1;
     private string USER_HASH = "System";
     private const string ROLE = "Normal";
     private byte[] bytes = new byte[] { 0x01, 0x02, 0x03, 0x04 };
-
-    private string csvContent = "Title,BinaryData\nJoin a Gym,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\nWeekly Hiking,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\nMarathon for Beginners,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\n";
 
     [Fact]
     public async Task UploadMediaMementoShould_UploadMediaToDB()
@@ -197,13 +195,6 @@ public class MediaMementoServiceShould
 
     }
     [Fact]
-    public async Task UploadMediaMementoShould_ReturnErrorMessage_IfUserHasTooMuchMediaUploaded()
-    {
-        // need to upload over 1GB of media to test this
-        Assert.False(true);
-
-    }
-    [Fact]
     public async Task DeleteMediaMementoShould_ReturnErrorMessage_WhenMediaDeleteFails()
     {
         // Arrange
@@ -288,5 +279,35 @@ public class MediaMementoServiceShould
 
         // Arrange
         Assert.NotNull(result);
+        Assert.True(result.HasError == false);
+    }
+    [Fact]
+    public async Task UploadMediaMementosShould_ReturnErrorWithSQLInjection()
+    {
+        // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
+
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
+        Logging logger = new Logging(logTarget: logTarget);
+
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
+
+        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "1" }, new List<string> { "Yoga Session", "John'; DROP TABLE users; --" } };
+
+        // Act
+        var result = await mediaMementoService.UploadMediaMementosFromCSV(USER_HASH, csvContent, principal);
+
+        // Arrange
+        Assert.NotNull(result);
+        Assert.True(result.HasError == true);
     }
 }

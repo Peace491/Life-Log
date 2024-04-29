@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Peace.Lifelog.Security;
+using System.Collections.ObjectModel;
 
 public class MediaMementoService : IMediaMementoService
 {
@@ -176,17 +177,17 @@ public class MediaMementoService : IMediaMementoService
 
             if (TimeOperation(timer) == false)
             {
-                response.ErrorMessage = "Upload media memento operation took longer than 3 seconds.";
+                response.ErrorMessage = "Get all media memento operation took longer than 3 seconds.";
                 return response;
             }
 
             if (response.Output != null)
             {
-                foreach (int result in response.Output)
+                foreach (List<object> result in response.Output)
                 {
-                    if (result == 0)
+                    if (result.Count == 0)
                     {
-                        response.ErrorMessage = "No media memento found to delete from.";
+                        response.ErrorMessage = "No media memento found";
                         response.HasError = true;
                         return response;
                     }

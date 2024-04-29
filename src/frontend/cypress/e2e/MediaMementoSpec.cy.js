@@ -14,7 +14,7 @@ describe('Media Memento E2E Test', () => {
     cy.get('#file-input93').selectFile('./cypress/fixtures/lifeloglogo1.png', {force: true});
 
     // Assert
-    cy.get('#modalText').should('contain', 'Image uploaded successfully');
+    cy.get('#modalText').should('contain', 'The media was successfully uploaded.');
   })
   it('View Media', () => {
     // Arrange
@@ -59,7 +59,7 @@ describe('Media Memento E2E Test', () => {
     cy.get('#file-input93').selectFile('./cypress/fixtures/lifeloglogo1.png', {force: true});
 
     // Assert
-    cy.get('#modalText').should('contain', 'Image uploaded successfully');
+    cy.get('#modalText').should('contain', 'The media was successfully uploaded.');
   })
   it('Delete Media', () => {
         // Arrange
@@ -75,7 +75,7 @@ describe('Media Memento E2E Test', () => {
         cy.get('#delete-button93').click();
     
         // Assert
-        cy.get('#modalText').should('contain', 'Image deleted successfully');
+        cy.get('#modalText').should('contain', 'The media was successfully deleted uploaded.');
   })
   it('Has Image Template If No Media Uploaded', () => {
     // Arrange
@@ -151,5 +151,33 @@ describe('Media Memento E2E Test', () => {
 
     // Assert
     cy.get('#delete-button93').should('not.exist');
+  })
+  it('Bulk Uploads', () => {
+    // Arrange
+    cy.visit('http://localhost:3000/');
+    window.localStorage.clear()
+    window.localStorage.setItem('token-local', token)
+    // Visit the pages
+    cy.wait(500)
+
+    // Act
+    cy.get('#bulk-upload-media-input').selectFile('./cypress/fixtures/testing_CSV.csv', {force: true});
+
+    // Assert
+    cy.get('#modalText').should('contain', 'The media was successfully bulk uploaded.');
+  })
+  it('Does Not Bulk Upload SQL Injection attack', () => {
+    // Arrange
+    cy.visit('http://localhost:3000/');
+    window.localStorage.clear()
+    window.localStorage.setItem('token-local', token)
+    // Visit the pages
+    cy.wait(500)
+
+    // Act
+    cy.get('#bulk-upload-media-input').selectFile('./cypress/fixtures/sql_injection_test.csv', {force: true});
+
+    // Assert
+    cy.get('#modalText').should('contain', 'Upload failed: Internal Server Error');
   })
 })
