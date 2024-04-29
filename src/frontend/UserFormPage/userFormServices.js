@@ -1,7 +1,14 @@
 
 import * as routeManager from '../routeManager.js'
+import * as userFormValidation from './userFormValidation.js'
 
 export function createUserForm(url, values, jwtToken) {
+    if (url == null || values == null || jwtToken == null) throw Error("Invalid Request")
+
+    let isUserFormValid = userFormValidation.isUserFormValid(values)
+
+    if (!isUserFormValid) throw Error("Invalid User Form Rankings")
+
     let request = ajaxClient.post(url, values, jwtToken)
 
     return new Promise(function (resolve, reject) {
@@ -19,6 +26,8 @@ export function createUserForm(url, values, jwtToken) {
 }
 
 export function getUserFormRankings(url, principal, jwtToken) {
+    if (url == null || principal == null || jwtToken == null) throw Error("Invalid Request")
+
     let request = ajaxClient.get(url + `?userHash=${principal.userId}&role=${principal.claims["Role"]}`, jwtToken)
 
     return new Promise(function (resolve, reject) {
@@ -37,6 +46,12 @@ export function getUserFormRankings(url, principal, jwtToken) {
 }
 
 export function updateUserForm(url, values, jwtToken) {
+    if (url == null || values == null || jwtToken == null) throw Error("Invalid Request")
+
+    let isUserFormValid = userFormValidation.isUserFormValid(values)
+
+    if (!isUserFormValid) throw Error("Invalid User Form Rankings")
+
     let request = ajaxClient.put(url, values, jwtToken)
 
     return new Promise(function (resolve, reject) {
@@ -56,6 +71,8 @@ export function updateUserForm(url, values, jwtToken) {
 }
 
 export function getUserFormCompletionStatus(url, userHash, jwtToken) {
+    if (url == null || userHash == null || jwtToken == null) throw Error("Invalid Request")
+
     let request = ajaxClient.get(url + `?UserHash=${userHash}`, jwtToken)
 
     return new Promise((resolve, reject) => {

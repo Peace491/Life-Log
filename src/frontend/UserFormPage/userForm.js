@@ -25,7 +25,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         try {
             userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
         } catch (error) {
-            alert(error)
+            console.error(error)
         }
         
 
@@ -67,7 +67,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                     await userFormService.createUserForm(webServiceUrl, values, jwtToken)
                 }
                 catch (error) {
-                    alert(error)
+                    console.error(error)
                 }
             }
 
@@ -75,7 +75,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                 try {
                     await userFormService.updateUserForm(webServiceUrl, values, jwtToken)
                 } catch (error) {
-                    alert(error)
+                    console.error(error)
                 }
                 
             }
