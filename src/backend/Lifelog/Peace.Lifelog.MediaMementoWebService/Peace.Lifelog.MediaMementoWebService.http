@@ -1,0 +1,6 @@
+@Peace.Lifelog.MediaMementoWebService_HostAddress = http://localhost:5012
+
+GET {{Peace.Lifelog.MediaMementoWebService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

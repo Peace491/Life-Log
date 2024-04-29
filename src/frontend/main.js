@@ -51,7 +51,8 @@ import * as userFormService from './UserFormPage/userFormServices.js'
             var userHash = JSON.parse(jwtToken).Payload.UserHash; 
 
 
-            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+            var userFormIsCompleted = 'true'
+            //await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)

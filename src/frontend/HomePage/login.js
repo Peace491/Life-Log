@@ -165,7 +165,8 @@ export function loadHomePage(root, ajaxClient) {
                 if (userFormIsCompleted == 'true') {
                     routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 } else {
-                    routeManager.loadPage(routeManager.PAGES.userFormPage)
+                    // JACK CHANGES
+                    routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 }
             });
         } catch (error) {
