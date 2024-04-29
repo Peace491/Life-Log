@@ -1,3 +1,4 @@
+import * as log from '../Log/log.js'
 export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal, uploadURL, deleteURL) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
@@ -303,8 +304,10 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             // Check if the response has an error
             if (response.ok) {
                 showAlert('The media was successfully uploaded.');
+                log.log(userHash, "Info", "View", `Media uploaded for LLI ${lliid}`, jwtToken)
             } else {
                 showAlert('Upload failed: ' + response.statusText);
+                log.log(userHash, "ERROR", "View", `Media failed to be uploaded for LLI ${lliid}`, jwtToken)
             }
         })
         .catch((error) => Promise.reject(error), showAlert('Image upload failed'));
@@ -323,9 +326,11 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         .then(response => {
             // Check if the response has an error
             if (response.ok) {
-                showAlert('The media was successfully deleted uploaded.');
+                showAlert('The media was successfully deleted.');
+                log.log(userHash, "Info", "View", `Media deleted for LLI ${lliid}`, jwtToken)
             } else {
                 showAlert('Delete failed: ' + response.statusText);
+                log.log(userHash, "ERROR", "View", `Media failed to be deleted for LLI ${lliid}`, jwtToken)
             }
         })
         .catch((error) => Promise.reject(error), showAlert('Image deletion failed'));

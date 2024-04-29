@@ -475,8 +475,10 @@ export function loadLLIPage(root, ajaxClient) {
                         // Check if the response has an error
                         if (response.ok) {
                             showAlert('The media was successfully bulk uploaded.');
+                            log.log(userHash, "Info", "View", `Media uploaded for ${principal.userId}`, jwtToken)
                         } else {
                             showAlert('Upload failed: ' + response.statusText);
+                            log.log(userHash, "ERROR", "View", `Media failed to be bulk uploaded for ${principal.userId}`, jwtToken)
                         }
                     })
                     .catch(error => {
