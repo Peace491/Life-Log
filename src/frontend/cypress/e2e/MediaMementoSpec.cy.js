@@ -94,5 +94,62 @@ describe('Media Memento E2E Test', () => {
     cy.get('#img93').should('be.visible');
     cy.get('#img93').should('have.attr', 'src', "./Assets/default-pic.svg");
   })
+  it('Has No delete button while template is up', () => {
+    // Arrange
+    cy.visit('http://localhost:3000/');
+    window.localStorage.clear()
+    window.localStorage.setItem('token-local', token)
+    // Visit the pages
+    cy.wait(500)
 
+    // Act
+    cy.get('div#93.lli').click();
+    cy.wait(500)
+
+    // Assert
+    cy.get('#img93').should('exist');
+    cy.get('#img93').should('be.visible');
+    cy.get('#img93').should('have.attr', 'src', "./Assets/default-pic.svg");
+    cy.get('#delete-button93').should('not.exist');
+  })
+  it('Has delete button after media is uploaded', () => {
+    // Arrange
+    cy.visit('http://localhost:3000/');
+    window.localStorage.clear()
+    window.localStorage.setItem('token-local', token)
+    // Visit the pages
+    cy.wait(500)
+
+    // Act
+    cy.get('div#93.lli').click();
+    cy.wait(500)
+    cy.get('#file-input93').selectFile('./cypress/fixtures/lifeloglogo1.png', {force: true});
+
+    // Assert
+    cy.get('#delete-button93').should('exist');
+    cy.get('#delete-button93').should('be.visible');
+  })
+  it('Has no delete button after media is deleted', () => {
+    // Arrange
+    cy.visit('http://localhost:3000/');
+    window.localStorage.clear()
+    window.localStorage.setItem('token-local', token)
+    // Visit the pages
+    cy.wait(500)
+
+    // Act
+    cy.get('div#93.lli').click();
+    cy.wait(500)
+    cy.get('#file-input93').selectFile('./cypress/fixtures/lifeloglogo1.png', {force: true});
+    cy.wait(500)
+    cy.get('span.close').click();
+    cy.wait(500)
+    cy.get('#delete-button93').click({force: true});
+    cy.wait(500)
+    cy.get('span.close').click();
+    cy.wait(500)
+
+    // Assert
+    cy.get('#delete-button93').should('not.exist');
+  })
 })

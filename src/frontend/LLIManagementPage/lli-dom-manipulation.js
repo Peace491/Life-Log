@@ -209,15 +209,6 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         deleteButton.id = 'delete-button' + lli.lliid;
         deleteButton.className = 'delete-button';
         deleteButton.textContent = 'X';
-        // deleteButton.style.position = 'absolute';
-        // deleteButton.style.top = '1px';
-        // deleteButton.style.right = '1px';
-        // deleteButton.style.alignContent = 'top-right';
-        // deleteButton.style.background = 'red';
-        // deleteButton.style.color = 'white';
-        // deleteButton.style.border = 'none';
-        // deleteButton.style.cursor = 'pointer';
-        // deleteButton.style.opacity = '0.8';
         deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
         deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
 
@@ -285,14 +276,24 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
         deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
 
+        var deleteButtonId = 'delete-button' + lli.lliid;
+        var existingDeleteButton = document.getElementById(deleteButtonId);
 
-        deleteButton.onclick = function() {
-            mediaImg.src = './Assets/default-pic.svg';
-            deleteLLIImage(lli.lliid);
-            mediaContainer.removeChild(deleteButton);
+        if (!existingDeleteButton) {
+            const deleteButton = document.createElement('button');
+            deleteButton.id = deleteButtonId;
+            deleteButton.className = 'delete-button';
+            deleteButton.textContent = 'X';
+            deleteButton.style.opacity = '0.8'; // Default opacity
+            deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
+            deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
+            deleteButton.onclick = function() {
+                mediaImg.src = './Assets/default-pic.svg';
+                deleteLLIImage(lli.lliid);
+                mediaContainer.removeChild(deleteButton);
+            }
+            mediaContainer.appendChild(deleteButton);
         }
-        mediaContainer.appendChild(deleteButton);
-
     }
 
     function updateLLIImage(lliid, image, jwtToken) {
