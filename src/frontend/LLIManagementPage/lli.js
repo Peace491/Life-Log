@@ -14,6 +14,7 @@ export function loadLLIPage(root, ajaxClient) {
         alert("Missing dependencies");
     }
 
+    let principal = {};
     const MAX_TITLE_LENGTH = 50
     const EARLIEST_DEADLINE = 1960
     const LATEST_DEADLINE = 2100
@@ -424,7 +425,7 @@ export function loadLLIPage(root, ajaxClient) {
         getAllLLI().then(function (completedLLIList) {
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken);
+                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -435,8 +436,8 @@ export function loadLLIPage(root, ajaxClient) {
         });
     }
 
-
-    function bulkUploadMediaFunction() {
+    // Jack Pickle
+    function bulkUploadMediaFunction(principal) {
         document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
             let files = this.files;
             if (files.length === 0) {
@@ -467,7 +468,7 @@ export function loadLLIPage(root, ajaxClient) {
     
                 // Now csvData holds all the parsed CSV as an array of arrays
     
-                ajaxClient.post('http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV', { CSVMatrix: csvData }, jwtToken)
+                ajaxClient.post('http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV', { CSVMatrix: csvData, AppPrincipal: principal }, jwtToken)
                     .then(response => {
                         showAlert('The media was successfully bulk uploaded uploaded.');
                     }
@@ -522,19 +523,25 @@ export function loadLLIPage(root, ajaxClient) {
             var userHash = JSON.parse(jwtToken).Payload.UserHash
             log.logPageAccess(userHash, routeManager.PAGES.lliManagementPage, jwtToken)
 
+            principal = {
+                userId: JSON.parse(jwtToken).Payload.UserHash,
+                claims: JSON.parse(jwtToken).Payload.Claims,
+            };
+
+            console.log("Principal: ", principal);
             // Set up event handlers
             setupCreateLLITemplate();
             setupCreateLLISubmit();
             // setupFilterSelect();
             setupFilter();
             setupSearch();
-            bulkUploadMediaFunction();
+            bulkUploadMediaFunction(principal);
 
             let timeAccessed = performance.now()
             routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);
             
             // Get data
-            showLLI(jwtToken);
+            showLLI(jwtToken, principal);
         }
     }
 

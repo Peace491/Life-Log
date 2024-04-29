@@ -32,12 +32,11 @@ public class MediaMementoController : ControllerBase
     {
         try
         {
-            Console.WriteLine("Payload: " + payload.LliId + " " + payload.Binary.Length);
             if (Request.Headers == null)
             {
                 return StatusCode(401);
             }
-            Console.WriteLine("Request.Headers: " + Request.Headers["Token"]);
+            
             var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
             
             if (jwtToken == null)
@@ -45,30 +44,36 @@ public class MediaMementoController : ControllerBase
                 return StatusCode(401);
             }
 
-            Console.WriteLine("JWT Token: " + jwtToken.Payload.UserHash);
-
             var userHash = jwtToken.Payload.UserHash;
 
             if (userHash == null)
             {
                 return StatusCode(401);
             }
-            Console.WriteLine("UserHash: " + userHash);
+            
 
             if (!jwtService.IsJwtValid(jwtToken))
             {
                 return StatusCode(401);
             }
+            Console.WriteLine("Payload: " + payload);
+            Console.WriteLine("Payload.LliId: " + payload.LliId);
+            Console.WriteLine("Payload.Binary: " + payload.Binary);
+            Console.WriteLine("Payload.AppPrincipal: " + payload.AppPrincipal);
 
-            var response = await _mediaMementoService.UploadMediaMemento(userHash, payload.LliId, payload.Binary);
+            if (payload.AppPrincipal == null)
+            {
+                return StatusCode(400, "AppPrincipal is null.");
+            }
 
-            Console.WriteLine("Response: " + response);
+            
+            var response = await _mediaMementoService.UploadMediaMemento(userHash, payload.LliId, payload.Binary, payload.AppPrincipal);
+
     
             return Ok(response);
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Exception: " + ex.Message);
             _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }
@@ -103,7 +108,7 @@ public class MediaMementoController : ControllerBase
                 return StatusCode(401);
             }
 
-            var response = await _mediaMementoService.DeleteMediaMemento(payload.LliId);
+            var response = await _mediaMementoService.DeleteMediaMemento(payload.LliId, payload.AppPrincipal);
             return Ok(response);
         }
         catch (Exception ex)
@@ -118,7 +123,6 @@ public class MediaMementoController : ControllerBase
     {
         try
         {
-            Console.WriteLine("Payload: " + payload.CSVMatrix.Count);
             if (Request.Headers == null)
             {
                 return StatusCode(401);
@@ -143,10 +147,7 @@ public class MediaMementoController : ControllerBase
                 return StatusCode(401);
             }
 
-            Console.WriteLine("before call");
-            Console.WriteLine(payload.CSVMatrix);
-            var response = await _mediaMementoService.UploadMediaMementosFromCSV(userHash, payload.CSVMatrix);
-            Console.WriteLine("after call", response.HasError, response.ErrorMessage);
+            var response = await _mediaMementoService.UploadMediaMementosFromCSV(userHash, payload.CSVMatrix, payload.AppPrincipal);
             return Ok(response);
         }
         catch (Exception ex)

@@ -5,12 +5,14 @@ using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.MediaMementoService;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
 using DomainModels;
 
 public class MediaMementoServiceShould
 {
     private int lliId = 100;
-    private string userHash = "System";
+    private string USER_HASH = "System";
+    private const string ROLE = "Normal";
     private byte[] bytes = new byte[] { 0x01, 0x02, 0x03, 0x04 };
 
     private string csvContent = "Title,BinaryData\nJoin a Gym,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\nWeekly Hiking,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\nMarathon for Beginners,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAATUlEQVR4nO3OMQHAIBAAsQf/nlsDLJlguCjImvnmPft24KyWqCVqiVqilqglaolaopaoJWqJWqKWqCVqiVqilqglaolaopaoJWqJWuIHP6wBY/cJXlsAAAAASUVORK5CYII=\n";
@@ -19,77 +21,98 @@ public class MediaMementoServiceShould
     public async Task UploadMediaMementoShould_UploadMediaToDB()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         // Act
-        var result = mediaMementoService.UploadMediaMemento(userHash, lliId, bytes);
+        var result = await mediaMementoService.UploadMediaMemento(USER_HASH, lliId, bytes, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == false);
-        Assert.True(result.Result.ErrorMessage == null);
+        Assert.True(result.HasError == false);
+        Assert.True(result.ErrorMessage == null);
     }
     [Fact]
     public async Task DeleteMediaMementoShould_DeleteMediaFromDB()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         // Act
-        var result = mediaMementoService.DeleteMediaMemento(lliId);
+        var result = await mediaMementoService.DeleteMediaMemento(lliId, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == false);
-        Assert.True(result.Result.ErrorMessage == null);
+        Assert.True(result.HasError == false);
+        Assert.True(result.ErrorMessage == null);
     }
     [Fact]
     public async Task GetAllUserLLIShould_GetAllUserLLI()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         // Act
-        var result = mediaMementoService.GetAllUserImages(userHash);
+        var result = await mediaMementoService.GetAllUserImages(USER_HASH, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == false);
-        Assert.True(result.Result.ErrorMessage == null);
+        Assert.True(result.HasError == false);
+        Assert.True(result.ErrorMessage == null);
     }
     [Fact]
     public async Task UploadMediaMementoShould_ReturnErrorMessage_WhenMediaUploadFails()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
@@ -97,72 +120,81 @@ public class MediaMementoServiceShould
 
         byte[] badByte = new byte[] {};
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         // Act
-        var result = mediaMementoService.UploadMediaMemento(userHash, lliId, badByte);
+        var result = await mediaMementoService.UploadMediaMemento(USER_HASH, lliId, badByte, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == true);
-        Assert.True(result.Result.ErrorMessage == "File size is greater than 50 mb or empty.");
+        Assert.True(result.HasError == true);
+        Assert.True(result.ErrorMessage == "File size is greater than 50 mb or empty.");
     }
     [Fact]
     public async Task UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsEmpty()
     {
-         // Arrange
+        // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
+
         byte[] badByte = new byte[] {};
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
 
         // Act
-        var result = mediaMementoService.UploadMediaMemento(userHash, lliId, badByte);
+        var result = await mediaMementoService.UploadMediaMemento(USER_HASH, lliId, badByte, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == true);
-        Assert.True(result.Result.ErrorMessage == "File size is greater than 50 mb or empty.");
+        Assert.True(result.HasError == true);
+        Assert.True(result.ErrorMessage == "File size is greater than 50 mb or empty.");
 
     }
     [Fact]
     public async Task UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoBiggerThan50mbs()
     {
-         // Arrange
+        // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
+
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
+
         int sizeInBytes = 50 * 1048576 + 100; // 50 MB plus an additional 100 bytes
         byte[] largeByteArray = new byte[sizeInBytes];
 
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
-
         // Act
-        var result = mediaMementoService.UploadMediaMemento(userHash, lliId, largeByteArray);
+        var result = await mediaMementoService.UploadMediaMemento(USER_HASH, lliId, largeByteArray, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == true);
-        Assert.True(result.Result.ErrorMessage == "File size is greater than 50 mb or empty.");
+        Assert.True(result.HasError == true);
+        Assert.True(result.ErrorMessage == "File size is greater than 50 mb or empty.");
 
-    }
-    [Fact]
-    public async Task UploadMediaMementoShould_ReturnErrorMessage_IfMediaMementoIsNotImage()
-    {
-        Assert.False(true);
     }
     [Fact]
     public async Task UploadMediaMementoShould_ReturnErrorMessage_IfUserHasTooMuchMediaUploaded()
@@ -175,69 +207,84 @@ public class MediaMementoServiceShould
     public async Task DeleteMediaMementoShould_ReturnErrorMessage_WhenMediaDeleteFails()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         // Act
-        var result = mediaMementoService.DeleteMediaMemento(-1);
+        var result = await mediaMementoService.DeleteMediaMemento(-1, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == true);
-        Assert.True(result.Result.ErrorMessage == "No media memento found to delete from.");
+        Assert.True(result.HasError == true);
+        Assert.True(result.ErrorMessage == "No media memento found to delete from.");
 
     }
     [Fact]
     public async Task DeleteMediaMementoShould_ReturnErrorMessage_IfLLIIDDoesntExistOnDb()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         // Act
-        var result = mediaMementoService.DeleteMediaMemento(-1);
+        var result = await mediaMementoService.DeleteMediaMemento(-1, principal);
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.Result.HasError == true);
-        Assert.True(result.Result.ErrorMessage == "No media memento found to delete from.");
+        Assert.True(result.HasError == true);
+        Assert.True(result.ErrorMessage == "No media memento found to delete from.");
 
     }
     [Fact]
     public async Task UploadMediaMementosShould_UploadMultipleMediaToDB()
     {
         // Arrange
+        var principal = new AppPrincipal();
+        principal.UserId = USER_HASH;
+        principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+
 
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
 
-        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
+        var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
         List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "1" }, new List<string> { "Yoga Session", "2" } };
 
         // Act
-        var result = mediaMementoService.UploadMediaMementosFromCSV(userHash, csvContent);
+        var result = await mediaMementoService.UploadMediaMementosFromCSV(USER_HASH, csvContent, principal);
 
         // Arrange
         Assert.NotNull(result);

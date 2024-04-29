@@ -11,24 +11,37 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Peace.Lifelog.Security;
+
 public class MediaMementoService : IMediaMementoService
 {
+    private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
     private readonly IMediaMementoRepo _mediaMementoRepository;
     private readonly ILogging _logger;
+    private readonly ILifelogAuthService _lifelogAuthService;
     private int fiftyMB = 52428800;
     private int oneGB = 1073741824;
     private Response validMediaResponse = new Response { HasError = false, ErrorMessage = null };
 
-    public MediaMementoService(IMediaMementoRepo mediaMementoRepository, ILogging logger)
+    public MediaMementoService(IMediaMementoRepo mediaMementoRepository, ILogging logger, ILifelogAuthService lifelogAuthService)
     {
         _mediaMementoRepository = mediaMementoRepository;
         _logger = logger;
+        _lifelogAuthService = lifelogAuthService;
     }
 
-    public async Task<Response> UploadMediaMemento(string userhash, int lliId, byte[] binary)
+    public async Task<Response> UploadMediaMemento(string userhash, int lliId, byte[] binary, AppPrincipal? appPrincipal)
     {
         try
         {
+            if (appPrincipal == null)
+            {
+                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+            }
+            if (IsUserAuthorizedForMedia(appPrincipal) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+            }
             if(ValidateFileSize(binary.Length) == false)
             {
                 return new Response { HasError = true, ErrorMessage = "File size is greater than 50 mb or empty." };
@@ -62,10 +75,18 @@ public class MediaMementoService : IMediaMementoService
         }
     }
 
-    public async Task<Response> DeleteMediaMemento(int lliId)
+    public async Task<Response> DeleteMediaMemento(int lliId, AppPrincipal? appPrincipal)
     {
         try
         {
+            if (appPrincipal == null)
+            {
+                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+            }
+            if (IsUserAuthorizedForMedia(appPrincipal) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+            }
             Stopwatch timer = new Stopwatch();
             timer.Start();
             var response = await _mediaMementoRepository.DeleteMediaMemento(lliId);
@@ -114,10 +135,18 @@ public class MediaMementoService : IMediaMementoService
         }
     }
 
-    public async Task<Response> GetAllUserImages(string userhash)
+    public async Task<Response> GetAllUserImages(string userhash, AppPrincipal? appPrincipal)
     {
         try
         {
+            if (appPrincipal == null)
+            {
+                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+            }
+            if (IsUserAuthorizedForMedia(appPrincipal) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+            }
             Stopwatch timer = new Stopwatch();
             timer.Start();
             var response = await _mediaMementoRepository.GetAllUserImages(userhash);
@@ -146,11 +175,18 @@ public class MediaMementoService : IMediaMementoService
             return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
         }
     }
-    public async Task<Response> UploadMediaMementosFromCSV(string userHash, List<List<string>> CSVMatrix)
+    public async Task<Response> UploadMediaMementosFromCSV(string userHash, List<List<string>> CSVMatrix, AppPrincipal? appPrincipal)
     {
         try
         {
-            Console.WriteLine("trying bulk upload");
+            if (appPrincipal == null)
+            {
+                return new Response { HasError = true, ErrorMessage = "AppPrincipal is null." };
+            }
+            if (IsUserAuthorizedForMedia(appPrincipal) == false)
+            {
+                return new Response { HasError = true, ErrorMessage = "User is not authorized for this operation." };
+            }
             if (ContainsSQLInjection(CSVMatrix))
             {
                 return new Response { HasError = true, ErrorMessage = "SQL injection detected." };
@@ -171,7 +207,6 @@ public class MediaMementoService : IMediaMementoService
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            Console.WriteLine("CSVMatrix: " + CSVMatrix.Count);
             var response = await _mediaMementoRepository.UploadMediaMementosFromCSV(CSVMatrix);
             timer.Stop();
 
@@ -189,7 +224,6 @@ public class MediaMementoService : IMediaMementoService
             {
                 return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
             }
-            Console.WriteLine("after bulk upload is complete");
             return response;
         }
         catch (Exception ex)
@@ -244,6 +278,11 @@ public class MediaMementoService : IMediaMementoService
             return true;
         }
         return false;
+    }
+    private bool IsUserAuthorizedForMedia(AppPrincipal appPrincipal)
+    {
+
+        return _lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
     }
     public static bool ContainsSQLInjection(List<List<string>> csvContent)
     {

@@ -1,4 +1,4 @@
-export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken) {
+export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -215,7 +215,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
         deleteButton.onclick = function() {
             mediaImg.src = './Assets/default-pic.svg';
-            deleteLLIImage(lli.lliid);
+            deleteLLIImage(lli.lliid, jwtToken, principal);
             mediaContainer.removeChild(deleteButton);
             // Optional: Add your code here to handle further deletion (e.g., update server or database)
         };
@@ -265,7 +265,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             mediaImg.style.maxHeight = '200px';
             // Optional: Update a hidden input with the base64 of the image, if needed
             document.getElementById('imageBase64').value = e.target.result.split(',')[1];
-            updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken)
+            updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken, principal)
         };
         reader.readAsDataURL(file);
         // Create delete button
@@ -284,23 +284,24 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             deleteButton.id = deleteButtonId;
             deleteButton.className = 'delete-button';
             deleteButton.textContent = 'X';
-            deleteButton.style.opacity = '0.8'; // Default opacity
             deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
             deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
             deleteButton.onclick = function() {
                 mediaImg.src = './Assets/default-pic.svg';
-                deleteLLIImage(lli.lliid);
+                deleteLLIImage(lli.lliid, jwtToken, principal);
                 mediaContainer.removeChild(deleteButton);
             }
             mediaContainer.appendChild(deleteButton);
         }
     }
 
-    function updateLLIImage(lliid, image, jwtToken) {
+    function updateLLIImage(lliid, image, jwtToken, principal) {
         let url = "http://localhost:8091/mediaMemento/UploadMedia"
+        console.log(principal)
         const UploadMediaMementoRequest = {
             LLiId: lliid,
-            Binary: image
+            Binary: image,
+            AppPrincipal : principal
         }
         return ajaxClient
         .post(url, UploadMediaMementoRequest, jwtToken)
@@ -309,11 +310,12 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         }
     
         
-    function deleteLLIImage(lliid, jwtToken){
+    function deleteLLIImage(lliid, jwtToken, principal){
         jwtToken = localStorage["token-local"]
         let deleteurl = "http://localhost:8091/mediaMemento/DeleteMedia"
         const DeleteMediaMementoRequest = {
-            LLiId: lliid
+            LLiId: lliid,
+            AppPrincipal : principal
         }
         
         return ajaxClient
