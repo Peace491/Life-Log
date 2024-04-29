@@ -422,7 +422,6 @@ export function loadLLIPage(root, ajaxClient) {
 
         // Get initial lli
         getAllLLI().then(function (completedLLIList) {
-            console.log(completedLLIList)
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
                 let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken);
@@ -462,23 +461,20 @@ export function loadLLIPage(root, ajaxClient) {
                 const allRows = content.split(/\r?\n/).filter(row => row.length); // Split by new line and filter out any empty lines
                 allRows.forEach((row, index) => {
                     const columns = row.split(',');
-                    console.log(`Row ${index + 1}:`, columns);
                     // Store parsed data into csvData array
                     csvData.push(columns);
                 });
     
                 // Now csvData holds all the parsed CSV as an array of arrays
-                console.log(csvData);  // You can now use this variable for further processing
     
                 ajaxClient.post('http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV', { CSVMatrix: csvData }, jwtToken)
                     .then(response => {
-                        alert('The media is successfully uploaded.');
+                        showAlert('The media was successfully bulk uploaded uploaded.');
                     }
                     )
                     .catch(error => {
-                        alert('Error: ' + error.message);
+                        showAlert('Error: ' + error.message);
                     });
-                // Optionally, upload or process data here after parsing
             };
     
             reader.onerror = function () {
@@ -489,87 +485,30 @@ export function loadLLIPage(root, ajaxClient) {
         });
     }
     
-    
-    // function bulkUploadMediaFunction() {
-    //     document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
-    //         let files = this.files;
-    //         if (files.length === 0) {
-    //             alert('Please select a file!');
-    //             return;
-    //         }
-    //         let file = files[0];
-    
-    //         // Ensure the file is a CSV
-    //         if (file.type !== "text/csv" && !file.name.endsWith('.csv')) {
-    //             alert('Please select a CSV file.');
-    //             return;
-    //         }
-    
-    //         // Prepare the file to be uploaded
-    //         let formData = new FormData();
-    //         formData.append('file', file);
-    
-    //         let bulkUploadMediaUrl = "http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV";
-    //         let jwtToken = localStorage.getItem('token-local'); // Assume token is stored in local storage
-    
+    // Get the modal
+    var modal = document.getElementById("myModal");
 
-    //         ajaxClient.post(bulkUploadMediaUrl, { CSVFile: formData }, jwtToken)
-    //         .then(response => {
-    //             alert('The media is successfully uploaded.');
-    //         })
-    //         .catch(error => {
-    //             alert('Error: ' + error.message);
-    //         });
-    //     });
-    // }
-    
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
 
-    // function bulkUploadMediaFunction() {
+    // Function to open the modal
+    function showAlert(message) {
+        document.getElementById('modalText').innerText = message;
+        modal.style.display = "block";
+    }
 
-    //     document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
-    //         let files = this.files;
-    //         if (files.length === 0) {
-    //             alert('Please select a file!');
-    //             return;
-    //         }
-    //         let file = files[0];
-        
-    //         // Ensure the file is a CSV
-    //         if (file.type !== "text/csv" && !file.name.endsWith('.csv')) {
-    //             alert('Please select a CSV file.');
-    //             return;
-    //         }
-        
-    //         let reader = new FileReader();
-    //         reader.onload = function (e) {
-    //             let content = e.target.result;
-    //             console.log(content)
-    //             let allRows = content.split(/\r?\n/); // Split by new line to get rows
-    //             console.log(allRows)
-    //             let combinedString = allRows.join('\n'); // Join rows with '/' as per your requirement
-        
-    //             let bulkUploadMediaUrl = "http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV";
-    //             let jwtToken = localStorage.getItem('token-local'); // Assume token is stored in local storage
-    //             console.log(combinedString)
-    //             ajaxClient.post(bulkUploadMediaUrl, { CSVContent: combinedString }, jwtToken)
-    //             .then(response => {
-    //                 alert('The media is successfully uploaded.');
-    //             })
-    //             .catch(error => {
-    //                 alert('Error: ' + error.message);
-    //             });
-    //         };
-        
-    //         reader.onerror = function () {
-    //             alert('Failed to read file!');
-    //         };
-        
-    //         reader.readAsText(file);
-    //     });
-        
-        
-        
-    // }
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
 
     root.myApp = root.myApp || {};
 

@@ -10,11 +10,13 @@ describe('Media Memento E2E Test', () => {
 
     // Act
     cy.get('div#93.lli').click();
-    // cy.get('div.lli-media-container').click();
-    cy.wait(100)
+    cy.wait(500)
+
+    cy.get('#file-input93').selectFile('./cypress/fixtures/lifeloglogo1.png', {force: true});
+
 
     // Assert
-    cy.get('div.lli-media-container').should('contain', 'img');
+    cy.get('#modalText').should('contain', 'Image uploaded successfully');
   })
   it('View Media', () => {
     // Arrange
