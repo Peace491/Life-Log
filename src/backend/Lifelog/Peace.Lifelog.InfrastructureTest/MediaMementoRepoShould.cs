@@ -46,6 +46,7 @@ public class MediaMementoRepoShould
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
 
+        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "1" }, new List<string> { "Yoga Session", "SGVsbG8h" } };
         // Act
         var response = await mediaMementoRepo.UploadMediaMementosFromCSV(csvContent);
 

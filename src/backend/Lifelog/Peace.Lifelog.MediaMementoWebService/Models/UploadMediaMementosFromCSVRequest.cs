@@ -2,6 +2,6 @@
 {
     public class UploadMediaMementosFromCSVRequest
     {
-        public string CSVContent { get; set; } = "";
+        public List<List<string>> CSVMatrix { get; set; } = [];
     }
 }

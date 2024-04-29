@@ -531,9 +531,7 @@ main {
     justify-content: center;
 }
 
-.lli-media-container>img {
-    height: 110px;
-}
+
 
 .hidden {
     display: none;
@@ -558,4 +556,18 @@ button:hover, .add-lli-button-container>img:hover {
     cursor: pointer;
 }
 
+.lli-media-img{
+    max-height: 190px; /* Maximum height of the image */
+    display: block; /* Ensures that the image is displayed as a block element, which removes extra space below */
+    width: auto; /* Width is automatically adjusted to maintain aspect ratio */
+    height: auto; /* Height is automatically adjusted to maintain aspect ratio */
+}
 
+.lli-media-container{
+    height: 190px;
+    position: relative; /* Allows absolute positioning of child elements within this container */
+    width: 100%; /* Makes the container span the full width of its parent */
+    display: flex; /* Makes the container a flex container */
+    justify-content: center; /* Centers the image horizontally */
+    align-items: center; /* Centers the image vertically */
+}

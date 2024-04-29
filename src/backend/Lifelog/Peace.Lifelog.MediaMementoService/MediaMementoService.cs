@@ -6,7 +6,11 @@ using Org.BouncyCastle.Security;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 namespace Peace.Lifelog.MediaMementoService;
-
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Diagnostics;
 public class MediaMementoService : IMediaMementoService
 {
     private readonly IMediaMementoRepo _mediaMementoRepository;
@@ -142,11 +146,16 @@ public class MediaMementoService : IMediaMementoService
             return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
         }
     }
-    public async Task<Response> UploadMediaMementosFromCSV(string userHash, string csv)
+    public async Task<Response> UploadMediaMementosFromCSV(string userHash, List<List<string>> CSVMatrix)
     {
         try
         {
-            int totalLength = ValidateTotalLengthOfSecondColumns(csv);
+            Console.WriteLine("trying bulk upload");
+            if (ContainsSQLInjection(CSVMatrix))
+            {
+                return new Response { HasError = true, ErrorMessage = "SQL injection detected." };
+            }
+            int totalLength = ValidateTotalLengthOfSecondColumns(CSVMatrix);
             if (totalLength == -1)
             {
                 return new Response { HasError = true, ErrorMessage = "A files size is greater than 50 mb or empty." };
@@ -158,9 +167,12 @@ public class MediaMementoService : IMediaMementoService
                 return new Response { HasError = true, ErrorMessage = "User does not have enough storage space, Storing this would store more than 1 gb." };
             }
 
+
+
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            var response = await _mediaMementoRepository.UploadMediaMementosFromCSV(csv);
+            Console.WriteLine("CSVMatrix: " + CSVMatrix.Count);
+            var response = await _mediaMementoRepository.UploadMediaMementosFromCSV(CSVMatrix);
             timer.Stop();
 
             if (TimeOperation(timer) == false)
@@ -177,7 +189,7 @@ public class MediaMementoService : IMediaMementoService
             {
                 return new Response { HasError = true, ErrorMessage = "An error occurred while processing your request." };
             }
-
+            Console.WriteLine("after bulk upload is complete");
             return response;
         }
         catch (Exception ex)
@@ -233,13 +245,32 @@ public class MediaMementoService : IMediaMementoService
         }
         return false;
     }
-    private int ValidateTotalLengthOfSecondColumns(string csvContent)
+    public static bool ContainsSQLInjection(List<List<string>> csvContent)
+    {
+        // Define a regular expression to detect suspicious SQL characters and keywords
+        string pattern = @"('|;|--|\b(ALTER|CREATE|DELETE|DROP|EXEC|EXECUTE|INSERT|MERGE|SELECT|UPDATE|UNION|ALTER|GRANT|REVOKE)\b)";
+        Regex sqlCheckRegex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        foreach (var row in csvContent)
+        {
+            foreach (var column in row)
+            {
+                if (sqlCheckRegex.IsMatch(column))
+                {
+                    Console.WriteLine($"Potential SQL injection found in data: {column}");
+                    return true; // Return true if a potential SQL injection attempt is detected
+                }
+            }
+        }
+
+        return false; // No SQL injection pattern found
+    }
+    private int ValidateTotalLengthOfSecondColumns(List<List<string>> csvContent)
     {
         int totalLength = 0;
         bool isFirstLine = true; // Flag to skip the first line
 
-        string[] lines = csvContent.Split('\n');
-        foreach (var line in lines)
+        foreach (var row in csvContent)
         {
             if (isFirstLine)
             {
@@ -247,17 +278,20 @@ public class MediaMementoService : IMediaMementoService
                 continue;
             }
 
-            if (!string.IsNullOrEmpty(line))
+            // Ensure the row has at least two columns
+            if (row.Count >= 2 && !string.IsNullOrEmpty(row[1]))
             {
-                string[] columns = line.Split(',');
-                if (columns.Length >= 2)
+                // Get the length of the second column, trim for safety
+                int lengthOfSecondColumn = row[1].Trim().Length;
+
+                // Check if the file size is valid
+                if (!ValidateFileSize(lengthOfSecondColumn))
                 {
-                    if (ValidateFileSize(columns[1].Trim().Length) == false)
-                    {
-                        return -1;
-                    }
-                    totalLength += columns[1].Trim().Length; // Add the length of the second column
+                    return -1; // Return -1 if any file size is invalid
                 }
+
+                // Add the length of the second column
+                totalLength += lengthOfSecondColumn;
             }
         }
         return totalLength;

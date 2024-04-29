@@ -50,36 +50,46 @@ public class MediaMementoRepo : IMediaMementoRepo
         return await _readDataOnlyDAO.ReadData(updatedGetAllUserImagesQuery, null);
     }
 
-    public async Task<Response> UploadMediaMementosFromCSV(string csvContent)
+    public async Task<Response> UploadMediaMementosFromCSV(List<List<string>> csvContent)
     {
-        bool isFirstLine = true; // Flag to skip the first line
+        bool isFirstLine = true; // Flag to skip the first line (header)
+
         try
         {
-            string[] lines = csvContent.Split('\n');
-            foreach (var line in lines)
+            Console.WriteLine("Trying upload");
+            Console.WriteLine("csvContent: " + csvContent.Count);
+            foreach (var row in csvContent)
             {
+                Console.WriteLine("For loop");
                 if (isFirstLine)
                 {
-                    isFirstLine = false; // Set flag to false after the first line
-                    continue; // Skip the first line
+                    isFirstLine = false; // Skip the header row
+                    continue;
                 }
 
-                if (!string.IsNullOrEmpty(line))
+                // Make sure each row has at least two columns
+                if (row.Count >= 2)
                 {
-                    string[] columns = line.Split(',');
-                    if (columns.Length >= 2)
-                    {
-                        string title = columns[0].Trim();
-                        string binaryData = columns[1].Trim();
-                        string myquery = $"UPDATE LLI SET MediaMemento = '{binaryData}' WHERE Title = '{title}'";
-                        _ = await _updateDataOnlyDAO.UpdateData(myquery);
-                    }
+                    string title = row[0].Trim();
+                    string binaryData = row[1].Trim();
+
+                    byte [] temp = Convert.FromBase64String(binaryData);
+                    var hexString = "0x" + BitConverter.ToString(temp).Replace("-", "");
+
+                    // Format the SQL query directly with string interpolation
+                    string myquery = $"UPDATE LLI SET MediaMemento = {hexString} WHERE Title = '{title}';";
+
+                    // Execute the query
+                    var res = await _updateDataOnlyDAO.UpdateData(myquery);
+                    Console.WriteLine("res: " + res.HasError);
                 }
             }
+
             return new Response { HasError = false, ErrorMessage = null };
         }
         catch (Exception ex)
         {
+            Console.WriteLine("upload fails");
             return new Response { HasError = true, ErrorMessage = ex.Message };
         }
     }

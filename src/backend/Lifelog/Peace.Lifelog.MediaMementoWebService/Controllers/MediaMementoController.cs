@@ -118,6 +118,7 @@ public class MediaMementoController : ControllerBase
     {
         try
         {
+            Console.WriteLine("Payload: " + payload.CSVMatrix.Count);
             if (Request.Headers == null)
             {
                 return StatusCode(401);
@@ -142,11 +143,16 @@ public class MediaMementoController : ControllerBase
                 return StatusCode(401);
             }
 
-            var response = await _mediaMementoService.UploadMediaMementosFromCSV(userHash, payload.CSVContent);
+            Console.WriteLine("before call");
+            Console.WriteLine(payload.CSVMatrix);
+            var response = await _mediaMementoService.UploadMediaMementosFromCSV(userHash, payload.CSVMatrix);
+            Console.WriteLine("after call", response.HasError, response.ErrorMessage);
             return Ok(response);
         }
         catch (Exception ex)
         {
+            Console.WriteLine(payload.CSVMatrix);
+            Console.WriteLine("Exception: " + ex.Message);
             _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
             return StatusCode(500, "An error occurred while processing your request.");
         }

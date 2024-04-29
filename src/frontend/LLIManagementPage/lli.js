@@ -436,38 +436,140 @@ export function loadLLIPage(root, ajaxClient) {
         });
     }
 
+
     function bulkUploadMediaFunction() {
-        let bulkUploadMediaButton = document.getElementById('bulk-upload-media-button')
-        bulkUploadMediaButton.addEventListener('click', function () {
-            let bulkUploadMediaInput = document.getElementById('bulk-upload-media-input')
-            bulkUploadMediaInput.click()
-        })
-
-        let bulkUploadMediaInput = document.getElementById('bulk-upload-media-input')
-        bulkUploadMediaInput.addEventListener('change', function () {
-            let files = bulkUploadMediaInput.files
-            let formData = new FormData()
-            for (let i = 0; i < files.length; i++) {
-                formData.append('file', files[i])
+        document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
+            let files = this.files;
+            if (files.length === 0) {
+                alert('Please select a file!');
+                return;
             }
-
-            let bulkUploadMediaUrl = webServiceUrl + '/bulkUploadMedia'
-            let request = ajaxClient.post(bulkUploadMediaUrl, formData, jwtToken)
-
-            request.then(function (response) {
-                if (response.status != 200) {
-                    throw new Error(response.statusText)
-                }
-
-                return response.json()
-            }).then(function (response) {
-                alert('The media is successfully uploaded.')
-                location.reload()
-            }).catch(function (error) {
-                alert(error)
-            })
-        })
+            let file = files[0];
+    
+            // Ensure the file is a CSV
+            if (file.type !== "text/csv" && !file.name.endsWith('.csv')) {
+                alert('Please select a CSV file.');
+                return;
+            }
+    
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let content = e.target.result;
+                // Prepare an array to hold the parsed CSV data
+                let csvData = [];
+    
+                // Parse CSV content
+                const allRows = content.split(/\r?\n/).filter(row => row.length); // Split by new line and filter out any empty lines
+                allRows.forEach((row, index) => {
+                    const columns = row.split(',');
+                    console.log(`Row ${index + 1}:`, columns);
+                    // Store parsed data into csvData array
+                    csvData.push(columns);
+                });
+    
+                // Now csvData holds all the parsed CSV as an array of arrays
+                console.log(csvData);  // You can now use this variable for further processing
+    
+                ajaxClient.post('http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV', { CSVMatrix: csvData }, jwtToken)
+                    .then(response => {
+                        alert('The media is successfully uploaded.');
+                    }
+                    )
+                    .catch(error => {
+                        alert('Error: ' + error.message);
+                    });
+                // Optionally, upload or process data here after parsing
+            };
+    
+            reader.onerror = function () {
+                alert('Failed to read file!');
+            };
+    
+            reader.readAsText(file); // Read the file as text
+        });
     }
+    
+    
+    // function bulkUploadMediaFunction() {
+    //     document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
+    //         let files = this.files;
+    //         if (files.length === 0) {
+    //             alert('Please select a file!');
+    //             return;
+    //         }
+    //         let file = files[0];
+    
+    //         // Ensure the file is a CSV
+    //         if (file.type !== "text/csv" && !file.name.endsWith('.csv')) {
+    //             alert('Please select a CSV file.');
+    //             return;
+    //         }
+    
+    //         // Prepare the file to be uploaded
+    //         let formData = new FormData();
+    //         formData.append('file', file);
+    
+    //         let bulkUploadMediaUrl = "http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV";
+    //         let jwtToken = localStorage.getItem('token-local'); // Assume token is stored in local storage
+    
+
+    //         ajaxClient.post(bulkUploadMediaUrl, { CSVFile: formData }, jwtToken)
+    //         .then(response => {
+    //             alert('The media is successfully uploaded.');
+    //         })
+    //         .catch(error => {
+    //             alert('Error: ' + error.message);
+    //         });
+    //     });
+    // }
+    
+
+    // function bulkUploadMediaFunction() {
+
+    //     document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
+    //         let files = this.files;
+    //         if (files.length === 0) {
+    //             alert('Please select a file!');
+    //             return;
+    //         }
+    //         let file = files[0];
+        
+    //         // Ensure the file is a CSV
+    //         if (file.type !== "text/csv" && !file.name.endsWith('.csv')) {
+    //             alert('Please select a CSV file.');
+    //             return;
+    //         }
+        
+    //         let reader = new FileReader();
+    //         reader.onload = function (e) {
+    //             let content = e.target.result;
+    //             console.log(content)
+    //             let allRows = content.split(/\r?\n/); // Split by new line to get rows
+    //             console.log(allRows)
+    //             let combinedString = allRows.join('\n'); // Join rows with '/' as per your requirement
+        
+    //             let bulkUploadMediaUrl = "http://localhost:8091/mediaMemento/UploadMediaMementosFromCSV";
+    //             let jwtToken = localStorage.getItem('token-local'); // Assume token is stored in local storage
+    //             console.log(combinedString)
+    //             ajaxClient.post(bulkUploadMediaUrl, { CSVContent: combinedString }, jwtToken)
+    //             .then(response => {
+    //                 alert('The media is successfully uploaded.');
+    //             })
+    //             .catch(error => {
+    //                 alert('Error: ' + error.message);
+    //             });
+    //         };
+        
+    //         reader.onerror = function () {
+    //             alert('Failed to read file!');
+    //         };
+        
+    //         reader.readAsText(file);
+    //     });
+        
+        
+        
+    // }
 
     root.myApp = root.myApp || {};
 
@@ -487,6 +589,7 @@ export function loadLLIPage(root, ajaxClient) {
             // setupFilterSelect();
             setupFilter();
             setupSearch();
+            bulkUploadMediaFunction();
 
             let timeAccessed = performance.now()
             routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);

@@ -234,6 +234,8 @@ public class MediaMementoServiceShould
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger);
 
+        List<List<string>> csvContent = new List<List<string>> { new List<string> { "Guided Imagery Sessions", "1" }, new List<string> { "Yoga Session", "2" } };
+
         // Act
         var result = mediaMementoService.UploadMediaMementosFromCSV(userHash, csvContent);
 

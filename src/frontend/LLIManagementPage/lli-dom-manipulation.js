@@ -160,12 +160,14 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
     // Media container
     const mediaContainer = document.createElement('div');
     mediaContainer.classList.add('lli-media-container');
-    mediaContainer.style.position = 'relative'; // Required for absolute positioning of delete button
-    mediaContainer.style.height = 'fit-content';
-    mediaContainer.style.width = '100%';
+    // mediaContainer.style.position = 'relative'; // Required for absolute positioning of delete button
+    // mediaContainer.style.height = 'fit-content';
+    // mediaContainer.style.width = '100%';
 
     // Image that acts as the upload button and will display the uploaded image
     const mediaImg = document.createElement('img');
+    mediaImg.id = 'img' + lli.lliid;
+    mediaImg.className = 'lli-media-img';
     mediaImg.src = './Assets/default-pic.svg'; // Default image source
     // Base64 string from lli.mediaMemento
     if(lli.mediaMemento != null) {
@@ -179,10 +181,10 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         // Set the Data URL as the image source
         mediaImg.src = imageDataUrl;
         mediaImg.alt = 'Uploaded Image';
-        mediaImg.style.maxHeight = '190px'; // Adjust this to control image size
-        mediaImg.style.display = 'block'; // Ensures the image does not leave space at the bottom
-        mediaImg.style.width = 'auto'; // Adjust this to control image size
-        mediaImg.style.height = 'auto'; // Maintain aspect ratio
+        // mediaImg.style.maxHeight = '190px'; // Adjust this to control image size
+        // mediaImg.style.display = 'block'; // Ensures the image does not leave space at the bottom
+        // mediaImg.style.width = 'auto'; // Adjust this to control image size
+        // mediaImg.style.height = 'auto'; // Maintain aspect ratio
         mediaContainer.appendChild(mediaImg);
 
         // Create delete button
@@ -204,7 +206,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         deleteButton.onclick = function() {
             mediaImg.src = './Assets/default-pic.svg';
             deleteLLIImage(lli.lliid);
-
+            mediaContainer.removeChild(deleteButton);
             // Optional: Add your code here to handle further deletion (e.g., update server or database)
         };
 
@@ -257,6 +259,29 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
             updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken)
         };
         reader.readAsDataURL(file);
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.style.position = 'absolute';
+        deleteButton.style.top = '1px';
+        deleteButton.style.right = '1px';
+        deleteButton.style.alignContent = 'top-right';
+        deleteButton.style.background = 'red';
+        deleteButton.style.color = 'white';
+        deleteButton.style.border = 'none';
+        deleteButton.style.cursor = 'pointer';
+        deleteButton.style.opacity = '0.8';
+        deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
+        deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
+
+
+        deleteButton.onclick = function() {
+            mediaImg.src = './Assets/default-pic.svg';
+            deleteLLIImage(lli.lliid);
+            mediaContainer.removeChild(deleteButton);
+        }
+        mediaContainer.appendChild(deleteButton);
+
     }
 
     function updateLLIImage(lliid, image, jwtToken) {
