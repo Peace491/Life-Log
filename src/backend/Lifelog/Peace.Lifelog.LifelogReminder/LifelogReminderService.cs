@@ -34,6 +34,20 @@ public class LifelogReminderService : ILifelogReminderService
 
         string content = form.Content;
         string frequency = form.Frequency;
+        if(content != "active" && content != "completed")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Invalid Input";
+            response = Logging(response, userHash, "Error", "Front End Update Request");
+            return response;
+        }
+        if(frequency != "weekly" && frequency != "monthly")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Invalid Input";
+            response = Logging(response, userHash, "Error", "Front End Update Request");
+            return response;
+        }
         response = await CheckIfUserHashInDB(response, userHash);
         if (response.HasError)
         {
@@ -54,6 +68,11 @@ public class LifelogReminderService : ILifelogReminderService
             response = Logging(response, userHash, "Error", "persistant data store");
         }
         response = addContentAndFrequencyToDB;
+        string output = "Reminder Form Updated Successfully";
+        response.Output = ConvertStringOutputToResponseOutput(output);
+        response.ErrorMessage = "Email Sent Successfully";
+        Logging(response, userHash, "info", "business");
+        response.ErrorMessage = null;
         return response;
     }
     #endregion

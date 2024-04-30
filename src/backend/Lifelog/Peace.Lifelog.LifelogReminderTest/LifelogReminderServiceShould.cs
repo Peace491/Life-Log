@@ -1,6 +1,8 @@
 namespace Peace.Lifelog.LifelogReminderTest;
 
 using System.Diagnostics;
+using DomainModels;
+using MimeKit;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.LifelogReminder;
@@ -8,7 +10,7 @@ using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagement;
 
-public class PinServiceShould : IAsyncLifetime, IDisposable
+public class LifelogReminderShould : IAsyncLifetime, IDisposable
 {
     private static CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
     private static ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
@@ -27,8 +29,6 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     private const string ZIP_CODE = "90701";
     //double check principal declratoin
     private AppPrincipal? PRINCIPAL = new AppPrincipal();
-    private string Content = "Active";
-    private string Frequency = "Weekly";
     private Stopwatch timer = new Stopwatch();
 
     public async Task InitializeAsync()
@@ -76,10 +76,70 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         testForm.UserHash = USER_HASH;
 
         //act
-        //var createUserInDBResponse = await lifelogReminderRepo.AddUserHashAndDate(USER_HASH);
+        var createUserInDBResponse = await lifelogReminderRepo.AddUserHashAndDate(USER_HASH);
         var sendEmailResponse = await lifelogReminderService.SendReminderEmail(testForm);
 
-        //
+        //Assert
         Assert.True(sendEmailResponse.Output!.Count == 1);
+        Assert.True(sendEmailResponse.Output is not null);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deleteUserSql = $"DELETE FROM LifelogReminder WHERE UserHash=\"{USER_HASH}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deleteUserSql);
     }
+    [Fact]
+    public async Task UpdateReminderForm_ShouldUpdateDataInDB()
+    {
+        //arrange
+        ReminderFormData testForm = new ReminderFormData();
+        string Content = "Completed";
+        string Frequency = "Monthly";
+        testForm.UserHash = USER_HASH;
+        testForm.Content = Content;
+        testForm.Frequency = Frequency;
+
+        //act
+        var createUserInDBResponse = await lifelogReminderRepo.AddUserHashAndDate(USER_HASH);
+        var updateDbResponse = await lifelogReminderService.UpdateReminderConfiguration(testForm);
+
+        //Assert
+        Assert.True(updateDbResponse.Output!.Count == 1);
+        Assert.True(updateDbResponse.Output is not null);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deleteUserSql = $"DELETE FROM LifelogReminder WHERE UserHash=\"{USER_HASH}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deleteUserSql);
+    }
+    [Fact]
+    public async Task UpdateReminderForm_ShouldThrowAnErrorIfInvalidInput()
+    {
+        //arrange
+        ReminderFormData testForm = new ReminderFormData();
+        string Content = "Nope";
+        string Frequency = "Nope";
+        testForm.UserHash = USER_HASH;
+        testForm.Content = Content;
+        testForm.Frequency = Frequency;
+
+        //act
+        var createUserInDBResponse = await lifelogReminderRepo.AddUserHashAndDate(USER_HASH);
+        var updateDbResponse = await lifelogReminderService.UpdateReminderConfiguration(testForm);
+
+        //Assert
+        Assert.True(updateDbResponse.HasError == true);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deleteUserSql = $"DELETE FROM LifelogReminder WHERE UserHash=\"{USER_HASH}\";";
+
+        await deleteDataOnlyDAO.DeleteData(deleteUserSql);
+    }
+    
 }

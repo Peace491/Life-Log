@@ -9,9 +9,6 @@ using Peace.Lifelog.LifelogReminder;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 /* Registration of objects for .NET's DI Container */
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
@@ -36,15 +33,9 @@ var config = LifelogConfig.LoadConfiguration();
 // Creation of the WebApplication host object
 var app = builder.Build(); // Only part needed to execute Web API project
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 /* Setup of Middleware Pipeline */
 
-// app.UseHttpsRedirection();
 
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline

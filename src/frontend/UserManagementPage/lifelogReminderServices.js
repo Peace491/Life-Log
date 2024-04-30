@@ -12,9 +12,6 @@ export function submitReminderForm(url, userHash, jwtToken, formData) {
         Content: content,
         Frequency: frequency
     }
-    //const requestBody = JSON.stringify({ content, frequency, userHash, jwtToken});
-
-    //let request = ajaxClient.put(url, userHash, requestBody, jwtToken)
     let request = ajaxClient.put(url, requestBody, jwtToken)
 
     return new Promise(function (resolve, reject) {
@@ -26,8 +23,7 @@ export function submitReminderForm(url, userHash, jwtToken, formData) {
         }).then(function (response) {
             // Move to lli page
             alert("User Successfully Submitted Reminder Form")
-            window.localStorage.clear()
-            routeManager.loadPage(routeManager.PAGES.homePage);
+            routeManager.loadPage(routeManager.PAGES.lliManagementPage);
             resolve(response)
         }).catch(function (error) {
             reject(error)
@@ -49,8 +45,7 @@ export function sendEmailToUser(url, userHash, jwtToken) {
         }).then(function (response) {
             // Move to lli page
             alert("Successfully Sent a Reminder to the User")
-            window.localStorage.clear()
-            routeManager.loadPage(routeManager.PAGES.homePage);
+            routeManager.loadPage(routeManager.PAGES.lliPage);
             resolve(response)
         }).catch(function (error) {
             reject(error)

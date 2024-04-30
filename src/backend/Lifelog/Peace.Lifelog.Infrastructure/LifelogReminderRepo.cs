@@ -26,7 +26,7 @@ public class LifelogReminderRepo : ILifelogReminderRepo
     }
     public async Task<Response> AddUserHashAndDate(string userHash)
     {
-        var writeUserHashAndDate = $"INSERT INTO LifelogReminder(UserHash, Content, Frequency, Date) VALUES('{userHash}', 'Active', 'Weekly', DATE_SUB(CURRENT_DATE(), INTERVAL 32 DAY))";
+        var writeUserHashAndDate = $"INSERT INTO LifelogReminder(UserHash, Content, Frequency, Date) VALUES('{userHash}', 'active', 'weekly', DATE_SUB(CURRENT_DATE(), INTERVAL 32 DAY))";
         var writeUserHashAndDateResponse = await createDataOnlyDAO.CreateData(writeUserHashAndDate);
         return writeUserHashAndDateResponse;
     }
