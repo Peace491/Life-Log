@@ -10,6 +10,7 @@ import * as personalNotePage from './PersonalNotePage/personalnote.js'
 import * as mapPage from './MapPage/map.js'
 import * as uadPage from './UsageAnalysisDashboardPage/uad.js'
 import * as umPage from './UserManagementPage/um.js'
+//import * as lfPage from './UserManagementPage/lifelogReminder.js'
 
 import * as log from './Log/log.js'
 
@@ -23,7 +24,8 @@ export const PAGES = {
     personalNotePage: 'PersonalNotePage',
     mapPage: 'MapPage',
     uadPage: 'UsageAnalysisDashboardPage',
-    umPage: 'UserManagementPage'
+    umPage: 'UserManagementPage',
+    //lfPage: 'LifelogReminderPage'
 }
 
 const SCRIPTS = {
@@ -36,7 +38,8 @@ const SCRIPTS = {
     'PersonalNotePage': 'personalnote.js',
     'MapPage': 'map.js',
     'UsageAnalysisDashboardPage': 'uad.js',
-    'UserManagementPage': 'um.js'
+    'UserManagementPage':  'um.js',
+    //'LifelogReminderPage': 'lifelogReminder.js'
 }
 
 const LOAD_FUNCTION = {
@@ -49,7 +52,8 @@ const LOAD_FUNCTION = {
     'PersonalNotePage': personalNotePage.LoadPersonalNotePage,
     'MapPage': mapPage.LoadMapPage,
     'UsageAnalysisDashboardPage': uadPage.loadUADPage,
-    'UserManagementPage': umPage.loadUMPage
+    'UserManagementPage': umPage.loadUMPage,
+    //'LifelogReminderPage': lfPage.loadLFPage
 }
 
 export async function loadPage(page, state = null, currPage = null, timeVisited = null, jwtToken = null) {
@@ -112,7 +116,12 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
     let logoutInput = document.getElementById('logout')
     let userManagementLink = document.getElementById("user-setting")
     let mapLink = document.getElementById('map-link')
+    //let lifelogReminderLink = document.getElementById("reminder-link")
 
+    //lifelogReminderLink.addEventListener('click', function () {
+        //loadPage(PAGES.lifelogReminderPage, null, currPage, timeVisited, jwtToken)
+    //})
+    
     calendarLink.addEventListener('click', function () {
         loadPage(PAGES.calendarPage, null, currPage, timeVisited, jwtToken)
     })

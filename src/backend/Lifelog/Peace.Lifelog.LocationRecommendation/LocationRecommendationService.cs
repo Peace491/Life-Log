@@ -3,7 +3,6 @@ namespace Peace.Lifelog.LocationRecommendation;
 using System.Collections.Generic;
 using DomainModels;
 using Peace.Lifelog.Infrastructure;
-using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 
@@ -31,14 +30,14 @@ public class LocationRecommendationService : ILocationRecommendationService
     {
         var response = new Response();
         response.HasError = false;
-        string userHash = getRecommendationRequest.UserHash; 
+        string userHash = getRecommendationRequest.UserHash;
         response = this.locationRecommendationValidation.ValidateUser(response, getRecommendationRequest.Principal!, userHash);
-        if(response.HasError)
+        if (response.HasError)
         {
             response = LoggingError(response, getRecommendationRequest.Principal!, response.ErrorMessage!);
             return response;
         }
-        if(IsUserAuthorizedForLocationRecommendation(getRecommendationRequest.Principal!))
+        if (IsUserAuthorizedForLocationRecommendation(getRecommendationRequest.Principal!))
         {
             try
             {
@@ -46,7 +45,7 @@ public class LocationRecommendationService : ILocationRecommendationService
                 var clusterDataResponse = locationRecommendationCluster.ClusterRecommendation(coordResponse);
                 response.Output = clusterDataResponse.Output;
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 string errorMessage = error.ToString();
                 response = LoggingError(response, getRecommendationRequest.Principal!, errorMessage);
@@ -90,7 +89,7 @@ public class LocationRecommendationService : ILocationRecommendationService
         //var retrievePinIdResponse = GetPinId(clusterDataResponse);
         return response;
     }
-    
+
     #region Helper Functions
     private Response LoggingError(Response response, AppPrincipal principal, string errorMessage)
     {
@@ -113,7 +112,7 @@ public class LocationRecommendationService : ILocationRecommendationService
         return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
     }
 
-    
+
     #endregion
     #endregion
 }
