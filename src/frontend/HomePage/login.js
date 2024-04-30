@@ -2,6 +2,7 @@
 
 import * as routeManager from '../routeManager.js';
 import * as userFormService from '../UserFormPage/userFormServices.js'
+import * as lifelogReminderService from '../UserManagementPage/lifelogReminderServices.js'
 import * as log from '../Log/log.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
@@ -20,6 +21,7 @@ export function loadHomePage(root, ajaxClient) {
     const webServiceUrl = 'http://localhost:8082/authentication';
     const motivationalQuoteServiceUrl = 'http://localhost:8084';
     let userFormCompletionStatusUrl = ""
+    let lifelogReminderSendUrl = ""
 
 
     function getMotivationalQuote() {
@@ -160,6 +162,7 @@ export function loadHomePage(root, ajaxClient) {
                         claims: jwtTokenObject.Payload.Claims,
                     };
                     var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
+                    var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
                 } catch (error) {
                     console.error(error)
                     alert(error)
@@ -169,7 +172,8 @@ export function loadHomePage(root, ajaxClient) {
                 if (userFormIsCompleted == 'true') {
                     routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 } else {
-                    routeManager.loadPage(routeManager.PAGES.userFormPage)
+                    // JACK CHANGES
+                    routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 }
             });
         } catch (error) {
@@ -185,6 +189,7 @@ export function loadHomePage(root, ajaxClient) {
         const data = await response.json();
         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
+        lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
     }
 
     // Initialize the current view by setting up data and attaching event handlers 

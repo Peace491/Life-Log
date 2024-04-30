@@ -1,4 +1,5 @@
-export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI) {
+import * as log from '../Log/log.js'
+export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal, uploadURL, deleteURL) {
     // Create div element with class "lli" and "expanded-lli"
     const lliDiv = document.createElement('div');
     lliDiv.classList.add('lli');
@@ -155,15 +156,193 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
     hiddenNonRequiredFieldsContainer.appendChild(costHeading);
     hiddenNonRequiredFieldsContainer.appendChild(recurrenceContainer);
-    hiddenFieldsContainer.appendChild(hiddenNonRequiredFieldsContainer)
+    hiddenFieldsContainer.appendChild(hiddenNonRequiredFieldsContainer);
+
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // Function to open the modal
+    function showAlert(message) {
+        document.getElementById('modalText').innerText = message;
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 
     // Media container
     const mediaContainer = document.createElement('div');
     mediaContainer.classList.add('lli-media-container');
+
+    // Image that acts as the upload button and will display the uploaded image
     const mediaImg = document.createElement('img');
-    mediaImg.src = lli.media || './Assets/default-pic.svg';
-    mediaImg.alt = '';
+    mediaImg.id = 'img' + lli.lliid;
+    mediaImg.className = 'lli-media-img';
+    mediaImg.src = './Assets/default-pic.svg'; // Default image source
+    // Base64 string from lli.mediaMemento
+    if(lli.mediaMemento != null) {
+        const base64String = lli.mediaMemento;
+
+        // Create Data URL
+        const imageDataUrl = `data:image/png;base64,${base64String}`;
+
+        // Set the Data URL as the image source
+        mediaImg.src = imageDataUrl;
+        // Set the Data URL as the image source
+        mediaImg.src = imageDataUrl;
+        mediaImg.alt = 'Uploaded Image';
+        mediaContainer.appendChild(mediaImg);
+
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.id = 'delete-button' + lli.lliid;
+        deleteButton.className = 'delete-button';
+        deleteButton.textContent = 'X';
+        deleteButton.addEventListener('mouseover', () => { deleteButton.style.opacity = '1'; });
+        deleteButton.addEventListener('mouseout', () => { deleteButton.style.opacity = '0.8'; });
+
+
+        deleteButton.onclick = function() {
+            mediaImg.src = './Assets/default-pic.svg';
+            deleteLLIImage(lli.lliid, jwtToken, principal, deleteURL);
+            mediaContainer.removeChild(deleteButton);
+        };
+
+    // Append the delete button to the container
+    // Append the image to the media container
     mediaContainer.appendChild(mediaImg);
+    mediaContainer.appendChild(deleteButton);
+    }
+    
+    mediaImg.alt = 'Upload Image';
+    mediaImg.style.cursor = 'pointer'; // Make cursor indicate clickable area
+    mediaImg.style.transition = 'opacity 0.3s ease'; // Smooth transition for visual feedback
+    mediaImg.addEventListener('click', () => {
+        fileInput.click(); // Simulate click on file input when image is clicked
+    });
+    mediaContainer.appendChild(mediaImg);
+
+    // Hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'file-input' + lli.lliid;
+    fileInput.accept = 'image/png, image/jpeg';
+    fileInput.style.display = 'none'; // Hide the file input element
+    fileInput.addEventListener('change', handleImageUpload); // Updated to use your upload and preview function
+
+    // Append file input to the container (could also be elsewhere in the DOM)
+    mediaContainer.appendChild(fileInput);
+
+    // Function to handle image upload and preview (instant show of image after selection)
+    function handleImageUpload(event) {
+        var file = event.target.files[0];
+        if (!file) {
+            alert('No file selected.');
+            return;
+        }
+        if (file.size > 5242880) {
+            alert('The file is too large. Please select a file smaller than 5MB.');
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // Update the src of the mediaImg with the loaded image
+            mediaImg.src = e.target.result;
+            mediaImg.style.maxWidth = '200px';
+            mediaImg.style.maxHeight = '200px';
+    
+            document.getElementById('imageBase64').value = e.target.result.split(',')[1];
+            updateLLIImage(lli.lliid, e.target.result.split(',')[1], jwtToken, principal, uploadURL)
+        };
+        reader.readAsDataURL(file);
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.id = 'delete-button' + lli.lliid;
+        deleteButton.className = 'delete-button';
+        deleteButton.textContent = 'X';
+
+        var deleteButtonId = 'delete-button' + lli.lliid;
+        var existingDeleteButton = document.getElementById(deleteButtonId);
+
+        if (!existingDeleteButton) {
+            const deleteButton = document.createElement('button');
+            deleteButton.id = deleteButtonId;
+            deleteButton.className = 'delete-button';
+            deleteButton.textContent = 'X';
+            deleteButton.onclick = function() {
+                mediaImg.src = './Assets/default-pic.svg';
+                deleteLLIImage(lli.lliid, jwtToken, principal, deleteURL);
+                mediaContainer.removeChild(deleteButton);
+            }
+            mediaContainer.appendChild(deleteButton);
+        }
+    }
+
+    function updateLLIImage(lliid, image, jwtToken, principal, uploadURL) {
+        let url = uploadURL;
+
+        const UploadMediaMementoRequest = {
+            LLiId: lliid,
+            Binary: image,
+            AppPrincipal : principal
+        }
+        return ajaxClient
+        .post(url, UploadMediaMementoRequest, jwtToken)
+        .then(response => {
+            // Check if the response has an error
+            if (response.ok) {
+                showAlert('The media was successfully uploaded.');
+                log.log(principal.userId, "Info", "View", `Media uploaded for LLI ${lliid}`, jwtToken)
+            } else {
+                showAlert('Upload failed: ' + response.statusText);
+                log.log(principal.userId, "ERROR", "View", `Media failed to be uploaded for LLI ${lliid}`, jwtToken)
+            }
+        })
+        .catch((error) => Promise.reject(error), showAlert('Image upload failed'));
+        }
+    
+        
+    function deleteLLIImage(lliid, jwtToken, principal){
+        let deleteurl = "http://localhost:8091/mediaMemento/DeleteMedia"
+        const DeleteMediaMementoRequest = {
+            LLiId: lliid,
+            AppPrincipal : principal
+        }
+        
+        return ajaxClient
+        .post(deleteurl, DeleteMediaMementoRequest, jwtToken)
+        .then(response => {
+            // Check if the response has an error
+            if (response.ok) {
+                showAlert('The media was successfully deleted.');
+                log.log(principal.userId, "Info", "View", `Media deleted for LLI ${lliid}`, jwtToken)
+            } else {
+                showAlert('Delete failed: ' + response.statusText);
+                log.log(principal.userId, "ERROR", "View", `Media failed to be deleted for LLI ${lliid}`, jwtToken)
+            }
+        })
+        .catch((error) => Promise.reject(error), showAlert('Image deletion failed'));
+    }
+
+    const imageBase64 = document.createElement('input');
+    imageBase64.type = 'hidden';
+    imageBase64.id = 'imageBase64';
+    mediaContainer.appendChild(imageBase64);
+
+    // Append the media container to your existing DOM (as needed)
+    document.body.appendChild(mediaContainer);
 
     // Append button, hidden fields, and media containers to hidden content div
     hiddenContentDiv.appendChild(buttonContainer);
@@ -589,8 +768,3 @@ export function filterLLI(filterOption, filterContainer) {
 
 }
 
-// export {
-//     createLLIComponents,
-//     convertLLIToEditMode,
-//     filterLLI   
-// }

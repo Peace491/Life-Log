@@ -120,7 +120,7 @@ public sealed class MapsController : ControllerBase
             {
                 return StatusCode(400, "AppPrincipal is null.");
             }
-
+ 
             CreatePinRequest createPinRequest = new();
             createPinRequest.Principal = payload.AppPrincipal;
             createPinRequest.PinId = payload.PinId;

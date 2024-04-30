@@ -15,5 +15,6 @@ public class LLI
     public string? Category1 { get; set; } = null; // Maybe give default category
     public string? Category2 { get; set; } = null;
     public string? Category3 { get; set; } = null;
+    public byte[]? MediaMemento { get; set; } = null;
 }
 

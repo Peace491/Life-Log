@@ -14,6 +14,7 @@ export function loadLLIPage(root, ajaxClient) {
         alert("Missing dependencies");
     }
 
+    let principal = {};
     const MAX_TITLE_LENGTH = 50
     const EARLIEST_DEADLINE = 1960
     const LATEST_DEADLINE = 2100
@@ -52,6 +53,12 @@ export function loadLLIPage(root, ajaxClient) {
     const MAX_NUM_OF_CATEGORIES = 3;
 
     let jwtToken = ""
+
+    // Jack Pickle
+    let MediaMementoWebService = "";
+    let MediaMementoUpload =  "";
+    let MediaMementoDelete = "";
+    let MediaMementoUploadFromCSV = "";
 
     const webServiceUrl = 'http://localhost:8080/lli';
 
@@ -105,6 +112,8 @@ export function loadLLIPage(root, ajaxClient) {
             });
         });
     }
+
+
 
     function updateLLI(options) {
         let updateLLIUrl = webServiceUrl + '/putLLI'
@@ -414,7 +423,7 @@ export function loadLLIPage(root, ajaxClient) {
         })
     }
 
-    function showLLI() {
+    function showLLI(jwtToken, principal, uploadUrl, deleteUrl) {
         let lliContentContainer = document.getElementsByClassName("current-lli-content-container")[0]
         let finishedLLIContentContainer = document.getElementsByClassName("finished-lli-content-container")[0]
 
@@ -422,7 +431,7 @@ export function loadLLIPage(root, ajaxClient) {
         getAllLLI().then(function (completedLLIList) {
             if (!completedLLIList) return
             completedLLIList.reverse().forEach(lli => {
-                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI);
+                let lliHTML = lliDomManip.createLLIComponents(lli, createLLI, getAllLLI, updateLLI, deleteLLI, jwtToken, principal, uploadUrl, deleteUrl);
                 if (lli.status != "Completed") {
                     lliContentContainer.append(lliHTML);
                 }
@@ -433,17 +442,110 @@ export function loadLLIPage(root, ajaxClient) {
         });
     }
 
+    // Jack Pickle
+    function bulkUploadMediaFunction(principal, url) {
+        document.getElementById('bulk-upload-media-input').addEventListener('change', function () {
+            let files = this.files;
+            if (files.length === 0) {
+                alert('Please select a file!');
+                return;
+            }
+            let file = files[0];
+    
+            // Ensure the file is a CSV
+            if (file.type !== "text/csv" && !file.name.endsWith('.csv')) {
+                alert('Please select a CSV file.');
+                return;
+            }
+    
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let content = e.target.result;
+                let csvData = [];
+    
+                // Parse CSV content
+                const allRows = content.split(/\r?\n/).filter(row => row.length);
+                allRows.forEach(row => {
+                    csvData.push(row.split(','));
+                });
+    
+                // Post the CSV data to the server
+                ajaxClient.post(url, { CSVMatrix: csvData, AppPrincipal: principal }, jwtToken)
+                    .then(response => {
+                        // Check if the response has an error
+                        if (response.ok) {
+                            showAlert('The media was successfully bulk uploaded.');
+                            log.log(principal.userId, "Info", "View", `Media uploaded for ${principal.userId}`, jwtToken)
+                        } else {
+                            showAlert('Upload failed: ' + response.statusText);
+                            log.log(principal.userId, "ERROR", "View", `Media failed to be bulk uploaded for ${principal.userId}`, jwtToken)
+                        }
+                    })
+                    .catch(error => {
+                        showAlert('Error: ' + error.message);
+                    });
+            };
+    
+            reader.onerror = function () {
+                showAlert('Failed to read file!');
+            };
+            reader.readAsText(file); // Read the file as text
+        });
+    }
+    
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // new alert with modal
+    function showAlert(message) {
+        document.getElementById('modalText').innerText = message;
+        modal.style.display = "block";
+    }
+
+    // close modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
     root.myApp = root.myApp || {};
 
+    async function fetchConfig() {
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
+        MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
+        MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;
+        MediaMementoUploadFromCSV = data.LifelogUrlConfig.MediaMemento.MediaMementoUploadFromCSV;
+      }
+
     // Initialize the current view by setting up data and attaching event handlers 
-    function init() {
+    async function init() {
         jwtToken = localStorage["token-local"]
 
         if (jwtToken == null) {
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+
             var userHash = JSON.parse(jwtToken).Payload.UserHash
             log.logPageAccess(userHash, routeManager.PAGES.lliManagementPage, jwtToken)
+
+            await fetchConfig();
+
+            principal = {
+                userId: JSON.parse(jwtToken).Payload.UserHash,
+                claims: JSON.parse(jwtToken).Payload.Claims,
+            };
 
             // Set up event handlers
             setupCreateLLITemplate();
@@ -451,12 +553,15 @@ export function loadLLIPage(root, ajaxClient) {
             // setupFilterSelect();
             setupFilter();
             setupSearch();
+            bulkUploadMediaFunction(principal, MediaMementoWebService + MediaMementoUploadFromCSV);
 
             let timeAccessed = performance.now()
             routeManager.setupHeaderLinks(routeManager.PAGES.lliManagementPage, timeAccessed, jwtToken);
             
+            let uploadURL = MediaMementoWebService + MediaMementoUpload;
+            let deleteURL = MediaMementoWebService + MediaMementoDelete;
             // Get data
-            showLLI();
+            showLLI(jwtToken, principal, uploadURL, deleteURL);
         }
     }
 

@@ -1,0 +1,6 @@
+@MediaMementoWebService_HostAddress = http://localhost:5187
+
+GET {{MediaMementoWebService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
