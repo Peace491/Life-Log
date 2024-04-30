@@ -54,7 +54,8 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
             var userHash = JSON.parse(jwtToken).Payload.UserHash; 
 
 
-            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+            var userFormIsCompleted = 'true'
+            //await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
 
             var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
 

@@ -566,7 +566,7 @@ export function LoadMapPage(root, ajaxClient) {
             };
             initMap();
             attachInitMapAsGloablVar();
-            showPins()
+            showPins();
 
             window.name = routeManager.PAGES.mapPage
             // Set up event handlers

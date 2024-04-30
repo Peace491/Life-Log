@@ -1,0 +1,8 @@
+﻿using DomainModels;
+using Peace.Lifelog.Security;
+namespace Peace.Lifelog.MediaMementoService;
+
+public interface IUploadMedia
+{
+    Task<Response> UploadMediaMemento(string userhash, int lliId, byte[] binary, AppPrincipal? appPrincipal);
+}
