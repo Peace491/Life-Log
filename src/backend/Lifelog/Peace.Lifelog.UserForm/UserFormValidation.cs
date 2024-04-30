@@ -3,25 +3,25 @@ using Peace.Lifelog.Security;
 
 namespace Peace.Lifelog.UserForm;
 
-public class UserFormValidation : IUserFormValidation
+internal class UserFormValidation : IUserFormValidation
 {
     private const int NUM_OF_CATEGORIES = 10;
 
-    public Response ValidateUserFormRequest(Response response, IUserFormRequest createUserFormRequest, string requestType)
+    public Response ValidateUserFormRequest(Response response, IUserFormRequest userFormRequest, string requestType)
     {
-        var validateAppPrincipalResponse = ValidateAppPrincipal(response, createUserFormRequest.Principal);
+        var validateAppPrincipalResponse = ValidateAppPrincipal(response, userFormRequest.Principal);
         if (validateAppPrincipalResponse.HasError)
         {
             return HandleValidationError(response, validateAppPrincipalResponse.ErrorMessage!);
         }
 
-        var validateUserFormFieldInputValueResponse = ValidateUserFormFieldInputValue(response, requestType, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
+        var validateUserFormFieldInputValueResponse = ValidateUserFormFieldInputValue(response, requestType, userFormRequest.MentalHealthRating, userFormRequest.PhysicalHealthRating, userFormRequest.OutdoorRating, userFormRequest.SportRating, userFormRequest.ArtRating, userFormRequest.HobbyRating, userFormRequest.ThrillRating, userFormRequest.TravelRating, userFormRequest.VolunteeringRating, userFormRequest.FoodRating);
         if (validateUserFormFieldInputValueResponse.HasError)
         {
             return HandleValidationError(response, validateUserFormFieldInputValueResponse.ErrorMessage!);
         }
 
-        var validateUserFormFieldUniquenessResponse = ValidateUserFormFieldUniqueness(response, requestType, createUserFormRequest.MentalHealthRating, createUserFormRequest.PhysicalHealthRating, createUserFormRequest.OutdoorRating, createUserFormRequest.SportRating, createUserFormRequest.ArtRating, createUserFormRequest.HobbyRating, createUserFormRequest.ThrillRating, createUserFormRequest.TravelRating, createUserFormRequest.VolunteeringRating, createUserFormRequest.FoodRating);
+        var validateUserFormFieldUniquenessResponse = ValidateUserFormFieldUniqueness(response, requestType, userFormRequest.MentalHealthRating, userFormRequest.PhysicalHealthRating, userFormRequest.OutdoorRating, userFormRequest.SportRating, userFormRequest.ArtRating, userFormRequest.HobbyRating, userFormRequest.ThrillRating, userFormRequest.TravelRating, userFormRequest.VolunteeringRating, userFormRequest.FoodRating);
         if (validateUserFormFieldUniquenessResponse.HasError)
         {
             return HandleValidationError(response, validateUserFormFieldUniquenessResponse.ErrorMessage!);

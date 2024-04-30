@@ -70,10 +70,10 @@ export function updateUserForm(url, values, jwtToken) {
     })
 }
 
-export function getUserFormCompletionStatus(url, userHash, jwtToken) {
-    if (url == null || userHash == null || jwtToken == null) throw Error("Invalid Request")
+export function getUserFormCompletionStatus(url, principal, jwtToken) {
+    if (url == null || principal == null || jwtToken == null) throw Error("Invalid Request")
 
-    let request = ajaxClient.get(url + `?UserHash=${userHash}`, jwtToken)
+    let request = ajaxClient.get(url + `?userHash=${principal.userId}&role=${principal.claims["Role"]}`, jwtToken)
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {

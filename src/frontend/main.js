@@ -48,10 +48,14 @@ import * as userFormService from './UserFormPage/userFormServices.js'
         else {
             await fetchConfig()
 
-            var userHash = JSON.parse(jwtToken).Payload.UserHash; 
+            let jwtTokenObject = JSON.parse(jwtToken);
+            let principal = {
+                userId: jwtTokenObject.Payload.UserHash,
+                claims: jwtTokenObject.Payload.Claims,
+            };
 
 
-            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)

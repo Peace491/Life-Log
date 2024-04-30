@@ -148,20 +148,24 @@ export function loadHomePage(root, ajaxClient) {
         try {
             var email = usernameInput.value;
             var userHash = await getOTPEmail(email);
-    
+
             // Change event listener of button
             submitButton.addEventListener('click', async () => {
 
                 try {
                     jwtToken = await authenticateOTP(userHash, otpInput.value);
-                    var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
-                } catch (error)
-                {
+                    let jwtTokenObject = JSON.parse(jwtToken);
+                    let principal = {
+                        userId: jwtTokenObject.Payload.UserHash,
+                        claims: jwtTokenObject.Payload.Claims,
+                    };
+                    var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
+                } catch (error) {
                     console.error(error)
                     alert(error)
                     return
                 }
-                
+
                 if (userFormIsCompleted == 'true') {
                     routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 } else {

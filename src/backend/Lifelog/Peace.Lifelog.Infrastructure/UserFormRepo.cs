@@ -76,6 +76,7 @@ public class UserFormRepo : IUserFormRepo
         string sql = "SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking "
         + $"FROM UserForm Where UserHash=\"{userHash}\"";
 
+
         try {
             readResponse = await readDataOnlyDAO.ReadData(sql);
         } catch (Exception error) {

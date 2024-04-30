@@ -59,6 +59,8 @@ public sealed class UserFormController : ControllerBase
         }
         var response = new Response();
 
+        Console.WriteLine(userHash);
+
         var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
 
         try
@@ -108,7 +110,7 @@ public sealed class UserFormController : ControllerBase
 
     [HttpGet]
     [Route("isUserFormCompleted")]
-    public async Task<IActionResult> UserForm(string userHash)
+    public async Task<IActionResult> GetUserFormCompletionStatus(string userHash, string role)
     {
         var processTokenResponseStatus = ProcessJwtToken();
         if (processTokenResponseStatus != 200)
@@ -125,7 +127,8 @@ public sealed class UserFormController : ControllerBase
 
         try
         {
-            isUserFormCompleted = await userFormService.IsUserFormCompleted(userHash);
+            var principal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
+            isUserFormCompleted = await userFormService.IsUserFormCompleted(principal);
         }
         catch
         {

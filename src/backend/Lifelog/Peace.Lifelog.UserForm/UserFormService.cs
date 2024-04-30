@@ -27,19 +27,25 @@ public class UserFormService : IUserFormService
         response.HasError = false;
         var errorMessage = "";
 
+        if (createUserFormRequest == null) {
+            response.HasError = true;
+            response.ErrorMessage = "User Form Request Must Not Be Null";
+            return response;
+        }
+
         // Validate Input
         var validateCreateUserFormRequestResponse = this.userFormValidation.ValidateUserFormRequest(response, createUserFormRequest, UserFormRequestType.Create);
         if (validateCreateUserFormRequestResponse.HasError)
         {
             errorMessage = validateCreateUserFormRequestResponse.ErrorMessage;
-            return handleUserFormError(response, createUserFormRequest.Principal!, errorMessage!);
+            return HandleUserFormError(response, createUserFormRequest.Principal!, errorMessage!);
         }
 
         // Authorize request
         if (!IsUserAuthorizedForUserForm(createUserFormRequest.Principal!))
         {
             errorMessage = "The User Is Not Authorized To Use The User Form";
-            return handleUserFormError(response, createUserFormRequest.Principal!, errorMessage);
+            return HandleUserFormError(response, createUserFormRequest.Principal!, errorMessage);
         }
 
         // Create User Form in DB
@@ -53,14 +59,14 @@ public class UserFormService : IUserFormService
         }
         catch (Exception error)
         {
-            return handleUserFormError(response, createUserFormRequest.Principal, error.Message);
+            return HandleUserFormError(response, createUserFormRequest.Principal, error.Message);
         }
 
         // Handle Failure Response
         if (createUserFormInDBResponse.HasError)
         {
             errorMessage = "The User Form failed to save to the persistent data store";
-            return handleUserFormError(response, createUserFormRequest.Principal, errorMessage);
+            return HandleUserFormError(response, createUserFormRequest.Principal, errorMessage);
         }
 
         // Handle Success Response
@@ -79,14 +85,14 @@ public class UserFormService : IUserFormService
         if (validateAppPrincipalResponse.HasError)
         {
             errorMessage = validateAppPrincipalResponse.ErrorMessage;
-            return handleUserFormError(response, principal, errorMessage!);
+            return HandleUserFormError(response, principal, errorMessage!);
         }
 
         // Authorize request
         if (!IsUserAuthorizedForUserForm(principal!))
         {
             errorMessage = "The User Is Not Authorized To Use The User Form";
-            return handleUserFormError(response, principal, errorMessage);
+            return HandleUserFormError(response, principal, errorMessage);
         }
 
         // Get User Form in DB
@@ -105,14 +111,14 @@ public class UserFormService : IUserFormService
         }
         catch (Exception error)
         {
-            return handleUserFormError(response, principal, error.Message);
+            return HandleUserFormError(response, principal, error.Message);
         }
 
         // Handle Failure Response
         if (getUserFormRankingFromDBResponse.HasError)
         {
             errorMessage = "The User Form failed to save to the persistent data store";
-            return handleUserFormError(response, principal, errorMessage);
+            return HandleUserFormError(response, principal, errorMessage);
         }
 
         // Handle Success Response
@@ -126,19 +132,25 @@ public class UserFormService : IUserFormService
         response.HasError = false;
         var errorMessage = "";
 
+        if (updateUserFormRequest == null) {
+            response.HasError = true;
+            response.ErrorMessage = "User Form Request Must Not Be Null";
+            return response;
+        }
+
         // Validate Input
         var validateUpdateUserFormRequestResponse = this.userFormValidation.ValidateUserFormRequest(response, updateUserFormRequest, UserFormRequestType.Update);
         if (validateUpdateUserFormRequestResponse.HasError)
         {
             errorMessage = validateUpdateUserFormRequestResponse.ErrorMessage;
-            return handleUserFormError(response, updateUserFormRequest.Principal!, errorMessage!);
+            return HandleUserFormError(response, updateUserFormRequest.Principal!, errorMessage!);
         }
 
         // Authorize request
         if (!IsUserAuthorizedForUserForm(updateUserFormRequest.Principal!))
         {
             errorMessage = "The User Is Not Authorized To Use The User Form";
-            return handleUserFormError(response, updateUserFormRequest.Principal!, errorMessage);
+            return HandleUserFormError(response, updateUserFormRequest.Principal!, errorMessage);
         }
 
         // Update User Form in DB
@@ -152,14 +164,14 @@ public class UserFormService : IUserFormService
         }
         catch (Exception error)
         {
-            return handleUserFormError(response, updateUserFormRequest.Principal, error.Message);
+            return HandleUserFormError(response, updateUserFormRequest.Principal, error.Message);
         }
 
         // Handle Failure Response
         if (updateUserFormInDBResponse.HasError)
         {
             errorMessage = "The User Form failed to save to the persistent data store";
-            return handleUserFormError(response, updateUserFormRequest.Principal, errorMessage);
+            return HandleUserFormError(response, updateUserFormRequest.Principal, errorMessage);
         }
 
         // Handle Success Response
@@ -167,18 +179,28 @@ public class UserFormService : IUserFormService
         return response;
     }
 
-    public async Task<bool> IsUserFormCompleted(string userHash)
+    public async Task<bool> IsUserFormCompleted(AppPrincipal principal)
     {
         var response = new Response();
+        response.HasError = false;
 
-        if (!userFormValidation.IsValidUserHash(userHash))
+        // Validate App Principal
+        var validateAppPrincipalResponse = this.userFormValidation.ValidateAppPrincipal(response, principal);
+        if (validateAppPrincipalResponse.HasError)
+        {
+            return false;
+        }
+
+        // Check User Authorization
+        // Authorize request
+        if (!IsUserAuthorizedForUserForm(principal))
         {
             return false;
         }
 
         try
         {
-            response = await this.userFormRepo.ReadUserFormCompletionStatusInDB(userHash);
+            response = await this.userFormRepo.ReadUserFormCompletionStatusInDB(principal.UserId);
         }
         catch
         {
@@ -216,11 +238,15 @@ public class UserFormService : IUserFormService
         return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
     }
 
-    private Response handleUserFormError(Response response, AppPrincipal principal, string errorMessage)
+    private Response HandleUserFormError(Response response, AppPrincipal principal, string errorMessage)
     {
         response.HasError = true;
         response.ErrorMessage = errorMessage;
-        var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
+        if (principal == null) {
+            var logResponse = this.logging.CreateLog("Logs", errorMessage, "System" , "ERROR", "Business");
+        } else {
+            var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
+        }
         return response;
     }
 

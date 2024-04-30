@@ -105,6 +105,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                 userId: jwtTokenObject.Payload.UserHash,
                 claims: jwtTokenObject.Payload.Claims,
             };
+
             window.name = routeManager.PAGES.userFormPage
             await fetchConfig()
             if (userFormAction == "Update") {
