@@ -31,8 +31,8 @@ export function submitReminderForm(url, userHash, jwtToken, formData) {
     })
 }
 
-export function sendEmailToUser(url, userHash, jwtToken) {
-    let getUrl = url + "?userHash=" + userHash
+export function sendEmailToUser(url, jwtToken) {
+    let getUrl = url
     let request = ajaxClient.get(getUrl, jwtToken)
     //let request = ajaxClient.get(url, userHash, jwtToken)
 

@@ -57,11 +57,15 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
                 claims: jwtTokenObject.Payload.Claims,
             };
 
-
+            
             var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
-            //await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
 
-            var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
+            try {
+                var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, jwtToken);
+            } catch (error) {
+                console.error(error)
+            }
+            
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)

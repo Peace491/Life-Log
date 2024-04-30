@@ -162,7 +162,13 @@ export function loadHomePage(root, ajaxClient) {
                         claims: jwtTokenObject.Payload.Claims,
                     };
                     var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
-                    var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
+                    
+                    try {
+                        var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, jwtToken);
+                    } catch (error) {
+                        console.error(error)
+                    }
+
                 } catch (error) {
                     console.error(error)
                     alert(error)
