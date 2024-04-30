@@ -24,16 +24,16 @@ public sealed class UserFormController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> UserForm([FromBody] CreateUserFormRequest createUserFormRequest)
     {
-        var processTokenResponseStatus = ProcessJwtToken();
-        if (processTokenResponseStatus != 200)
-        {
-            return StatusCode(processTokenResponseStatus);
-        }
-
         var response = new Response();
 
         try
         {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
             response = await userFormService.CreateUserForm(createUserFormRequest);
         }
         catch (Exception error)
@@ -50,21 +50,25 @@ public sealed class UserFormController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> UserForm(string userHash, string role)
+    public async Task<IActionResult> UserForm()
     {
-        var processTokenResponseStatus = ProcessJwtToken();
-        if (processTokenResponseStatus != 200)
-        {
-            return StatusCode(processTokenResponseStatus);
-        }
+
         var response = new Response();
-
-        Console.WriteLine(userHash);
-
-        var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
 
         try
         {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+            var userHash = jwtToken!.Payload.UserHash;
+            var role = jwtToken.Payload.Claims!["Role"];
+
+            var appPrincipal = new AppPrincipal { UserId = userHash!, Claims = new Dictionary<string, string>() { { "Role", role } } };
+
             response = await userFormService.GetUserFormRanking(appPrincipal);
         }
         catch (Exception error)
@@ -84,15 +88,15 @@ public sealed class UserFormController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UserForm([FromBody] UpdateUserFormRequest updateUserFormRequest)
     {
-        var processTokenResponseStatus = ProcessJwtToken();
-        if (processTokenResponseStatus != 200)
-        {
-            return StatusCode(processTokenResponseStatus);
-        }
         var response = new Response();
 
         try
         {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
             response = await userFormService.UpdateUserForm(updateUserFormRequest);
         }
         catch (Exception error)
@@ -110,24 +114,24 @@ public sealed class UserFormController : ControllerBase
 
     [HttpGet]
     [Route("isUserFormCompleted")]
-    public async Task<IActionResult> GetUserFormCompletionStatus(string userHash, string role)
+    public async Task<IActionResult> GetUserFormCompletionStatus()
     {
-        var processTokenResponseStatus = ProcessJwtToken();
-        if (processTokenResponseStatus != 200)
-        {
-            return StatusCode(processTokenResponseStatus);
-        }
-
-        if (userHash == null)
-        {
-            return StatusCode(401);
-        }
-
         var isUserFormCompleted = false;
 
         try
         {
-            var principal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+            var userHash = jwtToken!.Payload.UserHash;
+            var role = jwtToken.Payload.Claims!["Role"];
+
+
+            var principal = new AppPrincipal { UserId = userHash!, Claims = new Dictionary<string, string>() { { "Role", role } } };
             isUserFormCompleted = await userFormService.IsUserFormCompleted(principal);
         }
         catch

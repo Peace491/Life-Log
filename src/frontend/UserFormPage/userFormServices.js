@@ -27,8 +27,7 @@ export function createUserForm(url, values, jwtToken) {
 
 export function getUserFormRankings(url, principal, jwtToken) {
     if (url == null || principal == null || jwtToken == null) throw Error("Invalid Request")
-
-    let request = ajaxClient.get(url + `?userHash=${principal.userId}&role=${principal.claims["Role"]}`, jwtToken)
+    let request = ajaxClient.get(url + "?userHash=" + principal.userId + "&role=" + principal.claims["Role"], jwtToken)
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {
@@ -72,8 +71,7 @@ export function updateUserForm(url, values, jwtToken) {
 
 export function getUserFormCompletionStatus(url, principal, jwtToken) {
     if (url == null || principal == null || jwtToken == null) throw Error("Invalid Request")
-
-    let request = ajaxClient.get(url + `?userHash=${principal.userId}&role=${principal.claims["Role"]}`, jwtToken)
+    let request = ajaxClient.get(url + "?userHash=" + principal.userId + "&role=" + principal.claims["Role"], jwtToken)
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {
