@@ -5,7 +5,7 @@ using Peace.Lifelog.UserManagementTest;
 
 namespace Peace.Lifelog.UserManagement;
 
-public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUser, IModifyLifelogUser, IRecoverLifelogUser, IDeletePersonalIdentifiableInformation, IViewPersonalIdentifiableInformation
+public class LifelogUserManagementService : ILifelogUserManagementService
 {
     private readonly AppUserManagementService appUserManagementService = new AppUserManagementService();
     private readonly SaltService saltService = new SaltService();
@@ -157,9 +157,21 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         response.Output = modifyLifelogProfileResponse.Output;
         return response;
     }
-    public async Task<Response> RecoverLifelogUser(LifelogAccountRequest lifelogAccountRequest)
+    public async Task<Response> RecoverLifelogUser(AppPrincipal principal, LifelogAccountRequest lifelogAccountRequest)
     {
         var response = new Response();
+
+        if (principal.Claims == null) {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Admin" && userRole != "Root") {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
 
         var recoverLifelogAccountResponse = await recoverLifelogAccountfromDB(lifelogAccountRequest);
 
@@ -352,7 +364,7 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         return userHash;
     }
 
-    public async Task<string> getUserIdFromUserHash(string userHash) {
+    public async Task<string> GetUserIdFromUserHash(string userHash) {
         if (userHash == string.Empty) return "";
 
         string userId = "";

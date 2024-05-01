@@ -1,6 +1,7 @@
 ﻿namespace Peace.Lifelog.UserManagementTest;
 
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagement;
 using System.Diagnostics;
 
@@ -521,9 +522,11 @@ public class LifelogUserManagementServiceShould
 
         var readAccountStatusSql = $"SELECT AccountStatus FROM LifelogAccount WHERE UserId = \"{mockUserId}\"";
 
+        var principal = new AppPrincipal();
+
         // Act
         timer.Start();
-        var recoverAccountResponse = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest);
+        var recoverAccountResponse = await lifelogUserManagementService.RecoverLifelogUser(principal, recoverAccountRequest);
         timer.Stop();
 
         var readAccountStatusResponse = await readDataOnlyDAO.ReadData(readAccountStatusSql);
@@ -562,10 +565,12 @@ public class LifelogUserManagementServiceShould
 
         var errorIsThrown = false;
 
+        var principal = new AppPrincipal();
+
         // Act
         try
         {
-            var recoverAccountResponse = await lifelogUserManagementService.RecoverLifelogUser(testLifelogAccountRequest);
+            var recoverAccountResponse = await lifelogUserManagementService.RecoverLifelogUser(principal, testLifelogAccountRequest);
         }
         catch (ArgumentNullException)
         {
@@ -592,10 +597,12 @@ public class LifelogUserManagementServiceShould
 
         var errorIsThrown = false;
 
+        var principal = new AppPrincipal();
+
         // Act
         try
         {
-            var recoverProfileResponse = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest);
+            var recoverProfileResponse = await lifelogUserManagementService.RecoverLifelogUser(principal, recoverAccountRequest);
         }
         catch (ArgumentNullException)
         {
@@ -619,8 +626,10 @@ public class LifelogUserManagementServiceShould
         recoverAccountRequest.UserId = ("UserId", mockUserId);
         recoverAccountRequest.AccountStatus = ("AccountStatus", enableStatus);
 
+        var principal = new AppPrincipal();
+
         // Act
-        var recoverProfileResponse = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest);
+        var recoverProfileResponse = await lifelogUserManagementService.RecoverLifelogUser(principal, recoverAccountRequest);
 
         // Assert
         Assert.True(recoverProfileResponse.HasError);
