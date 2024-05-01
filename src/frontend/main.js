@@ -17,30 +17,37 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
         alert("Missing dependencies");
     }
 
-     // Urls
-     let userFormCompletionStatusUrl = ""
-     let lifelogReminderSendUrl = ""
- 
-     async function fetchConfig() {
-         const response = await fetch('./lifelog-config.url.json');
-         const data = await response.json();
-         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
-         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
-         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
-     }
+    // Urls
+    let userFormCompletionStatusUrl = ""
+    let lifelogReminderSendUrl = ""
+
+    async function fetchConfig() {
+        const response = await fetch('./lifelog-config.url.json');
+        const data = await response.json();
+        let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
+        userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
+        lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
+    }
 
     root.myApp = root.myApp || {};
 
     // Initialize the current view by setting up data and attaching event handlers 
     async function init() {
         if (localStorage.length != 0) {
-            jwtToken = localStorage["token-local"]
+            try {
+                jwtToken = localStorage["token-local"]
+            } catch (error) {
+                console.error(error)
+                window.localStorage.clear()
+                routeManager.loadPage(routeManager.PAGES.homePage)
+            }
+            
         }
 
         if (!jwtToken) {
             routeManager.loadPage(routeManager.PAGES.homePage)
-        } 
-        else if(window.name) {
+        }
+        else if (window.name) {
             if (window.name == routeManager.PAGES.userFormPage) {
                 routeManager.loadPage(window.name, "Update")
             }
@@ -51,11 +58,21 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
         else {
             await fetchConfig()
 
-            let jwtTokenObject = JSON.parse(jwtToken);
-            let principal = {
-                userId: jwtTokenObject.Payload.UserHash,
-                claims: jwtTokenObject.Payload.Claims,
-            };
+            let jwtTokenObject
+            let principal
+
+            try {
+                jwtTokenObject = JSON.parse(jwtToken);
+                principal = {
+                    userId: jwtTokenObject.Payload.UserHash,
+                    claims: jwtTokenObject.Payload.Claims,
+                };
+            } catch(error) { // If there is an error with the token, log the user out
+                console.error(error)
+                window.localStorage.clear()
+                routeManager.loadPage(routeManager.PAGES.homePage)
+            }
+            
 
             
             var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
@@ -65,7 +82,7 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
             } catch (error) {
                 console.error(error)
             }
-            
+
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)

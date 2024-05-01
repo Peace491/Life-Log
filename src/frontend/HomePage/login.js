@@ -156,6 +156,7 @@ export function loadHomePage(root, ajaxClient) {
 
                 try {
                     jwtToken = await authenticateOTP(userHash, otpInput.value);
+
                     let jwtTokenObject = JSON.parse(jwtToken);
                     let principal = {
                         userId: jwtTokenObject.Payload.UserHash,
@@ -184,6 +185,7 @@ export function loadHomePage(root, ajaxClient) {
             });
         } catch (error) {
             // Handle any errors that might occur
+            alert(error)
             console.error(error);
         }
     }
