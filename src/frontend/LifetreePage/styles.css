@@ -197,3 +197,96 @@ main {
 body {
     font-family: Arial, sans-serif;
 }
+
+/* 
+END OF LLI CONTAINER
+*/
+
+.tree-segment{
+    width: 200px;
+    height: auto;
+}
+
+.left-branch{
+    margin-left: -155px;
+
+}
+
+.right-branch{
+    margin-right: -155px;
+    width: 238px;   
+
+}
+
+.tree-container{
+    position: relative;
+    text-align: center;
+
+}
+
+.lli-title-text.left-text{
+    position: absolute;
+    bottom: 42px;
+    left: -2px;
+    
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
+.lli-title-text.right-text{
+    position: absolute;
+    bottom: 2px;
+    right: -2px;
+    
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
+button.btn{
+    background-color: #C07012;
+    color:white;
+    width: 140px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    
+}
+
+button.right-btn{
+    background-color: #C07012;
+    color:white;
+    width: 175px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    
+}
+button.right-btn:hover{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 20px 0 rgba(0,0,0,0.19);
+    background-color: rgb(183, 99, 40);
+    color: white;
+    /* border: 2px solid rgb(117, 66, 8); */
+    
+
+}
+
+button.btn:hover{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 20px 0 rgba(0,0,0,0.19);
+    background-color: rgb(183, 99, 40);
+    color: white;
+    /* border: 2px solid rgb(117, 66, 8); */
+    
+
+}
+.overflow{
+    overflow: hidden;
+    white-space: nowrap;
+    display: block;
+    text-overflow: ellipsis;
+    
+
+}
