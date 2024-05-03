@@ -61,7 +61,6 @@ export function loadAdminToolPage(root, ajaxClient) {
     async function setupTools() {
         try {
             let response = await getRecoverAccountRequests()
-            console.log(response)
 
             let recoverAccountRequestsContainer = document.getElementById('recover-account-requests-container')
 
@@ -73,7 +72,6 @@ export function loadAdminToolPage(root, ajaxClient) {
                     recoverAccountRequestsContainer.appendChild(requestDiv)
                 });
             }
-            
 
         } catch (error) {
             alert(error)
