@@ -34,8 +34,6 @@ export function loadAdminToolPage(root, ajaxClient) {
                 }
                 return response.json()
             }).then(function (response) {
-                if (response.status == 401) throw new Error("Failed to recover user")
-                if (response.status == 500) throw new Error("Failed to recover user")
                 resolve(response)
             }).catch(function (error) {
                 reject(error)
@@ -43,7 +41,45 @@ export function loadAdminToolPage(root, ajaxClient) {
         })
     }
 
-    function setupTools() {
+    async function getRecoverAccountRequests() {
+        let request = ajaxClient.get(recoverAccountUrl, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error("Failed to get recover account requests")
+                }
+                return response.json()
+            }).then(function (response) {
+                resolve(response)
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
+    }
+
+    async function setupTools() {
+        try {
+            let response = await getRecoverAccountRequests()
+            console.log(response)
+
+            let recoverAccountRequestsContainer = document.getElementById('recover-account-requests-container')
+
+            if (response != null && response.output != null) {
+                response.output.forEach(request => {
+                    let requestDiv = document.createElement('div')
+                    requestDiv.innerText = request[0]
+    
+                    recoverAccountRequestsContainer.appendChild(requestDiv)
+                });
+            }
+            
+
+        } catch (error) {
+            alert(error)
+            console.error(error)
+        }
+
         let recoverAccountInputButton = document.getElementById('recover-account-button')
 
         recoverAccountInputButton.addEventListener('click', async function () {
@@ -53,6 +89,7 @@ export function loadAdminToolPage(root, ajaxClient) {
                 let response = await recoverAccount(principal, userId)
                 alert("Successfully recover user account")
             } catch (error) {
+                alert(error)
                 console.error(error)
             }
 

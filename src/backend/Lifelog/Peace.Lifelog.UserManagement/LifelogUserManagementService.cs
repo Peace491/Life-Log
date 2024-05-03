@@ -11,6 +11,8 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     private readonly SaltService saltService = new SaltService();
 
     private readonly CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+    private readonly ReadDataOnlyDAO readDataOnlyDAO= new ReadDataOnlyDAO();
+    private readonly DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
 
     public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
@@ -93,8 +95,8 @@ public class LifelogUserManagementService : ILifelogUserManagementService
             return response;
         }
 
-         // Populate Authentication table
-        var createLifelogAuthenticationResponse = await createLifelogAuthenticationInDB(lifelogAccountRequest ,lifelogProfileRequest);
+        // Populate Authentication table
+        var createLifelogAuthenticationResponse = await createLifelogAuthenticationInDB(lifelogAccountRequest, lifelogProfileRequest);
 
         if (createLifelogAuthenticationResponse.HasError == true)
         {
@@ -157,17 +159,63 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         response.Output = modifyLifelogProfileResponse.Output;
         return response;
     }
-    public async Task<Response> RecoverLifelogUser(AppPrincipal principal, LifelogAccountRequest lifelogAccountRequest)
+
+    public async Task<Response> GetRecoveryAccountRequests(AppPrincipal principal)
     {
         var response = new Response();
 
-        if (principal.Claims == null) {
+        if (principal.Claims == null)
+        {
             response.HasError = true;
             response.ErrorMessage = "Must provide principal";
             return response;
         }
         var userRole = principal.Claims["Role"];
-        if (userRole != "Admin" && userRole != "Root") {
+        if (userRole != "Admin" && userRole != "Root")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
+
+        var sql = "";
+
+        if (userRole == "Root")
+        {
+            sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId";
+        }
+        else
+        {
+            sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest "
+            + "WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId "
+            + "AND (LifelogAccount.Role != 'Admin' AND LifelogAccount.Role != 'Root') ";
+        }
+
+        response = await readDataOnlyDAO.ReadData(sql);
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to get Lifelog User Recovery Requests.";
+            return response;
+        }
+
+        response.HasError = false;
+        return response;
+    }
+
+    public async Task<Response> RecoverLifelogUser(AppPrincipal principal, LifelogAccountRequest lifelogAccountRequest)
+    {
+        var response = new Response();
+
+        if (principal.Claims == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Admin" && userRole != "Root")
+        {
             response.HasError = true;
             response.ErrorMessage = "Unauthorized Request";
             return response;
@@ -175,7 +223,11 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         var recoverLifelogAccountResponse = await recoverLifelogAccountfromDB(lifelogAccountRequest);
 
-        if (recoverLifelogAccountResponse.HasError == true)
+        var deleteRecoveryRequestSql = $"DELETE FROM LifelogAccountRecoveryRequest WHERE UserId = \"{lifelogAccountRequest.UserId.Value}\"";
+
+        var deleteResponse = await deleteDataOnlyDAO.DeleteData(deleteRecoveryRequestSql);
+
+        if (recoverLifelogAccountResponse.HasError == true || deleteResponse.HasError == true)
         {
             response.HasError = true;
             response.ErrorMessage = "Failed to recover Lifelog User Account.";
@@ -184,6 +236,32 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         response.HasError = false;
         response.Output = recoverLifelogAccountResponse.Output;
+        return response;
+    }
+
+    public async Task<Response> CreateRecoveryAccountRequest(LifelogAccountRequest lifelogAccountRequest)
+    {
+        var response = new Response();
+
+        if (lifelogAccountRequest.UserId.Type == null || lifelogAccountRequest.UserId.Value == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide UserId";
+            return response;
+        }
+
+        string sql = $"INSERT INTO LifelogAccountRecoveryRequest (UserId) VALUES (\"{lifelogAccountRequest.UserId.Value}\")";
+
+        response = await createDataOnlyDAO.CreateData(sql);
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to create Account Recovery Request";
+            return response;
+        }
+
+        response.HasError = false;
+
         return response;
     }
 
@@ -247,8 +325,9 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
     }
 
-    private string createSalt() {
-        
+    private string createSalt()
+    {
+
         var salt = "";
         var saltResponse = saltService.getSalt();
 
@@ -271,8 +350,9 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
     }
 
-    private async Task<Response> createLifelogUserRoleInDB(LifelogAccountRequest lifelogAccountRequest) {
-        string sql = $"INSERT INTO LifelogUserRole ({lifelogAccountRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})" 
+    private async Task<Response> createLifelogUserRoleInDB(LifelogAccountRequest lifelogAccountRequest)
+    {
+        string sql = $"INSERT INTO LifelogUserRole ({lifelogAccountRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})"
          + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
         var createLifelogUserRoleInDBResponse = await createDataOnlyDAO.CreateData(sql);
 
@@ -293,7 +373,8 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         return createLifelogProfileResponse;
     }
 
-    private async Task<Response> createLifelogUserOTPInDB(LifelogProfileRequest lifelogProfileRequest) {
+    private async Task<Response> createLifelogUserOTPInDB(LifelogProfileRequest lifelogProfileRequest)
+    {
         string sql = $"INSERT INTO LifelogUserOTP ({lifelogProfileRequest.UserId.Type}) VALUES (\"{lifelogProfileRequest.UserId.Value}\")";
         var createLifelogUserOTPInDBResponse = await createDataOnlyDAO.CreateData(sql);
 
@@ -302,7 +383,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
     private async Task<Response> createLifelogAuthenticationInDB(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
-        string sql = $"INSERT INTO LifelogAuthentication ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type}, IsUserFormCompleted)" 
+        string sql = $"INSERT INTO LifelogAuthentication ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type}, IsUserFormCompleted)"
          + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\", 0)";
         var createLifelogAuthenticationInDBResponse = await createDataOnlyDAO.CreateData(sql);
 
@@ -342,7 +423,8 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         return recoverLifelogAccountResponse;
     }
 
-    public async Task<string> getUserHashFromUserId(string userId) {
+    public async Task<string> getUserHashFromUserId(string userId)
+    {
         if (userId == string.Empty) return "";
 
         string userHash = "";
@@ -353,9 +435,12 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         var response = await readDataOnlyDAO.ReadData(sql);
 
-        if (response.Output != null) {
-            foreach (List<Object> output in response.Output) {
-                foreach (string userHashOutput in output) {
+        if (response.Output != null)
+        {
+            foreach (List<Object> output in response.Output)
+            {
+                foreach (string userHashOutput in output)
+                {
                     userHash = userHashOutput;
                 }
             }
@@ -364,7 +449,8 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         return userHash;
     }
 
-    public async Task<string> GetUserIdFromUserHash(string userHash) {
+    public async Task<string> GetUserIdFromUserHash(string userHash)
+    {
         if (userHash == string.Empty) return "";
 
         string userId = "";
@@ -375,9 +461,12 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         var response = await readDataOnlyDAO.ReadData(sql);
 
-        if (response.Output != null) {
-            foreach (List<Object> output in response.Output) {
-                foreach (string userIdOutput in output) {
+        if (response.Output != null)
+        {
+            foreach (List<Object> output in response.Output)
+            {
+                foreach (string userIdOutput in output)
+                {
                     userId = userIdOutput;
                 }
             }

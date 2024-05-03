@@ -24,7 +24,7 @@ export function loadHomePage(root, ajaxClient) {
     const motivationalQuoteServiceUrl = 'http://localhost:8084';
     let userFormCompletionStatusUrl = ""
     let lifelogReminderSendUrl = ""
-
+    let accountRecoveryUrl = ""
 
     function getMotivationalQuote() {
         const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
@@ -94,6 +94,19 @@ export function loadHomePage(root, ajaxClient) {
         });
     }
 
+    function createAccountRecoveryRequest(email) {
+        let request = ajaxClient.post(accountRecoveryUrl, email)
+
+        return new Promise((resolve, reject) => {
+            request.then(function (response) {
+                if (response.status != 200) throw new Error("Failed to create account recovery request. If you have already created a request, please wait until the requestis resolved by an admin.")
+                resolve(response);
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
 
     let otpStatus = false;
 
@@ -104,6 +117,19 @@ export function loadHomePage(root, ajaxClient) {
         let loginPrompt = document.getElementById('login-prompt')
         let usernameInput = document.getElementById('username-input')
         let submitCredentialButton = document.getElementById('submit-credential-button')
+
+        if (isRecoverAccountRequest == true) {
+            let email = usernameInput.value
+            try {
+                console.log(email)
+                let response = await createAccountRecoveryRequest(email)
+                alert("Account recovery request successfully created. Our admin will promptly take a look at the request.")
+            } catch (error) {
+                alert(error)
+            }
+
+            return 
+        }
 
         //Change form format 
         loginContainer.style = 'grid-template-rows: 1fr 1fr 2fr 2fr;'
@@ -151,6 +177,7 @@ export function loadHomePage(root, ajaxClient) {
         // Make API queries
         try {
             var email = usernameInput.value;
+
             var userHash = await getOTPEmail(email);
 
             // Change event listener of button
@@ -165,7 +192,7 @@ export function loadHomePage(root, ajaxClient) {
                         claims: jwtTokenObject.Payload.Claims,
                     };
                     var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
-                    
+
                     try {
                         var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, jwtToken);
                     } catch (error) {
@@ -184,7 +211,11 @@ export function loadHomePage(root, ajaxClient) {
                     // JACK CHANGES
                     routeManager.loadPage(routeManager.PAGES.lliManagementPage)
                 }
+
+
             });
+
+
         } catch (error) {
             // Handle any errors that might occur
             alert(error)
@@ -193,8 +224,13 @@ export function loadHomePage(root, ajaxClient) {
     }
 
     async function setupRecoverAccount() {
+        let loginText = document.getElementById('login-text')
+        let loginPrompt = document.getElementById('login-prompt')
+
         let recoverAccountLink = document.getElementById('recover-account-link')
-        recoverAccountLink.addEventListener('click', function() {
+        recoverAccountLink.addEventListener('click', function () {
+            loginText.innerText = "Recovery Account"
+            loginPrompt.innerText = "Enter your account information"
             isRecoverAccountRequest = true
         })
     }
@@ -207,6 +243,7 @@ export function loadHomePage(root, ajaxClient) {
         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
+        accountRecoveryUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.RecoverUser
     }
 
     // Initialize the current view by setting up data and attaching event handlers 
@@ -227,6 +264,8 @@ export function loadHomePage(root, ajaxClient) {
             registerUserButton.addEventListener('click', function () {
                 routeManager.loadPage(routeManager.PAGES.registrationPage)
             });
+
+            setupRecoverAccount()
 
         }
         // Fetch and display the motivational quote

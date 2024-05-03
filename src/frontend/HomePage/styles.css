@@ -313,6 +313,10 @@ a:link {
     rotate: 180deg;
 }
 
-.recover-account-link {
+#recover-account-link {
     text-decoration: underline;
+}
+
+#recover-account-link:hover {
+    cursor: pointer;
 }
