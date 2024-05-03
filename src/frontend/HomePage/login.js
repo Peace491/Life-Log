@@ -191,7 +191,6 @@ export function loadHomePage(root, ajaxClient) {
                         userId: jwtTokenObject.Payload.UserHash,
                         claims: jwtTokenObject.Payload.Claims,
                     };
-                    var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
 
                     try {
                         var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, jwtToken);
@@ -199,19 +198,20 @@ export function loadHomePage(root, ajaxClient) {
                         console.error(error)
                     }
 
+                    var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
+
+                    if (userFormIsCompleted == 'true') {
+                        routeManager.loadPage(routeManager.PAGES.lliManagementPage)
+                    } else {
+                        // JACK CHANGES
+                        routeManager.loadPage(routeManager.PAGES.userFormPage)
+                    }
+
                 } catch (error) {
                     console.error(error)
                     alert(error)
                     return
                 }
-
-                if (userFormIsCompleted == 'true') {
-                    routeManager.loadPage(routeManager.PAGES.lliManagementPage)
-                } else {
-                    // JACK CHANGES
-                    routeManager.loadPage(routeManager.PAGES.lliManagementPage)
-                }
-
 
             });
 

@@ -77,11 +77,11 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
             
             var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, principal, jwtToken);
 
-            try {
-                var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, jwtToken);
-            } catch (error) {
-                console.error(error)
-            }
+            // try {
+            //     var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, jwtToken);
+            // } catch (error) {
+            //     console.error(error)
+            // }
 
 
             if (userFormIsCompleted == 'true') {

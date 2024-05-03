@@ -44,8 +44,7 @@ export function sendEmailToUser(url, jwtToken) {
             return response.json()
         }).then(function (response) {
             // Move to lli page
-            alert("Successfully Sent a Reminder to the User")
-            routeManager.loadPage(routeManager.PAGES.lliPage);
+            // alert("Successfully Sent a Reminder to the User")
             resolve(response)
         }).catch(function (error) {
             reject(error)
