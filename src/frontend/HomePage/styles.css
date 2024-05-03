@@ -312,3 +312,7 @@ a:link {
     bottom: 51.1%;
     rotate: 180deg;
 }
+
+.recover-account-link {
+    text-decoration: underline;
+}

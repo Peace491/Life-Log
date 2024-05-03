@@ -18,6 +18,8 @@ export function loadHomePage(root, ajaxClient) {
 
     let jwtToken;
 
+    let isRecoverAccountRequest = false
+
     const webServiceUrl = 'http://localhost:8082/authentication';
     const motivationalQuoteServiceUrl = 'http://localhost:8084';
     let userFormCompletionStatusUrl = ""
@@ -188,6 +190,13 @@ export function loadHomePage(root, ajaxClient) {
             alert(error)
             console.error(error);
         }
+    }
+
+    async function setupRecoverAccount() {
+        let recoverAccountLink = document.getElementById('recover-account-link')
+        recoverAccountLink.addEventListener('click', function() {
+            isRecoverAccountRequest = true
+        })
     }
 
     root.myApp = root.myApp || {};
