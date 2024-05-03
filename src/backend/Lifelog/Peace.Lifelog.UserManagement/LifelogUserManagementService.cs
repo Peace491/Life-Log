@@ -1,17 +1,24 @@
 ﻿using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.UserManagementTest;
 
 namespace Peace.Lifelog.UserManagement;
 
 public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUser, IModifyLifelogUser, IRecoverLifelogUser, IDeletePersonalIdentifiableInformation, IViewPersonalIdentifiableInformation
 {
-    private readonly AppUserManagementService appUserManagementService = new AppUserManagementService();
-    private readonly SaltService saltService = new SaltService();
-
-    private readonly CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-
+    private readonly AppUserManagementService appUserManagementService;
+    private readonly SaltService saltService;
+    private readonly CreateDataOnlyDAO createDataOnlyDAO;
+    private readonly IUserManagmentRepo userManagementRepo;
+    public LifelogUserManagementService(IUserManagmentRepo userManagementRepo, AppUserManagementService appUserManagementService, SaltService saltService, CreateDataOnlyDAO createDataOnlyDAO)
+    {
+        this.userManagementRepo = userManagementRepo;
+        this.appUserManagementService = appUserManagementService;
+        this.saltService = saltService;
+        this.createDataOnlyDAO = createDataOnlyDAO;
+    }
 
     public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
@@ -175,42 +182,42 @@ public class LifelogUserManagementService : ICreateLifelogUser, IDeleteLifelogUs
         return response;
     }
 
-    // public async Task<Response> DeletePersonalIdentifiableInformation(string userHash)
-    // {
-    //     throw new NotImplementedException();
-    //     // var response = new Response();
+    public async Task<Response> DeletePersonalIdentifiableInformation(string userHash)
+    {
+        var response = new Response();
+        try
+        {
+            // any biz rules for this operation
 
-    //     // var deletePersonalIdentifiableInformationResponse = await appUserManagementService.DeletePersonalIdentifiableInformation(userHash);
+            // go to repo
+            response = await userManagementRepo.DeletePersonalIdentifiableInformation(userHash);
 
-    //     // if (deletePersonalIdentifiableInformationResponse.HasError == true)
-    //     // {
-    //     //     response.HasError = true;
-    //     //     response.ErrorMessage = "Failed to delete personal identifiable information.";
-    //     //     return response;
-    //     // }
+            // log what userhash is deleting their pii data
+        }
+        catch (Exception ex)
+        {
+            // _ = await logger.CreateLog("logs", userHash, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+    public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
+    {
+        var response = new Response();
+        try
+        {
+            // any biz rules for this operation
 
-    //     // response.HasError = false;
-    //     // response.Output = deletePersonalIdentifiableInformationResponse.Output;
-    //     // return response;
-    // }
-    // public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
-    // {
-    //     throw new NotImplementedException();
-    //     // var response = new Response();
+            // go to repo
+            response = await userManagementRepo.ViewPersonalIdentifiableInformation(userHash);
 
-    //     // var viewPersonalIdentifiableInformationResponse = await appUserManagementService.ViewPersonalIdentifiableInformation(userHash);
-
-    //     // if (viewPersonalIdentifiableInformationResponse.HasError == true)
-    //     // {
-    //     //     response.HasError = true;
-    //     //     response.ErrorMessage = "Failed to view personal identifiable information.";
-    //     //     return response;
-    //     // }
-
-    //     // response.HasError = false;
-    //     // response.Output = viewPersonalIdentifiableInformationResponse.Output;
-    //     // return response;
-    // }
+            // log what userhash is viewing their pii data
+        }
+        catch (Exception ex)
+        {
+            // _ = await logger.CreateLog("logs", userHash, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
     // Helper functions
     // Some should be moved to infrastructure
     #region Helper Functions

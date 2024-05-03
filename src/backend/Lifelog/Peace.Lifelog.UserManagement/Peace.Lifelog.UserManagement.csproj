@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Security\Peace.Lifelog.Security.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

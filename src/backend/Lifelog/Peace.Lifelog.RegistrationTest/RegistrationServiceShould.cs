@@ -3,6 +3,9 @@ namespace Peace.Lifelog.RegistrationTest;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.RegistrationService;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;   
+using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.UserManagementTest;
 
 
@@ -131,8 +134,18 @@ public class RegistrationServiceShould
     {
         // Arrange
         // init view and delete DAO
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var LifelogUserManagementService = new LifelogUserManagementService();
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        SaltService saltService = new SaltService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
 
         const string USEREMAIL = "NormalUser@gmail.com";
         
@@ -161,7 +174,7 @@ public class RegistrationServiceShould
 
         // cleanup
         // delete using usermanagmentservice
-        await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+        await lifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
     }
 
     [Fact]
@@ -169,8 +182,18 @@ public class RegistrationServiceShould
     {
         // Arrange
         // init view and delete DAO
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var LifelogUserManagementService = new LifelogUserManagementService();
+         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        SaltService saltService = new SaltService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
 
         const string ADMINEMAIL = "AdminUser@gmail.com";
 
@@ -197,7 +220,7 @@ public class RegistrationServiceShould
         Assert.True(readResponse.Output.Count == 1);
 
         // Cleanup
-        await LifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
+        await lifelogUserManagementService.DeleteLifelogUser(testLifelogAccountRequest, testLifelogProfileRequest);
 
 
     }

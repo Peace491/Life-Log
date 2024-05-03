@@ -5,6 +5,7 @@ using Peace.Lifelog.Security;
 using Peace.Lifelog.Email;
 using Peace.Lifelog.UserManagement;
 using DomainModels;
+using Peace.Lifelog.Logging;
 using back_end;
 
 namespace Peace.Lifelog.SecurityWebService;
@@ -13,13 +14,21 @@ namespace Peace.Lifelog.SecurityWebService;
 [Route("authentication")]
 public class AuthenticationController : ControllerBase
 {
+    private readonly LifelogUserManagementService lifelogUserManagementService;
+    private readonly ILogging _logger;
+    public AuthenticationController(LifelogUserManagementService lifelogUserManagementService, ILogging logger)
+    {
+        this.lifelogUserManagementService = lifelogUserManagementService;
+        _logger = logger;
+    }
     [HttpGet]
     [Route("getOTPEmail")]
     public async Task<IActionResult> GetOTPEmail(string userId)
     {
         try
         {
-            var lifelogUserManagementService = new LifelogUserManagementService();
+            
+            // var lifelogUserManagementService = new LifelogUserManagementService();
 
             var userHash = await lifelogUserManagementService.getUserHashFromUserId(userId);
 

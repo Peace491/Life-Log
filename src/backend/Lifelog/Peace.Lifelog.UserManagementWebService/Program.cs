@@ -26,6 +26,7 @@ builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<IUserFormService, UserFormService>();
 builder.Services.AddTransient<ILifelogReminderService, LifelogReminderService>();
 builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 
 var config = LifelogConfig.LoadConfiguration();

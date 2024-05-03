@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-
+using Peace.Lifelog.Infrastructure;
 
 
 public class RegistrationService()
@@ -164,10 +164,18 @@ public class RegistrationService()
     public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole)
     {
         var response = new Response();
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
-        var logging = new Logging(logTarget);
+         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        SaltService saltService = new SaltService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        
+        var userManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
 
         string userID = email;
 
@@ -182,7 +190,7 @@ public class RegistrationService()
         profileRequest.DOB = ("DOB", DOB);
         profileRequest.ZipCode = ("ZipCode", zipCode);
 
-        var userManagementService = new LifelogUserManagementService();
+        
         var createLifelogUserResponse = await userManagementService.CreateLifelogUser(accountRequest, profileRequest);
 
         if (createLifelogUserResponse.HasError == true)
@@ -190,7 +198,7 @@ public class RegistrationService()
             response.HasError = true;
             response.ErrorMessage = createLifelogUserResponse.ErrorMessage;
 
-            await logging.CreateLog("Logs", "System", "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+            await logger.CreateLog("Logs", "System", "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -213,7 +221,7 @@ public class RegistrationService()
         }
 
 
-        await logging.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful");
+        await logger.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful");
 
         return response;
 
