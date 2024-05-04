@@ -158,6 +158,10 @@ main {
     padding: 2% 5%;
 }
 
+.map-link-container:hover {
+    cursor: pointer;
+}
+
 .lli-container {
     height: 500px;
     width: 100%;
@@ -531,9 +535,7 @@ main {
     justify-content: center;
 }
 
-.lli-media-container>img {
-    height: 110px;
-}
+
 
 .hidden {
     display: none;
@@ -558,4 +560,69 @@ button:hover, .add-lli-button-container>img:hover {
     cursor: pointer;
 }
 
+.lli-media-img{
+    max-height: 180px; /* Maximum height of the image */
+    display: block; /* Ensures that the image is displayed as a block element, which removes extra space below */
+    width: auto; /* Width is automatically adjusted to maintain aspect ratio */
+    height: auto; /* Height is automatically adjusted to maintain aspect ratio */
+}
 
+.lli-media-container{
+    height: 190px;
+    position: relative; /* Allows absolute positioning of child elements within this container */
+    width: 100%; /* Makes the container span the full width of its parent */
+    display: flex; /* Makes the container a flex container */
+    justify-content: center; /* Centers the image horizontally */
+    align-items: center; /* Centers the image vertically */
+}
+
+.delete-button {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+
+/* Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+  
+  /* The Close Button */
+  .close {
+    color: orange;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  

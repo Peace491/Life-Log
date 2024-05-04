@@ -2,6 +2,7 @@
 
 import * as routeManager from './routeManager.js';
 import * as userFormService from './UserFormPage/userFormServices.js'
+import * as lifelogReminderService from './UserManagementPage/lifelogReminderServices.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -18,12 +19,14 @@ import * as userFormService from './UserFormPage/userFormServices.js'
 
      // Urls
      let userFormCompletionStatusUrl = ""
+     let lifelogReminderSendUrl = ""
  
      async function fetchConfig() {
          const response = await fetch('./lifelog-config.url.json');
          const data = await response.json();
          let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
          userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
+         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
      }
 
     root.myApp = root.myApp || {};
@@ -51,7 +54,10 @@ import * as userFormService from './UserFormPage/userFormServices.js'
             var userHash = JSON.parse(jwtToken).Payload.UserHash; 
 
 
-            var userFormIsCompleted = await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+            var userFormIsCompleted = 'true'
+            //await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+
+            var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)

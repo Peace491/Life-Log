@@ -5,11 +5,9 @@ using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.UserForm;
 using Peace.Lifelog.UserManagementWebService.Controllers;
+using Peace.Lifelog.LifelogReminder;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 /* Registration of objects for .NET's DI Container */
 
@@ -19,27 +17,25 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
+builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<IUserFormService, UserFormService>();
+builder.Services.AddTransient<ILifelogReminderService, LifelogReminderService>();
+builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
+
 
 var config = LifelogConfig.LoadConfiguration();
 
 // Creation of the WebApplication host object
 var app = builder.Build(); // Only part needed to execute Web API project
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 /* Setup of Middleware Pipeline */
 
-// app.UseHttpsRedirection();
 
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline
