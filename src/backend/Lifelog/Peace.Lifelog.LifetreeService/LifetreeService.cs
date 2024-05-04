@@ -14,6 +14,7 @@ using Peace.Lifelog.Logging;
 using Peace.Lifelog.PersonalNote;
 
 
+
 public class LifetreeService
 {
     #region contructor method
@@ -48,7 +49,37 @@ public class LifetreeService
 
     public async Task<Response> getAllCompletedLLI(string userHash)
     {
-        throw new NotImplementedException();  
+        var timer = new Stopwatch();
+        timer.Start();
+
+        var getCompletedLLIResponse = new Response();
+        getCompletedLLIResponse.Output = new List<object>();
+
+
+        var getAllLLIResponse = await lliService.GetAllLLIFromUser(userHash);
+
+
+
+        if (getAllLLIResponse.Output is not null)
+        {
+            
+            foreach (LLI LLI in getAllLLIResponse.Output.Cast<LLI>())
+            {
+                if (LLI.Status == "Completed")
+                {
+                    getCompletedLLIResponse.Output.Add(LLI);
+                }
+                
+            }
+        }
+        getCompletedLLIResponse.HasError = getAllLLIResponse.HasError;
+        getCompletedLLIResponse.ErrorMessage = getAllLLIResponse.ErrorMessage;
+
+        timer.Stop();
+
+        // add logs here
+
+        return getCompletedLLIResponse;
     }
 
     public async Task<Response> GetOnePNWithLifetree(string userHash, PN pn)
