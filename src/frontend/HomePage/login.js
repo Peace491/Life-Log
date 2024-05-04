@@ -4,6 +4,7 @@ import * as routeManager from '../routeManager.js';
 import * as userFormService from '../UserFormPage/userFormServices.js'
 import * as lifelogReminderService from '../UserManagementPage/lifelogReminderServices.js'
 import * as log from '../Log/log.js'
+import * as inactivity from '../shared/inactivity.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -206,6 +207,8 @@ export function loadHomePage(root, ajaxClient) {
                         // JACK CHANGES
                         routeManager.loadPage(routeManager.PAGES.userFormPage)
                     }
+
+                    inactivity.initInactivityTracker()
 
                 } catch (error) {
                     console.error(error)
