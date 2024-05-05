@@ -18,14 +18,18 @@ export function loadHomePage(root, ajaxClient) {
 
     let jwtToken;
 
-    const webServiceUrl = 'http://localhost:8082/authentication';
-    const motivationalQuoteServiceUrl = 'http://localhost:8084';
+    let authenticationWebService = "";
+    let authenticateOTPUrl = "";
+    let authenticateOTPEmailUrl = "";
+
+    let motivationalQuoteServiceUrl = "";
+
     let userFormCompletionStatusUrl = ""
     let lifelogReminderSendUrl = ""
 
 
     function getMotivationalQuote() {
-        const quoteUrl = motivationalQuoteServiceUrl + '/quotes/getQuote';
+        const quoteUrl = motivationalQuoteServiceUrl;
 
         let request = ajaxClient.get(quoteUrl);
 
@@ -50,7 +54,7 @@ export function loadHomePage(root, ajaxClient) {
 
     // NOT exposed to the global object ("Private" functions)
     function getOTPEmail(email) {
-        const getUrl = webServiceUrl + `/getOTPEmail?UserId=${email}`
+        const getUrl = authenticationWebService + authenticateOTPEmailUrl + email;
 
         let request = ajaxClient.get(getUrl)
 
@@ -66,7 +70,7 @@ export function loadHomePage(root, ajaxClient) {
     }
 
     function authenticateOTP(userHash, otp) {
-        const postUrl = webServiceUrl + `/authenticateOTP`
+        const postUrl = authenticationWebService + authenticateOTPUrl;
 
         let data = {
             userHash: userHash,
@@ -186,6 +190,10 @@ export function loadHomePage(root, ajaxClient) {
         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
+        authenticationWebService = data.LifelogUrlConfig.HomePage.AuthenticationWebService;
+        authenticateOTPUrl = data.LifelogUrlConfig.HomePage.AuthenticationOTP;
+        authenticateOTPEmailUrl = data.LifelogUrlConfig.HomePage.AuthenticateOTPEmail;
+        motivationalQuoteServiceUrl = data.LifelogUrlConfig.HomePage.MotivationalQuoteWebService;
     }
 
     // Initialize the current view by setting up data and attaching event handlers 
