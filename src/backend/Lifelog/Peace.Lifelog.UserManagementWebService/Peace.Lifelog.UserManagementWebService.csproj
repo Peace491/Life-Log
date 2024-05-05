@@ -1,28 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-rc.1.23421.29" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-rc.1.23421.29" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Peace.Lifelog.Email\Peace.Lifelog.Email.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.LifelogReminder\Peace.Lifelog.LifelogReminder.csproj" />
-    <ProjectReference Include="..\Peace.LifeLog.RegistrationService\Peace.LifeLog.RegistrationService.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.UserForm\Peace.Lifelog.UserForm.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.LifelogReminder\Peace.Lifelog.LifelogReminder.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
-    <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
-    <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.Email\Peace.Lifelog.Email.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.LifelogReminder\Peace.Lifelog.LifelogReminder.csproj" />
+		<ProjectReference Include="..\Peace.LifeLog.RegistrationService\Peace.Lifelog.RegistrationService.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.UserForm\Peace.Lifelog.UserForm.csproj" />
+		<ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
+	</ItemGroup>
 
 </Project>
