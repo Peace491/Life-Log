@@ -52,7 +52,7 @@ public class UserFormRepo : IUserFormRepo
                 throw new Exception(createUserFormResponse.ErrorMessage);
             }
 
-            var updateAuthenticationResponse = await this.UpdateUserIsCompletedFieldInAuthenticationTableInDB(userHash);
+            var updateAuthenticationResponse = await this.UpdateUserIsCompletedFieldInLifelogProfileInDB(userHash);
 
             if (updateAuthenticationResponse.HasError)
             {
@@ -92,7 +92,7 @@ public class UserFormRepo : IUserFormRepo
     {
         var readResponse = new Response();
 
-        string sql = $"SELECT IsUserFormCompleted FROM LifelogAuthentication WHERE UserHash=\"{userHash}\"";
+        string sql = $"SELECT IsUserFormCompleted FROM LifelogProfile WHERE UserHash=\"{userHash}\"";
 
         try {
             readResponse = await readDataOnlyDAO.ReadData(sql);
@@ -183,9 +183,9 @@ public class UserFormRepo : IUserFormRepo
         return updateUserFormResponse;
     }
 
-    private Task<Response> UpdateUserIsCompletedFieldInAuthenticationTableInDB(string userHash)
+    private Task<Response> UpdateUserIsCompletedFieldInLifelogProfileInDB(string userHash)
     {
-        var sql = $"UPDATE LifelogAuthentication SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
+        var sql = $"UPDATE LifelogProfile SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
 
         var response = this.updateDataOnlyDAO.UpdateData(sql);
 
