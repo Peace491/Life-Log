@@ -16,7 +16,6 @@ public class PinService : IPinService
     private ILifelogAuthService lifelogAuthService;
     private PinValidation pinValidation;
     private ILogging logging;
-    private LLIService lliService;
 
     //For LLI 
     private CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
@@ -31,7 +30,6 @@ public class PinService : IPinService
         this.mapRepo = mapRepo;
         this.logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         this.loggingLLI = new Logging(logTarget);
-        this.lliService = new LLIService(this.createDataOnlyDAO!, this.readDataOnlyDAO!, this.updateDataOnlyDAO!, this.deleteDataOnlyDAO!, this.loggingLLI!);
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.pinValidation = new PinValidation();
@@ -252,56 +250,6 @@ public class PinService : IPinService
             // Handle the case when LLIId is null
             return handlePinError(response, viewPinRequest.Principal!, "LLIId is null");
         }
-    }
-
-    public async Task<Response> EditPinLLI(EditPinLIIRequest editPinLLIRequest)
-    {
-        var response = new Response();
-        response.HasError = false;
-        var errorMessage = "";
-
-        // Validate Input
-        var validateCreatePinRequestResponse = this.pinValidation.ValidatePinRequest(response, editPinLLIRequest, PinRequestType.Edit);
-        if (validateCreatePinRequestResponse.HasError)
-        {
-            errorMessage = validateCreatePinRequestResponse.ErrorMessage;
-            return handlePinError(response, editPinLLIRequest.Principal!, errorMessage!);
-        }
-
-        // Authorize request
-        if (!IsUserAuthorizedForPin(editPinLLIRequest.Principal!))
-        {
-            errorMessage = "The User Is Not Authorized To edit an LLI";
-            return handlePinError(response, editPinLLIRequest.Principal!, errorMessage!);
-        }
-
-        // Update Pin in DB
-        Response readLLIInDBResponse;
-        var userHash = editPinLLIRequest.Principal!.UserId;
-
-        try
-        {
-            readLLIInDBResponse = await this.mapRepo.ReadLLIInDB(editPinLLIRequest.LLIId);
-
-            if (readLLIInDBResponse.Output is not null)
-            {
-                var lliOutput = ConvertDatabaseResponseOutputToLLIObjectList(readLLIInDBResponse);
-
-                if (lliOutput != null)
-                {
-                    LLI lli = (LLI)lliOutput[0];
-                    var editLLIResponse = this.lliService.UpdateLLI(userHash, lli);
-                }
-            }
-        }
-        catch (Exception error)
-        {
-            return handlePinError(response, editPinLLIRequest.Principal!, error.Message);
-        }
-
-        // Handle Success Response
-        var logResponse = this.logging.CreateLog("Logs", editPinLLIRequest.Principal!.UserId, "Info", "Persistent Data Store", "LLI edit operation performed through pin");
-        return response;
     }
 
     public async Task<Response> FetchPinStatus(string LLIId, string userHash)
