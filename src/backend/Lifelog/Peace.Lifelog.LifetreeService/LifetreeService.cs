@@ -65,7 +65,7 @@ public class LifetreeService
             
             foreach (LLI LLI in getAllLLIResponse.Output.Cast<LLI>())
             {
-                if (LLI.Status == "Completed")
+                if (LLI.Status == LLIStatus.Completed)
                 {
                     getCompletedLLIResponse.Output.Add(LLI);
                 }

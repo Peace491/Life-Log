@@ -7,6 +7,7 @@ using Peace.Lifelog.LLI;
 using Peace.Lifelog.PersonalNote;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.Infrastructure;
+using System.Diagnostics;
 
 
     public class LifetreeServiceShould : IAsyncLifetime, IDisposable
@@ -77,21 +78,154 @@ using Peace.Lifelog.Infrastructure;
 
 
         [Fact]
-        public void LifetreeServiceShould_GiveAllCompletedLLI()
+        public async Task LifetreeServiceShould_GiveAllCompletedLLI()
         {
-        throw new NotImplementedException();
+        // Arrange
+
+        //Create LLI for the user
+        // LLI with Current Month as Deadline
+        int numberOfLLI = 5;
+        string testLLIInboundDeadline = "Test completed LLI";
+        
+        DateTime lliDateTime = new DateTime(2024, 1, 1);
+
+        for (int i = 1; i <= numberOfLLI; i++)
+        {
+            var testLLI = new LLI();
+            testLLI.UserHash = USER_HASH;
+            testLLI.Title = testLLIInboundDeadline;
+            testLLI.Description = $"completed Test Get LLI number {i}";
+            testLLI.Category1 = LLICategory.Travel;
+            testLLI.Category2 = LLICategory.Outdoor;
+            testLLI.Category3 = LLICategory.Volunteering;
+            testLLI.Status = LLIStatus.Completed;
+            testLLI.Visibility = LLIVisibility.Public;
+            testLLI.Deadline = lliDateTime.ToString("yyyy-MM-dd");
+            testLLI.Cost = 0;
+
+            var LLIRecurrence = new LLIRecurrence();
+            LLIRecurrence.Status = LLIRecurrenceStatus.On;
+            LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
+
+            testLLI.Recurrence = LLIRecurrence;
+            var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
         }
 
-        [Fact]
-        public void LifetreeServiceShould_GiveAPersonalNote()
+        //Create LLI with no current month as deadline 
+        string testLLIOutboundDeadline = "Test active LLI";
+
+        for (int i = 1; i <= numberOfLLI; i++)
         {
-        throw new NotImplementedException();
+            var testLLI = new LLI();
+            testLLI.UserHash = USER_HASH;
+            testLLI.Title = testLLIOutboundDeadline;
+            testLLI.Description = $"Active Test Get LLI number {i}";
+            testLLI.Category1 = LLICategory.Travel;
+            testLLI.Category2 = LLICategory.Outdoor;
+            testLLI.Category3 = LLICategory.Volunteering;
+            testLLI.Status = LLIStatus.Active;
+            testLLI.Visibility = LLIVisibility.Public;
+            testLLI.Deadline = lliDateTime.ToString("yyyy-MM-dd");
+            testLLI.Cost = 0;
+
+            var LLIRecurrence = new LLIRecurrence();
+            LLIRecurrence.Status = LLIRecurrenceStatus.On;
+            LLIRecurrence.Frequency = LLIRecurrenceFrequency.Weekly;
+
+            testLLI.Recurrence = LLIRecurrence;
+            var createLLIResponse = await LLIService.CreateLLI(USER_HASH, testLLI);
         }
+
+
+        var lifetreeService = new LifetreeService();
+
+        // Act
+        var completedLLIResponse = await lifetreeService.getAllCompletedLLI(USER_HASH);
+
+        // Assert
+
+        if (completedLLIResponse.Output is not null)
+        {
+            foreach (LLI outputLLI in completedLLIResponse.Output)
+            {
+                
+                Assert.True(outputLLI.Status == LLIStatus.Completed);
+
+            }
+        }
+        else
+        {
+            Assert.True(false);
+        }
+
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deleteLLISql = $"DELETE FROM LLI WHERE Title=\"{testLLIInboundDeadline}\";";
+        await deleteDataOnlyDAO.DeleteData(deleteLLISql);
+
+        deleteLLISql = $"DELETE FROM LLI WHERE Title=\"{testLLIOutboundDeadline}\";";
+        await deleteDataOnlyDAO.DeleteData(deleteLLISql);
+    }
+
+        [Fact]
+        public async Task LifetreeServiceShould_GiveAPersonalNote()
+        {
+        //Arrange
+        var timer = new Stopwatch();
+        var lifetreeService = new LifetreeService();
+        string testPersonalNoteContent = "personal note creation";
+
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+        var createPersonalNoteResponse = await this.PNService.CreatePersonalNote(USER_HASH, testPN);
+
+        //Act
+        timer.Start();
+        var getPNResponse = await lifetreeService.GetOnePNWithLifetree(USER_HASH, testPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(getPNResponse.HasError == false);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePNSql = $"DELETE FROM PersonalNote WHERE NoteDate=\"{DateTime.Today.ToString("yyyy-MM-dd")}\";";
+        await deleteDataOnlyDAO.DeleteData(deletePNSql);
+    }
 
     
         [Fact]
-        public void LifetreeServiceShould_CreateAPersonalNote()
+        public async Task LifetreeServiceShould_CreateAPersonalNote()
         {
-        throw new NotImplementedException();
-        }
+
+        //Arrange
+        var timer = new Stopwatch();
+        var lifetreeService = new LifetreeService();
+        string testPersonalNoteContent = "personal note creation with calendar";
+
+        var testPN = new PN();
+        testPN.UserHash = USER_HASH;
+        testPN.NoteContent = testPersonalNoteContent;
+        testPN.NoteDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+
+
+        //Act
+        timer.Start();
+        var createPNResponse = await lifetreeService.CreatePNWithLifetree(USER_HASH, testPN);
+        timer.Stop();
+
+        // Assert
+        Assert.True(createPNResponse.HasError == false);
+
+        //cleanup
+        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+        var deletePNSql = $"DELETE FROM PersonalNote WHERE NoteDate=\"{DateTime.Today.ToString("yyyy-MM-dd")}\";";
+        await deleteDataOnlyDAO.DeleteData(deletePNSql);
+    }
 }

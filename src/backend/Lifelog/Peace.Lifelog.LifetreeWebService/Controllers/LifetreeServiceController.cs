@@ -1,5 +1,6 @@
 namespace Peace.Lifelog.LifetreeWebService;
 
+using back_end;
 using Microsoft.AspNetCore.Mvc;
 using Peace.Lifelog.LifetreeService;
 using System.Text.Json;
@@ -18,8 +19,8 @@ public class LifetreeServiceController : ControllerBase
 
 
     [HttpGet]
-    [Route("getMonthLLI")]
-    public async Task<IActionResult> GetMonthLLI(int month, int year)
+    [Route("getCompletedLLI")]
+    public async Task<IActionResult> GetCompletedLLI()
     {
 
         if (Request.Headers == null)

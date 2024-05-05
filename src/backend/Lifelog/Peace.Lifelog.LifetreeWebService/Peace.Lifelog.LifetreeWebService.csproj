@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Config\Peace.Lifelog.Config.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.LifetreeService\Peace.Lifelog.LifetreeService.csproj" />
+  </ItemGroup>
+
 </Project>
