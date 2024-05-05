@@ -186,8 +186,7 @@ export function loadLifetreePage(root, ajaxClient) {
         }
 
         // Call getNote function to retrieve note data
-        getNote(selectedDate)
-        .then(function (noteText) {
+        getNote(selectedDate).then(function (noteText) {
             let noteParagraph = document.getElementById("create-paragraph-input");
             if(noteText == null)
             {

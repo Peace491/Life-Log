@@ -1,6 +1,19 @@
 using Microsoft.Net.Http.Headers;
+using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.Logging;
+using Peace.Lifelog.Security;
+using Peace.Lifelog.LifetreeService;
+using Peace.Lifelog.LifetreeService.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddTransient<ILogTarget, LogTarget>();
+builder.Services.AddTransient<ILogging, Logging>();
+
+builder.Services.AddTransient<ILifetreeService, LifetreeService>();
+builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

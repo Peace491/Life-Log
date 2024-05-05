@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 using DomainModels;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
+using Peace.Lifelog.LifetreeService.Contracts;
 using Peace.Lifelog.LLI;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.PersonalNote;
 
 
 
-public class LifetreeService
+
+public class LifetreeService : ILifetreeService
 {
     #region contructor method
     private static int WARNING_TIME_LIMIT_IN_SECOND = 3;
