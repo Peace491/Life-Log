@@ -1,5 +1,6 @@
 ﻿namespace Peace.Lifelog.UserManagementTest;
 
+using Org.BouncyCastle.Bcpg;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagement;
@@ -522,7 +523,7 @@ public class LifelogUserManagementServiceShould
 
         var readAccountStatusSql = $"SELECT AccountStatus FROM LifelogAccount WHERE UserId = \"{mockUserId}\"";
 
-        var principal = new AppPrincipal();
+        var principal = new AppPrincipal() {UserId = mockUserId, Claims = new Dictionary<string,string>() {{"Role", "Admin"}}};
 
         // Act
         timer.Start();
@@ -565,7 +566,7 @@ public class LifelogUserManagementServiceShould
 
         var errorIsThrown = false;
 
-        var principal = new AppPrincipal();
+        var principal = new AppPrincipal() {UserId = mockUserId, Claims = new Dictionary<string,string>() {{"Role", "Admin"}}};
 
         // Act
         try
@@ -597,7 +598,7 @@ public class LifelogUserManagementServiceShould
 
         var errorIsThrown = false;
 
-        var principal = new AppPrincipal();
+        var principal = new AppPrincipal() {UserId = mockUserId, Claims = new Dictionary<string,string>() {{"Role", "Admin"}}};
 
         // Act
         try
