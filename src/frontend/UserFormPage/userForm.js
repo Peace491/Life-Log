@@ -118,7 +118,11 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
             setupSubmitUserForm()
 
             let timeAccessed = performance.now()
-            routeManager.setupHeaderLinks(routeManager.PAGES.userFormPage, timeAccessed, jwtToken);
+
+            if (userFormAction == "Update") {
+                routeManager.setupHeaderLinks(routeManager.PAGES.userFormPage, timeAccessed, jwtToken);
+            }
+            
         }
     }
 
