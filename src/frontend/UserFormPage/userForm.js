@@ -25,7 +25,14 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         try {
             userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
         } catch (error) {
+            userFormAction = "Create"
             console.error(error)
+            return
+        }
+
+        if (userFormRankingResponse == null) {
+            userFormAction = "Create"
+            return
         }
 
         let userFormRanking = userFormRankingResponse.Output[0]
