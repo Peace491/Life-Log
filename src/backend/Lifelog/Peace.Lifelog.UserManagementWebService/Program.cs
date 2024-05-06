@@ -16,6 +16,7 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 
 // Dependency Injection
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<CreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
@@ -27,7 +28,9 @@ builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<IUserFormService, UserFormService>();
 builder.Services.AddTransient<ILifelogReminderService, LifelogReminderService>();
 builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
+builder.Services.AddTransient<AppUserManagementService, AppUserManagementService>();
 builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManagementService>();
+builder.Services.AddTransient<SaltService, SaltService>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 
