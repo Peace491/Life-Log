@@ -16,7 +16,7 @@ export function createUserForm(url, values, jwtToken) {
         request.then(function (response) {
             return response.json()
         }).then(function (response) {
-            modal.showAlert('The User Form is successfully created.')
+            alert('The User Form is successfully created.')
             // Move to lli page
             resolve(response)
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)
