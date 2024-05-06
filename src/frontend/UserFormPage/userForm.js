@@ -79,8 +79,6 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                 
             }
         })
-
-
     }
 
     async function fetchConfig() {

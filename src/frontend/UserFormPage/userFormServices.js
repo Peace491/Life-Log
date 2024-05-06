@@ -1,6 +1,7 @@
 
 import * as routeManager from '../routeManager.js'
 import * as userFormValidation from './userFormValidation.js'
+import * as modal from '../shared/modal.js'
 
 export function createUserForm(url, values, jwtToken) {
     if (url == null || values == null || jwtToken == null) throw Error("Invalid Request")
@@ -15,7 +16,7 @@ export function createUserForm(url, values, jwtToken) {
         request.then(function (response) {
             return response.json()
         }).then(function (response) {
-            alert('The User Form is successfully created.')
+            modal.showAlert('The User Form is successfully created.')
             // Move to lli page
             resolve(response)
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)
@@ -60,7 +61,8 @@ export function updateUserForm(url, values, jwtToken) {
             }
             return response.json()
         }).then(function (response) {
-            alert('The User Form is successfully updated.')
+            modal.showAlert('The User Form is successfully updated.')
+            // alert('The User Form is successfully updated.')
             // Move to lli page
             resolve(response)
         }).catch(function (error) {

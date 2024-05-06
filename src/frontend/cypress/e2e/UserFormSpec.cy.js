@@ -1,6 +1,6 @@
 describe('User Form Test', () => {
     let token = '{"Header":{"Alg":"HS256","Typ":"JWT"},"Payload":{"Iss":"localhost","Sub":"myApp","Aud":"myApp","Exp":"638477345117710790","Iat":"638477333117710758","Nbf":null,"Scope":"","UserHash":"TestUser","Claims":{"Role":"Admin"}},"Signature":"lrs50BAplaJBayP3LEUCYscgQjjILbJrBVSOG4V9Jwc"}'
-    it('Create a new user form on login', () => {
+    it('Update User Form', () => {
         //#region Arrange
         cy.visit('http://localhost:3000/');
         window.localStorage.clear()
@@ -58,6 +58,13 @@ describe('User Form Test', () => {
 
         cy.wait(1000)
 
+        // Check modal
+        cy.get('#modalText').should('contain', 'The User Form is successfully updated.')
+
+        cy.get('span.close').click();
+
+        cy.wait(500)
+
         // Go to another page
         cy.get('#lli-view').click()
 
@@ -78,6 +85,102 @@ describe('User Form Test', () => {
         cy.get('#travel-rank').should('have.value', ratings[7]);
         cy.get('#volunteering-rank').should('have.value', ratings[8]);
         cy.get('#food-rank').should('have.value', ratings[9]);
+    })
+
+    it('Non Integer Ranking', () => {
+        //#region Arrange
+        cy.visit('http://localhost:3000/');
+        window.localStorage.clear()
+        window.localStorage.setItem('token-local', token)
+
+        cy.wait(2000)
+
+        cy.get('#user-form-link').click()
+
+        cy.wait(2000)
+
+
+        cy.get('#mental-health-rank').clear()
+        cy.get('#mental-health-rank').type("Hello")
+
+        cy.wait(500)
+
+        cy.get('#submit-ranking-button').click()
+
+        cy.wait(1000)
+
+        // Check modal
+        cy.get('#modalText').should('contain', 'User Form Rankings must be an integer')
+
+        cy.get('span.close').click();
+
+        cy.wait(500)
+
+    })
+
+    it('Not in Range Ranking', () => {
+        //#region Arrange
+        cy.visit('http://localhost:3000/');
+        window.localStorage.clear()
+        window.localStorage.setItem('token-local', token)
+
+        cy.wait(2000)
+
+        cy.get('#user-form-link').click()
+
+        cy.wait(2000)
+
+
+        cy.get('#mental-health-rank').clear()
+        cy.get('#mental-health-rank').type(11)
+
+        cy.wait(500)
+
+        cy.get('#submit-ranking-button').click()
+
+        cy.wait(1000)
+
+        // Check modal
+        cy.get('#modalText').should('contain', "User Form Rankings must be between 1 and 10")
+
+        cy.get('span.close').click();
+
+        cy.wait(500)
+
+    })
+
+    it('Not Unique Ranking', () => {
+        //#region Arrange
+        cy.visit('http://localhost:3000/');
+        window.localStorage.clear()
+        window.localStorage.setItem('token-local', token)
+
+        cy.wait(2000)
+
+        cy.get('#user-form-link').click()
+
+        cy.wait(2000)
+
+
+        cy.get('#mental-health-rank').clear()
+        cy.get('#mental-health-rank').type(1)
+
+        cy.get('#physical-health-rank').clear()
+        cy.get('#physical-health-rank').type(1)
+
+        cy.wait(500)
+
+        cy.get('#submit-ranking-button').click()
+
+        cy.wait(1000)
+
+        // Check modal
+        cy.get('#modalText').should('contain', "All User Form Rankings must be unique")
+
+        cy.get('span.close').click();
+
+        cy.wait(500)
+
     })
 
 

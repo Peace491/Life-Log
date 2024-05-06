@@ -1,22 +1,24 @@
+import * as modal from '../shared/modal.js'
+
 export function isUserFormValid(values) {
     let isInt = isAllRankingIntegers(values)
 
     if (!isInt) {
-        alert("User Form Rankings must be an integer")
+        modal.showAlert("User Form Rankings must be an integer")
         return false
     }
 
     let isInRange = isAllIntegersInRange(values)
 
     if (!isInRange) {
-        alert("User Form Rankings must be between 1 and 10")
+        modal.showAlert("User Form Rankings must be between 1 and 10")
         return false
     }
 
     let isUnique = isAllRankingUnique(values)
 
     if (!isUnique) {
-        alert("All User Form Rankings must be unique")
+        modal.showAlert("All User Form Rankings must be unique")
         return false
     }
 
