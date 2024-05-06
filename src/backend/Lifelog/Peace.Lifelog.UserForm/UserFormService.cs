@@ -1,5 +1,6 @@
 ﻿namespace Peace.Lifelog.UserForm;
 
+using System.Diagnostics;
 using DomainModels;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Security;
@@ -7,6 +8,8 @@ using Peace.Lifelog.Security;
 public class UserFormService : IUserFormService
 {
     private List<string> authorizedRoles = new List<string>() { "Normal", "Admin", "Root" };
+    private int WARNING_TIME_LIMIT = 3;
+    private int ERROR_TIME_LIMIT = 5;
 
     private IUserFormRepo userFormRepo;
     private ILifelogAuthService lifelogAuthService;
@@ -23,6 +26,9 @@ public class UserFormService : IUserFormService
 
     public async Task<Response> CreateUserForm(CreateUserFormRequest createUserFormRequest)
     {
+        Stopwatch timer = new Stopwatch();    
+        timer.Start();
+
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
@@ -69,6 +75,10 @@ public class UserFormService : IUserFormService
             return HandleUserFormError(response, createUserFormRequest.Principal, errorMessage);
         }
 
+        timer.Stop();
+        // Handle Time
+        HandleTiming(timer);
+
         // Handle Success Response
         var logResponse = this.logging.CreateLog("Logs", "User Form successfully created", createUserFormRequest.Principal.UserId, "Info", "Business");
         return response;
@@ -76,6 +86,9 @@ public class UserFormService : IUserFormService
 
     public async Task<Response> GetUserFormRanking(AppPrincipal principal)
     {
+        Stopwatch timer = new Stopwatch();    
+        timer.Start();
+
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
@@ -121,6 +134,10 @@ public class UserFormService : IUserFormService
             return HandleUserFormError(response, principal, errorMessage);
         }
 
+        timer.Stop();
+        // Handle Time
+        HandleTiming(timer);
+
         // Handle Success Response
         var logResponse = this.logging.CreateLog("Logs", "User Form successfully created", userHash, "Info", "Business");
         return response;
@@ -128,6 +145,9 @@ public class UserFormService : IUserFormService
 
     public async Task<Response> UpdateUserForm(UpdateUserFormRequest updateUserFormRequest)
     {
+        Stopwatch timer = new Stopwatch();    
+        timer.Start();
+
         var response = new Response();
         response.HasError = false;
         var errorMessage = "";
@@ -174,6 +194,10 @@ public class UserFormService : IUserFormService
             return HandleUserFormError(response, updateUserFormRequest.Principal, errorMessage);
         }
 
+        timer.Stop();
+        // Handle Time
+        HandleTiming(timer);
+
         // Handle Success Response
         var logResponse = this.logging.CreateLog("Logs", "User Form successfully updated", updateUserFormRequest.Principal.UserId, "Info", "Business");
         return response;
@@ -181,6 +205,9 @@ public class UserFormService : IUserFormService
 
     public async Task<bool> IsUserFormCompleted(AppPrincipal principal)
     {
+        Stopwatch timer = new Stopwatch();    
+        timer.Start();
+
         var response = new Response();
         response.HasError = false;
 
@@ -198,6 +225,7 @@ public class UserFormService : IUserFormService
             return false;
         }
 
+        // Get User Form Completion Status In DB
         try
         {
             response = await this.userFormRepo.ReadUserFormCompletionStatusInDB(principal.UserId);
@@ -227,6 +255,10 @@ public class UserFormService : IUserFormService
             return false;
         }
 
+        timer.Stop();
+        // Handle Time
+        HandleTiming(timer);
+
         return false;
     }
 
@@ -248,6 +280,17 @@ public class UserFormService : IUserFormService
             var logResponse = this.logging.CreateLog("Logs", errorMessage, principal.UserId, "ERROR", "Business");
         }
         return response;
+    }
+
+    private void HandleTiming(Stopwatch timer)
+    {
+        if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT && timer.Elapsed.TotalSeconds < ERROR_TIME_LIMIT)
+        {
+            var logResponse = this.logging.CreateLog("Logs", "Operation exceeded time frame", "System" , "Warning", "Persistent Data Store");
+        }
+        else if (timer.Elapsed.TotalSeconds > WARNING_TIME_LIMIT){
+            var logResponse = this.logging.CreateLog("Logs", "Operation took too long", "System" , "ERROR", "Persistent Data Store");
+        }
     }
 
     private UserFormRanking ConvertUserFormRankingDBOutputToUserRankingObject(Response response)
