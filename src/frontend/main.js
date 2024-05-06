@@ -26,7 +26,7 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
          const data = await response.json();
          let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
          userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
-         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
+        //  lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
      }
 
     root.myApp = root.myApp || {};
@@ -55,9 +55,9 @@ import * as lifelogReminderService from './UserManagementPage/lifelogReminderSer
 
 
             var userFormIsCompleted = 'true'
-            //await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
+            await userFormService.getUserFormCompletionStatus(userFormCompletionStatusUrl, userHash, jwtToken);
 
-            var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
+            // var lifelogReminderEmailSent = await lifelogReminderService.sendEmailToUser(lifelogReminderSendUrl, userHash, jwtToken);
 
             if (userFormIsCompleted == 'true') {
                 routeManager.loadPage(routeManager.PAGES.lliManagementPage)

@@ -8,7 +8,10 @@ using Peace.Lifelog.LifetreeService.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
+builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
+builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 

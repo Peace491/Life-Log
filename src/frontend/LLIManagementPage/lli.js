@@ -523,10 +523,10 @@ export function loadLLIPage(root, ajaxClient) {
         // fetch all Url's
         const response = await fetch('../lifelog-config.url.json');
         const data = await response.json();
-        MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
-        MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
-        MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;
-        MediaMementoUploadFromCSV = data.LifelogUrlConfig.MediaMemento.MediaMementoUploadFromCSV;
+        // MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
+        // MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
+        // MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;
+        // MediaMementoUploadFromCSV = data.LifelogUrlConfig.MediaMemento.MediaMementoUploadFromCSV;
       }
 
     // Initialize the current view by setting up data and attaching event handlers 

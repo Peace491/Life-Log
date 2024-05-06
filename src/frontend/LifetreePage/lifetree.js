@@ -249,12 +249,13 @@ export function loadLifetreePage(root, ajaxClient) {
 
         jwtToken = localStorage["token-local"]
 
-        if (jwtToken != null) { // change to ==
+        if (jwtToken == null) { // change to ==
             alert("Unauthorized User In View")
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
             
             //add main calls here
+            showLifetree()
             
 
         }
