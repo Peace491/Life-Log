@@ -5,24 +5,137 @@ namespace Peace.Lifelog.UserManagementWebService.Controllers;
 
 using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagement;
+using System.Text.Json;
+using back_end;
 
 [ApiController]
 [Route("userManagement")]
-public class UserManagementController : ControllerBase
+public sealed class UserManagementController : ControllerBase
 {
+    private readonly IJWTService jwtService;
+    private readonly ILifelogUserManagementService lifelogUserManagementService;
+    public UserManagementController(IJWTService jwtService, ILifelogUserManagementService lifelogUserManagementService)
+    {
+        this.jwtService = jwtService;
+        this.lifelogUserManagementService = lifelogUserManagementService;
+    }
+
+    [HttpPost]
+    [Route("recoverUser")]
+    public async Task<IActionResult> CreateUserRecoveryRequest([FromBody] string userId)
+    {
+        try
+        {
+            var lifelogAccountRequest = new LifelogAccountRequest() { UserId = ("UserId", userId) };
+            var response = await lifelogUserManagementService.CreateRecoveryAccountRequest(lifelogAccountRequest);
+
+            if (response.HasError)
+            {
+                return StatusCode(500, response.ErrorMessage);
+            }
+
+            return Ok("Account Recovery Request Successfully Created");
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("recoverUser")]
+    public async Task<IActionResult> RecoverUser()
+    {
+        try
+        {
+            var processTokenResponseStatus = jwtService.ProcessToken(Request);
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+            var userHash = jwtToken!.Payload.UserHash;
+            var claims = jwtToken.Payload.Claims;
+            // var userHash = "System";
+            // var claims = new Dictionary<string, string>() { { "Role", "Admin" } };
+
+            var principal = new AppPrincipal(){UserId = userHash!, Claims = claims};
+
+            var response = await lifelogUserManagementService.GetRecoveryAccountRequests(principal);
+
+            if (response.HasError)
+            {
+                if (response.ErrorMessage == "Unauthorized Request")
+                {
+                    return StatusCode(401);
+                }
+                return StatusCode(500);
+            }
+
+            return Ok(response);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error.Message);
+        }
+
+    }
+
+    [HttpPut]
+    [Route("recoverUser")]
+    public async Task<IActionResult> RecoverUser([FromBody] RecoverAccountRequest recoverAccountRequest)
+    {
+        try
+        {
+            var processTokenResponseStatus = jwtService.ProcessToken(Request);
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            var lifelogAccountRequest = new LifelogAccountRequest() { UserId = ("UserId", recoverAccountRequest.UserId) };
+            var response = await lifelogUserManagementService.RecoverLifelogUser(recoverAccountRequest.Principal, lifelogAccountRequest);
+
+            if (response.HasError)
+            {
+                if (response.ErrorMessage == "Unauthorized Request")
+                {
+                    return StatusCode(401);
+                }
+                return StatusCode(500, response.ErrorMessage);
+            }
+
+            return Ok(response);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error.Message);
+        }
+
+    }
+
     [HttpDelete]
     public async Task<IActionResult> DeleteUser(string userHash)
     {
-        try {
-            var lifelogUserManagementService = new LifelogUserManagementService();
-            var userId = await lifelogUserManagementService.getUserIdFromUserHash(userHash);
+        try
+        {
+            var processTokenResponseStatus = jwtService.ProcessToken(Request);
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
 
-            var lifelogAccountRequest = new LifelogAccountRequest(){UserId = ("UserId", userId)};
-            var lifelogProfileRequest = new LifelogProfileRequest(){UserId = ("UserHash", userHash)};
+            var userId = await lifelogUserManagementService.GetUserIdFromUserHash(userHash);
+
+            var lifelogAccountRequest = new LifelogAccountRequest() { UserId = ("UserId", userId) };
+            var lifelogProfileRequest = new LifelogProfileRequest() { UserId = ("UserHash", userHash) };
             var response = await lifelogUserManagementService.DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
 
             return Ok(response);
-        } catch(Exception error) {
+        }
+        catch (Exception error)
+        {
             return StatusCode(500, error.Message);
         }
 

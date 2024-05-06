@@ -1,5 +1,6 @@
 ﻿namespace Peace.Lifelog.UserManagement;
 
+using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagement;
 
 public class LifelogAccountRequest : IUserAccountRequest, IStatusAccountRequest

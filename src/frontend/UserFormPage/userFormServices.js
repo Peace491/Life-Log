@@ -1,7 +1,15 @@
 
 import * as routeManager from '../routeManager.js'
+import * as userFormValidation from './userFormValidation.js'
+import * as modal from '../shared/modal.js'
 
 export function createUserForm(url, values, jwtToken) {
+    if (url == null || values == null || jwtToken == null) throw Error("Invalid Request")
+
+    let isUserFormValid = userFormValidation.isUserFormValid(values)
+
+    if (!isUserFormValid) throw Error("Invalid User Form Rankings")
+
     let request = ajaxClient.post(url, values, jwtToken)
 
     return new Promise(function (resolve, reject) {
@@ -19,7 +27,8 @@ export function createUserForm(url, values, jwtToken) {
 }
 
 export function getUserFormRankings(url, principal, jwtToken) {
-    let request = ajaxClient.get(url + `?userHash=${principal.userId}&role=${principal.claims["Role"]}`, jwtToken)
+    if (url == null || principal == null || jwtToken == null) throw Error("Invalid Request")
+    let request = ajaxClient.get(url + "?userHash=" + principal.userId + "&role=" + principal.claims["Role"], jwtToken)
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {
@@ -37,6 +46,12 @@ export function getUserFormRankings(url, principal, jwtToken) {
 }
 
 export function updateUserForm(url, values, jwtToken) {
+    if (url == null || values == null || jwtToken == null) throw Error("Invalid Request")
+
+    let isUserFormValid = userFormValidation.isUserFormValid(values)
+
+    if (!isUserFormValid) throw Error("Invalid User Form Rankings")
+
     let request = ajaxClient.put(url, values, jwtToken)
 
     return new Promise(function (resolve, reject) {
@@ -46,7 +61,8 @@ export function updateUserForm(url, values, jwtToken) {
             }
             return response.json()
         }).then(function (response) {
-            alert('The User Form is successfully updated.')
+            modal.showAlert('The User Form is successfully updated.')
+            // alert('The User Form is successfully updated.')
             // Move to lli page
             resolve(response)
         }).catch(function (error) {
@@ -55,8 +71,9 @@ export function updateUserForm(url, values, jwtToken) {
     })
 }
 
-export function getUserFormCompletionStatus(url, userHash, jwtToken) {
-    let request = ajaxClient.get(url + `?UserHash=${userHash}`, jwtToken)
+export function getUserFormCompletionStatus(url, principal, jwtToken) {
+    if (url == null || principal == null || jwtToken == null) throw Error("Invalid Request")
+    let request = ajaxClient.get(url + "?userHash=" + principal.userId + "&role=" + principal.claims["Role"], jwtToken)
 
     return new Promise((resolve, reject) => {
         request.then(function (response) {

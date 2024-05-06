@@ -10,6 +10,7 @@ import * as personalNotePage from './PersonalNotePage/personalnote.js'
 import * as mapPage from './MapPage/map.js'
 import * as uadPage from './UsageAnalysisDashboardPage/uad.js'
 import * as umPage from './UserManagementPage/um.js'
+import * as adminToolPage from './AdminPage/adminTools.js'
 //import * as lfPage from './UserManagementPage/lifelogReminder.js'
 
 import * as log from './Log/log.js'
@@ -25,6 +26,7 @@ export const PAGES = {
     mapPage: 'MapPage',
     uadPage: 'UsageAnalysisDashboardPage',
     umPage: 'UserManagementPage',
+    adminToolPage: 'AdminPage'
     //lfPage: 'LifelogReminderPage'
 }
 
@@ -39,6 +41,7 @@ const SCRIPTS = {
     'MapPage': 'map.js',
     'UsageAnalysisDashboardPage': 'uad.js',
     'UserManagementPage':  'um.js',
+    'AdminPage': 'adminTools.js'
     //'LifelogReminderPage': 'lifelogReminder.js'
 }
 
@@ -53,6 +56,7 @@ const LOAD_FUNCTION = {
     'MapPage': mapPage.LoadMapPage,
     'UsageAnalysisDashboardPage': uadPage.loadUADPage,
     'UserManagementPage': umPage.loadUMPage,
+    'AdminPage': adminToolPage.loadAdminToolPage
     //'LifelogReminderPage': lfPage.loadLFPage
 }
 
@@ -160,6 +164,8 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
 
         let role = jwtTokenJson.Payload.Claims.Role
         if (role == "Admin" || role == "Root") {
+            let pageLinkContainer = document.getElementsByClassName("page-link-container")[0]
+
             var divContainer = document.createElement("div");
             divContainer.className = "uad-link-container";
             divContainer.id = "uad-link";
@@ -171,14 +177,28 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
             // Append the h2 element to the div container
             divContainer.appendChild(h2Element);
 
-            let pageLinkContainer = document.getElementsByClassName("page-link-container")[0]
             pageLinkContainer.appendChild(divContainer)
 
-            let uadLink = document.getElementById('uad-link')
-
-            uadLink.addEventListener('click', function () {
+            divContainer.addEventListener('click', function () {
                 loadPage(PAGES.uadPage, null, currPage, timeVisited, jwtToken)
             })
+
+            let adminToolContainer = document.createElement('div')
+            adminToolContainer.classList = 'admin-tool-link-container'
+            adminToolContainer.id = 'admin-tool-link'
+            
+            var adminToolH2 = document.createElement('h2')
+            adminToolH2.textContent = "Admin Tools"
+
+            adminToolContainer.appendChild(adminToolH2)
+
+            pageLinkContainer.appendChild(adminToolContainer)
+
+            adminToolContainer.addEventListener('click', function() {
+                loadPage(PAGES.adminToolPage, null, currPage, timeVisited, jwtToken)
+            })
+
+
         }
 
     }
