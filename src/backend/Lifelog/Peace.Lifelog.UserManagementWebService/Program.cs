@@ -16,6 +16,7 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 
 // Dependency Injection
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+// this is due to lifelog user managmnet or user managmnet needs a create only dao of non interface type
 builder.Services.AddTransient<CreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();

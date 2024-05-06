@@ -3,6 +3,7 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.UserManagementTest;
+using Newtonsoft.Json;
 
 namespace Peace.Lifelog.UserManagement;
 
@@ -278,12 +279,38 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     }
     public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
     {
-        throw new NotImplementedException();
-       
+        Console.WriteLine("ViewPersonalIdentifiableInformation");
+        var response = await userManagementRepo.ViewPersonalIdentifiableInformation(userHash);
+
+        string fpath = await ComposeLogsToFileAsync(response);
+
+        Console.WriteLine("Logs written to: " + fpath);
+        // TODO: send email with attachment, and log op
+        
+        return response;
     }
     // Helper functions
     // Some should be moved to infrastructure
     #region Helper Functions
+    public async Task<string> ComposeLogsToFileAsync(Response response)
+        {
+            string directory = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = Path.Combine(directory, "logs.txt");
+
+            using (StreamWriter writer = File.CreateText(filePath))
+            {
+                if (response.Output != null)
+                {
+                    foreach (var outputItem in response.Output)
+                    {
+                        await writer.WriteLineAsync(JsonConvert.SerializeObject(outputItem));
+                    }
+                }
+            }
+
+            return filePath;
+        }
+    
     private string createUserHashWithGivenId(string userId, string salt)
     {
         // Create Lifelog User Hash

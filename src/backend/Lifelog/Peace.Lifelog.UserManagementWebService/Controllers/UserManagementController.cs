@@ -159,12 +159,13 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
-    [HttpGet("ViewPII")]
-    public async Task<IActionResult> ViewUserPIIData(string userHash)
+    [HttpPost("ViewPII")]
+    public async Task<IActionResult> ViewUserPIIData([FromBody] ViewPIIRequest payload)
     {
         try 
         {
-            var response = await lifelogUserManagementService.ViewPersonalIdentifiableInformation(userHash);
+            Console.WriteLine("Viewing PII data for user: " + payload.userHash);
+            var response = await lifelogUserManagementService.ViewPersonalIdentifiableInformation(payload.userHash);
 
             if(response.HasError)
             {

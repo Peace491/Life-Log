@@ -42,3 +42,25 @@ select {
     padding: 5px;
     border-radius: 5px;
 }
+#upc-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#upc-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#upc-container .button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#upc-container .button:hover {
+    background-color: #ddd;
+}

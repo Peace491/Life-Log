@@ -837,5 +837,34 @@ public class LifelogUserManagementServiceShould
         Assert.True(recoverProfileResponse.HasError);
     }
     #endregion
+    #region View PII test
+    [Fact]
+    public async void LifelogUserManagementServiceViewPIIShould_ReturnPIIForUser()
+    {
+        //Arrange
+        var timer = new Stopwatch();
 
+        // Create Test User Account
+        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        SaltService saltService = new SaltService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+
+        string usrHash = "System";
+
+        // Act
+        var response = await lifelogUserManagementService.ViewPersonalIdentifiableInformation(usrHash);
+
+        // Assert
+        Assert.True(response.HasError == false);
+    }
+    #endregion
 }
