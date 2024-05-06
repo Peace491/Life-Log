@@ -6,6 +6,7 @@ using Peace.Lifelog.Security;
 using Peace.Lifelog.UserForm;
 using Peace.Lifelog.UserManagementWebService.Controllers;
 using Peace.Lifelog.LifelogReminder;
+using Peace.Lifelog.UserManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,19 +27,25 @@ builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<IUserFormService, UserFormService>();
 builder.Services.AddTransient<ILifelogReminderService, LifelogReminderService>();
 builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
+builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManagementService>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 
 var config = LifelogConfig.LoadConfiguration();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Creation of the WebApplication host object
 var app = builder.Build(); // Only part needed to execute Web API project
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 /* Setup of Middleware Pipeline */
-
-
-
 // Defining a custom middleware AND adding it to Kestral's request pipeline
 app.Use((httpContext, next) =>
 {

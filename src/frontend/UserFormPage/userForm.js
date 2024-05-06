@@ -23,24 +23,23 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
     async function setupUserFormRanking() {
         let userFormRankingResponse
         try {
-            // userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
+            userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
         } catch (error) {
-            alert(error)
+            console.error(error)
         }
-        
 
-        // let userFormRanking = userFormRankingResponse.Output[0]
+        let userFormRanking = userFormRankingResponse.Output[0]
 
-        // document.getElementById('mental-health-rank').value = userFormRanking.MentalHealthRating;
-        // document.getElementById('physical-health-rank').value = userFormRanking.PhysicalHealthRating;
-        // document.getElementById('outdoor-rank').value = userFormRanking.OutdoorRating;
-        // document.getElementById('sport-rank').value = userFormRanking.SportRating;
-        // document.getElementById('art-rank').value = userFormRanking.ArtRating;
-        // document.getElementById('hobby-rank').value = userFormRanking.HobbyRating;
-        // document.getElementById('thrill-rank').value = userFormRanking.ThrillRating;
-        // document.getElementById('travel-rank').value = userFormRanking.TravelRating;
-        // document.getElementById('volunteering-rank').value = userFormRanking.VolunteeringRating;
-        // document.getElementById('food-rank').value = userFormRanking.FoodRating;
+        document.getElementById('mental-health-rank').value = userFormRanking.MentalHealthRating;
+        document.getElementById('physical-health-rank').value = userFormRanking.PhysicalHealthRating;
+        document.getElementById('outdoor-rank').value = userFormRanking.OutdoorRating;
+        document.getElementById('sport-rank').value = userFormRanking.SportRating;
+        document.getElementById('art-rank').value = userFormRanking.ArtRating;
+        document.getElementById('hobby-rank').value = userFormRanking.HobbyRating;
+        document.getElementById('thrill-rank').value = userFormRanking.ThrillRating;
+        document.getElementById('travel-rank').value = userFormRanking.TravelRating;
+        document.getElementById('volunteering-rank').value = userFormRanking.VolunteeringRating;
+        document.getElementById('food-rank').value = userFormRanking.FoodRating;
     }
 
     function setupSubmitUserForm() {
@@ -67,7 +66,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                     await userFormService.createUserForm(webServiceUrl, values, jwtToken)
                 }
                 catch (error) {
-                    alert(error)
+                    console.error(error)
                 }
             }
 
@@ -75,13 +74,11 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                 try {
                     await userFormService.updateUserForm(webServiceUrl, values, jwtToken)
                 } catch (error) {
-                    alert(error)
+                    console.error(error)
                 }
                 
             }
         })
-
-
     }
 
     async function fetchConfig() {
@@ -105,6 +102,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
                 userId: jwtTokenObject.Payload.UserHash,
                 claims: jwtTokenObject.Payload.Claims,
             };
+
             window.name = routeManager.PAGES.userFormPage
             await fetchConfig()
             if (userFormAction == "Update") {
