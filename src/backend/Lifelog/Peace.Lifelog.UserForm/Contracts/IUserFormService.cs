@@ -7,7 +7,7 @@ public interface IUserFormService
 {
     public Task<Response> CreateUserForm(CreateUserFormRequest createUserFormRequest);
     public Task<Response> UpdateUserForm(UpdateUserFormRequest updateUserFormRequest);
-    public Task<bool> IsUserFormCompleted(string userHash);
+    public Task<bool> IsUserFormCompleted(AppPrincipal appPrincipal);
 
     public Task<Response> GetUserFormRanking(AppPrincipal principal);
 }

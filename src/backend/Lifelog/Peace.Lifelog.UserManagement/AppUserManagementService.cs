@@ -479,7 +479,7 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         var properties = userManagementRequest.GetType().GetProperties();
         foreach (var property in properties)
         {
-            if (property.Name == "ModelName") { continue; }
+            if (property.Name == "ModelName" || property.Name == "principal") { continue; }
 
             string tupleString = userManagementRequest.GetType().GetProperty(property.Name)!.GetValue(userManagementRequest, null)!.ToString()!;
 

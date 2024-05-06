@@ -1,6 +1,7 @@
 ﻿namespace Peace.Lifelog.UserManagement;
 
 using DomainModels;
+using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagementTest;
 
 /// <summary>
@@ -8,6 +9,8 @@ using Peace.Lifelog.UserManagementTest;
 /// </summary>
 public interface IRecoverLifelogUser
 {
-    public Task<Response> RecoverLifelogUser(LifelogAccountRequest lifelogAccountRequest);
+    public Task<Response> CreateRecoveryAccountRequest(LifelogAccountRequest lifelogAccountRequest);
+    public Task<Response> GetRecoveryAccountRequests(AppPrincipal principal);
+    public Task<Response> RecoverLifelogUser(AppPrincipal principal, LifelogAccountRequest lifelogAccountRequest);
 
 }
