@@ -4,7 +4,7 @@ namespace Peace.Lifelog.Security;
 /// <summary>
 /// IHasher Interface
 /// </summary>
-public interface IHasher
+public interface IHashService
 {
     /// <summary>
     /// Will hash string input plaintext

@@ -1,6 +1,7 @@
 namespace Peace.Lifelog.UserManagementTest;
 
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Logging;
 using Peace.Lifelog.UserManagement;
 using System.Diagnostics;
 
@@ -59,9 +60,14 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
 
         var mockUserId = "1";
         var mockMfaId = "2";
@@ -98,7 +104,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceCreateAccountShould_ThrowArgumentNullErrorIfUserIdIsNull()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var testAccountRequest = new TestAccountRequest();
 
@@ -125,7 +137,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceCreateAccountShould_ThrowArgumentNullErrorIfAccountDetailsIsNull()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "1";
 
@@ -154,7 +172,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceCreateAccountShould_ReturnAnErrorResponseIfTheAccountAlreadyExist()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
 
         var mockUserId = "1";
@@ -183,7 +207,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceCreateAccountShould_ReturnAnErrorResponseIfTheRequestResultInInvalidSQL()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var wrongUserIdType = "Phone";
         var mockUserId = "1";
@@ -216,7 +246,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "2";
         var mockMfaId = "3";
@@ -262,9 +298,14 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
 
 
         var mockUserId = "2";
@@ -317,7 +358,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnArgumentNullExceptionWithNullUserId()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "";
@@ -346,7 +393,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnArgumentNullExceptionWithNullAccountStatus()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "phongNeedsBetterVariableNames";
@@ -375,7 +428,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnAnErrorResponseIfAccountDoesNotExist()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "jackDoesNotExist";
@@ -395,7 +454,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverStatusAccountShould_ReturnAnErrorResponseIfRequestResultInIncorrectSQL()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "jackDoesNotExist";
@@ -416,7 +481,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnArgumentNullExceptionWithNullUserId()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "";
@@ -445,7 +516,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnArgumentNullExceptionWithNullMfaId()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "phongNeedsBetterVariableNames";
@@ -473,7 +550,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnAnErrorResponseIfAccountDoesNotExist()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "jackDoesNotExist";
@@ -493,7 +576,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceRecoverMfaAccountShould_ReturnAnErrorResponseIfRequestResultInIncorrectSQL()
     {
         // Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
         var recoverAccountRequest = new TestAccountRequest();
 
         string mockUserId = "jackDoesNotExist";
@@ -520,11 +609,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
-
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         // Creating User Account
         var mockUserId = "1";
@@ -586,7 +677,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var testProfileRequest = new TestProfileRequest();
 
@@ -616,7 +713,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var testProfileRequest = new TestProfileRequest();
 
@@ -650,7 +753,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "7";
         var newZipCode = "54321-9876";
@@ -676,7 +785,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "7";
         var newZipCode = "54321-9876";
@@ -706,9 +821,13 @@ public class AppUserManagementServiceShould : IDisposable
         //Arrange
         var timer = new Stopwatch();
 
-        var appUserManagementService = new AppUserManagementService();
-
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "2";
         var mockMfaId = "3";
@@ -743,13 +862,19 @@ public class AppUserManagementServiceShould : IDisposable
         Assert.True(timer.Elapsed.TotalSeconds <= TestVariables.MAX_EXECUTION_TIME_IN_SECONDS);
         Assert.True(readResponse.Output is null);
 
-    }
+}
 
     [Fact]
     public async void AppUserManagementServiceDeleteAccountShould_ThrowArgumentNullErrorIfUserIdIsNull()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockMfaId = "2";
         var mockPassword = "password";
@@ -780,7 +905,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceDeleteAccountShould_ReturnAnErrorResponseIfAccountDoesntExist()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "accountDoesntExist";
         var mockMfaId = "2";
@@ -805,7 +936,13 @@ public class AppUserManagementServiceShould : IDisposable
     public async void AppUserManagementServiceDeleteAccountShould_ReturnAnErrorResponseIfRequestResultInInvalidSQL()
     {
         //Arrange
-        var appUserManagementService = new AppUserManagementService();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO    = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO  updateDataOnlyDAO  = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO  deleteDataOnlyDAO  = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logging = new Logging(logTarget);
+        var appUserManagementService = new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
 
         var mockUserId = "mockUserId";
         var mockMfaId = "2";

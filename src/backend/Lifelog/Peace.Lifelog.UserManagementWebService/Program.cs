@@ -6,6 +6,7 @@ using Peace.Lifelog.Security;
 using Peace.Lifelog.UserForm;
 using Peace.Lifelog.UserManagementWebService.Controllers;
 using Peace.Lifelog.LifelogReminder;
+using Peace.Lifelog.Email;
 using Peace.Lifelog.UserManagement;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +28,12 @@ builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<IUserFormService, UserFormService>();
 builder.Services.AddTransient<ILifelogReminderService, LifelogReminderService>();
 builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
+builder.Services.AddTransient<AppUserManagementService, AppUserManagementService>();
 builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManagementService>();
+builder.Services.AddTransient<ISaltService, SaltService>();
+builder.Services.AddTransient<IHashService, HashService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 
 var config = LifelogConfig.LoadConfiguration();

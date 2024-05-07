@@ -69,7 +69,7 @@ public class MediaMementoController : ControllerBase
 
             if (response.HasError)
             {
-                return StatusCode(500, "An error occurred while processing your request.");
+                throw new Exception(response.ErrorMessage);
             }
     
             return Ok(response);
