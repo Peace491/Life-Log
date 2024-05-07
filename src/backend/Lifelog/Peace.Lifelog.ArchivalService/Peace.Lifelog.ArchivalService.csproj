@@ -1,9 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
     <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.Logservice\Peace.Lifelog.LogService.csproj" />
+    <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include=" Contracts/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.307.29" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lifelog-config.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="lifelog-config.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <PropertyGroup>

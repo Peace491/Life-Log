@@ -2,11 +2,12 @@
 
 namespace Peace.Lifelog.UserManagementWebService.Controllers;
 
-
+using Org.BouncyCastle.Security;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.UserManagement;
 using System.Text.Json;
 using back_end;
+using Peace.Lifelog.Logging;
 
 [ApiController]
 [Route("userManagement")]
@@ -138,7 +139,25 @@ public sealed class UserManagementController : ControllerBase
         {
             return StatusCode(500, error.Message);
         }
-
     }
+    [HttpPost("ViewPII")]
+    public async Task<IActionResult> ViewUserPIIData([FromBody] ViewPIIRequest payload)
+    {
+        try 
+        {
+            Console.WriteLine("Viewing PII data for user: " + payload.userHash);
+            var response = await lifelogUserManagementService.ViewPersonalIdentifiableInformation(payload.userHash);
 
+            if(response.HasError)
+            {
+                throw new Exception("Error deleting PII data");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
 }

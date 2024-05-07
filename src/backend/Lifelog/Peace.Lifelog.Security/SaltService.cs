@@ -1,7 +1,7 @@
 ﻿namespace Peace.Lifelog.Security;
 using DomainModels;
 using System.Security.Cryptography;
-public class SaltService
+public class SaltService : ISaltService
 {
     private static int saltLength = 32;
     public Response getSalt()

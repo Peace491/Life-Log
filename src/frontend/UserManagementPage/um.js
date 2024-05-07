@@ -32,6 +32,18 @@ export function loadUMPage(root, ajaxClient) {
             }
         })
     }
+
+    function setupViewPII(userHash) {
+        let viewPIIButton = document.getElementById('view-pii')
+        viewPIIButton.addEventListener('click', function() {
+            try{
+                umService.viewPII(userManagementWebServiceUrl, userHash, jwtToken)
+            }
+            catch (error) {
+                alert(error)
+            }
+        })
+    }
     
     function submitReminderForm(userHash) {
         const form = document.getElementById('selectionForm');
@@ -68,6 +80,8 @@ export function loadUMPage(root, ajaxClient) {
             await fetchConfig()
 
             setupDeleteUser(userHash)
+
+            setupViewPII(userHash)
 
             submitReminderForm(userHash)
 

@@ -26,6 +26,7 @@
     <ProjectReference Include="..\DomainModels\DomainModels.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.DataAccess\Peace.Lifelog.DataAccess.csproj" />
     <ProjectReference Include="..\Peace.Lifelog.UserManagement\Peace.Lifelog.UserManagement.csproj" />
+    <ProjectReference Include="..\Peace.Lifelog.Infrastructure\Peace.Lifelog.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

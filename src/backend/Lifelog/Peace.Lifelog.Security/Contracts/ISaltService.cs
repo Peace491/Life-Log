@@ -2,7 +2,7 @@
 
 namespace Peace.Lifelog.Security;
 
-public interface ISalt
+public interface ISaltService
 {
     Response getSalt();
 }

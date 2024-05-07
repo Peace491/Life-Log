@@ -9,16 +9,26 @@ using DomainModels;
 using Peace.Lifelog.RegistrationService;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.Email;
+using Peace.Lifelog.UserManagement;
+using Peace.Lifelog.Logging;
 
 [ApiController]
 [Route("registration")]
 public class RegistrationController : ControllerBase
 {
+    private readonly ILifelogUserManagementService lifelogUserManagementService;
+    private readonly ILogging logger;
+
+    public RegistrationController(ILifelogUserManagementService lifelogUserManagementService, ILogging logger)
+    {
+        this.lifelogUserManagementService = lifelogUserManagementService;
+        this.logger = logger;
+    }
     [HttpPost]
     [Route("registerNormalUser")]
     public async Task<IActionResult> RegisterNormalUser([FromBody] RegisterNormalUserRequest registerNormalUserRequest)
     {
-        var registrationService = new RegistrationService();
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
         var emailService = new EmailService();
 
         var checkInputResponse = await registrationService.CheckInputValidation(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);

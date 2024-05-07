@@ -8,7 +8,7 @@ using Peace.Lifelog.Security;
 
 public class ReServiceShould
 {
-    private string USER_HASH = "System";
+    private string USER_HASH = "TestUser";
     private const string ROLE = "Normal";
     
     [Theory]

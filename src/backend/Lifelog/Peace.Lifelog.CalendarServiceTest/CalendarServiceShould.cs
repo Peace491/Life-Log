@@ -10,6 +10,7 @@ using Peace.Lifelog.UserManagement;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Peace.Lifelog.Security;
 
 public class CalendarServiceShould : IAsyncLifetime, IDisposable
 {
@@ -36,8 +37,18 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
 
     public async Task InitializeAsync()
     {
-        var appUserManagementService = new AppUserManagementService();
-        var lifelogUserManagementService = new LifelogUserManagementService();
+         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        SaltService saltService = new SaltService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", USER_ID);

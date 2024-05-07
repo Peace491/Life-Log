@@ -12,6 +12,9 @@ public class LifelogConfig
     public string SystemUserHash { get; set; } = "";
     public string TestUserHash { get; set; } = "";
     public string HostURL { get; set; } = "";
+    public string S3BucketName { get; set; } = "";
+    public string AccessKeyId { get; set; } = "";
+    public string SecretAccessKey { get; set; } = "";
 
     public static LifelogConfig LoadConfiguration()
     {

@@ -1,4 +1,6 @@
 
+// TODO: funciton to enable/diable logging (could cause preformance issue/could be env based)
+
 export async function log(userHash, level, category, message, jwtToken) {
     let logWebServiceUrl = await fetchLogServiceUrl()
 
