@@ -25,7 +25,14 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         try {
             userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
         } catch (error) {
+            userFormAction = "Create"
             console.error(error)
+            return
+        }
+
+        if (userFormRankingResponse == null) {
+            userFormAction = "Create"
+            return
         }
 
         let userFormRanking = userFormRankingResponse.Output[0]
@@ -40,6 +47,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         document.getElementById('travel-rank').value = userFormRanking.TravelRating;
         document.getElementById('volunteering-rank').value = userFormRanking.VolunteeringRating;
         document.getElementById('food-rank').value = userFormRanking.FoodRating;
+        
     }
 
     function setupSubmitUserForm() {
@@ -111,7 +119,11 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
             setupSubmitUserForm()
 
             let timeAccessed = performance.now()
-            routeManager.setupHeaderLinks(routeManager.PAGES.userFormPage, timeAccessed, jwtToken);
+
+            if (userFormAction == "Update") {
+                routeManager.setupHeaderLinks(routeManager.PAGES.userFormPage, timeAccessed, jwtToken);
+            }
+            
         }
     }
 

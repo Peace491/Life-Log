@@ -11,6 +11,8 @@ import * as mapPage from './MapPage/map.js'
 import * as uadPage from './UsageAnalysisDashboardPage/uad.js'
 import * as umPage from './UserManagementPage/um.js'
 import * as adminToolPage from './AdminPage/adminTools.js'
+import * as lifetreePage from './LifetreePage/lifetree.js'
+
 //import * as lfPage from './UserManagementPage/lifelogReminder.js'
 
 import * as log from './Log/log.js'
@@ -26,7 +28,8 @@ export const PAGES = {
     mapPage: 'MapPage',
     uadPage: 'UsageAnalysisDashboardPage',
     umPage: 'UserManagementPage',
-    adminToolPage: 'AdminPage'
+    adminToolPage: 'AdminPage',
+    lifetreePage: 'LifetreePage'
     //lfPage: 'LifelogReminderPage'
 }
 
@@ -41,7 +44,8 @@ const SCRIPTS = {
     'MapPage': 'map.js',
     'UsageAnalysisDashboardPage': 'uad.js',
     'UserManagementPage':  'um.js',
-    'AdminPage': 'adminTools.js'
+    'AdminPage': 'adminTools.js',
+    'LifetreePage': 'lifetree.js'
     //'LifelogReminderPage': 'lifelogReminder.js'
 }
 
@@ -56,7 +60,9 @@ const LOAD_FUNCTION = {
     'MapPage': mapPage.LoadMapPage,
     'UsageAnalysisDashboardPage': uadPage.loadUADPage,
     'UserManagementPage': umPage.loadUMPage,
-    'AdminPage': adminToolPage.loadAdminToolPage
+    'AdminPage': adminToolPage.loadAdminToolPage,
+    'LifetreePage': lifetreePage.loadLifetreePage
+
     //'LifelogReminderPage': lfPage.loadLFPage
 }
 
@@ -120,6 +126,7 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
     let logoutInput = document.getElementById('logout')
     let userManagementLink = document.getElementById("user-setting")
     let mapLink = document.getElementById('map-link')
+    let lifetreeLink = document.getElementById('lifetree-link')
     //let lifelogReminderLink = document.getElementById("reminder-link")
 
     //lifelogReminderLink.addEventListener('click', function () {
@@ -139,6 +146,7 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
     })
 
     lliLink.addEventListener('click', function () {
+        console.log("reached lli link")
         loadPage(PAGES.lliManagementPage, null, currPage, timeVisited, jwtToken)
     })
 
@@ -157,6 +165,10 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
     logoutInput.addEventListener('click', function () {
         window.localStorage.clear()
         loadPage(PAGES.homePage, null, currPage, timeVisited, jwtToken)
+    })
+
+    lifetreeLink.addEventListener('click', function () {
+        loadPage(PAGES.lifetreePage, null, currPage, timeVisited, jwtToken)
     })
 
     if (jwtToken != null) {

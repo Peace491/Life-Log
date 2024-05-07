@@ -26,6 +26,7 @@ public class UserFormRepo : IUserFormRepo
     {
         var createUserFormResponse = new Response();
 
+        // Create Sql Statement
         string sql = "INSERT INTO UserForm "
         + "(UserHash, MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking) "
         + "VALUES "
@@ -43,6 +44,7 @@ public class UserFormRepo : IUserFormRepo
         + $"{foodRating}"
         + ");";
 
+        // Execute Sql Statement
         try
         {
             createUserFormResponse = await this.createDataOnlyDAO.CreateData(sql);
@@ -117,7 +119,7 @@ public class UserFormRepo : IUserFormRepo
         var updateUserFormResponse = new Response();
 
         # region Creating the sql statement
-        // Only add the parameters if it is filled out
+        // Only add the parameters if it is filled out (not 0)
         string sql = "UPDATE UserForm SET ";
 
         string parametersAndValues = "";

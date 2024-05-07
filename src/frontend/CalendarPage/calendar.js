@@ -443,9 +443,10 @@ export function loadCalendarPage(root, ajaxClient) {
         let llititle = titleElement.textContent
 
         let deadlineElement = document.getElementById("edit-date-input")
-        let llideadline = deadlineElement.value
+        let llideadline = deadlineElement.value //check whether this is right value to look at 
 
 
+        // cannot look at multiple lli on same day; is selecting the first lli on the same day
         let getLLIID = document.getElementById(`insert-llievent-${llideadline.split("-")[2]}`).querySelector(".lli-btn.event");
         console.log("id parent", `insert-llievent-${llideadline.split("-")[2]}`)
         console.log(getLLIID.id)

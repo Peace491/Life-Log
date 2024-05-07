@@ -23,11 +23,16 @@ import * as inactivity from '../shared/inactivity.js'
     let lifelogReminderSendUrl = ""
 
     async function fetchConfig() {
+        try{
         const response = await fetch('./lifelog-config.url.json');
         const data = await response.json();
         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
+        }
+        catch (error){
+            console.error(error)
+        }
     }
 
     root.myApp = root.myApp || {};
