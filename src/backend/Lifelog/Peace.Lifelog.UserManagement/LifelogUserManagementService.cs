@@ -292,23 +292,23 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     // Some should be moved to infrastructure
     #region Helper Functions
     public async Task<string> ComposeLogsToFileAsync(Response response)
-        {
-            string directory = AppDomain.CurrentDomain.BaseDirectory;
-            string filePath = Path.Combine(directory, "logs.txt");
+    {
+        string directory = AppDomain.CurrentDomain.BaseDirectory;
+        string filePath = Path.Combine(directory, "logs.txt");
 
-            using (StreamWriter writer = File.CreateText(filePath))
+        using (StreamWriter writer = File.CreateText(filePath))
+        {
+            if (response.Output != null)
             {
-                if (response.Output != null)
+                foreach (var outputItem in response.Output)
                 {
-                    foreach (var outputItem in response.Output)
-                    {
-                        await writer.WriteLineAsync(JsonConvert.SerializeObject(outputItem));
-                    }
+                    await writer.WriteLineAsync(JsonConvert.SerializeObject(outputItem));
                 }
             }
-
-            return filePath;
         }
+
+        return filePath;
+    }
     
     private string createUserHashWithGivenId(string userId, string salt)
     {

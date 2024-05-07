@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Peace.Lifelog.ArchivalService;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
+using DomainModels;
 using ZstdSharp.Unsafe;
 
 public class ArchivalServiceShould : IDisposable
@@ -58,6 +59,22 @@ public class ArchivalServiceShould : IDisposable
     }
 
     #region Success
+    [Fact]
+    public async void S3Archive_Should_Archive()
+    {
+        // Arrange 
+        var archivalService = new ArchivalService();
+        Stopwatch timer = new Stopwatch();
+
+        // Act
+        timer.Start();
+        var response = await archivalService.ArchiveFileToS3();
+        timer.Stop();
+
+        // Assert 
+        Assert.True(response.HasError == false);
+        Assert.True(timer.ElapsedMilliseconds < MAX_EXECUTION_TIME_IN_MILLISECONDS);
+    }
     [Fact]
     public async void ArchivalServiceShould_Archive()
     {
