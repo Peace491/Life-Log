@@ -7,7 +7,6 @@ using Peace.Lifelog.UserManagement;
 using System.Diagnostics;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
-using Peace.Lifelog.Security;
 
 public class LifelogUserManagementServiceShould
 {

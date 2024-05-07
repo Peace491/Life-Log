@@ -274,11 +274,6 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         return response;
     }
-
-    public async Task<Response> DeletePersonalIdentifiableInformation(string userHash)
-    {
-        throw new NotImplementedException();
-    }
     public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
     {
         Console.WriteLine("ViewPersonalIdentifiableInformation");
