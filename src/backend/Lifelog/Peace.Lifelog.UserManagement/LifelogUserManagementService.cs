@@ -52,6 +52,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         // Populate user account table
         var createLifelogAccountResponse = await createLifelogAccountInDB(lifelogAccountRequest);
+        
 
         if (createLifelogAccountResponse.HasError == true)
         {
