@@ -8,7 +8,7 @@ namespace Peace.Lifelog.Security;
 /// <summary>
 /// HashService, containing methods relating to hashing, namely "Hasher"
 /// </summary>
-public class HashService : IHasher
+public class HashService : IHashService
 {
     /// <summary>
     /// Takes in plaintext and returns hash of the plaintext. 

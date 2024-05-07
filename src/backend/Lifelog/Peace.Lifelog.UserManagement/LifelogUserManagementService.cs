@@ -12,18 +12,24 @@ namespace Peace.Lifelog.UserManagement;
 public class LifelogUserManagementService : ILifelogUserManagementService
 {
     private readonly AppUserManagementService appUserManagementService;
-    private readonly SaltService saltService;
-    private readonly CreateDataOnlyDAO createDataOnlyDAO;
+    private readonly ISaltService saltService;
+    private readonly ICreateDataOnlyDAO createDataOnlyDAO;
+    private readonly IReadDataOnlyDAO readDataOnlyDAO;
+    private readonly IDeleteDataOnlyDAO deleteDataOnlyDAO;
     private readonly IUserManagmentRepo userManagementRepo;
-    public LifelogUserManagementService(IUserManagmentRepo userManagementRepo, AppUserManagementService appUserManagementService, SaltService saltService, CreateDataOnlyDAO createDataOnlyDAO)
+    private readonly IEmailService emailService;
+    private readonly IHashService hashService;
+    public LifelogUserManagementService(IUserManagmentRepo userManagementRepo, AppUserManagementService appUserManagementService, ISaltService saltService, ICreateDataOnlyDAO createDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO, IDeleteDataOnlyDAO deleteDataOnlyDAO, IEmailService emailService, IHashService hashService)
     {
         this.userManagementRepo = userManagementRepo;
         this.appUserManagementService = appUserManagementService;
         this.saltService = saltService;
         this.createDataOnlyDAO = createDataOnlyDAO;
-    }    private readonly ReadDataOnlyDAO readDataOnlyDAO= new ReadDataOnlyDAO();
-    private readonly DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-
+        this.readDataOnlyDAO = readDataOnlyDAO;
+        this.deleteDataOnlyDAO = deleteDataOnlyDAO;
+        this.emailService = emailService;
+        this.hashService = hashService;
+    }    
 
     public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
@@ -276,16 +282,12 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     }
     public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
     {
-        Console.WriteLine("ViewPersonalIdentifiableInformation");
         var response = await userManagementRepo.ViewPersonalIdentifiableInformation(userHash);
 
         string fpath = await ComposeLogsToFileAsync(response);
 
-        Console.WriteLine("Logs written to: " + fpath);
-
-        var EmailService = new EmailService();
-        var emailResponse = await EmailService.SendPIIEmail(userHash, fpath);
-        // TODO: send email with attachment, and log operation
+        var emailResponse = await emailService.SendPIIEmail(userHash, fpath);
+        // todo: try catch it
         return response;
     }
     // Helper functions
@@ -314,8 +316,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     {
         // Create Lifelog User Hash
         var userHash = "";
-        var hashService = new HashService();
-
+       
         var hashResponse = hashService.Hasher(userId + salt);
 
         if (hashResponse.Output is not null)
@@ -398,11 +399,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
     private async Task<Response> createRecSummaryInDB(string userHash)
     {
-        // string sql = $"INSERT INTO RecSummary ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type}, IsUserFormCompleted)" 
-        //  + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\", 0)";
-        string sql = $"INSERT INTO `RecSummary` (`UserHash`, `Category1`, `Category2`, `SystemMostPopular`) VALUES ('{userHash}', 'Mental Health', 'Physical Health', (SELECT Category1 FROM (SELECT Category1 FROM RecSummary WHERE UserHash = 'system') AS derivedTable));";
-
-        var createRecSummaryInDBResponse = await createDataOnlyDAO.CreateData(sql);
+        var createRecSummaryInDBResponse = await userManagementRepo.CreateRecSummaryForUser(userHash);
 
         return createRecSummaryInDBResponse;
     }
@@ -435,11 +432,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         string userHash = "";
 
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-        string sql = $"SELECT UserHash FROM LifelogAccount WHERE UserId=\"{userId}\"";
-
-        var response = await readDataOnlyDAO.ReadData(sql);
+        var response = await userManagementRepo.GetUserHashFromUserId(userId);
 
         if (response.Output != null)
         {
@@ -461,11 +454,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         string userId = "";
 
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-
-        string sql = $"SELECT UserId FROM LifelogUserHash WHERE UserHash=\"{userHash}\"";
-
-        var response = await readDataOnlyDAO.ReadData(sql);
+        var response = await userManagementRepo.GetUserIdFromUserHash(userHash);
 
         if (response.Output != null)
         {
