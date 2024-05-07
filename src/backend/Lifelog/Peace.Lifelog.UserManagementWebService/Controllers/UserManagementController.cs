@@ -140,25 +140,6 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
-    [HttpDelete("DeletePII")]
-    public async Task<IActionResult> DeleteUserPIIData(string userHash)
-    {
-        try 
-        {
-            var response = await lifelogUserManagementService.DeletePersonalIdentifiableInformation(userHash);
-
-            if(response.HasError)
-            {
-                throw new Exception("Error deleting PII data");
-            }
-
-            return Ok(response);
-        } 
-        catch(Exception error) 
-        {
-            return StatusCode(500, error.Message);
-        }
-    }
     [HttpPost("ViewPII")]
     public async Task<IActionResult> ViewUserPIIData([FromBody] ViewPIIRequest payload)
     {
