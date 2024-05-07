@@ -13,20 +13,14 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 {
     private readonly AppUserManagementService appUserManagementService;
     private readonly ISaltService saltService;
-    private readonly ICreateDataOnlyDAO createDataOnlyDAO;
-    private readonly IReadDataOnlyDAO readDataOnlyDAO;
-    private readonly IDeleteDataOnlyDAO deleteDataOnlyDAO;
     private readonly IUserManagmentRepo userManagementRepo;
     private readonly IEmailService emailService;
     private readonly IHashService hashService;
-    public LifelogUserManagementService(IUserManagmentRepo userManagementRepo, AppUserManagementService appUserManagementService, ISaltService saltService, ICreateDataOnlyDAO createDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO, IDeleteDataOnlyDAO deleteDataOnlyDAO, IEmailService emailService, IHashService hashService)
+    public LifelogUserManagementService(IUserManagmentRepo userManagementRepo, AppUserManagementService appUserManagementService, ISaltService saltService,  IEmailService emailService, IHashService hashService)
     {
         this.userManagementRepo = userManagementRepo;
         this.appUserManagementService = appUserManagementService;
         this.saltService = saltService;
-        this.createDataOnlyDAO = createDataOnlyDAO;
-        this.readDataOnlyDAO = readDataOnlyDAO;
-        this.deleteDataOnlyDAO = deleteDataOnlyDAO;
         this.emailService = emailService;
         this.hashService = hashService;
     }    
@@ -196,18 +190,21 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         var sql = "";
 
+
         if (userRole == "Root")
         {
+            response = await userManagementRepo.GetAccountRecoveryRequestRoot();
             sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId";
         }
         else
         {
+            response = await userManagementRepo.GetAccountRecoveryRequestNotRoot();
             sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest "
             + "WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId "
             + "AND (LifelogAccount.Role != 'Admin' AND LifelogAccount.Role != 'Root') ";
         }
 
-        response = await readDataOnlyDAO.ReadData(sql);
+        //response = await readDataOnlyDAO.ReadData(sql);
 
         if (response.HasError == true)
         {
@@ -239,9 +236,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         var recoverLifelogAccountResponse = await recoverLifelogAccountfromDB(lifelogAccountRequest);
 
-        var deleteRecoveryRequestSql = $"DELETE FROM LifelogAccountRecoveryRequest WHERE UserId = \"{lifelogAccountRequest.UserId.Value}\"";
-
-        var deleteResponse = await deleteDataOnlyDAO.DeleteData(deleteRecoveryRequestSql);
+        var deleteResponse = await userManagementRepo.DeleteAccountRecoveryRequest(lifelogAccountRequest.UserId.Value);
 
         if (recoverLifelogAccountResponse.HasError == true || deleteResponse.HasError == true)
         {
@@ -266,9 +261,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
             return response;
         }
 
-        string sql = $"INSERT INTO LifelogAccountRecoveryRequest (UserId) VALUES (\"{lifelogAccountRequest.UserId.Value}\")";
-
-        response = await createDataOnlyDAO.CreateData(sql);
+        response = await userManagementRepo.CreateAccountRecoveryRequest(lifelogAccountRequest.UserId.Value);
 
         if (response.HasError == true)
         {
@@ -290,6 +283,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         // todo: try catch it
         return response;
     }
+
     // Helper functions
     // Some should be moved to infrastructure
     #region Helper Functions
@@ -314,9 +308,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     
     private string createUserHashWithGivenId(string userId, string salt)
     {
-        // Create Lifelog User Hash
         var userHash = "";
-       
         var hashResponse = hashService.Hasher(userId + salt);
 
         if (hashResponse.Output is not null)
@@ -329,12 +321,10 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         }
 
         return userHash;
-
     }
 
     private string createSalt()
     {
-
         var salt = "";
         var saltResponse = saltService.getSalt();
 
@@ -351,79 +341,52 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
     private async Task<Response> createLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
     {
-        Response createAccountResponse = await appUserManagementService.CreateAccount(lifelogAccountRequest);
-
-        return createAccountResponse;
-
+        return await appUserManagementService.CreateAccount(lifelogAccountRequest);
     }
 
     private async Task<Response> createLifelogUserRoleInDB(LifelogAccountRequest lifelogAccountRequest)
     {
-        string sql = $"INSERT INTO LifelogUserRole ({lifelogAccountRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})"
-         + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
-        var createLifelogUserRoleInDBResponse = await createDataOnlyDAO.CreateData(sql);
-
-        return createLifelogUserRoleInDBResponse;
+        return await userManagementRepo.CreateLifelogUserRoleInDB(lifelogAccountRequest.UserId.Value, lifelogAccountRequest.Role.Value);
     }
 
     private async Task<Response> createUserHashInDB(LifelogUserHashRequest lifelogUserHashRequest)
     {
-        Response createUserHashResponse = await appUserManagementService.CreateUserHash(lifelogUserHashRequest);
-
-        return createUserHashResponse;
+        return await appUserManagementService.CreateUserHash(lifelogUserHashRequest);
     }
 
     private async Task<Response> createLifelogProfileInDB(LifelogProfileRequest lifelogProfileRequest)
     {
-        Response createLifelogProfileResponse = await appUserManagementService.CreateProfile(lifelogProfileRequest);
-
-        return createLifelogProfileResponse;
+        return await appUserManagementService.CreateProfile(lifelogProfileRequest);
     }
 
     private async Task<Response> createLifelogUserOTPInDB(LifelogProfileRequest lifelogProfileRequest)
     {
-        string sql = $"INSERT INTO LifelogUserOTP ({lifelogProfileRequest.UserId.Type}) VALUES (\"{lifelogProfileRequest.UserId.Value}\")";
-        var createLifelogUserOTPInDBResponse = await createDataOnlyDAO.CreateData(sql);
-
-        return createLifelogUserOTPInDBResponse;
+        return await userManagementRepo.CreateLifelogUserOTPInDB(lifelogProfileRequest.UserId.Value);
     }
 
     private async Task<Response> createLifelogAuthenticationInDB(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
-        string sql = $"INSERT INTO LifelogAuthentication ({lifelogAccountRequest.UserId.Type}, {lifelogProfileRequest.UserId.Type}, {lifelogAccountRequest.Role.Type})"
-         + $"VALUES (\"{lifelogAccountRequest.UserId.Value}\", \"{lifelogProfileRequest.UserId.Value}\", \"{lifelogAccountRequest.Role.Value}\")";
-        var createLifelogAuthenticationInDBResponse = await createDataOnlyDAO.CreateData(sql);
-
-        return createLifelogAuthenticationInDBResponse;
+        return await userManagementRepo.CreateLifelogAuthenticationInDB(lifelogAccountRequest.UserId.Value, lifelogProfileRequest.UserId.Value, lifelogAccountRequest.Role.Value);
     }
 
     private async Task<Response> createRecSummaryInDB(string userHash)
     {
-        var createRecSummaryInDBResponse = await userManagementRepo.CreateRecSummaryForUser(userHash);
-
-        return createRecSummaryInDBResponse;
+        return await userManagementRepo.CreateRecSummaryForUser(userHash);
     }
 
     private async Task<Response> deleteLifelogAccountInDB(LifelogAccountRequest lifelogAccountRequest)
     {
-        Response deleteAccountResponse = await appUserManagementService.DeleteAccount(lifelogAccountRequest);
-
-        return deleteAccountResponse;
-
+        return await appUserManagementService.DeleteAccount(lifelogAccountRequest);
     }
 
     private async Task<Response> modifyLifelogProfileInDB(LifelogProfileRequest lifelogProfileRequest)
     {
-        Response modifyLifelogProfileResponse = await appUserManagementService.ModifyProfile(lifelogProfileRequest);
-
-        return modifyLifelogProfileResponse;
+        return await appUserManagementService.ModifyProfile(lifelogProfileRequest);
     }
 
     private async Task<Response> recoverLifelogAccountfromDB(IStatusAccountRequest userAccountRequest)
     {
-        Response recoverLifelogAccountResponse = await appUserManagementService.RecoverStatusAccount(userAccountRequest);
-
-        return recoverLifelogAccountResponse;
+        return await appUserManagementService.RecoverStatusAccount(userAccountRequest);
     }
 
     public async Task<string> getUserHashFromUserId(string userId)

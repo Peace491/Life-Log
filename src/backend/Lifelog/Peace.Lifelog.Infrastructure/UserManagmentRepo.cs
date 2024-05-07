@@ -3,7 +3,7 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 using DomainModels;
 using System.Text.RegularExpressions;
-using Google.Protobuf.WellKnownTypes;
+
 
 public class UserManagmentRepo : IUserManagmentRepo
 {
@@ -64,6 +64,160 @@ public class UserManagmentRepo : IUserManagmentRepo
         catch (Exception ex)
         {
             _ = await logger.CreateLog("logs", userHash, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+    public async Task<Response> CreateLifelogUserRoleInDB(string userId, string role)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userId input
+            if(ContainsSQLInjection(userId))
+            {
+                throw new Exception("SQL Injection detected in create lifelog user role in db");
+            }
+
+            // substitute userId in query
+            string sql = $"INSERT INTO LifelogUserRole (UserId, Role) VALUES (\"{userId}\", \"{role}\")";
+
+            // execute 
+            response = await createDataOnlyDAO.CreateData(sql);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userId, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+    
+    public async Task<Response> CreateLifelogUserOTPInDB(string userHash)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userId input
+            if(ContainsSQLInjection(userHash))
+            {
+                throw new Exception("SQL Injection detected in create lifelog user OTP in db");
+            }
+
+            // substitute userId in query
+            string sql = $"INSERT INTO LifelogUserOTP (UserHash) VALUES (\"{userHash}\")";
+            // execute 
+            response = await createDataOnlyDAO.CreateData(sql);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userHash, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> CreateLifelogAuthenticationInDB(string userId, string userHash, string role)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userId input
+            if(ContainsSQLInjection(userId))
+            {
+                throw new Exception("SQL Injection detected in create lifelog authentication in db");
+            }
+
+            // substitute userId in query
+            string sql = $"INSERT INTO LifelogAuthentication (UserId, UserHash, Role) VALUES (\"{userId}\", \"{userHash}\", \"{role}\")";
+
+            // execute 
+            response = await createDataOnlyDAO.CreateData(sql);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userId, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> GetAccountRecoveryRequestRoot()
+    {
+        Response response = new Response();
+        try
+        {
+            // substitute userId in query
+            string sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId";
+
+            // execute 
+            response = await readDataOnlyDAO.ReadData(sql, null);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", "root", "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+    public async Task<Response> GetAccountRecoveryRequestNotRoot()
+    {
+        Response response = new Response();
+        try
+        {
+            // substitute userId in query
+            string sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest "
+            + "WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId "
+            + "AND (LifelogAccount.Role != 'Admin' AND LifelogAccount.Role != 'Root') ";
+
+            // execute 
+            response = await readDataOnlyDAO.ReadData(sql, null);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", "root", "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> CreateAccountRecoveryRequest(string userId)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userId input
+            if(ContainsSQLInjection(userId))
+            {
+                throw new Exception("SQL Injection detected in create account recovery request");
+            }
+
+            // substitute userId in query
+            string sql = $"INSERT INTO LifelogAccountRecoveryRequest (UserId) VALUES (\"{userId}\")";
+
+            // execute 
+            response = await createDataOnlyDAO.CreateData(sql);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userId, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+    public async Task<Response> DeleteAccountRecoveryRequest(string userId)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userId input
+            if(ContainsSQLInjection(userId))
+            {
+                throw new Exception("SQL Injection detected in delete account recovery request");
+            }
+
+            // substitute userId in query
+            string deleteQuery = $"DELETE FROM LifelogAccountRecoveryRequest WHERE UserId = \"{userId}\"";
+
+            // execute 
+            response = await deleteDataOnlyDAO.DeleteData(deleteQuery);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userId, "Server", "Error", ex.Message);
         }
         return response;
     }

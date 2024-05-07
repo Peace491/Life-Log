@@ -7,6 +7,7 @@ using Peace.Lifelog.UserManagement;
 using System.Diagnostics;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
+using Peace.Lifelog.Email;
 
 public class LifelogUserManagementServiceShould
 {
@@ -17,18 +18,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var timer = new Stopwatch();
 
 
@@ -74,18 +78,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
 
         var mockRole = "Normal";
@@ -123,18 +130,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockID = "23";
         // Creating User Profile based off User Account
@@ -168,18 +178,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
@@ -214,18 +227,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "TestInvalidSQLCreation";
         var mockRole = "Normal";
@@ -259,20 +275,21 @@ public class LifelogUserManagementServiceShould
         var timer = new Stopwatch();
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
-
-
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
@@ -313,18 +330,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockRole = "Normal";
 
@@ -361,18 +381,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockRole = "Normal";
 
@@ -402,18 +425,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "TestUserCreation";
         var mockRole = "Normal";
@@ -446,18 +472,21 @@ public class LifelogUserManagementServiceShould
         //Arrange
         var timer = new Stopwatch();
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "TestUserModify";
         var mockRole = "Normal";
@@ -523,18 +552,21 @@ public class LifelogUserManagementServiceShould
         var timer = new Stopwatch();
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var testLifelogProfileRequest = new LifelogProfileRequest();
 
@@ -563,18 +595,21 @@ public class LifelogUserManagementServiceShould
     {
         //Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         // Creating User Profile with null user details
 
@@ -605,18 +640,21 @@ public class LifelogUserManagementServiceShould
         var timer = new Stopwatch();
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "7";
         var newZipCode = "54321-9876";
@@ -645,18 +683,21 @@ public class LifelogUserManagementServiceShould
         var timer = new Stopwatch();
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
 
         var mockUserId = "TestUserRecovery";
@@ -719,18 +760,21 @@ public class LifelogUserManagementServiceShould
         var timer = new Stopwatch();
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var mockUserId = "";
         var mockRole = "Normal";
@@ -764,18 +808,21 @@ public class LifelogUserManagementServiceShould
     {
         // Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var recoverAccountRequest = new LifelogAccountRequest();
 
         string mockUserId = "phongNeedsBetterVariableNames";
@@ -807,18 +854,21 @@ public class LifelogUserManagementServiceShould
     {
         // Arrange
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var recoverAccountRequest = new LifelogAccountRequest();
 
         string mockUserId = "jackDoesNotExist";
@@ -844,18 +894,21 @@ public class LifelogUserManagementServiceShould
         var timer = new Stopwatch();
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService();
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         string usrHash = "System";
 

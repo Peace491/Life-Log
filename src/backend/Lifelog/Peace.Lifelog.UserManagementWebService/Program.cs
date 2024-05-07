@@ -16,10 +16,7 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 
 // Dependency Injection
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
-// this is due to lifelog user managmnet or user managmnet needs a create only dao of non interface type
-builder.Services.AddTransient<CreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
-builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
@@ -31,7 +28,8 @@ builder.Services.AddTransient<ILifelogReminderService, LifelogReminderService>()
 builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
 builder.Services.AddTransient<AppUserManagementService, AppUserManagementService>();
 builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManagementService>();
-builder.Services.AddTransient<SaltService, SaltService>();
+builder.Services.AddTransient<ISaltService, SaltService>();
+builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 
