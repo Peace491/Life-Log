@@ -15,22 +15,19 @@ using MailKit.Security;
 using Peace.Lifelog.Infrastructure;
 
 
-public class RegistrationService()
+public class RegistrationService
 {
-    // fix the tests 
-
-
+    private readonly ILifelogUserManagementService lifelogUserManagementService;
+    private readonly ILogging logger;
+    public RegistrationService(ILifelogUserManagementService lifelogUserManagementService, ILogging logger)
+    {
+        this.lifelogUserManagementService = lifelogUserManagementService;
+        this.logger = logger;
+    }
 
     public async Task<Response> CheckInputValidation(string email, string DOB, string zipCode)
     {
         var response = new Response();
-
-        var createDataOnlyDAO = new CreateDataOnlyDAO();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
-        var logging = new Logging(logTarget);
-        /*var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var userHashResponse = await readDataOnlyDAO.ReadData($"SELECT UserHash FROM lifelogaccount WHERE UserID = \"System\"");*/
         string logHash = "System";
 
         bool createDateTrue = DateTime.TryParseExact(DOB, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime date);
@@ -48,7 +45,7 @@ public class RegistrationService()
             response.HasError = true;
             response.ErrorMessage = "The birth date is invalid.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+            await logger.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -67,7 +64,7 @@ public class RegistrationService()
             response.HasError = true;
             response.ErrorMessage = "The email is too short.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+            await logger.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -85,7 +82,7 @@ public class RegistrationService()
             response.HasError = true;
             response.ErrorMessage = "The email is not alphanumeric.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+            await logger.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -102,7 +99,7 @@ public class RegistrationService()
             response.HasError = true;
             response.ErrorMessage = "The email is not in the correct format.";
 
-            await logging.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+            await logger.CreateLog("Logs", logHash, "Warning", "Data", "User registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -112,39 +109,6 @@ public class RegistrationService()
         return response;
 
     }
-
-
-    /*public static void SendOTPEmail(string email){ // Should probably be in Security Library
-
-        string lifelogEmail = "";   // add lifelog email and pass
-        string lifelogPassword = "";
-
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Lifelog", lifelogEmail));
-        message.To.Add(new MailboxAddress("", email));
-        message.Subject = "Your OTP for Lifelog!";
-
-        // TODO: create OTP generator ??
-        string registrationOTP = "";
-
-        var body = new BodyBuilder();
-        body.HtmlBody = $"<p>Thank you for registering! Please use this OTP {registrationOTP} to confirm your registration.</p>";
-
-        message.Body = body.ToMessageBody();
-
-        using (var emailClient = new SmtpClient()){
-            emailClient.Connect("smtp.gmail.com", 465, SecureSocketOptions.Auto);
-
-            emailClient.Authenticate (lifelogEmail, lifelogPassword);
-
-            emailClient.Send(message);
-
-            emailClient.Disconnect (true);
-        }
-
-    }*/
-
-
 
     public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode)
     {
@@ -164,19 +128,6 @@ public class RegistrationService()
     public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole)
     {
         var response = new Response();
-         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
-        ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
-    
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
-        
-        var userManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
-
         string userID = email;
 
 
@@ -191,7 +142,7 @@ public class RegistrationService()
         profileRequest.ZipCode = ("ZipCode", zipCode);
 
         
-        var createLifelogUserResponse = await userManagementService.CreateLifelogUser(accountRequest, profileRequest);
+        var createLifelogUserResponse = await lifelogUserManagementService.CreateLifelogUser(accountRequest, profileRequest);
 
         if (createLifelogUserResponse.HasError == true)
         {

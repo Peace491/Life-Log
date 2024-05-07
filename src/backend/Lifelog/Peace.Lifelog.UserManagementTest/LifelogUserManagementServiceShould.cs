@@ -30,7 +30,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var timer = new Stopwatch();
@@ -90,7 +91,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -142,7 +144,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -190,7 +193,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -239,7 +243,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -287,7 +292,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -342,7 +348,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -393,7 +400,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -437,7 +445,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -484,7 +493,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -564,7 +574,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -607,7 +618,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -652,7 +664,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -695,7 +708,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -772,7 +786,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
@@ -820,7 +835,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var recoverAccountRequest = new LifelogAccountRequest();
@@ -866,7 +882,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var recoverAccountRequest = new LifelogAccountRequest();
@@ -906,7 +923,8 @@ public class LifelogUserManagementServiceShould
         IEmailService emailService = new EmailService();
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 

@@ -6,6 +6,7 @@ using Peace.Lifelog.Security;
 using Peace.Lifelog.UserForm;
 using Peace.Lifelog.UserManagementWebService.Controllers;
 using Peace.Lifelog.LifelogReminder;
+using Peace.Lifelog.Email;
 using Peace.Lifelog.UserManagement;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 // Dependency Injection
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
+builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
@@ -30,6 +32,7 @@ builder.Services.AddTransient<AppUserManagementService, AppUserManagementService
 builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManagementService>();
 builder.Services.AddTransient<ISaltService, SaltService>();
 builder.Services.AddTransient<IHashService, HashService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 

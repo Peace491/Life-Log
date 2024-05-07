@@ -1,5 +1,6 @@
 using Microsoft.Net.Http.Headers;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Email;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
@@ -25,7 +26,9 @@ builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 builder.Services.AddTransient<AppUserManagementService, AppUserManagementService>();
 builder.Services.AddTransient<LifelogUserManagementService, LifelogUserManagementService>();
-builder.Services.AddTransient<SaltService, SaltService>();
+builder.Services.AddTransient<ISaltService, SaltService>();
+builder.Services.AddTransient<IHashService, HashService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 
