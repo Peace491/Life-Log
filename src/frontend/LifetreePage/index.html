@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifelog Calendar</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <link rel="stylesheet" href="./LifetreePage/styles.css">
+
+    <header>
+        <div class="logo-container">
+            <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view" />
+        </div>
+        <div class="header-contents-container">
+            <div class="page-link-container">
+                <div class="calendar-link-container" id="calendar-link">
+                    <h2>Calendar</h2>
+                </div>
+                <div class="map-link-container" id="map-link">
+                    <h2>Map</h2>
+                </div>
+                <div class="note-link-container" id="note-link" data-testid = "note-view">
+                    <h2>Notes</h2>
+                </div>
+                <div class="life-tree-link-container" id="lifetree-link">
+                    <h2>Life Tree</h2>
+                </div>
+                <div class="user-form-link-container" id="user-form-link">
+                    <h2>User Form</h2>
+                </div>
+                <div class="rec-link-container" id="rec-engine-link">
+                    <h2>Recommendation Engine</h2>
+                </div>
+            </div>
+            <div class="user-management-container">
+                <div class="setting-container">
+                    <img src="./Assets/setting.svg" alt="">
+                </div>
+                <div class="user-setting-container">
+                    <img src="./Assets/user-setting.svg" id="user-setting" alt="">
+                </div>
+                <div class="logout-container" id="logout">
+                    <h2>Log Out</h2>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="main-container" class="current-lli-container lli-container">
+            <div class="current-lli-header-title-container lli-header-title-container">
+                <h2>LifeLog LifeTree</h2>
+            </div>
+            
+            <button data-modal-target="#pn-modal" id="pn-button" class="button-pn button-1">Personal Note</button>
+            
+
+            <!-- <div class="tree-container">
+                <img class="tree-segment left-branch" src="Assets/Left Branch Topdown.svg" alt="Left Branch">
+                <button class="lli-title-text left-text left-branch btn"><span class="overflow">my very first lli that i like </span></button>
+            </div>
+            <div class="tree-container">
+                <img class="tree-segment right-branch" src="Assets/Right Branch Topdown.svg" alt="Right Branch">
+                <button class="lli-title-text right-text right-branch right-btn"><span class="overflow">my very first lli that i like fjdsiofiodsfhsdiofhsdiof </span></button>
+            </div>
+            <img class="tree-segment right-branch" src="Assets/Right Branch Topdown.svg" alt="Right Branch">
+            <img class="tree-segment left-branch" src="Assets/Left Branch Topdown.svg" alt="Left Branch">
+            <img class="tree-segment right-branch" src="Assets/Right Branch Topdown.svg" alt="Right Branch"> -->
+        </div>
+
+        <div id="lli-modal-edit" class="modal lli-modal-edit">
+            <div class="lli expanded-lli" id="create-lli-template">
+                <div class="lli-non-hidden-content">
+                    <div class="lli-title-container">
+                        <h2 id="edit-title-input">Enter Title</h2> <!-- title -->
+                    </div>
+                    <div class="lli-main-content-container">
+                        <div class="lli-deadline-container">
+                            <h2><span style="font-weight: 600;">Deadline:</span></h2> <!-- change value to lli.deadline -->
+                            <input type="date" id="edit-date-input" class="date-input" value="2024-11-11" autocomplete="off" readonly></input> 
+                        </div>
+                        <div class="lli-category-container"> <!-- select options -->
+                            <select name="" id="edit-category-input" class="category-select" multiple autocomplete="off">
+                                <option value="Mental Health" selected="selected">Mental Health</option>
+                                <option value="Physical Health">Physical Health</option>
+                                <option value="Outdoor">Outdoor</option>
+                                <option value="Sport">Sport</option>
+                                <option value="Art">Art</option>
+                                <option value="Hobby">Hobby</option>
+                                <option value="Thrill">Thrill</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Volunteering">Volunteering</option>
+                                <option value="Food">Food</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lli-description-container">
+                        <h2>Description</h2>
+                        <p id="edit-paragraph-input">Edit</p> <!-- change edit -->
+                    </div>
+                </div>
+
+                <div class="lli-hidden-content">
+                    <div class="lli-button-container">
+                        <button id="close-create-lli-button"></button> <!-- close button -->
+
+                    </div>
+                    <div class="lli-hidden-fields-container">
+                        <div class="lli-hidden-required-fields-container">
+                            <div class="lli-status-container">
+                                <h2><span style="font-weight: 600;">Status: </span></h2>
+                                <select id="edit-status-input" class="status-select" autocomplete="off"> <!-- select option -->
+                                    <option value="Active" selected="selected">Active</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Postponed">Postponed</option>
+                                </select>
+                            </div>
+                            <div class="lli-visibility-container"> 
+                                <h2><span style="font-weight: 600;">Visibility: </span></h2>
+                                <select name="" id="edit-visibility-input" class="visibility-select" autocomplete="off">
+                                    <option value="Public" selected="selected">Public</option> <!-- select option -->
+                                    <option value="Private">Private</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="lli-hidden-non-required-fields-container">
+                            <h2><span style="font-weight: 600;">Cost:</span> $<span id="create-cost-input"
+                                    >100</span></h2> <!-- cost -->
+                            <div class="lli-recurrence-container">
+                                <h2><span style="font-weight: 600;">Recurring: </span></h2>
+                                <select id="edit-recurrence-input" class="recurrence-select" autocomplete="off"> <!-- select option -->
+                                    <option value="Off" selected="selected">Off</option>
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lli-media-container">
+                        <img src="../LLIManagementPage/Assets/default-pic.svg" alt="">
+                    </div>
+                    <div class="create-lli-button-container">
+                       
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="pn-modal" class="modal pn-modal">
+            <div class="note">
+                <div class="note-options">
+                    <div class="note-date-container">
+                        <h2 class="date-aligned-header">
+                            <span class="date-bold-span">Date:</span>
+                        </h2>                    
+                        <input type="date" id="create-date-input-pn" class="date-input" value="" autocomplete="off"></input>
+                    </div>
+                    <div class="note-create-container">
+                        <button id="create-pn-btn">Create PN</button>    
+                    </div>
+                </div>
+
+                <div class="note-input-container">
+                    <div class="note-input">
+                        <p contenteditable id="create-paragraph-input-pn" data-placeholder="What are you thinking?......"></p>
+                    </div>
+                    <div class="hold-id"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="overlay"></div>
+        
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../Resources/Ajax/fetch-ajax.js"></script>
+    
+    <script src="lifetree.js"></script>
+    <!-- Page Specific -->
+    
+
+
+</body>
+
+</html>

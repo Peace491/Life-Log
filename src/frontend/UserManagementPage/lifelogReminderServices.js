@@ -31,8 +31,8 @@ export function submitReminderForm(url, userHash, jwtToken, formData) {
     })
 }
 
-export function sendEmailToUser(url, userHash, jwtToken) {
-    let getUrl = url + "?userHash=" + userHash
+export function sendEmailToUser(url, jwtToken) {
+    let getUrl = url
     let request = ajaxClient.get(getUrl, jwtToken)
     //let request = ajaxClient.get(url, userHash, jwtToken)
 
@@ -44,8 +44,7 @@ export function sendEmailToUser(url, userHash, jwtToken) {
             return response.json()
         }).then(function (response) {
             // Move to lli page
-            alert("Successfully Sent a Reminder to the User")
-            routeManager.loadPage(routeManager.PAGES.lliPage);
+            // alert("Successfully Sent a Reminder to the User")
             resolve(response)
         }).catch(function (error) {
             reject(error)

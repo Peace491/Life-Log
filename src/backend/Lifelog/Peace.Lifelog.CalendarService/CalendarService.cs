@@ -62,7 +62,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
 
         if (getAllLLIResponse.Output is not null)
         {
-            Console.WriteLine("lliservice works");
+          
             foreach (LLI LLI in getAllLLIResponse.Output.Cast<LLI>())
             {
                 var lliDeadline = LLI.Deadline!.Substring(0, LLI.Deadline!.IndexOf(' '));
@@ -71,10 +71,6 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
                 DateTime LLIdateTime;
                 LLIdateTime = DateTime.ParseExact(lliDeadline, "M/d/yyyy", null);
 
-                Console.WriteLine(LLIdateTime.Month);
-                Console.WriteLine(LLIdateTime.Year);
-                Console.WriteLine(validDateTime.Month);
-                Console.WriteLine(validDateTime.Year);
 
 
                 if (LLIdateTime.Year == validDateTime.Year && LLIdateTime.Month == validDateTime.Month)

@@ -30,9 +30,9 @@ public sealed class LifelogReminderController : ControllerBase
             return StatusCode(processTokenResponseStatus);
         }
         var response = new Response();
-        
+
         //var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
-        ReminderFormData submitFormData= new ReminderFormData();
+        ReminderFormData submitFormData = new ReminderFormData();
         submitFormData.Content = reminderFormData.Content;
         submitFormData.Frequency = reminderFormData.Frequency;
         submitFormData.UserHash = reminderFormData.UserHash;
@@ -55,24 +55,26 @@ public sealed class LifelogReminderController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> SendReminderEmail(string userHash)
+    public async Task<IActionResult> SendReminderEmail()
     {
-        var processTokenResponseStatus = ProcessJwtToken();
-        if (processTokenResponseStatus != 200)
-        {
-            return StatusCode(processTokenResponseStatus);
-        }
-        var response = new Response();
-
-        ReminderFormData sendReminderEmail = new ReminderFormData();
-        sendReminderEmail.UserHash = userHash;
-        sendReminderEmail.Content = null!;
-        sendReminderEmail.Frequency = null!;
-
         //var appPrincipal = new AppPrincipal { UserId = userHash, Claims = new Dictionary<string, string>() { { "Role", role } } };
-
+        var response = new Response();
         try
         {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+            var userHash = jwtToken!.Payload.UserHash;
+
+            ReminderFormData sendReminderEmail = new ReminderFormData();
+            sendReminderEmail.UserHash = userHash!;
+            sendReminderEmail.Content = null!;
+            sendReminderEmail.Frequency = null!;
             response = await this._lifelogReminderService.SendReminderEmail(sendReminderEmail);
         }
         catch (Exception error)

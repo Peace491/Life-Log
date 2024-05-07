@@ -26,6 +26,7 @@ public class UserFormRepo : IUserFormRepo
     {
         var createUserFormResponse = new Response();
 
+        // Create Sql Statement
         string sql = "INSERT INTO UserForm "
         + "(UserHash, MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking) "
         + "VALUES "
@@ -43,6 +44,7 @@ public class UserFormRepo : IUserFormRepo
         + $"{foodRating}"
         + ");";
 
+        // Execute Sql Statement
         try
         {
             createUserFormResponse = await this.createDataOnlyDAO.CreateData(sql);
@@ -52,7 +54,7 @@ public class UserFormRepo : IUserFormRepo
                 throw new Exception(createUserFormResponse.ErrorMessage);
             }
 
-            var updateAuthenticationResponse = await this.UpdateUserIsCompletedFieldInAuthenticationTableInDB(userHash);
+            var updateAuthenticationResponse = await this.UpdateUserIsCompletedFieldInLifelogProfileInDB(userHash);
 
             if (updateAuthenticationResponse.HasError)
             {
@@ -76,6 +78,7 @@ public class UserFormRepo : IUserFormRepo
         string sql = "SELECT MentalHealthRanking, PhysicalHealthRanking, OutdoorRanking, SportRanking, ArtRanking, HobbyRanking, ThrillRanking, TravelRanking, VolunteeringRanking, FoodRanking "
         + $"FROM UserForm Where UserHash=\"{userHash}\"";
 
+
         try {
             readResponse = await readDataOnlyDAO.ReadData(sql);
         } catch (Exception error) {
@@ -91,7 +94,7 @@ public class UserFormRepo : IUserFormRepo
     {
         var readResponse = new Response();
 
-        string sql = $"SELECT IsUserFormCompleted FROM LifelogAuthentication WHERE UserHash=\"{userHash}\"";
+        string sql = $"SELECT IsUserFormCompleted FROM LifelogProfile WHERE UserHash=\"{userHash}\"";
 
         try {
             readResponse = await readDataOnlyDAO.ReadData(sql);
@@ -116,7 +119,7 @@ public class UserFormRepo : IUserFormRepo
         var updateUserFormResponse = new Response();
 
         # region Creating the sql statement
-        // Only add the parameters if it is filled out
+        // Only add the parameters if it is filled out (not 0)
         string sql = "UPDATE UserForm SET ";
 
         string parametersAndValues = "";
@@ -182,9 +185,9 @@ public class UserFormRepo : IUserFormRepo
         return updateUserFormResponse;
     }
 
-    private Task<Response> UpdateUserIsCompletedFieldInAuthenticationTableInDB(string userHash)
+    private Task<Response> UpdateUserIsCompletedFieldInLifelogProfileInDB(string userHash)
     {
-        var sql = $"UPDATE LifelogAuthentication SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
+        var sql = $"UPDATE LifelogProfile SET IsUserFormCompleted = 1 WHERE UserHash=\"{userHash}\"";
 
         var response = this.updateDataOnlyDAO.UpdateData(sql);
 
