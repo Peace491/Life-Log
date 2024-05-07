@@ -23,6 +23,7 @@ public class ArchivalService : IArchive
     LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration(); 
     public async Task<Response> ArchiveFileToS3()
     {
+        var response = new Response();
         try
         {
             // Create an instance of AmazonS3Client with your AWS credentials
@@ -36,7 +37,12 @@ public class ArchivalService : IArchive
 
             var archivalRepo = new ArchiveRepo(new ReadDataOnlyDAO(), new DeleteDataOnlyDAO());
 
-            var response = await archivalRepo.SelectArchivableLogs();
+            response = await archivalRepo.SelectArchivableLogs();
+
+            if (response.HasError)
+            {
+                throw new Exception("Error selecting logs to archive");
+            }
 
             // Compose the logs to a file
             string fPath = await ComposeLogsToFileAsync(response);
@@ -73,7 +79,12 @@ public class ArchivalService : IArchive
             File.Delete(fPath);
 
             // Delete the logs from the database
-            var deleteResponse = await archivalRepo.DeleteArchivedLogs();
+            response = await archivalRepo.DeleteArchivedLogs();
+            
+            if (response.HasError)
+            {
+                throw new Exception("Error deleting logs after archiving");
+            }
         }
         catch (AmazonS3Exception ex)
         {
