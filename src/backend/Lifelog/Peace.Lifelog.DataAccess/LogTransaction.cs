@@ -4,13 +4,15 @@ using DomainModels;
 
 using MySql.Data.MySqlClient;
 
+
 public class LogTransaction : ILogTransaction
 {
-    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = LogTransUser; Password = password;";
+
+    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
     public MySqlConnection ConnectToDb()
     {
-        return new MySqlConnection(connectionString);
+        return new MySqlConnection(lifelogConfig.LogTransConnectionString);
     }
 
     public async Task<Response> CreateDataAccessTransactionLog(string level, string message, string userHash = "System")
