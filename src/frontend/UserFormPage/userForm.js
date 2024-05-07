@@ -47,6 +47,7 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         document.getElementById('travel-rank').value = userFormRanking.TravelRating;
         document.getElementById('volunteering-rank').value = userFormRanking.VolunteeringRating;
         document.getElementById('food-rank').value = userFormRanking.FoodRating;
+        
     }
 
     function setupSubmitUserForm() {

@@ -81,6 +81,7 @@ public class LLIController : ControllerBase
         }
         else if (response.ErrorMessage!.Contains("invalid") || response.ErrorMessage!.Contains("completed within the last year"))
         {
+            Console.WriteLine(response.ErrorMessage!);
             return StatusCode(400, response.ErrorMessage);
         }
         else
