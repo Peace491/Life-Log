@@ -241,12 +241,14 @@ export function loadHomePage(root, ajaxClient) {
     root.myApp = root.myApp || {};
 
     async function fetchConfig() {
+        
         const response = await fetch('./lifelog-config.url.json');
         const data = await response.json();
         let webServiceUrl = data.LifelogUrlConfig.UserManagement.UserForm.UserFormWebService;
         userFormCompletionStatusUrl = webServiceUrl + data.LifelogUrlConfig.UserManagement.UserForm.UserFormCompletionStatus;
         lifelogReminderSendUrl = data.LifelogUrlConfig.UserManagement.LifelogReminder.LifelogReminderWebService;
         accountRecoveryUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.RecoverUser
+        
     }
 
     // Initialize the current view by setting up data and attaching event handlers 

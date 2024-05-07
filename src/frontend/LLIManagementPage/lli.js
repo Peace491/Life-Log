@@ -76,7 +76,9 @@ export function loadLLIPage(root, ajaxClient) {
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
                 if (response.status != 200) {
+                    
                     throw new Error(response.statusText)
+                      
                 }
 
                 return response.json()
@@ -520,13 +522,17 @@ export function loadLLIPage(root, ajaxClient) {
     root.myApp = root.myApp || {};
 
     async function fetchConfig() {
+        try{
         // fetch all Url's
         const response = await fetch('../lifelog-config.url.json');
         const data = await response.json();
-        // MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
-        // MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
-        // MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;
-        // MediaMementoUploadFromCSV = data.LifelogUrlConfig.MediaMemento.MediaMementoUploadFromCSV;
+        MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
+        MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
+        MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;
+        MediaMementoUploadFromCSV = data.LifelogUrlConfig.MediaMemento.MediaMementoUploadFromCSV;
+        } catch (error){
+            console.error(error)
+        }
       }
 
     // Initialize the current view by setting up data and attaching event handlers 

@@ -290,3 +290,440 @@ button.btn:hover{
     
 
 }
+
+.button-pn {
+    background-color: #04AA6D; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+
+  .button-1 {
+    background-color: white; 
+    color: black; 
+    border: 2px solid #04AA6D;
+  }
+
+  .button-1:hover {
+    background-color: #04AA6D;
+    color: white;
+  }
+
+/*-------------------------------MODAL STYLING (FOR CREATING MODALS)---------------------------------*/
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    border: 5px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: white;
+    width: 660px;
+    max-width: 80%;
+  }
+
+.modal.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#overlay {
+    position: fixed;
+    opacity: 0;
+    transition: 200ms ease-in-out;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: none;
+  }
+  
+#overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+  
+
+  
+
+/*-------------------------------LLI MODAL CONTENT CSS---------------------------------*/
+
+.lli-content-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 60px;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: scroll;
+    scrollbar-color: #EBA755 white;
+}
+
+.lli {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    
+
+    padding: 15px 15px;
+
+    height: 80%;
+    width: 250px;
+    min-width: 250px;
+
+    background-color: white;
+
+    border-radius: 10px;
+}
+
+.lli-non-hidden-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+
+.lli-title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lli-title-container>h2 {
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+.lli-main-content-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    width: 100%;
+    max-width: 270px;
+    
+}
+
+.lli-deadline-container {
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: left;
+    width: 100%;
+}
+
+.date-input {
+    font-size: 12px;
+    font-family: "Inter", sans-serif;
+}
+
+.lli-category-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: right;
+    width: 100%;
+}
+
+.lli-deadline-container>h2, .lli-category-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-category-container>select {
+    border: none;
+    width: 100%;
+    height: 80%;
+    font-size: 0.9em;
+    font-weight: 600;
+    background-color: white;
+    position: relative;
+    bottom: 7px;
+}
+
+.lli-description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+
+    margin-top: 20px;
+}
+
+.lli-description-container>h2 {
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.lli-description-container>p {
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+
+.add-lli-button-container {
+    height: 70px;
+    position: relative;
+    top: 40px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.add-lli-button-container>img {
+    height: 100%;
+}
+
+.expanded-lli {
+    width: 625px;
+    min-width: 625px;
+    max-width: 625px;
+}
+
+.lli-hidden-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.lli-hidden-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 21px; 
+}
+
+.lli-hidden-required-fields-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 15px;
+}
+
+.lli-hidden-required-fields-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-hidden-non-required-fields-container {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.lli-hidden-non-required-fields-container>h2 {
+    font-size: 0.9em;
+}
+
+.lli-button-container {
+    display: flex;
+    justify-content: right;
+    gap: 10px;
+    width: 100%;
+}
+
+.lli-button-container>button {
+    position:relative;
+    background-color: transparent;
+    background-repeat:no-repeat;
+    border: none;
+    height: 18px;
+    width: 18px;
+    bottom: 9px;
+    left: 10px;
+}
+
+
+
+
+
+.status-select, .visibility-select {
+    border: none;
+    width: 80%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    right: 4px;
+    bottom: 2px;
+}
+
+.lli-status-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.lli-status-container>h2 {
+    width: 67px;
+    font-size: 0.9em;
+}
+
+.lli-visibility-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.lli-visibility-container>h2 {
+    width: 105px;
+    font-size: 0.9em;
+}
+
+.lli-recurrence-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.lli-recurrence-container>h2 {
+    font-size: 0.9em;
+}
+
+.recurrence-select {
+    border: none;
+    width: 40%;
+    height: 100%;
+    font-size: 0.9em;
+    background-color: white;
+    position: relative;
+    bottom: 2px;
+}
+
+.lli-media-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lli-media-container>img {
+    height: 110px;
+}
+
+/* .hidden {
+    display: none;
+    visibility: hidden;
+} */
+
+.create-lli-button-container {
+    display: flex;
+    justify-content: right;
+}
+
+#create-lli-button {
+    height: 30px;
+    width: 100px;
+    border: none;
+    border-radius: 5px;
+    background-color: aquamarine;
+    font-weight: 600;
+}
+
+/*---------------------PN STYLINGS-----------------------------*/
+
+.note{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 15px;
+    height: 90%;
+    min-width: 250px;
+    width: 95%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.note-options{
+    display: flex;
+    justify-content: space-between;
+}
+
+.note-date-container{
+    display: flex;
+    gap: 8px;
+    flex-direction: row;
+    justify-items: center;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 4px;
+    border-radius: 5px;
+    margin-right: auto;
+}
+
+.note-create-container{
+    align-self: center;
+    transform: scale(1.0);
+    margin-right: 6px;
+}
+.date-bold-span {
+    font-weight: 600; /* Apply the bold font weight */
+    display: inline-block; /* Ensure the span is inline but can have a width and height */
+}
+
+.note-input-container{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    border: solid;
+    border-color: #EEEEEE;
+    height: 100%;
+    padding: 11px 11px 11px 11px;
+    border-radius: 10px;
+}
+
+.note-input-container div {
+    display: flex;
+    flex-direction: column;
+}
+
+p:empty:not(:focus)::before {
+    content: attr(data-placeholder);
+}
+
+#create-paragraph-input:focus {
+    outline: none;
+    background: none;
+}
+#date-input {
+    font-size: 20px;
+    font-family: "Inter", sans-serif;
+}
+
+.note-input{
+    grid-area: 1 / 1 / 5 / 7;
+}
+
+#submit-note-button {
+    display: none;
+    grid-area: 5 / 6 / 6 / 7;
+    background-color: #EBA755;
+    height: 30px;
+    width: 80px;
+    justify-self: end;
+    align-self: end;
+    text-align: center;
+    padding-top: 10px;
+    border-radius: 15px;
+    font-size: larger;
+    color: white;
+    font-weight: bold;
+}
+
+#submit-note-button:hover {background-color: #c79354}
+.date-input{
+    border: none;
+}

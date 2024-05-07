@@ -28,7 +28,7 @@ public class LifetreeServiceController : ControllerBase
     public async Task<IActionResult> GetCompletedLLI()
     {
 
-        /*var processTokenResponseStatus = ProcessJwtToken();
+        var processTokenResponseStatus = ProcessJwtToken();
         if (processTokenResponseStatus != 200)
         {
             return StatusCode(processTokenResponseStatus);
@@ -40,9 +40,9 @@ public class LifetreeServiceController : ControllerBase
         if (userHash == null)
         {
             return StatusCode(401);
-        }*/
+        }
 
-        string userHash = "I4uZ7P4EqfCVTfxuh6v5y7k4wN94xADhkcNb//yeTjs=";
+        /*string userHash = "bvjkHx+lmD8D5Dr/0//1P5SXmcu5Mb6oSBh4nKdUKYI=";*/
 
 
         var response = await lifetreeService.getAllCompletedLLI(userHash);

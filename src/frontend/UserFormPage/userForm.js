@@ -24,10 +24,8 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         let userFormRankingResponse
         try {
             userFormRankingResponse = await userFormService.getUserFormRankings(webServiceUrl, principal, jwtToken)
-        } catch (error) {
-            console.error(error)
-        }
-
+        
+        
         let userFormRanking = userFormRankingResponse.Output[0]
 
         document.getElementById('mental-health-rank').value = userFormRanking.MentalHealthRating;
@@ -40,6 +38,9 @@ export function loadUserFormPage(root, ajaxClient, userFormAction = "Create") {
         document.getElementById('travel-rank').value = userFormRanking.TravelRating;
         document.getElementById('volunteering-rank').value = userFormRanking.VolunteeringRating;
         document.getElementById('food-rank').value = userFormRanking.FoodRating;
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     function setupSubmitUserForm() {
