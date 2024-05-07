@@ -7,6 +7,7 @@ using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;   
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.UserManagementTest;
+using Peace.Lifelog.Email;
 
 
 public class RegistrationServiceShould
@@ -24,7 +25,21 @@ public class RegistrationServiceShould
     {
 
         // Arrange
-        var registrationService = new RegistrationService();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         // Act
         var validEmailFormatResponse = await registrationService.CheckInputValidation(EMAIL, DOB, ZIPCODE);
@@ -39,7 +54,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         string invalidEmail = "invalid@com.";
-        var registrationService = new RegistrationService();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         // Act
         var validEmailFormatResponse = await registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
@@ -54,7 +84,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         string invalidEmail = "z@gmail.com";
-        var registrationService = new RegistrationService();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         // Act
         var threeCharsResponse = await registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
@@ -68,7 +113,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         string invalidEmail = "zarif&123!@gmail.com";
-        var registrationService = new RegistrationService();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         // Act
         var alphanumericResponse = await registrationService.CheckInputValidation(invalidEmail, DOB, ZIPCODE);
@@ -82,7 +142,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         string invalidDOB = "1969-01-01";
-        var registrationService = new RegistrationService();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         // Act
         var validDOBResponse = await registrationService.CheckInputValidation(EMAIL, invalidDOB, ZIPCODE);
@@ -96,7 +171,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         string invalidZipCode = "90624";
-        var registrationService = new RegistrationService();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
         const string USERWITHINVALIDZIPCODE = "EmailWithInvalidZipcode@gmail.com";
 
         // Act
@@ -113,7 +203,22 @@ public class RegistrationServiceShould
         string emptyEmail = "";
         string emptyDOB = ""; // <-should this be empty or null?
         string emptyZipCode = "";
-        var registrationService = new RegistrationService();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         // Act
         var inputNotNullResponse = await registrationService.CheckInputValidation(emptyEmail, emptyDOB, emptyZipCode);
@@ -134,18 +239,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         // init view and delete DAO
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         const string USEREMAIL = "NormalUser@gmail.com";
         
@@ -159,9 +268,6 @@ public class RegistrationServiceShould
         var testLifelogProfileRequest = new LifelogProfileRequest();
         testLifelogProfileRequest.DOB = ("DOB", DOB);
         testLifelogProfileRequest.ZipCode = ("ZipCode", ZIPCODE);
-
-        // create reg object
-        var registrationService = new RegistrationService();
         
         // Act
         var sucessfulRegistrationResponse = await registrationService.RegisterNormalUser(USEREMAIL, DOB, ZIPCODE);
@@ -182,18 +288,22 @@ public class RegistrationServiceShould
     {
         // Arrange
         // init view and delete DAO
-         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
+        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
 
         const string ADMINEMAIL = "AdminUser@gmail.com";
 
@@ -208,7 +318,6 @@ public class RegistrationServiceShould
         testLifelogProfileRequest.DOB = ("DOB", DOB);
         testLifelogProfileRequest.ZipCode = ("ZipCode", ZIPCODE);
 
-        var registrationService = new RegistrationService();
 
         // Act
         var sucessfulRegistrationResponse = await registrationService.RegisterAdminUser(ADMINEMAIL, DOB, ZIPCODE);

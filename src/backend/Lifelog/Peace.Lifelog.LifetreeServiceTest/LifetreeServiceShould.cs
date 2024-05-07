@@ -8,7 +8,8 @@ using Peace.Lifelog.PersonalNote;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.Infrastructure;
 using System.Diagnostics;
-
+using Peace.Lifelog.Security;
+using Peace.Lifelog.Email;
 
     public class LifetreeServiceShould : IAsyncLifetime, IDisposable
     {
@@ -35,8 +36,20 @@ using System.Diagnostics;
 
     public async Task InitializeAsync()
     {
-        var appUserManagementService = new AppUserManagementService();
-        var lifelogUserManagementService = new LifelogUserManagementService();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService   emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", USER_ID);
@@ -68,7 +81,20 @@ using System.Diagnostics;
 
     public void Dispose()
     {
-        var appUserManagementService = new AppUserManagementService();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService   emailService = new EmailService();
+    
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", USER_ID);
         var deleteAccountResponse = appUserManagementService.DeleteAccount(testLifelogAccountRequest);

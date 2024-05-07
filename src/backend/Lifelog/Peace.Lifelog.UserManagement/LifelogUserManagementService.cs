@@ -188,20 +188,13 @@ public class LifelogUserManagementService : ILifelogUserManagementService
             return response;
         }
 
-        var sql = "";
-
-
         if (userRole == "Root")
         {
             response = await userManagementRepo.GetAccountRecoveryRequestRoot();
-            sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId";
         }
         else
         {
             response = await userManagementRepo.GetAccountRecoveryRequestNotRoot();
-            sql = "SELECT LifelogAccount.UserId FROM LifelogAccount INNER JOIN LifelogAccountRecoveryRequest "
-            + "WHERE LifelogAccount.UserId = LifelogAccountRecoveryRequest.UserId "
-            + "AND (LifelogAccount.Role != 'Admin' AND LifelogAccount.Role != 'Root') ";
         }
 
         //response = await readDataOnlyDAO.ReadData(sql);
