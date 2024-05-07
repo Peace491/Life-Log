@@ -145,6 +145,29 @@ export function loadRegistrationPage(root, ajaxClient) {
         
     }
 
+    // Fetch URL config
+    async function fetchConfig() {
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        webServiceUrl = data.LifelogUrlConfig.Map.MapWebService;
+        webServiceUrlLLI = data.LifelogUrlConfig.LLI.LLIWebService;
+        createUrl = data.LifelogUrlConfig.Map.MapPinCreate;
+        getAllPinUrl = data.LifelogUrlConfig.Map.MapGetAllPin;
+        getAllLLIUrl = data.LifelogUrlConfig.LLI.GetAllLLI;
+        updateUrl = data.LifelogUrlConfig.Map.MapPinUpdate;
+        deleteUrl = data.LifelogUrlConfig.Map.MapPinDelete;
+        viewUrl = data.LifelogUrlConfig.Map.MapPinView;
+        getPinStatusUrl = data.LifelogUrlConfig.Map.MapPinStatusGet;
+        editPinLLIUrl = data.LifelogUrlConfig.Map.MapPinLLIEdit;
+        viewChangeUrl = data.LifelogUrlConfig.Map.MapViewUpdate;
+
+        webServiceUrlLocRec = data.LifelogUrlConfig.LocationRecommendation.LocRecWebService;
+        getRecommendationUrl = data.LifelogUrlConfig.LocationRecommendation.GetLocationRecommendation;
+        viewRecommendationUrl = data.LifelogUrlConfig.LocationRecommendation.ViewLocationRecommendation;
+        updateLogUrl = data.LifelogUrlConfig.LocationRecommendation.UpdateLog;
+    }
+
     root.myApp = root.myApp || {};
 
     // Show or Hide private functions
