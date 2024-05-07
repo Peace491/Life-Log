@@ -61,6 +61,47 @@ public class EmailService : IEmailService
         return response;
     }
 
+    public async Task<Response> SendPIIEmail(string userHash, string logFilePath)
+    {
+        var readDataOnlyDao = new ReadDataOnlyDAO();
+
+        var email = new MimeMessage();
+        email.From.Add(new MailboxAddress("Lifelog", lifelogConfig.LifelogSystemEmail)); // Get from config
+        string selectEmailSql = $"SELECT UserId FROM LifelogAccount WHERE UserHash = \"{userHash}\"";
+        var toResponse = await readDataOnlyDao.ReadData(selectEmailSql);
+
+        string to = "";
+
+        if (toResponse.Output != null)
+        {
+            foreach (List<Object> output in toResponse.Output)
+            {
+                to = output[0].ToString()!;
+            }
+        }
+
+        // Check if log file exists
+        if (!File.Exists(logFilePath))
+        {
+            Console.WriteLine("Log file not found");
+            throw new FileNotFoundException("Log file not found", logFilePath);
+        }
+
+        // Attach log file
+        var builder = new BodyBuilder();
+        builder.HtmlBody = "<h1>Your Lifelog PII data!</h1>";
+        builder.Attachments.Add(logFilePath);
+
+        // Create the email message
+        email.To.Add(new MailboxAddress("", to));
+        email.Subject = "Your Lifelog Personal Identifiable Information!";
+        email.Body = builder.ToMessageBody();
+
+        // Send email
+        var emailResponse = SendEmail(email);
+        return emailResponse;
+    }
+
     // Created method for usage in both otp email and Lifelog Reminder Feature
     private Response SendEmail(MimeMessage email)
         

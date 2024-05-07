@@ -4,6 +4,8 @@ using Peace.Lifelog.Security;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.UserManagementTest;
 using Newtonsoft.Json;
+using Peace.Lifelog.Email;
+
 
 namespace Peace.Lifelog.UserManagement;
 
@@ -285,8 +287,10 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         string fpath = await ComposeLogsToFileAsync(response);
 
         Console.WriteLine("Logs written to: " + fpath);
-        // TODO: send email with attachment, and log op
-        
+
+        var EmailService = new EmailService();
+        var emailResponse = await EmailService.SendPIIEmail(userHash, fpath);
+        // TODO: send email with attachment, and log operation
         return response;
     }
     // Helper functions
