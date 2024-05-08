@@ -30,11 +30,12 @@ export function loadRegistrationPage(root, ajaxClient) {
         }
 
         let request = ajaxClient.post(postDataUrl, data)
-
+        console.log(request)
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
             }).then(function (data) {
+                console.log(data)
                 if (data.HasError == true) throw new Error("User Registration Failed")
                 resolve(data);
             }).catch(function (error) {
