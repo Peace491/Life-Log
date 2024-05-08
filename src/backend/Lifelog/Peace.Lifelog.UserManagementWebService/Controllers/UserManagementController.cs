@@ -202,4 +202,45 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
+    [HttpPost("GetAllNonRootUsers")]
+    public async Task<IActionResult> GetAllNonRootUsers([FromBody] GetNonRootUsersRequest payload)
+    {
+        try 
+        {
+            Console.WriteLine("Getting all non-root users");
+            var response = await lifelogUserManagementService.GetAllNonRootUsers(payload.Principal);
+
+            if(response.HasError)
+            {
+                throw new Exception("Error getting all non-root users");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+    [HttpPost("GetAllNormalUsers")]
+    public async Task<IActionResult> GetAllNormalUsers([FromBody] GetNormalUsersRequest payload)
+    {
+        try 
+        {
+            Console.WriteLine("Getting all normal users");
+            var response = await lifelogUserManagementService.GetAllNormalUsers(payload.Principal);
+
+            if(response.HasError)
+            {
+                throw new Exception("Error getting all normal users");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
 }
+
