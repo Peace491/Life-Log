@@ -160,4 +160,46 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
+    [HttpPost("UpdateRoleToAdmin")]
+    public async Task<IActionResult> UpdateUserRoleToAdmin([FromBody] UpdateRoleToAdmin payload)
+    {
+        try 
+        {
+            Console.WriteLine("Updating user role for user: " + payload.UserId);
+            // first principal is principal of user making the request, second uid is uid of user to update
+            var response = await lifelogUserManagementService.UpdateRoleToAdmin(payload.Principal, payload.UserId);
+
+            if(response.HasError)
+            {
+                throw new Exception("Error updating user role");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+    [HttpPost("UpdateRoleToNormal")]
+    public async Task<IActionResult> UpdateUserRoleToNormal([FromBody] UpdateRoleToNormal payload)
+    {
+        try 
+        {
+            Console.WriteLine("Updating user role for user: " + payload.UserId);
+            // first principal is principal of user making the request, second uid is uid of user to update
+            var response = await lifelogUserManagementService.UpdateRoleToNormal(payload.Principal, payload.UserId);
+
+            if(response.HasError)
+            {
+                throw new Exception("Error updating user role");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
 }
