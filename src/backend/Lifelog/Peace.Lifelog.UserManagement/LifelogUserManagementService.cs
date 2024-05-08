@@ -23,6 +23,129 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         this.hashService = hashService;
     }    
 
+    #region User Mangagement Stories 1 & 2
+    public async Task<Response> GetAllNormalUsers(AppPrincipal principal)
+    {
+        var response = new Response();
+
+        if (principal.Claims == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Admin" && userRole != "Root")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
+
+        response = await userManagementRepo.GetAllNormalUsers();
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to get Lifelog Normal Users.";
+            return response;
+        }
+
+        response.HasError = false;
+        return response;
+    }
+
+    public async Task<Response> GetAllNonRootUsers(AppPrincipal principal)
+    {
+        var response = new Response();
+
+        if (principal.Claims == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Root")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
+
+        response = await userManagementRepo.GetAllNonRootUsers();
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to get Lifelog Non-Root Users.";
+            return response;
+        }
+
+        response.HasError = false;
+        return response;
+    }
+
+    public async Task<Response> UpdateRoleToAdmin(AppPrincipal principal, string userId)
+    {
+        var response = new Response();
+
+        if (principal.Claims == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Root")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
+
+        response = await userManagementRepo.ChangeUserRole(userId, "Admin");
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to update user role to Admin.";
+            return response;
+        }
+
+        response.HasError = false;
+        return response;
+    }
+
+    public async Task<Response> UpdateRoleToNormal(AppPrincipal principal, string userId)
+    {
+        var response = new Response();
+
+        if (principal.Claims == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Root")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
+
+        response = await userManagementRepo.ChangeUserRole(userId, "Normal");
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to update user role to Normal.";
+            return response;
+        }
+
+        response.HasError = false;
+        return response;
+    }
+
+    #endregion
+
     public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
         var response = new Response();

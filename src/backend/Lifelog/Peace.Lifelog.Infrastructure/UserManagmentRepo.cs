@@ -9,16 +9,89 @@ public class UserManagmentRepo : IUserManagmentRepo
 {
     private readonly ICreateDataOnlyDAO createDataOnlyDAO;
     private readonly IReadDataOnlyDAO readDataOnlyDAO;
+    private readonly IUpdateDataOnlyDAO updateDataOnlyDAO;
     private readonly IDeleteDataOnlyDAO deleteDataOnlyDAO;
     private readonly ILogging logger;
 
-    public UserManagmentRepo(ICreateDataOnlyDAO createDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO, IDeleteDataOnlyDAO deleteDataOnlyDAO, ILogging logger)
+    public UserManagmentRepo(ICreateDataOnlyDAO createDataOnlyDAO, IReadDataOnlyDAO readDataOnlyDAO, IUpdateDataOnlyDAO updateDataOnlyDAO, IDeleteDataOnlyDAO deleteDataOnlyDAO, ILogging logger)
     {
         this.createDataOnlyDAO = createDataOnlyDAO;
         this.readDataOnlyDAO = readDataOnlyDAO;
+        this.updateDataOnlyDAO = updateDataOnlyDAO;
         this.deleteDataOnlyDAO = deleteDataOnlyDAO;
         this.logger = logger;
     }
+
+    #region User Management Repository Methods Userstory 1 & 2
+    public async Task<Response> GetAllNormalUsers()
+    {
+        Response response = new Response();
+        try
+        {
+            string sql = "SELECT UserId FROM LifelogUserRole WHERE Role = 'Normal'";
+
+            // execute 
+            response = await readDataOnlyDAO.ReadData(sql, null);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", "root", "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> GetAllNonRootUsers()
+    {
+        Response response = new Response();
+        try
+        {
+            string sql = "SELECT UserId FROM LifelogUserRole WHERE Role != 'Root'";
+
+            // execute 
+            response = await readDataOnlyDAO.ReadData(sql, null);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", "root", "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> ChangeUserRole(string userId, string role)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userId input
+            if(ContainsSQLInjection(userId))
+            {
+                throw new Exception("SQL Injection detected in change user role");
+            }
+
+            if(role != "Normal" && role != "Admin" && role != "Root")
+            {
+                throw new Exception("Invalid role");
+            }
+
+            // substitute userId in querys
+            string accountSql = $"UPDATE LifelogAccount SET Role = \"{role}\" WHERE UserId = \"{userId}\"";
+            string userRoleSql = $"UPDATE LifelogUserRole SET Role = \"{role}\" WHERE UserId = \"{userId}\"";
+
+            // execute 
+            response = await updateDataOnlyDAO.UpdateData(userRoleSql);
+            if(response.HasError == false)
+            {
+                response = await updateDataOnlyDAO.UpdateData(accountSql);
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userId, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    #endregion
 
     #region User Management Repository Methods
     public async Task<Response> GetUserHashFromUserId(string userId)
