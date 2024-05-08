@@ -18,7 +18,7 @@ public class UserManagmentRepoShould
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        var userManagmentRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
 
         _ = await logger.CreateLog("logs", userHash, "Info", "Error", "message");
 
@@ -40,7 +40,7 @@ public class UserManagmentRepoShould
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        var userManagmentRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO,readDataOnlyDAO, deleteDataOnlyDAO, logger);
 
         _ = await logger.CreateLog("Logs", userHash, "Info", "View", "view PII test");
         _ = await logger.CreateLog("Logs", userHash, "Info", "View", "view PII test");

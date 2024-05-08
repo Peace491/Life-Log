@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
+using Peace.Lifelog.Email;
 
 public class LogTransactionShould : IAsyncLifetime, IDisposable 
 {
@@ -43,18 +44,20 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
         await DDLTransactionDAO.ExecuteDDLCommand(createMockTableSql);
 
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
 
         LIFELOG_ACCOUNT_REQUEST.UserId = ("UserId", USER_ID);
         LIFELOG_ACCOUNT_REQUEST.Role = ("Role", ROLE);
@@ -76,18 +79,20 @@ public class LogTransactionShould : IAsyncLifetime, IDisposable
     
     {
         // Create Test User Account
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        SaltService saltService = new SaltService();
+        ISaltService saltService = new SaltService();
+        IHashService hashService = new HashService();
+        IEmailService emailService = new EmailService();
     
-        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(readDataOnlyDAO, deleteDataOnlyDAO, logger);
-        AppUserManagementService appUserManagementService =  new AppUserManagementService();
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO,logger);
         
-        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, createDataOnlyDAO);
+        var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);
         var deleteAccountResponse = lifelogUserManagementService.DeleteLifelogUser(LIFELOG_ACCOUNT_REQUEST, LIFELOG_PROFILE_REQUEST);
 
         var DDLTransactionDAO = new DDLTransactionDAO();

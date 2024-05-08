@@ -189,7 +189,6 @@ public class LifelogUserManagementService : ILifelogUserManagementService
             return response;
         }
 
-
         if (userRole == "Root")
         {
             response = await userManagementRepo.GetAccountRecoveryRequestRoot();
