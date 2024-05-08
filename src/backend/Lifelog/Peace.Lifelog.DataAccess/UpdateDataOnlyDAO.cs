@@ -4,7 +4,7 @@ using DomainModels;
 
 using MySql.Data.MySqlClient;
 
-public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO 
+public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO
 {
     LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
@@ -13,7 +13,7 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO
         return new MySqlConnection(lifelogConfig.UpdateOnlyConnectionString);
     }
 
-    public async Task<Response> UpdateData(string sql) 
+    public async Task<Response> UpdateData(string sql)
     {
         var response = new Response();
 
@@ -32,50 +32,50 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO
         }
 
         MySqlTransaction? transaction = null;
-        
-        try 
+
+        try
         {
-            var connection = ConnectToDb();
-            
-            connection.Open();
-
-            transaction = connection.BeginTransaction();
-            
-            await using (var command = new MySqlCommand())
+            using (var connection = ConnectToDb())
             {
-                // Set the connection for the command
-                command.Connection = connection;
 
-                // Define the SQL command
-                command.CommandText = sql;
+                connection.Open();
 
-                // Define the transaction
-                command.Transaction = transaction;
+                transaction = connection.BeginTransaction();
 
-                // Execute the SQL command
-                var dbResponse = command.ExecuteNonQuery();
+                await using (var command = new MySqlCommand())
+                {
+                    // Set the connection for the command
+                    command.Connection = connection;
 
-                response.Output = [dbResponse];
+                    // Define the SQL command
+                    command.CommandText = sql;
+
+                    // Define the transaction
+                    command.Transaction = transaction;
+
+                    // Execute the SQL command
+                    var dbResponse = command.ExecuteNonQuery();
+
+                    response.Output = [dbResponse];
+                }
+
+                transaction.Commit();
+
+                response.HasError = false;
+
+                // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
+
+                // response.LogId = logTransactionResponse.LogId;
             }
 
-            transaction.Commit();
-
-            connection.Close();
-            
-            response.HasError = false;
-
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
-
-            response.LogId = logTransactionResponse.LogId;
-
-        } 
+        }
         catch (Exception error)
         {
-            if (transaction != null) 
+            if (transaction != null)
             {
                 transaction.Rollback();
             }
-            
+
             response.HasError = true;
             response.ErrorMessage = error.Message;
 

@@ -1,5 +1,6 @@
 namespace Peace.Lifelog.DataAccess;
 
+using System.Diagnostics;
 using DomainModels;
 
 using MySql.Data.MySqlClient;
@@ -8,12 +9,12 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
 {
     LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
-    public  MySqlConnection ConnectToDb()
+    public MySqlConnection ConnectToDb()
     {
         return new MySqlConnection(lifelogConfig.CreateOnlyConnectionString);
     }
 
-    public async Task<Response> CreateData(string sql) 
+    public async Task<Response> CreateData(string sql)
     {
         var response = new Response();
 
@@ -32,50 +33,51 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
         }
 
         MySqlTransaction? transaction = null;
-        
-        try 
+
+        try
         {
-            var connection = ConnectToDb();
-
-            connection.Open();
-
-            transaction = connection.BeginTransaction();
-            
-            await using (var command = new MySqlCommand())
+            using (var connection = ConnectToDb())
             {
-                // Set the connection for the command
-                command.Connection = connection;
 
-                // Define the SQL command
-                command.CommandText = sql;
+                connection.Open();
 
-                // Define the transaction
-                command.Transaction = transaction;
+                transaction = connection.BeginTransaction();
 
-                // Execute the SQL command
-                var dbResponse = command.ExecuteNonQuery();
+                await using (var command = new MySqlCommand())
+                {
+                    // Set the connection for the command
+                    command.Connection = connection;
 
-                response.Output = [command.LastInsertedId, dbResponse];
+                    // Define the SQL command
+                    command.CommandText = sql;
+
+                    // Define the transaction
+                    command.Transaction = transaction;
+
+                    // Execute the SQL command
+                    var dbResponse = command.ExecuteNonQuery();
+                    
+
+                    response.Output = [command.LastInsertedId, dbResponse];
+                }
+
+                transaction.Commit();
+
+                // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Create is successful");
+
+                // response.LogId = logTransactionResponse.LogId;
+
+                response.HasError = false;
             }
 
-            transaction.Commit();
-
-            connection.Close();
-
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Create is successful");
-
-            response.LogId = logTransactionResponse.LogId;
-
-            response.HasError = false;
-
-        } 
+        }
         catch (Exception error)
         {
-            if (transaction != null) 
+            if (transaction != null)
             {
                 transaction.Rollback();
             }
-            
+
             response.HasError = true;
             response.ErrorMessage = error.Message;
 

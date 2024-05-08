@@ -6,11 +6,11 @@ using MySql.Data.MySqlClient;
 
 public class DDLTransactionDAO : IDDLTransactionDAO
 {
-    private readonly string connectionString = "Server = localhost; Database = LifelogDB; User ID = DDLUser; Password = password;";
+    LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
     public MySqlConnection ConnectToDb()
     {
-        return new MySqlConnection(connectionString);
+        return new MySqlConnection(lifelogConfig.DDLConnectionString);
     }
 
     public async Task<Response> ExecuteDDLCommand(string sql)
@@ -64,9 +64,9 @@ public class DDLTransactionDAO : IDDLTransactionDAO
             
             response.HasError = false;
 
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "DDL Transaction Successful");
+            // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "DDL Transaction Successful");
 
-            response.LogId = logTransactionResponse.LogId;
+            // response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)

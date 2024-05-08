@@ -96,10 +96,10 @@ public class ReadDataOnlyDAOShould : IDisposable
         // Cleanup
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
 
-        var logTransaction = new LogTransaction();
-        await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
-        await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
+        // var logTransaction = new LogTransaction();
+        // await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
 
     [Fact]
@@ -144,16 +144,16 @@ public class ReadDataOnlyDAOShould : IDisposable
         // Cleanup
         var deleteResponse = await deleteOnlyDAO.DeleteData(deleteSql);
 
-        var logTransaction = new LogTransaction();
+        // var logTransaction = new LogTransaction();
 
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
 
-        foreach (Response createResponse in createResponses)
-        {
-            await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
-        }
+        // foreach (Response createResponse in createResponses)
+        // {
+        //     await logTransaction.DeleteDataAccessTransactionLog(createResponse.LogId);
+        // }
 
-        await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
+        // await logTransaction.DeleteDataAccessTransactionLog(deleteResponse.LogId);
     }
     
         // ... (previous methods)
@@ -180,8 +180,8 @@ public class ReadDataOnlyDAOShould : IDisposable
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
-        var logTransaction = new LogTransaction();
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // var logTransaction = new LogTransaction();
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
@@ -206,8 +206,8 @@ public class ReadDataOnlyDAOShould : IDisposable
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
-        var logTransaction = new LogTransaction();
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // var logTransaction = new LogTransaction();
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
@@ -230,8 +230,8 @@ public class ReadDataOnlyDAOShould : IDisposable
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
-        var logTransaction = new LogTransaction();
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // var logTransaction = new LogTransaction();
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
@@ -258,8 +258,8 @@ public class ReadDataOnlyDAOShould : IDisposable
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
-        var logTransaction = new LogTransaction();
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // var logTransaction = new LogTransaction();
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
     [Fact]
@@ -286,8 +286,8 @@ public class ReadDataOnlyDAOShould : IDisposable
         Assert.True(timer.Elapsed.TotalSeconds <= MAX_EXECUTION_TIME_IN_SECONDS);
 
         // Cleanup
-        var logTransaction = new LogTransaction();
-        await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
+        // var logTransaction = new LogTransaction();
+        // await logTransaction.DeleteDataAccessTransactionLog(readResponse.LogId);
     }
 
 }

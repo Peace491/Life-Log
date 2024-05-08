@@ -4,7 +4,7 @@ using DomainModels;
 
 using MySql.Data.MySqlClient;
 
-public class ReadDataOnlyDAO : IReadDataOnlyDAO 
+public class ReadDataOnlyDAO : IReadDataOnlyDAO
 {
     LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
@@ -13,7 +13,7 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO
         return new MySqlConnection(lifelogConfig.ReadOnlyConnectionString);
     }
 
-    public async Task<Response> ReadData(string sql, int? count = 10, int currentPage = 0) 
+    public async Task<Response> ReadData(string sql, int? count = 10, int currentPage = 0)
     {
         var response = new Response();
 
@@ -55,60 +55,61 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO
             return response;
         }
 
-        
-        try 
+
+        try
         {
-            var connection = ConnectToDb();
-            
-            connection.Open();
-            
-            await using (var command = new MySqlCommand())
+            using (var connection = ConnectToDb())
             {
-                // Set the connection for the command
-                command.Connection = connection;
 
-                // Define the SQL command
-                if (count == null) 
-                {
-                    command.CommandText = sql;
-                }
-                else 
-                {
-                    command.CommandText = sql + $" LIMIT {count} OFFSET {count * currentPage}";
-                }
-                
+                connection.Open();
 
-                // Execute the SQL command
-                var dbResponse = command.ExecuteReader();
-
-                while (dbResponse.Read())
+                await using (var command = new MySqlCommand())
                 {
-                    if (response.Output == null)
+                    // Set the connection for the command
+                    command.Connection = connection;
+
+                    // Define the SQL command
+                    if (count == null)
                     {
-                        response.Output = new List<Object>();
+                        command.CommandText = sql;
                     }
-                    
-                    List<object> row = new List<object>();
-
-                    for (int i = 0; i < dbResponse.FieldCount; i++)
+                    else
                     {
-                        row.Add(dbResponse[i]);
+                        command.CommandText = sql + $" LIMIT {count} OFFSET {count * currentPage}";
                     }
 
-                    response.Output.Add(row);
-                    
+
+                    // Execute the SQL command
+                    var dbResponse = command.ExecuteReader();
+
+                    while (dbResponse.Read())
+                    {
+                        if (response.Output == null)
+                        {
+                            response.Output = new List<Object>();
+                        }
+
+                        List<object> row = new List<object>();
+
+                        for (int i = 0; i < dbResponse.FieldCount; i++)
+                        {
+                            row.Add(dbResponse[i]);
+                        }
+
+                        response.Output.Add(row);
+
+                    }
                 }
+
+                response.HasError = false;
+
+                // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Read Data is successful");
+
+                // response.LogId = logTransactionResponse.LogId;
+
             }
 
-            connection.Close();
-            
-            response.HasError = false;
-
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Read Data is successful");
-
-            response.LogId = logTransactionResponse.LogId;
-
-        } 
+        }
         catch (Exception error)
         {
             response.HasError = true;
