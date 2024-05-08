@@ -16,12 +16,13 @@ export function loadRegistrationPage(root, ajaxClient) {
 
     let jwtToken
 
-    const registrationServiceUrl = 'http://localhost:8081';
-    const authenticationServiceUrl = 'http://localhost:8082/authentication';
+    let registrationServiceUrl = '';
+    let authenticationWebServiceUrl = "";
+    let authenticateOTPUrl = "";
 
     // NOT exposed to the global object ("Private" functions)
     function registerUser(userId, dob, zipCode) {
-        let postDataUrl = registrationServiceUrl + "/registration/registerNormalUser"
+        let postDataUrl = registrationServiceUrl
 
         let data = {
             userId: userId,
@@ -45,7 +46,7 @@ export function loadRegistrationPage(root, ajaxClient) {
     }
 
     function authenticateOTP(userHash, otp) {
-        const postUrl = authenticationServiceUrl + `/authenticateOTP`
+        const postUrl = authenticationWebServiceUrl + authenticateOTPUrl
 
         let data = {
             userHash: userHash,
@@ -149,25 +150,16 @@ export function loadRegistrationPage(root, ajaxClient) {
 
     // Fetch URL config
     async function fetchConfig() {
+        try{
         // fetch all Url's
         const response = await fetch('../lifelog-config.url.json');
         const data = await response.json();
-        webServiceUrl = data.LifelogUrlConfig.Map.MapWebService;
-        webServiceUrlLLI = data.LifelogUrlConfig.LLI.LLIWebService;
-        createUrl = data.LifelogUrlConfig.Map.MapPinCreate;
-        getAllPinUrl = data.LifelogUrlConfig.Map.MapGetAllPin;
-        getAllLLIUrl = data.LifelogUrlConfig.LLI.GetAllLLI;
-        updateUrl = data.LifelogUrlConfig.Map.MapPinUpdate;
-        deleteUrl = data.LifelogUrlConfig.Map.MapPinDelete;
-        viewUrl = data.LifelogUrlConfig.Map.MapPinView;
-        getPinStatusUrl = data.LifelogUrlConfig.Map.MapPinStatusGet;
-        editPinLLIUrl = data.LifelogUrlConfig.Map.MapPinLLIEdit;
-        viewChangeUrl = data.LifelogUrlConfig.Map.MapViewUpdate;
-
-        webServiceUrlLocRec = data.LifelogUrlConfig.LocationRecommendation.LocRecWebService;
-        getRecommendationUrl = data.LifelogUrlConfig.LocationRecommendation.GetLocationRecommendation;
-        viewRecommendationUrl = data.LifelogUrlConfig.LocationRecommendation.ViewLocationRecommendation;
-        updateLogUrl = data.LifelogUrlConfig.LocationRecommendation.UpdateLog;
+        registrationServiceUrl = data.LifelogUrlConfig.UserManagement.RegistrationService;
+        authenticationWebServiceUrl = data.LifelogUrlConfig.HomePage.AuthenticationWebService;
+        authenticateOTPUrl = data.LifelogUrlConfig.HomePage.AuthenticationOTP;
+        } catch (error){
+            console.log(error)
+        }
     }
 
     root.myApp = root.myApp || {};
@@ -177,10 +169,12 @@ export function loadRegistrationPage(root, ajaxClient) {
     //root.myApp.sendData = sendDataHandler;
 
     // Initialize the current view by attaching event handlers 
-    function init() {
+    async function init() {
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
+
+        await fetchConfig()
 
         if (jwtToken) {
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)
