@@ -1,11 +1,9 @@
 ﻿using DomainModels;
-using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.Infrastructure;
-using Peace.Lifelog.UserManagementTest;
-using Newtonsoft.Json;
 using Peace.Lifelog.Email;
 
+using Newtonsoft.Json;
 
 namespace Peace.Lifelog.UserManagement;
 
