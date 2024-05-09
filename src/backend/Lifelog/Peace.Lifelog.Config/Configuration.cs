@@ -7,6 +7,7 @@ public class LifelogConfig
     public string UpdateOnlyConnectionString { get; set; } = "";
     public string DeleteOnlyConnectionstring { get; set; } = "";
     public string LogTransConnectionString {get; set; } = "";
+    public string DDLConnectionString { get; set; } = "";
     public string LifelogSystemEmail { get; set; } = "";
     public string LifelogSystemEmailAppPassword { get; set; } = "";
     public string MaxExecutionTimeInMilliseconds { get; set; } = "";
