@@ -13,16 +13,16 @@ public class ArchiveRepo
         this.deleteDataOnlyDAO = deleteDataOnlyDAO;
     }
 
-    public async Task<Response> SelectArchivableLogs()
+    public async Task<Response> SelectArchivableLogs(string tableName)
     {
-        var selectLogs = "SELECT * FROM LifelogDB.Logs WHERE Timestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)";
+        var selectLogs = $"SELECT * FROM {tableName} WHERE Timestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)";
         var selectLogsResponse = await readDataOnlyDAO.ReadData(selectLogs, null);
         return selectLogsResponse;
     }
 
-    public async Task<Response> DeleteArchivedLogs()
+    public async Task<Response> DeleteArchivedLogs(string tableName)
     {
-        var deleteLogs = "DELETE FROM LifelogDB.Logs WHERE Timestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)";
+        var deleteLogs = $"DELETE FROM {tableName} WHERE Timestamp < DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)";
         var deleteLogsResponse = await deleteDataOnlyDAO.DeleteData(deleteLogs);
         return deleteLogsResponse;
     }
