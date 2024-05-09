@@ -79,7 +79,7 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
             response.HasError = true;
             response.ErrorMessage = error.Message;
 
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Create failed");
+            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", error.Message);
 
             response.LogId = logTransactionResponse.LogId;
         }
