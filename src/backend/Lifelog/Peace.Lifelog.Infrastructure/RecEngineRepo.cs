@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DomainModels;
+using MySqlX.XDevAPI.Relational;
 using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 using ZstdSharp.Unsafe;
@@ -13,6 +14,7 @@ public class RecEngineRepo : IRecEngineRepo
     #region Fields
 
     private readonly IReadDataOnlyDAO readDataOnlyDAO;
+    private readonly IDDLTransactionDAO ddlTransactionDAO;
     private readonly ILogging logger;
 
     #endregion
@@ -23,10 +25,12 @@ public class RecEngineRepo : IRecEngineRepo
     /// Initializes a new instance of the RecEngineRepo class, injecting dependencies for data access and logging.
     /// </summary>
     /// <param name="readDataOnlyDAO">Data access object for read-only database operations.</param>
+    /// <param name="dDLTransactionDAO">Data access object for data definition language (DDL) transactions.</param>
     /// <param name="logger">Service for logging application events and errors.</param>
-    public RecEngineRepo(IReadDataOnlyDAO readDataOnlyDAO, ILogging logger)
+    public RecEngineRepo(IReadDataOnlyDAO readDataOnlyDAO, IDDLTransactionDAO ddlTransactionDAO, ILogging logger)
     {
         this.readDataOnlyDAO = readDataOnlyDAO;
+        this.ddlTransactionDAO = ddlTransactionDAO;
         this.logger = logger;
     }
 
@@ -52,9 +56,15 @@ public class RecEngineRepo : IRecEngineRepo
 
             var userSummary = PopulateUserSummary(userHash, response);
 
-            string recommendationQuery = DynamicallyConstructQuery(userSummary, numRecs);
+            List<string> recommendationQuery = DynamicallyConstructQuery(userSummary, numRecs);
 
-            response = await readDataOnlyDAO.ReadData(recommendationQuery, null);
+            response = await readDataOnlyDAO.ReadData(recommendationQuery[0], null);
+
+            if (!response.HasError)
+            {
+                string tName = recommendationQuery[1];
+                var tableDrop = await ddlTransactionDAO.ExecuteDDLCommand($"DROP TABLE `{tName}`;");
+            }
 
             if (response.Output == null || response.Output.Count != numRecs)
             {
@@ -81,11 +91,11 @@ public class RecEngineRepo : IRecEngineRepo
     /// <param name="userSummary">User data mart containing information for tailoring recommendations.</param>
     /// <param name="numRecs">Number of recommendations to retrieve.</param>
     /// <returns>The SQL query string.</returns>
-    private string DynamicallyConstructQuery(RecSummary? userSummary, int numRecs)
+    private List<string> DynamicallyConstructQuery(RecSummary? userSummary, int numRecs)
     {
         if (userSummary == null)
         {
-            return $"SELECT * FROM LLI ORDER BY RAND() LIMIT {numRecs};";
+            return [$"SELECT * FROM LLI ORDER BY RAND() LIMIT {numRecs};", "LLI"];
         }
         string tableName = $"{userSummary.UserHash}Recs";
         string query = StartQuery(tableName);
@@ -129,7 +139,7 @@ public class RecEngineRepo : IRecEngineRepo
             }
         }
         query += EndQuery(tableName);
-        return query;
+        return [query, tableName];
     }
 
     /// <summary>
@@ -194,7 +204,6 @@ public class RecEngineRepo : IRecEngineRepo
     /// <returns>A portion of the SQL query for selecting LLIs not in specified categories.</returns>
     private string SelectNewLLINotOfCategories(string tableName, string userHash, List<string> categories, int limit)
     {
-        // Detailed implementation skipped for brevity.
         string category1 = categories[0];
         string category2 = categories[1];
         string category3 = categories[2];
