@@ -7,7 +7,6 @@ namespace Peace.Lifelog.UserManagementWebService.Controllers;
 using System.Text.Json;
 using DomainModels;
 using Peace.Lifelog.RegistrationService;
-using Peace.Lifelog.Security;
 using Peace.Lifelog.Email;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.Logging;
