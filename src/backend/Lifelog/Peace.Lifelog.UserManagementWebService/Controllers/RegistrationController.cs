@@ -41,6 +41,7 @@ public class RegistrationController : ControllerBase
             registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
         }
         else {
+            Console.WriteLine("CheckInputResponse has error");
             return BadRequest();
         }
 
