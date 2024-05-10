@@ -59,7 +59,7 @@ public sealed class LogController : ControllerBase
 
     [HttpGet]
     [Route("topNVisitedPage")]
-    public async Task<IActionResult> GetTopNVisitedPage(int numOfPage, int periodInMonth)
+    public async Task<IActionResult> GetTopNVisitedPage(int numOfPage)
     {
         // var processTokenResponseStatus = ProcessJwtToken();
         // if (processTokenResponseStatus != 200)
@@ -77,7 +77,7 @@ public sealed class LogController : ControllerBase
 
             if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
 
-            var response = await logging.ReadTopNMostVisitedPage("Logs", numOfPage, periodInMonth);
+            var response = await logging.ReadMostVisitedPage("Logs", numOfPage);
 
             return Ok(response);
         }
@@ -89,7 +89,7 @@ public sealed class LogController : ControllerBase
 
     [HttpGet]
     [Route("topNLongestPageVisit")]
-    public async Task<IActionResult> GetTopNLongestPageVisit(int numOfPage, int periodInMonth)
+    public async Task<IActionResult> GetTopNLongestPageVisit(int numOfPage)
     {
         // var processTokenResponseStatus = ProcessJwtToken();
         // if (processTokenResponseStatus != 200)
@@ -106,7 +106,7 @@ public sealed class LogController : ControllerBase
             }
 
             if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
-            var response = await logging.ReadTopNLongestPageVisit("Logs", numOfPage, periodInMonth);
+            var response = await logging.ReadLongestPageVisit("Logs", numOfPage);
 
             return Ok(response);
         }
@@ -119,7 +119,7 @@ public sealed class LogController : ControllerBase
 
     [HttpGet]
     [Route("loginLogsCount")]
-    public async Task<IActionResult> GetLoginLogsCount(string type, int period)
+    public async Task<IActionResult> GetLoginLogsCount(string type)
     {
         try
         {
@@ -130,7 +130,7 @@ public sealed class LogController : ControllerBase
             }
 
             if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
-            var response = await logging.ReadLoginLogsCount("Logs", type, period);
+            var response = await logging.ReadLoginLogsCount("Logs", type);
             return Ok(response);
         } catch (Exception error) 
         {
@@ -140,7 +140,7 @@ public sealed class LogController : ControllerBase
 
     [HttpGet]
     [Route("regLogsCount")]
-    public async Task<IActionResult> GetRegLogsCount(string type, int period)
+    public async Task<IActionResult> GetRegLogsCount(string type)
     {
         try
         {
@@ -151,7 +151,7 @@ public sealed class LogController : ControllerBase
             }
 
             if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
-            var response = await logging.ReadRegLogsCount("Logs", type, period);
+            var response = await logging.ReadRegLogsCount("Logs", type);
             return Ok(response);
         } catch (Exception error) 
         {

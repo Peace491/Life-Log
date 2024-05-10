@@ -51,27 +51,26 @@
 
 
     <main>
-        <div class="select-period-container">
-            <select name="period" id="period">
-                <option value="6" selected>6 Month</option>
-                <option value="12">12 Month</option>
-                <option value="24">24 Month</option>
-            </select>
-        </div>
         <div class="stats-container">
             <div class="login-status-container">
-                <h2 id="login-success"></h2>
-                <h2 id="login-failure"></h2>
+                <div id="login-success"></div>
+                <div id="login-failure"></div>
             </div>
             <div class="reg-stats-container">
-                <h2 id="reg-success"></h2>
-                <h2 id="reg-failure"></h2>
+                <div id="reg-success"></div>
+                <div id="reg-failure"></div>
             </div>
             <div class="longest-page-visit-container">
-                <h2 id="longest-page-visit"></h2>
+                <h2>Longest Page Visits:</h2>
+                <div id="longest-page-visit-6"></div>
+                <div id="longest-page-visit-12"></div>
+                <div id="longest-page-visit-24"></div>
             </div>
             <div class="most-used-feature-container">
-                <h2 id="most-used-feature"> </h2>
+                <h2>Most User Features: </h2>
+                <div id="most-used-feature-6"> </div>
+                <div id="most-used-feature-12"> </div>
+                <div id="most-used-feature-24"> </div>
             </div>
             <div class="app-specific-stats-container">
                 <h2>App Specific Stats</h2>
