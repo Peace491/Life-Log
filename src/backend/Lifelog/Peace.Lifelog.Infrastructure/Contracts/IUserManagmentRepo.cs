@@ -4,6 +4,9 @@ namespace Peace.Lifelog.Infrastructure;
 
 public interface IUserManagmentRepo
 {
+    public Task<Response> GetAllNormalUsers();
+    public Task<Response> GetAllNonRootUsers();
+    public Task<Response> ChangeUserRole(string userId, string role);
     public Task<Response> GetUserHashFromUserId(string userId);
     public Task<Response> GetUserIdFromUserHash(string userHash);
     public Task<Response> CreateLifelogUserRoleInDB(string userId, string role);

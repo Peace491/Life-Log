@@ -9,16 +9,74 @@ using ZstdSharp.Unsafe;
 public class UserManagmentRepoShould
 {
     [Fact]
+    public async Task GetAllNormalUsers()
+    {
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+
+        // Act
+        var response = await userManagmentRepo.GetAllNormalUsers();
+
+        // Assert
+        Assert.True(response.HasError == false);
+    }
+    [Fact]
+    public async Task GetAllNonRootUsers()
+    {
+        // Arrange
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+
+        // Act
+        var response = await userManagmentRepo.GetAllNonRootUsers();
+
+        // Assert
+        Assert.True(response.HasError == false);
+    }
+    [Fact]
+    public async Task ChangeUserRole()
+    {
+        // Arrange
+        var userId = "TestUser";
+        // TODO: 
+        var role = "Admin";
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+
+        // Act
+        var response = await userManagmentRepo.ChangeUserRole(userId, role);
+
+        // Assert
+        Assert.True(response.HasError == false);
+    }
+    [Fact]
     public async Task DeletePersonalIdentifiableInformation()
     {
         // Arrange
         var userHash = "userHash";
-        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
 
         _ = await logger.CreateLog("logs", userHash, "Info", "Error", "message");
 
@@ -37,10 +95,11 @@ public class UserManagmentRepoShould
         var userHash = "System";
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         ILogging logger = new Logging(logTarget);
-        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO,readDataOnlyDAO, deleteDataOnlyDAO, logger);
+        var userManagmentRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
 
         _ = await logger.CreateLog("Logs", userHash, "Info", "View", "view PII test");
         _ = await logger.CreateLog("Logs", userHash, "Info", "View", "view PII test");
