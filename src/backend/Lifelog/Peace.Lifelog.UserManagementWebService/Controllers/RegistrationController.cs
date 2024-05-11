@@ -10,7 +10,8 @@ using Peace.Lifelog.RegistrationService;
 using Peace.Lifelog.Email;
 using Peace.Lifelog.UserManagement;
 using Peace.Lifelog.Logging;
-
+using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Security;
 [ApiController]
 [Route("registration")]
 public class RegistrationController : ControllerBase
@@ -28,7 +29,9 @@ public class RegistrationController : ControllerBase
     public async Task<IActionResult> RegisterNormalUser([FromBody] RegisterNormalUserRequest registerNormalUserRequest)
     {
         var registrationService = new RegistrationService(lifelogUserManagementService, logger);
-        var emailService = new EmailService();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
 
         var checkInputResponse = await registrationService.CheckInputValidation(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
 

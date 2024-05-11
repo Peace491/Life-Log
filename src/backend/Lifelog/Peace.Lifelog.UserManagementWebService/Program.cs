@@ -33,6 +33,7 @@ builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManageme
 builder.Services.AddTransient<ISaltService, SaltService>();
 builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IOTPService, OTPService>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 

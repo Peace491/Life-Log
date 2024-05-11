@@ -46,7 +46,7 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
         ILogging logger = new Logging(logTarget);
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService   emailService = new EmailService();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
@@ -91,9 +91,9 @@ public class CalendarServiceShould : IAsyncLifetime, IDisposable
         ILogging logger = new Logging(logTarget);
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService   emailService = new EmailService();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
     
-         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
         var lifelogUserManagementService = new LifelogUserManagementService(userManagementRepo, appUserManagementService, saltService, emailService, hashService);

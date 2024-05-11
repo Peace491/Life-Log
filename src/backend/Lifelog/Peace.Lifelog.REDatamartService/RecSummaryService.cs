@@ -1,12 +1,9 @@
 ﻿namespace Peace.Lifelog.RecSummaryService;
 
-using System.Collections;
 using DomainModels;
-using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Logging;
 using Peace.Lifelog.Security;
-using ZstdSharp.Unsafe;
 
 public class RecSummaryService : IRecSummaryService
 {
@@ -34,6 +31,7 @@ public class RecSummaryService : IRecSummaryService
             {
                 response.HasError = true;
                 response.ErrorMessage = "An error occurred fetching user form.";
+                _ = await logger.CreateLog("Logs", principal.UserId, "ERROR", "Buisness", response.ErrorMessage);
                 return response;
             }
             // Init scoring with userform
@@ -56,20 +54,20 @@ public class RecSummaryService : IRecSummaryService
         catch (Exception ex)
         {
             _ = await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "Buisness", ex.Message);
-            return new Response { HasError = true, ErrorMessage = ex.Message };
+            response.ErrorMessage = ex.Message;
+            return response;
         }
         return response;
     }
 
     public async Task<Response> UpdateSystemUserRecSummary()
     {
+        Response response = new Response();
         var mostPopularCategoryResponse = await recSummaryRepo.GetMostPopularCategory();
         if (mostPopularCategoryResponse == null || mostPopularCategoryResponse.Output == null || !mostPopularCategoryResponse.Output.Any())
         {
-            return new Response
-            {
-                ErrorMessage = "No categories found or an error occurred."
-            };
+            response.ErrorMessage = "No categories found or an error occurred.";
+            return response;
         }
 
         // Assuming the intent is to update only the first valid category
@@ -77,10 +75,8 @@ public class RecSummaryService : IRecSummaryService
         var firstCategory = mostPopularCategoryResponse.Output.FirstOrDefault() as List<object>;
         if (firstCategory == null || !firstCategory.Any() || firstCategory[0] == null)
         {
-            return new Response
-            {
-                ErrorMessage = "First category is invalid or not found."
-            };
+            response.ErrorMessage = "No categories found or an error occurred.";
+            return response;
         }
 
         // Proceed with updating the Data Mart for the first valid category
@@ -107,11 +103,8 @@ public class RecSummaryService : IRecSummaryService
         {
             if (principal == null || principal.Claims == null || (principal.Claims["Role"] != "Admin" && principal.Claims["Role"] != "Root"))
             {
-                return new Response
-                {
-                    HasError = true,
-                    ErrorMessage = "Unauthorized"
-                };
+                response.ErrorMessage = "Unauthorized";
+                return response;
             }
 
             // get all userHashes
@@ -147,7 +140,7 @@ public class RecSummaryService : IRecSummaryService
         }
         catch (Exception ex)
         {
-            _ = await logger.CreateLog("Logs", "RecSummaryService", "ERROR", "System", $"An error occurred while processing your request: {ex.Message}");
+            _ = await logger.CreateLog("Logs", principal.UserId, "ERROR", "System", $"An error occurred while processing your request: {ex.Message}");
             response.ErrorMessage = "An error occurred while processing your request.";
         }
        

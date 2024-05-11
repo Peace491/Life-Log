@@ -16,10 +16,13 @@ public class AuthenticationController : ControllerBase
 {
     private readonly LifelogUserManagementService lifelogUserManagementService;
     private readonly ILogging _logger;
-    public AuthenticationController(LifelogUserManagementService lifelogUserManagementService, ILogging logger)
+    private readonly IEmailService emailService;
+
+    public AuthenticationController(LifelogUserManagementService lifelogUserManagementService, ILogging logger, IEmailService emailService)
     {
         this.lifelogUserManagementService = lifelogUserManagementService;
         _logger = logger;
+        this.emailService = emailService;
     }
     [HttpGet]
     [Route("getOTPEmail")]
@@ -31,8 +34,6 @@ public class AuthenticationController : ControllerBase
             // var lifelogUserManagementService = new LifelogUserManagementService();
 
             var userHash = await lifelogUserManagementService.getUserHashFromUserId(userId);
-
-            var emailService = new EmailService();
 
             // Act
             var emailResponse = await emailService.SendOTPEmail(userHash);

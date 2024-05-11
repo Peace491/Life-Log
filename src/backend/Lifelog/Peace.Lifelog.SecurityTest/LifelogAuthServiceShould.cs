@@ -31,7 +31,7 @@ public class LifelogAuthServiceShould : IAsyncLifetime, IDisposable
         ILogging logger = new Logging(logTarget);
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService   emailService = new EmailService();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
@@ -73,7 +73,7 @@ public class LifelogAuthServiceShould : IAsyncLifetime, IDisposable
         ILogging logger = new Logging(logTarget);
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService   emailService = new EmailService();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
     
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
@@ -90,9 +90,10 @@ public class LifelogAuthServiceShould : IAsyncLifetime, IDisposable
         //Arrange
         var timer = new Stopwatch();
         var lifelogAuthService = new LifelogAuthService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
 
         // Generate OTP
-        OTPService oTPService = new OTPService();
+        OTPService oTPService = new OTPService(updateDataOnlyDAO);
         var otpResponse = await oTPService.generateOneTimePassword(USER_HASH);
 
         string OTP = "";
