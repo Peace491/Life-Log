@@ -29,6 +29,7 @@ builder.Services.AddTransient<LifelogUserManagementService, LifelogUserManagemen
 builder.Services.AddTransient<ISaltService, SaltService>();
 builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IOTPService, OTPService>();
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 

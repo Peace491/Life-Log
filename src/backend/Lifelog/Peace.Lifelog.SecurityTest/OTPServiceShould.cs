@@ -1,5 +1,6 @@
 ﻿namespace Peace.Lifelog.SecurityTest;
 
+using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Security;
 using System.Diagnostics;
 
@@ -11,7 +12,8 @@ public class OTPServiceShould
     public async void GenerateOneTimePasswordShould_ProduceOTPLengthEight()
     {
         // Arrange
-        OTPService oTPService = new OTPService();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        OTPService oTPService = new OTPService(updateDataOnlyDAO);
         Stopwatch timer = new Stopwatch();
 
         // Act

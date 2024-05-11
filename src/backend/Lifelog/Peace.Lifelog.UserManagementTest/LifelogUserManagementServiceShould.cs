@@ -20,6 +20,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -27,9 +28,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
 
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -81,6 +82,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -88,9 +90,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -134,6 +136,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -141,9 +144,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -183,6 +186,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -190,9 +194,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -233,6 +237,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -240,9 +245,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -282,6 +287,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -289,9 +295,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -338,6 +344,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -345,9 +352,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -390,6 +397,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -397,9 +405,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -435,6 +443,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -442,9 +451,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -483,6 +492,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -490,9 +500,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -564,6 +574,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -571,9 +582,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -608,6 +619,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -615,9 +627,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -654,6 +666,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -661,9 +674,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -698,6 +711,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -705,9 +719,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -776,6 +790,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -783,9 +798,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -825,6 +840,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -832,9 +848,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -872,6 +888,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -879,9 +896,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         
@@ -913,6 +930,7 @@ public class LifelogUserManagementServiceShould
         // Create Test User Account
         ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
         ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
@@ -920,9 +938,9 @@ public class LifelogUserManagementServiceShould
 
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
-    
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IOTPService oTPService = new OTPService(updateDataOnlyDAO);
+        IEmailService emailService = new EmailService(readDataOnlyDAO, oTPService, updateDataOnlyDAO);
+
         IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         

@@ -3,7 +3,7 @@ using Peace.Lifelog.DataAccess;
 using Peace.Lifelog.Logging;
 using DomainModels;
 using System.Text.RegularExpressions;
-
+using Org.BouncyCastle.Asn1.Cms;
 
 public class UserManagmentRepo : IUserManagmentRepo
 {
