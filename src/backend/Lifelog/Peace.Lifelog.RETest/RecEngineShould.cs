@@ -29,13 +29,14 @@ public class ReServiceShould
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IDDLTransactionDAO ddlTransactionDAO = new DDLTransactionDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
         // need to setup a user every single time this test is run 
-        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, ddlTransactionDAO, logger);
         var recEngineService = new RecEngineService(recEngineRepo, logger, lifelogAuthService);
 
         // Act
@@ -57,13 +58,14 @@ public class ReServiceShould
         principal.Claims = new Dictionary<string, string>() {{"Claim", "Potato"}};
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IDDLTransactionDAO ddlTransactionDAO = new DDLTransactionDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
         // need to setup a user every single time this test is run 
-        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, ddlTransactionDAO, logger);
         var recEngineService = new RecEngineService(recEngineRepo, logger, lifelogAuthService);
         int numRecs = 5;
 
@@ -82,13 +84,14 @@ public class ReServiceShould
         principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IDDLTransactionDAO ddlTransactionDAO = new DDLTransactionDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
         // need to setup a user every single time this test is run 
-        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, ddlTransactionDAO, logger);
         var recEngineService = new RecEngineService(recEngineRepo, logger, lifelogAuthService);
         int numRecs = -1;
 
@@ -109,13 +112,14 @@ public class ReServiceShould
         principal.Claims = new Dictionary<string, string>() {{"Role", "Normal"}};
         // Arrange
         CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
-        ReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+        IDDLTransactionDAO ddlTransactionDAO = new DDLTransactionDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
         LifelogAuthService lifelogAuthService = new LifelogAuthService();
 
         // need to setup a user every single time this test is run 
-        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, logger);
+        var recEngineRepo = new RecEngineRepo(readDataOnlyDAO, ddlTransactionDAO, logger);
         var recEngineService = new RecEngineService(recEngineRepo, logger, lifelogAuthService);
         int numRecs = 11;
 
