@@ -6,5 +6,5 @@ namespace Peace.Lifelog.ArchivalService;
 
 public interface IArchive
 {
-    public Task<Response> Archive(DateTime dateTime, string table);
+    public Task<Response> ArchiveFileToS3(string tableName);
 }

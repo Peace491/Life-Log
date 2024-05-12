@@ -314,8 +314,8 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
         }
     
         
-    function deleteLLIImage(lliid, jwtToken, principal){
-        let deleteurl = "http://localhost:8091/mediaMemento/DeleteMedia"
+    function deleteLLIImage(lliid, jwtToken, principal, deleteURL){
+        let deleteurl = deleteURL;
         const DeleteMediaMementoRequest = {
             LLiId: lliid,
             AppPrincipal : principal
