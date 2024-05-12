@@ -57,7 +57,7 @@ export function loadHomePage(root, ajaxClient) {
 
     // NOT exposed to the global object ("Private" functions)
     function getOTPEmail(email) {
-        const getUrl = authenticationWebService + authenticateOTPEmailUrl + email;
+        const getUrl = authenticationWebService + authenticateOTPEmailUrl + `?userId=${email}`;
 
         let request = ajaxClient.get(getUrl)
 
