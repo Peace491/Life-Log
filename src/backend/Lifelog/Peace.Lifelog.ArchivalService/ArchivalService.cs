@@ -1,19 +1,10 @@
-﻿using System.ComponentModel.Design;
-using DomainModels;
-using System.IO;
+﻿using DomainModels;
 using Peace.Lifelog.DataAccess;
-using Peace.Lifelog.Logging;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using Peace.Lifelog.Infrastructure;
 using Newtonsoft.Json;
-using System.Diagnostics.CodeAnalysis;
 using Ionic.Zip;
-
-using System;
-using System.IO;
-using System.Text.Json;
-using System.Threading;
 
 namespace Peace.Lifelog.ArchivalService;
 
@@ -98,7 +89,7 @@ public class ArchivalService : IArchive
             Console.WriteLine($"Error uploading file to S3: {ex.Message}");
             throw;
         }
-        return new Response();
+        return response;
     }
     public async Task<string> ComposeLogsToFileAsync(Response response)
     {

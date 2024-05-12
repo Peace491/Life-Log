@@ -1,5 +1,0 @@
-ConnectionString=Server=.\;Initial Catalog=db;UserID=Alice;Password=StrongPassword;
-MaxRetryAttempts=10
-TimeoutLimitInSeconds=100
-MaxUploadCount=15
-AllowUploadFileTypes=pdf,docx,xlsx,png
