@@ -41,6 +41,7 @@ export function LoadMapPage(root, ajaxClient) {
     var currentMap;
     let pins = {};
     var markers = [];
+    var circles = [];
     let geocoder;
 
     //------------------------PINS----------------------------------------
@@ -320,14 +321,40 @@ export function LoadMapPage(root, ajaxClient) {
 
     }
 
+    //#region location recommendation
     //----------------------------------------------------------------------
 
     function getRecommendation(){
         let url = webServiceUrlLocRec + getRecommendationUrl
         try {
-            locationRecommendationService.getLocationRecommendation(url, jwtToken);
-            setMapOnAll(currentMap)
-            showPins()
+            //locationRecommendationService.getLocationRecommendation(url, jwtToken);
+            locationRecommendationService.getLocationRecommendation(url, jwtToken).then(function(circleData)
+            {
+                let centerOne = circleData.center[0];
+                let latOne = centerOne[0];
+                let lngOne = centerOne[1];
+                let centerTwo = circleData.center[1];
+                let latTwo = centerTwo[0];
+                let lngTwo = centerTwo[1];
+                let centerThree = circleData.center[2];
+                let latThree = centerThree[0];
+                let lngThree = centerThree[1];
+                let radiusOne = circleData.radii[0];
+                let radiusTwo = circleData.radii[1];
+                let radiusThree = circleData.radii[2];
+                drawCircle(latOne, lngOne, radiusOne);
+                drawCircle(latTwo, lngThree, radiusTwo);
+                drawCircle(latThree, lngThree, radiusThree);
+                setMapOnCircle(circles);
+                setMapOnAll(currentMap);
+                showPins();
+            }).catch(function(error) {
+                alert(error)
+                reject(error);
+            })
+            //setMapOnCircle(circles)
+            //setMapOnAll(currentMap)
+            //showPins()
         } catch (error) {
             alert("Unable to retrieve Recommendation, try again.");
         }
@@ -352,7 +379,33 @@ export function LoadMapPage(root, ajaxClient) {
             alert("Unable to log switching view, try again.");
         }
     }
+    function drawCircle(lati, lngy, radii){
+        try{
+            //var location = new google.maps.LatLng(lat, lng);
+            var circle = new google.maps.Circle({
+                strokeColor: '#FF0000', // outline
+                strokeOpacity: 0.8, // opacity
+                strokeWeight: 2, // thickness
+                fillColor: '#FF91A4', // fill
+                fillOpacity: 0.35, // fill opac
+                map: currentMap, 
+                center: { lat: lati, lng: lngy }, // center of circle
+                radius: (radii * 105000)//15000 // radius
+            });
+            circles.push(circle);
+        } catch(error){
+            alert("unable to draw circle with API");
+        }
+    }
 
+    function setMapOnCircle(map)
+    {
+        for(let i = 0; i < circles.length; i++)
+        {
+            circles[i].setMap(map);
+        }
+    }    
+//#endregion
     //-----------------------Modal------------------------------------------
     function renderModals() {
         const openModalButtons = document.querySelectorAll('[data-modal-target]');
@@ -410,22 +463,24 @@ export function LoadMapPage(root, ajaxClient) {
                 initInteractiveMap();
                 showPins()
                 updateLog()
+                locRecViewButton.classList.remove('currentView')
                 interMapViewButton.classList.add('currentView')
             })
 
-            locRecViewButton.classList.remove('currentView')
+            //locRecViewButton.classList.remove('currentView')
         }
 
         if (!locRecViewButton.classList.contains('currentView')) {
             locRecViewButton.addEventListener('click', function () {
                 initLocRecMap();
                 getRecommendation()
-                viewRecommendation()
+                //viewRecommendation()
                 showPins()
+                interMapViewButton.classList.remove('currentView')
                 locRecViewButton.classList.add('currentView')
             })
 
-            interMapViewButton.classList.remove('currentView')
+            //interMapViewButton.classList.remove('currentView')
         }
 
     }

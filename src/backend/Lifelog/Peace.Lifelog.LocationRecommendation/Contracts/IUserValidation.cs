@@ -5,5 +5,5 @@ namespace Peace.Lifelog.LocationRecommendation;
 
 public interface IUserValidation
 {
-    public Response ValidateUser(Response response, AppPrincipal appPrincipal, string userHash);
+    public Response ValidateUser(Response response, string userHash);
 }
