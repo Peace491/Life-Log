@@ -74,7 +74,7 @@ export function renderCalendar(showCalendarLLI) {
       }
 
       // div for inserting a single lli event : <button data-modal-target="#lli-modal-edit" class="lli-btn event">LLI 1</button>
-      days += `<div class="day current-day">${i} <div id="insert-llievent-${i}" class="lli-events event"></div><button data-modal-target="#lli-modal-create" class="add-lli-btn">+</button><button data-modal-target="#pn-modal" class="pn-btn event" id="pn-btn-${monthid}/${i}/${currentYear}">PN</button></div></div>`
+      days += `<div class="day current-day">${i} <div id="insert-llievent-${i}" class="lli-events event"></div><button data-modal-target="#lli-modal-create" class="add-lli-btn add-lli-btn-${i}">+</button><button data-modal-target="#pn-modal" class="pn-btn event" id="pn-btn-${monthid}/${i}/${currentYear}">PN</button></div></div>`
     } else {
       // all other days 
       if (i < 10) {
@@ -84,7 +84,7 @@ export function renderCalendar(showCalendarLLI) {
       if (currentMonth + 1 < 10) {
         monthid = `0${currentMonth + 1}`
       }
-      days += `<div class="day">${i} <div id="insert-llievent-${i}" class="lli-events event"></div><button data-modal-target="#lli-modal-create" class="add-lli-btn">+</button><button data-modal-target="#pn-modal" class="pn-btn event" id="pn-btn-${monthid}/${i}/${currentYear}">PN</button></div>`
+      days += `<div class="day">${i} <div id="insert-llievent-${i}" class="lli-events event"></div><button data-modal-target="#lli-modal-create" class="add-lli-btn add-lli-btn-${i}">+</button><button data-modal-target="#pn-modal" class="pn-btn event" id="pn-btn-${monthid}/${i}/${currentYear}">PN</button></div>`
     }
   }
 
