@@ -19,7 +19,9 @@ public class LifelogReminderShould : IAsyncLifetime, IDisposable
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-    private static ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+    private static UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static AppAuthService appAuthService = new AppAuthService();
+    private static ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
     private static ILifelogReminderRepo lifelogReminderRepo = new LifelogReminderRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
     private LifelogReminderService lifelogReminderService = new LifelogReminderService(lifelogReminderRepo, lifelogAuthService, logging);
     private const string USER_ID = "devinkothari02@gmail.com";

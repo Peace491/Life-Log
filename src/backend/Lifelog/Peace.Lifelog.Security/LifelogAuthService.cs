@@ -1,32 +1,49 @@
-﻿namespace Peace.Lifelog.Security;
+﻿using ZstdSharp.Unsafe;
+using Peace.Lifelog.Infrastructure;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+namespace Peace.Lifelog.Security;
 
 public class LifelogAuthService : ILifelogAuthService
 {
-    public Task<AppPrincipal>? AuthenticateLifelogUser(string UserHash, string OTPHash)
+    private readonly AppAuthService appAuthService;
+    private readonly UserManagmentRepo userManagementRepo;
+
+    public LifelogAuthService(AppAuthService appAuthService, UserManagmentRepo userManagementRepo)
+    {
+        this.appAuthService = appAuthService;
+        this.userManagementRepo = userManagementRepo;
+    }
+    public async Task<AppPrincipal>? AuthenticateLifelogUser(string UserHash, string OTPHash)
     {
         if (UserHash == string.Empty) {
-            return null;
+            return null!;
         }
         if (OTPHash == string.Empty) {
-            return null;
+            return null!;
         }
 
         var lifelogAuthenticationRequest = new LifelogAuthenticationRequest();
+
         lifelogAuthenticationRequest.UserId = ("UserHash", UserHash);
         lifelogAuthenticationRequest.Proof = ("OTPHash", OTPHash);
         lifelogAuthenticationRequest.Claims = ("Role", "");
 
         var appAuthService = new AppAuthService();
 
-        var principal = appAuthService.AuthenticateUser(lifelogAuthenticationRequest);
+        AppPrincipal? principal = await appAuthService.AuthenticateUser(lifelogAuthenticationRequest);
 
-        return principal;
+        if(principal != null) 
+        {
+            _ = userManagementRepo.UpdateUserFirstLogin(UserHash);
+        }
+        
+
+        return principal!;
     }
 
     public bool IsAuthorized(AppPrincipal currentPrincipal, List<string> authorizedRoles) {
         var appAuthService = new AppAuthService();
         
-
         bool isAuthorize = false;
 
         if (currentPrincipal.Claims == null || !currentPrincipal.Claims.ContainsKey("Role")) {

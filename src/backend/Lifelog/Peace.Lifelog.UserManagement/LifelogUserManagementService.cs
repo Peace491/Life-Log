@@ -180,7 +180,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogAccountResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            _ = deleteLifelogAccountInDB(lifelogAccountRequest);
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create Account table entry";
             return response;
@@ -192,7 +192,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogUserRoleResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            _ = deleteLifelogAccountInDB(lifelogAccountRequest);
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogUserRole table entry";
             return response;
@@ -204,7 +204,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createUserHashResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            _ = deleteLifelogAccountInDB(lifelogAccountRequest);
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create UserHash table entry";
             return response;
@@ -216,7 +216,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogProfileResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            _ = deleteLifelogAccountInDB(lifelogAccountRequest);
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogProfle";
             return response;
@@ -228,7 +228,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogUserOTPResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            _ = deleteLifelogAccountInDB(lifelogAccountRequest);
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogUserOTP";
             return response;
@@ -240,7 +240,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogAuthenticationResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
-            _ = deleteLifelogAccountInDB(lifelogAccountRequest);
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogAuthentication";
             return response;
@@ -415,6 +415,40 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         return response;
     }
     #endregion
+
+    public async Task<Response> CheckSuccessfulReg(LifelogAccountRequest acc, LifelogProfileRequest profile)
+    {
+        var response = new Response();
+
+        Console.WriteLine("Waiting for 3 minutes for the user to be created in the system");
+        await Task.Delay(TimeSpan.FromMinutes(2.5));
+        Console.WriteLine("Checking if the user was created successfully");
+
+        Console.WriteLine(acc.UserHash?.Value);
+        if (acc.UserHash?.Value != null)
+        {
+            response = await userManagementRepo.CheckSuccessfulReg(acc.UserHash?.Value);
+        }
+        
+        if (response.Output != null)
+        {
+            foreach (List<Object> output in response.Output)
+            {
+                Console.WriteLine("Output size: " + output.Count);
+                Console.WriteLine("Output val: " + output[0]);
+                foreach (bool outputItem in output)
+                {
+                    Console.WriteLine("Output: " + outputItem);
+                    if (outputItem == false)
+                    {
+                        _ = DeleteLifelogUser(acc, profile);
+                        Console.WriteLine("User was not created successfully. Deleting user.");
+                    }
+                }
+            }
+        }
+        return response;
+    }
 
     // Helper functions
     // Some should be moved to infrastructure
