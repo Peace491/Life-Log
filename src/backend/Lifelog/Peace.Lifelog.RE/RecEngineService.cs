@@ -74,7 +74,7 @@ public class RecEngineService : IRecEngineService
             if (!TimeOperation(timer))
             {
                 response.ErrorMessage = "Operation took too long";
-                _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Business", response.ErrorMessage);
+                _ = await logger.CreateLog("Logs", appPrincipal.UserId, "Warning", "Business", response.ErrorMessage);
                 return response;
             }
 
@@ -86,7 +86,7 @@ public class RecEngineService : IRecEngineService
         catch (Exception ex)
         {
             // Log the exception and set an error message
-            _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Service", ex.Message);
+            _ = await logger.CreateLog("Logs", appPrincipal.UserId, "ERROR", "Buisness", ex.Message);
             response.ErrorMessage = "An error occurred while processing your request.";
         }
 

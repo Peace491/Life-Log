@@ -171,12 +171,18 @@ public class RegistrationService
             }
         }
 
+        // Function to clear if first login is still zero after 2 mins
+        var _ = ClearFirstLogin(accountRequest, profileRequest);
 
         await logger.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful");
 
         return response;
-
-
     }
 
+    // Helper function to clear if first login doesnt happen
+    public async Task<Response> ClearFirstLogin(LifelogAccountRequest acc, LifelogProfileRequest prof)
+    {
+        return await lifelogUserManagementService.CheckSuccessfulReg(acc, prof);
+    }
+    
 }

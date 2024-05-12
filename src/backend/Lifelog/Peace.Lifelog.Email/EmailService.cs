@@ -8,10 +8,19 @@ using Peace.Lifelog.DataAccess;
 public class EmailService : IEmailService
 {
     LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration(); 
+    private readonly IReadDataOnlyDAO readDataOnlyDao;
+    private readonly IOTPService oTPService;
+    private readonly IUpdateDataOnlyDAO updateDataOnlyDAO;
+
+    public EmailService(IReadDataOnlyDAO readDataOnlyDao, IOTPService oTPService, IUpdateDataOnlyDAO updateDataOnlyDAO)
+    {
+        this.readDataOnlyDao = readDataOnlyDao;
+        this.oTPService = oTPService;
+        this.updateDataOnlyDAO = updateDataOnlyDAO;
+    }
     public async Task<Response> SendOTPEmail(string userHash)
     {
         var response = new Response();
-        var readDataOnlyDao = new ReadDataOnlyDAO();
         response.HasError = false;
 
         var otpEmail = new MimeMessage();
@@ -34,7 +43,6 @@ public class EmailService : IEmailService
         otpEmail.To.Add(new MailboxAddress("", to));
         otpEmail.Subject = "Your Lifelog OTP!";
 
-        OTPService oTPService = new OTPService();
         var otpResponse = await oTPService.generateOneTimePassword(userHash);
         var body = new BodyBuilder();
         if (otpResponse.Output != null)
@@ -63,8 +71,6 @@ public class EmailService : IEmailService
 
     public async Task<Response> SendPIIEmail(string userHash, string logFilePath)
     {
-        var readDataOnlyDao = new ReadDataOnlyDAO();
-
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress("Lifelog", lifelogConfig.LifelogSystemEmail)); // Get from config
         string selectEmailSql = $"SELECT UserId FROM LifelogAccount WHERE UserHash = \"{userHash}\"";
@@ -83,7 +89,6 @@ public class EmailService : IEmailService
         // Check if log file exists
         if (!File.Exists(logFilePath))
         {
-            Console.WriteLine("Log file not found");
             throw new FileNotFoundException("Log file not found", logFilePath);
         }
 

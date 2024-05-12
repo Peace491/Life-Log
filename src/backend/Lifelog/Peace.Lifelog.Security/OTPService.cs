@@ -6,10 +6,15 @@ using Peace.Lifelog.DataAccess;
 public class OTPService : IOTPService
 {
     private Random random = new Random();
+    private readonly IUpdateDataOnlyDAO updateDataOnlyDAO;
+
+    public OTPService(IUpdateDataOnlyDAO updateDataOnlyDAO)
+    {
+        this.updateDataOnlyDAO = updateDataOnlyDAO;
+    }
     public async Task<Response> generateOneTimePassword(string userHash)
     {
         var response = new Response();
-        var updateDataOnlyDAO = new UpdateDataOnlyDAO();
         // Hashed otp or not?
 
         response.HasError = false;
@@ -37,6 +42,8 @@ public class OTPService : IOTPService
             var temp = await updateDataOnlyDAO.UpdateData(updateSQL);
             var updateAuthenticationResponse = await updateDataOnlyDAO.UpdateData(updateAuthenticationSQL);
 
+            ClearOTPAfterDelay(userHash);
+
             response.Output = [str];
             return response;
         }
@@ -46,5 +53,17 @@ public class OTPService : IOTPService
             response.ErrorMessage = "Error generating one time password";
             return response;
         }
+    }
+    // helper method to clear OTP after 2 minutes
+    private async void ClearOTPAfterDelay(string userHash)
+    {
+        await Task.Delay(TimeSpan.FromMinutes(2));
+        
+        // Assuming a method to clear the OTP. Adapt it as per your actual data handling needs.
+        string clearAuthSql = $"UPDATE LifelogAuthentication SET OTPHash = NULL WHERE UserHash = \"{userHash}\"";
+        string clearSql = $"UPDATE LifelogUserOTP SET OTPHash = NULL WHERE UserHash = \"{userHash}\"";
+        
+        await updateDataOnlyDAO.UpdateData(clearSql);
+        await updateDataOnlyDAO.UpdateData(clearAuthSql);
     }
 }

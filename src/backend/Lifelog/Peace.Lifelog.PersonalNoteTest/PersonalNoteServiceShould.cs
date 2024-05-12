@@ -41,7 +41,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
         ILogging logger = new Logging(logTarget);
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService emailService = new EmailService();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
     
          IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
@@ -83,7 +83,7 @@ public class PersonalNoteServiceShould : IAsyncLifetime, IDisposable
         ILogging logger = new Logging(logTarget);
         ISaltService saltService = new SaltService();
         IHashService hashService = new HashService();
-        IEmailService   emailService = new EmailService();
+        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
     
          IUserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
         AppUserManagementService appUserManagementService =  new AppUserManagementService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);

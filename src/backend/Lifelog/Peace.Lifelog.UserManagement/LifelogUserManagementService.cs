@@ -4,6 +4,7 @@ using Peace.Lifelog.Infrastructure;
 using Peace.Lifelog.Email;
 
 using Newtonsoft.Json;
+using ZstdSharp.Unsafe;
 
 namespace Peace.Lifelog.UserManagement;
 
@@ -146,6 +147,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
     #endregion
 
+    #region Create LL User
     public async Task<Response> CreateLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
         var response = new Response();
@@ -178,6 +180,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogAccountResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create Account table entry";
             return response;
@@ -189,6 +192,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogUserRoleResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogUserRole table entry";
             return response;
@@ -200,6 +204,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createUserHashResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create UserHash table entry";
             return response;
@@ -211,6 +216,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogProfileResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogProfle";
             return response;
@@ -222,6 +228,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogUserOTPResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogUserOTP";
             return response;
@@ -233,6 +240,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         if (createLifelogAuthenticationResponse.HasError == true)
         {
             // TODO: HANDLE ERROR
+            _ = DeleteLifelogUser(lifelogAccountRequest, lifelogProfileRequest);
             response.HasError = true;
             response.ErrorMessage = "Failed to create LifelogAuthentication";
             return response;
@@ -254,7 +262,9 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         response.Output = [userHash];
         return response;
     }
+    #endregion
 
+    #region Delete LL User
     public async Task<Response> DeleteLifelogUser(LifelogAccountRequest lifelogAccountRequest, LifelogProfileRequest lifelogProfileRequest)
     {
         var response = new Response();
@@ -273,6 +283,9 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         response.Output = deleteLifelogAccountResponse.Output;
         return response;
     }
+    #endregion
+
+    #region Modify LL User
 
     public async Task<Response> ModifyLifelogUser(LifelogProfileRequest lifelogProfileRequest)
     {
@@ -291,7 +304,9 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         response.Output = modifyLifelogProfileResponse.Output;
         return response;
     }
+    #endregion
 
+    #region Recovery
     public async Task<Response> GetRecoveryAccountRequests(AppPrincipal principal)
     {
         var response = new Response();
@@ -386,6 +401,9 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         return response;
     }
+    #endregion
+    
+    #region View PII
     public async Task<Response> ViewPersonalIdentifiableInformation(string userHash)
     {
         var response = await userManagementRepo.ViewPersonalIdentifiableInformation(userHash);
@@ -394,6 +412,41 @@ public class LifelogUserManagementService : ILifelogUserManagementService
 
         var emailResponse = await emailService.SendPIIEmail(userHash, fpath);
         // todo: try catch it
+        return response;
+    }
+    #endregion
+
+    public async Task<Response> CheckSuccessfulReg(LifelogAccountRequest acc, LifelogProfileRequest profile)
+    {
+        var response = new Response();
+
+        Console.WriteLine("Waiting for 3 minutes for the user to be created in the system");
+        await Task.Delay(TimeSpan.FromMinutes(2.5));
+        Console.WriteLine("Checking if the user was created successfully");
+
+        Console.WriteLine(acc.UserHash?.Value);
+        if (acc.UserHash?.Value != null)
+        {
+            response = await userManagementRepo.CheckSuccessfulReg(acc.UserHash?.Value!);
+        }
+        
+        if (response.Output != null)
+        {
+            foreach (List<Object> output in response.Output)
+            {
+                Console.WriteLine("Output size: " + output.Count);
+                Console.WriteLine("Output val: " + output[0]);
+                foreach (bool outputItem in output)
+                {
+                    Console.WriteLine("Output: " + outputItem);
+                    if (outputItem == false)
+                    {
+                        _ = DeleteLifelogUser(acc, profile);
+                        Console.WriteLine("User was not created successfully. Deleting user.");
+                    }
+                }
+            }
+        }
         return response;
     }
 

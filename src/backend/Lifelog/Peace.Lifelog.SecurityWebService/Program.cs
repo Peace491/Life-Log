@@ -18,6 +18,8 @@ builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<UserManagmentRepo, UserManagmentRepo>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
@@ -25,10 +27,14 @@ builder.Services.AddTransient<IJWTService, JWTService>();
 builder.Services.AddTransient<ILifelogReminderRepo, LifelogReminderRepo>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 builder.Services.AddTransient<AppUserManagementService, AppUserManagementService>();
+builder.Services.AddTransient<AppAuthService, AppAuthService>();
+builder.Services.AddTransient<LifelogAuthService, LifelogAuthService>();
 builder.Services.AddTransient<LifelogUserManagementService, LifelogUserManagementService>();
+
 builder.Services.AddTransient<ISaltService, SaltService>();
 builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IOTPService, OTPService>();
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 

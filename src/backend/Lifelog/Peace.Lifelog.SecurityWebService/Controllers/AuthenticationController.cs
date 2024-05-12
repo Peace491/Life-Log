@@ -7,6 +7,7 @@ using Peace.Lifelog.UserManagement;
 using DomainModels;
 using Peace.Lifelog.Logging;
 using back_end;
+using Peace.Lifelog.DataAccess;
 
 namespace Peace.Lifelog.SecurityWebService;
 
@@ -15,11 +16,24 @@ namespace Peace.Lifelog.SecurityWebService;
 public class AuthenticationController : ControllerBase
 {
     private readonly LifelogUserManagementService lifelogUserManagementService;
+    private readonly LifelogAuthService lifelogAuthService;
+    private readonly AppUserManagementService appUserManagementService;
     private readonly ILogging _logger;
-    public AuthenticationController(LifelogUserManagementService lifelogUserManagementService, ILogging logger)
+    private readonly IEmailService emailService;
+    private readonly IReadDataOnlyDAO readDataOnlyDAO;
+    private readonly IUpdateDataOnlyDAO updateDataOnlyDAO;
+    private readonly IOTPService otpService;
+
+    public AuthenticationController(LifelogUserManagementService lifelogUserManagementService, AppUserManagementService appUserManagementService, LifelogAuthService lifelogAuthService, ILogging logger, IEmailService emailService, IReadDataOnlyDAO readDataOnlyDAO, IUpdateDataOnlyDAO updateDataOnlyDAO, IOTPService otpService)
     {
         this.lifelogUserManagementService = lifelogUserManagementService;
+        this.appUserManagementService = appUserManagementService;
+        this.lifelogAuthService = lifelogAuthService;
         _logger = logger;
+        this.emailService = emailService;
+        this.readDataOnlyDAO = readDataOnlyDAO;
+        this.updateDataOnlyDAO = updateDataOnlyDAO;
+        this.otpService = otpService;
     }
     [HttpGet]
     [Route("getOTPEmail")]
@@ -34,7 +48,7 @@ public class AuthenticationController : ControllerBase
 
             if (userHash == "") throw new ArgumentNullException();
 
-            var emailService = new EmailService();
+            var emailService = new EmailService(readDataOnlyDAO, otpService, updateDataOnlyDAO);
 
             // Act
             var emailResponse = await emailService.SendOTPEmail(userHash);
@@ -52,7 +66,6 @@ public class AuthenticationController : ControllerBase
     [Route("authenticateOTP")]
     public async Task<IActionResult> AuthenticateOTP([FromBody] AuthenticationRequest authenticationRequest)
     {
-        var lifelogAuthService = new LifelogAuthService();
         try
         {
             var appPrincipal = await lifelogAuthService.AuthenticateLifelogUser(authenticationRequest.UserHash, authenticationRequest.OTP)!;

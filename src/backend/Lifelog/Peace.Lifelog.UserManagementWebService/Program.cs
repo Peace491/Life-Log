@@ -21,6 +21,9 @@ builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
 builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IUserFormRepo, UserFormRepo>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<UserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<AppAuthService, AppAuthService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
@@ -33,6 +36,7 @@ builder.Services.AddTransient<ILifelogUserManagementService, LifelogUserManageme
 builder.Services.AddTransient<ISaltService, SaltService>();
 builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IOTPService, OTPService>();
 builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
 
 

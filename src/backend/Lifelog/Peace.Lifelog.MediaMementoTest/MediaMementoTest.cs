@@ -25,13 +25,15 @@ public class MediaMementoServiceShould
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
@@ -53,12 +55,15 @@ public class MediaMementoServiceShould
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
@@ -78,15 +83,18 @@ public class MediaMementoServiceShould
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
@@ -106,15 +114,18 @@ public class MediaMementoServiceShould
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
         byte[] badByte = new byte[] {};
 
@@ -139,12 +150,15 @@ public class MediaMementoServiceShould
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
@@ -168,16 +182,18 @@ public class MediaMementoServiceShould
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
 
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
 
@@ -201,15 +217,18 @@ public class MediaMementoServiceShould
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
@@ -230,15 +249,18 @@ public class MediaMementoServiceShould
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
@@ -262,12 +284,15 @@ public class MediaMementoServiceShould
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);
@@ -288,15 +313,18 @@ public class MediaMementoServiceShould
         var principal = new AppPrincipal();
         principal.UserId = USER_HASH;
         principal.Claims = new Dictionary<string, string>() {{"Role", ROLE}};
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
         IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         var mediaMementoRepo = new MediaMementoRepo(updateDataOnlyDAO, readDataOnlyDAO);
-        ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
 
-
-        CreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
         LogTarget logTarget = new LogTarget(createOnlyDAO: createDataOnlyDAO, readDataOnlyDAO: readDataOnlyDAO);
         Logging logger = new Logging(logTarget: logTarget);
+
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
 
 
         var mediaMementoService = new MediaMementoService(mediaMementoRepo, logger, lifelogAuthService);

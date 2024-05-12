@@ -13,7 +13,9 @@ public class LocationRecommendationServiceShould
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-    private static ILifelogAuthService lifelogAuthService = new LifelogAuthService();
+    private static AppAuthService appAuthService = new AppAuthService();
+    private static UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static ILifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
     private static ILocationRecommendationRepo locationRecommendationRepo = new LocationRecommendationRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
     private LocationRecommendationService locationRecommendationService = new LocationRecommendationService(locationRecommendationRepo, lifelogAuthService, logging);
 
