@@ -1,6 +1,6 @@
 //Get Recommendation
 export function getLocationRecommendation(url, jwtToken) {
-    let request = ajaxClient.post(url, jwtToken)
+    let request = ajaxClient.get(url, jwtToken)
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {
@@ -21,7 +21,7 @@ export function getLocationRecommendation(url, jwtToken) {
 }
 //Get Recommendation
 export function viewLocationRecommendation(url, jwtToken) {
-    let request = ajaxClient.post(url, jwtToken)
+    let request = ajaxClient.get(url, jwtToken)
 
     return new Promise(function (resolve, reject) {
         request.then(function (response) {

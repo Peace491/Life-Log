@@ -320,6 +320,7 @@ export function LoadMapPage(root, ajaxClient) {
 
     }
 
+    //#region location recommendation
     //----------------------------------------------------------------------
 
     function getRecommendation(){
@@ -352,7 +353,7 @@ export function LoadMapPage(root, ajaxClient) {
             alert("Unable to log switching view, try again.");
         }
     }
-
+//#endregion
     //-----------------------Modal------------------------------------------
     function renderModals() {
         const openModalButtons = document.querySelectorAll('[data-modal-target]');
