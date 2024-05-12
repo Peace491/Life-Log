@@ -24,7 +24,8 @@ using Peace.Lifelog.Email;
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-    private LLIService LLIService = new LLIService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static LLIRepo lliRepo = new LLIRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+    private LLIService LLIService = new LLIService(lliRepo, logging);
     private static IPersonalNoteRepo personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
     private PersonalNoteService PNService = new PersonalNoteService(personalNoteRepo, logging);
 

@@ -28,6 +28,7 @@ public class LifetreeService : ILifetreeService
     private DeleteDataOnlyDAO deleteDataOnlyDAO;
     private LogTarget logTarget;
     private Logging logging;
+    private LLIRepo lliRepo;
     private LLIService lliService;
     private PersonalNoteService personalNoteService;
     private IPersonalNoteRepo personalNoteRepo;
@@ -39,7 +40,8 @@ public class LifetreeService : ILifetreeService
         this.deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         this.logTarget = new LogTarget(this.createDataOnlyDAO, readDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
-        this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+        this.lliRepo = new LLIRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+        this.lliService = new LLIService(this.lliRepo, this.logging);
         this.personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
         this.personalNoteService = new PersonalNoteService(personalNoteRepo, this.logging);
 

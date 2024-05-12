@@ -19,8 +19,8 @@ public class LLIServiceShould : IAsyncLifetime, IDisposable
     private static DeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-    
-    private LLIService LLIService = new LLIService(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static LLIRepo lliRepo = new LLIRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+    private LLIService LLIService = new LLIService(lliRepo, logging);
     private const string USER_ID = "TestLLIServiceAccount";
     private string USER_HASH = "";
     private const string ROLE = "Normal";

@@ -165,6 +165,11 @@ export function loadRegistrationPage(root, ajaxClient) {
         } else {
             let submitButton = document.getElementById("submit-credential-button")
             submitButton.addEventListener("click", onSubmitRegistrationCredentials)
+
+            let lifelogLogo = document.getElementById('lifelog-logo')
+            lifelogLogo.addEventListener('click', function() {
+                routeManager.loadPage(routeManager.PAGES.homePage)
+            })
         }
     }
 

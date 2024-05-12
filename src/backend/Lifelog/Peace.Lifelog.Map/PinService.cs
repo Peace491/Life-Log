@@ -16,6 +16,7 @@ public class PinService : IPinService
     private ILifelogAuthService lifelogAuthService;
     private PinValidation pinValidation;
     private ILogging logging;
+    private LLIRepo lliRepo;
     private LLIService lliService;
 
     //For LLI 
@@ -23,6 +24,7 @@ public class PinService : IPinService
     private ReadDataOnlyDAO? readDataOnlyDAO = new ReadDataOnlyDAO();
     private UpdateDataOnlyDAO? updateDataOnlyDAO = new UpdateDataOnlyDAO();
     private DeleteDataOnlyDAO? deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    
     private LogTarget? logTarget;
     private Logging? loggingLLI;
 
@@ -31,7 +33,8 @@ public class PinService : IPinService
         this.mapRepo = mapRepo;
         this.logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
         this.loggingLLI = new Logging(logTarget);
-        this.lliService = new LLIService(this.createDataOnlyDAO!, this.readDataOnlyDAO!, this.updateDataOnlyDAO!, this.deleteDataOnlyDAO!, this.loggingLLI!);
+        this.lliRepo = new LLIRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+        this.lliService = new LLIService(this.lliRepo, this.loggingLLI!);
         this.lifelogAuthService = lifelogAuthService;
         this.logging = logging;
         this.pinValidation = new PinValidation();

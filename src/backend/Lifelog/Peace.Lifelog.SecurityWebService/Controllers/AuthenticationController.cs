@@ -32,6 +32,8 @@ public class AuthenticationController : ControllerBase
 
             var userHash = await lifelogUserManagementService.getUserHashFromUserId(userId);
 
+            if (userHash == "") throw new ArgumentNullException();
+
             var emailService = new EmailService();
 
             // Act

@@ -234,10 +234,10 @@ export function loadAdminToolPage(root, ajaxClient) {
         containerDiv.appendChild(removeAdminButtonElement)
 
         // Get reference to the main element
-        var mainElement = document.querySelector("main");
+        var accountContainer = document.getElementsByClassName('user-account-container')[0]
 
         // Append the container div to the main element
-        mainElement.appendChild(containerDiv);
+        accountContainer.appendChild(containerDiv);
 
     }
 

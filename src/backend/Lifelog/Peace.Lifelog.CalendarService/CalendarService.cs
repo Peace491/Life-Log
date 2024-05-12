@@ -23,6 +23,7 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
     private LogTarget logTarget;
     private Logging logging;
     private LLIService lliService;
+    private LLIRepo lliRepo;
     private PersonalNoteService personalNoteService;
     private IPersonalNoteRepo personalNoteRepo;
     public CalendarService()
@@ -33,7 +34,8 @@ public class CalendarService : IGetMonthLLI, IEditLLIWithCalendar, ICreateLLIWit
         this.deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         this.logTarget = new LogTarget(this.createDataOnlyDAO, readDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
-        this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+        this.lliRepo = new LLIRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+        this.lliService = new LLIService(this.lliRepo, this.logging);
         this.personalNoteRepo = new PersonalNoteRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
         this.personalNoteService = new PersonalNoteService(personalNoteRepo, this.logging);
 

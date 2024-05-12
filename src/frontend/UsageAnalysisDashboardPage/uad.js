@@ -24,6 +24,7 @@ export function loadUADPage(root, ajaxClient) {
     let lliWebServiceUrl = ""
     let mostCommonLLICategoryUrl = ""
     let mostExpensiveLLIUrl = ""
+    let lliCountUrl = ""
 
     function getTopNVisitedPage(numOfPage, period) {
         let request = ajaxClient.get(topNVisitedPageUrl + `?numOfPage=${numOfPage}`, jwtToken)
@@ -115,8 +116,26 @@ export function loadUADPage(root, ajaxClient) {
         })
     }
 
-    function getMostExpensiveLLI(period) {
-        let request = ajaxClient.get(mostExpensiveLLIUrl + `?period=${period}`, jwtToken)
+    function getMostExpensiveLLI() {
+        let request = ajaxClient.get(mostExpensiveLLIUrl, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error(response)
+                }
+                return response.json()
+            }).then(function (response) {
+                // Move to lli page
+                resolve(response)
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
+    }
+
+    function getLLICount() {
+        let request = ajaxClient.get(lliCountUrl, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
@@ -206,6 +225,7 @@ export function loadUADPage(root, ajaxClient) {
         let failureRegCount = await getRegLogsCount("Failure", period)
         let mostCommonLLICategory = await getMostCommonLLICategory(period)
         let mostExpensiveLLI = await getMostExpensiveLLI(period)
+        let lliCount = await getLLICount()
 
         //document.getElementById("login-success").innerText = "Successful Login Attempts: " + successLoginCount.output[0][0];
         let successLoginDiv = document.getElementById("login-success")
@@ -224,17 +244,15 @@ export function loadUADPage(root, ajaxClient) {
         document.getElementById("most-used-feature-6").innerText = "6 Month Feature: " + mostVisitedPage.output[0][0] + " ,Num Of Visits: " + mostVisitedPage.output[0][1]
         document.getElementById("most-used-feature-12").innerText = "12 Month Feature: " + mostVisitedPage.output[1][0] + " ,Num Of Visits: " + mostVisitedPage.output[1][1]
         document.getElementById("most-used-feature-24").innerText = "24 Month Feature: " + mostVisitedPage.output[2][0] + " ,Num Of Visits: " + mostVisitedPage.output[2][1]
-        document.getElementById("most-common-category").innerText = "Most Common LLI Category: " + mostCommonLLICategory.output[0][0]
-        document.getElementById("most-expensive-lli").innerText = "Most Expensive LLI: " + mostExpensiveLLI.output[0][0] + ": $" + mostExpensiveLLI.output[0][1]
-    }
+        
+        document.getElementById("lli-count-6").innerText = "6 Month LLI Count: " + lliCount.output[0][0][0]
+        document.getElementById("lli-count-12").innerText = "12 Month LLI Count: " + lliCount.output[1][0][0]
+        document.getElementById("lli-count-24").innerText = "24 Month LLI Count: " + lliCount.output[2][0][0]
 
-    function setupPeriodSelect() {
-        let select = document.getElementById('period')
-        select.addEventListener('click', function () {
-            let period = select.value
-            setupData(period)
-        })
 
+        document.getElementById("most-expensive-lli-6").innerText = "6 Month LLI: " + mostExpensiveLLI.output[0][0][0] + ": $" + mostExpensiveLLI.output[0][0][1]
+        document.getElementById("most-expensive-lli-12").innerText = "12 Month LLI: " + mostExpensiveLLI.output[1][0][0] + ": $" + mostExpensiveLLI.output[1][0][1]
+        document.getElementById("most-expensive-lli-24").innerText = "24 Month LLI: " + mostExpensiveLLI.output[2][0][0] + ": $" + mostExpensiveLLI.output[2][0][1]
     }
 
     async function fetchConfig() {
@@ -250,6 +268,7 @@ export function loadUADPage(root, ajaxClient) {
         lliWebServiceUrl = data.LifelogUrlConfig.LLI.LLIWebService
         mostCommonLLICategoryUrl = lliWebServiceUrl + data.LifelogUrlConfig.LLI.MostCommonLLICategory
         mostExpensiveLLIUrl = lliWebServiceUrl + data.LifelogUrlConfig.LLI.MostExpensiveLLI
+        lliCountUrl = lliWebServiceUrl + data.LifelogUrlConfig.LLI.LLICount
     }
 
     async function init() {
