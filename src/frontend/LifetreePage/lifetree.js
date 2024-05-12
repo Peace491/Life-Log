@@ -71,7 +71,7 @@ export function loadLifetreePage(root, ajaxClient) {
                 let output = data.output;
                 resolve(output);
             }).catch(function (error) {
-                alert(error)
+                console.error(error)
                 reject(error);
             });
         });
@@ -138,7 +138,12 @@ export function loadLifetreePage(root, ajaxClient) {
             let treeFragment = document.createDocumentFragment()
 
             // process each lli like this
+            if (data.output.length === 0){
+                alert("Please complete a LLI to View Tree Contents")
+            }
             data.output.forEach(function (lli, index) {
+
+
                 let leftorright
                 if (index % 2 == 1){
                     leftorright = "right"
@@ -224,6 +229,7 @@ export function loadLifetreePage(root, ajaxClient) {
             // user story 2 
             let selectAllButtons = document.querySelectorAll("button.lli-title-text")
             selectAllButtons.forEach((eachButton) => {
+                
                 eachButton.addEventListener('click', () => {
 
                     let lliidToFind = eachButton.id.split("-")[1];
@@ -338,7 +344,7 @@ export function loadLifetreePage(root, ajaxClient) {
         })
         .catch(function (error) {
             // Handle error if retrieval fails
-            alert("Error retrieving note: " + error);
+            console.error(error)
         });
     }
 
