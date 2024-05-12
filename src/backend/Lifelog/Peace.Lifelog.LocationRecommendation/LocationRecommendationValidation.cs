@@ -5,10 +5,10 @@ namespace Peace.Lifelog.LocationRecommendation;
 
 public class LocationRecommendationValidation : IUserValidation
 {
-    public Response ValidateUser(Response response, AppPrincipal principal, string userHash)
+    public Response ValidateUser(Response response, string userHash)
     {
-        var validateUserResponse = ValidateAppPrincipal(response, principal);
-        validateUserResponse = IsValidUserHash(validateUserResponse, userHash);
+        //var validateUserResponse = ValidateAppPrincipal(response, principal);
+        var validateUserResponse = IsValidUserHash(response, userHash);
         return validateUserResponse;
     }
 

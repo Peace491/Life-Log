@@ -37,13 +37,13 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
 
             if (jwtToken == null)
             {
                 return StatusCode(401);
             }
 
-            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
             var userHash = jwtToken.Payload.UserHash;
 
             if (userHash == null)
@@ -55,14 +55,10 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
-            if (appPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
             GetRecommendationRequest getRecommendationPayload = new GetRecommendationRequest();
             getRecommendationPayload.UserHash = userHash;
             // need to double check what is being passed in here
-            var response = await _locationRecommendationService.GetRecommendation(getRecommendationPayload);
+            var response = await _locationRecommendationService.GetRecommendation(userHash); //getRecommendationPayload
 
             if (response == null)
             {
@@ -96,12 +92,13 @@ public sealed class LocationRecommendationController : ControllerBase
                 return StatusCode(401);
             }
 
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
             if (jwtToken == null)
             {
                 return StatusCode(401);
             }
 
-            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
             var userHash = jwtToken!.Payload.UserHash;
 
             if (userHash == null)
