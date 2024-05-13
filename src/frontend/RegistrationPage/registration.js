@@ -74,7 +74,7 @@ export function loadRegistrationPage(root, ajaxClient) {
         });
     }
 
-    function onSubmitRegistrationCredentials(){
+    async function onSubmitRegistrationCredentials(){
         console.log("in reg credentials")
         // Get html elements
         let registrationFormContainer = document.getElementById('registration-form-container')
@@ -84,6 +84,29 @@ export function loadRegistrationPage(root, ajaxClient) {
         let usernameInput = document.getElementById('username-input')
         let dobInput = document.getElementById('dob-input')
         let submitCredentialButton = document.getElementById('submit-credential-button')
+
+        let userId = usernameInput.value
+        let dob = dobInput.value
+        let zipCode = zipcodeInput.value
+
+
+        try {
+            await registerUser(userId, dob, zipCode).then(function(data) {
+                let userHash = data.Output[0]
+    
+                submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
+    
+                submitCredentialButton.addEventListener('click', function() {
+                    authenticateOTP(userHash, otpInput.value)
+                });
+            })
+        } catch (error) {
+            console.error(error)
+            alert("Failed to register user")
+            return
+        }
+
+        submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
     
         // Change form format 
         registrationFormContainer.style = 'grid-template-rows: 1fr 1fr 4fr 2fr;'
@@ -125,28 +148,8 @@ export function loadRegistrationPage(root, ajaxClient) {
         zipcodeInput.setAttribute("readonly", "")
     
         submitCredentialButton.innerText = "Sign Up!"
-    
-        let userId = usernameInput.value
-        let dob = dobInput.value
-        let zipCode = zipcodeInput.value
 
-        submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
         
-
-        try {
-            registerUser(userId, dob, zipCode).then(function(data) {
-                let userHash = data.Output[0]
-    
-                submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
-    
-                submitCredentialButton.addEventListener('click', function() {
-                    authenticateOTP(userHash, otpInput.value)
-                });
-            })
-        } catch (error) {
-            console.error(error)
-            modal.showAlert(error)
-        }
         
     }
 
