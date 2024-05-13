@@ -23,7 +23,7 @@ public class LocationRecommendationRepo : ILocationRecommendationRepo
     {
         var readResponse = new Response();
 
-        string sql = $"SELECT Latitude, Longitude FROM mappin Where UserHash=\"{UserHash}\"";
+        string sql = $"SELECT Latitude, Longitude FROM MapPin Where UserHash=\"{UserHash}\"";
 
         try
         {
