@@ -42,7 +42,7 @@ public class LogTarget : ILogTarget
         }
         else
         {
-            logMessage = "User registration failed";
+            logMessage = "registration failed";
         }
 
         string sql = $"SELECT Count(*) FROM {table} WHERE Message LIKE '%{logMessage}%' AND Timestamp >= DATE_SUB(NOW(), INTERVAL {period} MONTH)";

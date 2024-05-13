@@ -66,7 +66,6 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
         // Create user account in DB
         var createResponse = await createDataOnlyDAO.CreateData(sql);
 
-        Console.WriteLine(createResponse.HasError);
         // Populate Response
         response = createResponse;
 
@@ -130,7 +129,6 @@ public class AppUserManagementService : ICreateAccount, IRecoverAccount, IModify
 
         // Populate Response
         response = createResponse;
-        Console.WriteLine(response.HasError);
 
         // Log Account Creation
         if (response.HasError)

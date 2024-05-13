@@ -37,13 +37,13 @@ public class RegistrationController : ControllerBase
 
         var registerUserResponse = new Response();
         var userHash = "";
-
-        if (checkInputResponse.HasError == false)
+        var ip = HttpContext?.Connection?.RemoteIpAddress?.ToString();
+        if (checkInputResponse.HasError == false && ip != null)
         {
-            registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
+            registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode, ip);
         }
-        else {
-            Console.WriteLine("CheckInputResponse has error");
+        else 
+        {
             return BadRequest();
         }
 
