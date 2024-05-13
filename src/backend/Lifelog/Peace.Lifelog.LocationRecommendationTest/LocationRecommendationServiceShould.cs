@@ -25,7 +25,7 @@ public class LocationRecommendationServiceShould
         GetRecommendationRequest getRecommendationRequest = new GetRecommendationRequest();
         getRecommendationRequest.Principal = null;
         getRecommendationRequest.UserHash = "TestUser";
-        var locationResponse = await locationRecommendationService.GetRecommendation(getRecommendationRequest);
+        var locationResponse = await locationRecommendationService.GetRecommendation(getRecommendationRequest.UserHash);
         //var pass = true;
 
         Assert.True(locationResponse.Output!.Count >= 0);
