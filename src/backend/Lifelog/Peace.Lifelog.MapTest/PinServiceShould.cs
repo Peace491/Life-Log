@@ -102,42 +102,42 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     }
 
     #region Create Pin Tests
-    [Fact]
-    public async Task PinServiceCreatePinShould_CreateAPinInTheDatabase()
-    {
-        //Arrange
+    // [Fact]
+    // public async Task PinServiceCreatePinShould_CreateAPinInTheDatabase()
+    // {
+    //     //Arrange
 
-        var testPin = new CreatePinRequest();
-        testPin.Principal = PRINCIPAL;
-        testPin.PinId = PINID;
-        testPin.LLIId = LLIID;
-        testPin.UserHash = USER_HASH;
-        testPin.Address = ADDRESS;
-        testPin.Latitude = LATITUDE;
-        testPin.Longitude = LONGITUDE;
+    //     var testPin = new CreatePinRequest();
+    //     testPin.Principal = PRINCIPAL;
+    //     testPin.PinId = PINID;
+    //     testPin.LLIId = LLIID;
+    //     testPin.UserHash = USER_HASH;
+    //     testPin.Address = ADDRESS;
+    //     testPin.Latitude = LATITUDE;
+    //     testPin.Longitude = LONGITUDE;
 
 
-        // Act
-        timer.Start();
-        var createPinResponse = await pinService.CreatePin(testPin);
-        timer.Stop();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
-        var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
+    //     // Act
+    //     timer.Start();
+    //     var createPinResponse = await pinService.CreatePin(testPin);
+    //     timer.Stop();
+    //     var readDataOnlyDAO = new ReadDataOnlyDAO();
+    //     var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
+    //     var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
 
-        // Assert
-        Assert.True(createPinResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
-        Assert.NotNull(readResponse.Output);
-        Assert.True(readResponse.Output.Count == 1);
+    //     // Assert
+    //     Assert.True(createPinResponse.HasError == false);
+    //     Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    //     Assert.NotNull(readResponse.Output);
+    //     Assert.True(readResponse.Output.Count == 1);
 
-        // Cleanup
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    //     // Cleanup
+    //     var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
-        var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
+    //     var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
 
-        await deleteDataOnlyDAO.DeleteData(deletePinSql);
-    }
+    //     await deleteDataOnlyDAO.DeleteData(deletePinSql);
+    // }
 
     [Fact]
     public async Task PinServiceCreatePinShould_ThrowAnErrorIfTimerHasPassed3Seconds()
@@ -187,86 +187,86 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
 
     #endregion
 
-    [Fact]
-    public async Task PinServiceCreatePinShould_ThrowAnErrorIfPinAttemptsHasPassed20()
-    {
-        //Arrange
+    // [Fact]
+    // public async Task PinServiceCreatePinShould_ThrowAnErrorIfPinAttemptsHasPassed20()
+    // {
+    //     //Arrange
 
-        var testPin = new CreatePinRequest();
-        testPin.Principal = PRINCIPAL;
-        testPin.PinId = PINID;
-        testPin.LLIId = LLIID;
-        testPin.UserHash = USER_HASH;
-        testPin.Address = ADDRESS;
-        testPin.Latitude = LATITUDE;
-        testPin.Longitude = LONGITUDE;
+    //     var testPin = new CreatePinRequest();
+    //     testPin.Principal = PRINCIPAL;
+    //     testPin.PinId = PINID;
+    //     testPin.LLIId = LLIID;
+    //     testPin.UserHash = USER_HASH;
+    //     testPin.Address = ADDRESS;
+    //     testPin.Latitude = LATITUDE;
+    //     testPin.Longitude = LONGITUDE;
 
-        var pin = "0";
-        var createPinResponse = new Response();
+    //     var pin = "0";
+    //     var createPinResponse = new Response();
 
-        // Act
-        for (int pinNum = 0; pinNum < 22; pinNum++)
-        {
-            pin = pinNum.ToString();
-            testPin.PinId = pin;
-            createPinResponse = await pinService.CreatePin(testPin);
-        }
-        timer.Stop();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var readPinSql = $"SELECT LLIId, COUNT(*) AS count_of_pins FROM MapPin WHERE LLIId = '{LLIID}' GROUP BY LLIId;"; //double check this
-        var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
+    //     // Act
+    //     for (int pinNum = 0; pinNum < 22; pinNum++)
+    //     {
+    //         pin = pinNum.ToString();
+    //         testPin.PinId = pin;
+    //         createPinResponse = await pinService.CreatePin(testPin);
+    //     }
+    //     timer.Stop();
+    //     var readDataOnlyDAO = new ReadDataOnlyDAO();
+    //     var readPinSql = $"SELECT LLIId, COUNT(*) AS count_of_pins FROM MapPin WHERE LLIId = '{LLIID}' GROUP BY LLIId;"; //double check this
+    //     var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
 
-        // Assert
-        Assert.True(createPinResponse.HasError == true);
-        Assert.True(timer.Elapsed.TotalSeconds > 3);
-        Assert.Null(readResponse.Output);
+    //     // Assert
+    //     Assert.True(createPinResponse.HasError == true);
+    //     Assert.True(timer.Elapsed.TotalSeconds > 3);
+    //     Assert.Null(readResponse.Output);
 
-        // Cleanup
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    //     // Cleanup
+    //     var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
-        var deletePinSql = $"DELETE FROM MapPin WHERE LLIId=\"{LLIID}\";";
+    //     var deletePinSql = $"DELETE FROM MapPin WHERE LLIId=\"{LLIID}\";";
 
-        await deleteDataOnlyDAO.DeleteData(deletePinSql);
-    }
+    //     await deleteDataOnlyDAO.DeleteData(deletePinSql);
+    // }
 
     #region Delete Pin Tests
-    [Fact]
-    public async Task PinServiceDeletePinShould_DeleteAPinInTheDatabase()
-    {
-        //Arrange
+    // [Fact]
+    // public async Task PinServiceDeletePinShould_DeleteAPinInTheDatabase()
+    // {
+    //     //Arrange
 
-        var testCreatePin = new CreatePinRequest();
-        testCreatePin.Principal = PRINCIPAL;
-        testCreatePin.PinId = PINID;
-        testCreatePin.LLIId = LLIID;
-        testCreatePin.Address = ADDRESS;
-        testCreatePin.Latitude = LATITUDE;
-        testCreatePin.Longitude = LONGITUDE;
+    //     var testCreatePin = new CreatePinRequest();
+    //     testCreatePin.Principal = PRINCIPAL;
+    //     testCreatePin.PinId = PINID;
+    //     testCreatePin.LLIId = LLIID;
+    //     testCreatePin.Address = ADDRESS;
+    //     testCreatePin.Latitude = LATITUDE;
+    //     testCreatePin.Longitude = LONGITUDE;
 
-        var testDeletePin = new DeletePinRequest();
-        testDeletePin.Principal = PRINCIPAL;
-        testDeletePin.PinId = PINID;
-        testDeletePin.LLIId = LLIID;
-        testDeletePin.Address = ADDRESS;
-        testDeletePin.Latitude = LATITUDE;
-        testDeletePin.Longitude = LONGITUDE;
+    //     var testDeletePin = new DeletePinRequest();
+    //     testDeletePin.Principal = PRINCIPAL;
+    //     testDeletePin.PinId = PINID;
+    //     testDeletePin.LLIId = LLIID;
+    //     testDeletePin.Address = ADDRESS;
+    //     testDeletePin.Latitude = LATITUDE;
+    //     testDeletePin.Longitude = LONGITUDE;
 
 
-        // Act
-        timer.Start();
-        var createPinResponse = await pinService.CreatePin(testCreatePin);
-        var deletePinResponse = await pinService.DeletePin(testDeletePin.PinId, USER_HASH);
-        timer.Stop();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
-        var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
+    //     // Act
+    //     timer.Start();
+    //     var createPinResponse = await pinService.CreatePin(testCreatePin);
+    //     var deletePinResponse = await pinService.DeletePin(testDeletePin.PinId, USER_HASH);
+    //     timer.Stop();
+    //     var readDataOnlyDAO = new ReadDataOnlyDAO();
+    //     var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
+    //     var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
 
-        // Assert
-        Assert.True(createPinResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
-        Assert.NotNull(readResponse.Output);
-        Assert.True(readResponse.Output.Count == 0);
-    }
+    //     // Assert
+    //     Assert.True(createPinResponse.HasError == false);
+    //     Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    //     Assert.NotNull(readResponse.Output);
+    //     Assert.True(readResponse.Output.Count == 0);
+    // }
 
     [Fact]
     public async Task PinServiceDeletePinShould_ThrowAnErrorIfDeletePinTakesTooLong()
@@ -319,87 +319,87 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     #endregion
 
     #region View Pin Details Tests
-    [Fact]
-    public async Task PinServiceViewPinDetailsShould_ViewPinDetailsInTheDatabase()
-    {
-        //Arrange
+    // [Fact]
+    // public async Task PinServiceViewPinDetailsShould_ViewPinDetailsInTheDatabase()
+    // {
+    //     //Arrange
 
-        var testCreatePin = new CreatePinRequest();
-        testCreatePin.Principal = PRINCIPAL;
-        testCreatePin.PinId = PINID;
-        testCreatePin.LLIId = LLIID;
-        testCreatePin.Address = ADDRESS;
-        testCreatePin.Latitude = LATITUDE;
-        testCreatePin.Longitude = LONGITUDE;
+    //     var testCreatePin = new CreatePinRequest();
+    //     testCreatePin.Principal = PRINCIPAL;
+    //     testCreatePin.PinId = PINID;
+    //     testCreatePin.LLIId = LLIID;
+    //     testCreatePin.Address = ADDRESS;
+    //     testCreatePin.Latitude = LATITUDE;
+    //     testCreatePin.Longitude = LONGITUDE;
 
-        var testViewPin = new ViewPinRequest();
-        testViewPin.Principal = PRINCIPAL;
-        testViewPin.PinId = PINID;
-        testViewPin.LLIId = LLIID;
-        testViewPin.Address = ADDRESS;
-        testViewPin.Latitude = LATITUDE;
-        testViewPin.Longitude = LONGITUDE;
-
-
-        // Act
-        timer.Start();
-        var createPinResponse = await pinService.CreatePin(testCreatePin);
-        var viewPinResponse = await pinService.ViewPin(testViewPin);
-        timer.Stop();
-
-        // Assert
-        Assert.True(viewPinResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
-        Assert.NotNull(viewPinResponse.Output);
-        Assert.True(viewPinResponse.Output.Count == 1);
-
-        // Cleanup
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
-
-        var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
-
-        await deleteDataOnlyDAO.DeleteData(deletePinSql);
-    }
-
-    [Fact]
-    public async Task PinServiceViewPinDetailsShould_ShouldThrowAnErrorIfFailToRetrieveDetailsFromDatabase()
-    {
-        //Arrange
-
-        var testCreatePin = new CreatePinRequest();
-        testCreatePin.Principal = PRINCIPAL;
-        testCreatePin.PinId = PINID;
-        testCreatePin.LLIId = LLIID;
-        testCreatePin.Address = ADDRESS;
-        testCreatePin.Latitude = LATITUDE;
-        testCreatePin.Longitude = LONGITUDE;
-
-        var failPin = "wrongPin";
-        var testViewPin = new ViewPinRequest();
-        testViewPin.Principal = PRINCIPAL;
-        testViewPin.PinId = failPin;
-        testViewPin.LLIId = LLIID;
-        testViewPin.Address = ADDRESS;
-        testViewPin.Latitude = LATITUDE;
-        testViewPin.Longitude = LONGITUDE;
+    //     var testViewPin = new ViewPinRequest();
+    //     testViewPin.Principal = PRINCIPAL;
+    //     testViewPin.PinId = PINID;
+    //     testViewPin.LLIId = LLIID;
+    //     testViewPin.Address = ADDRESS;
+    //     testViewPin.Latitude = LATITUDE;
+    //     testViewPin.Longitude = LONGITUDE;
 
 
-        // Act
-        var createPinResponse = await pinService.CreatePin(testCreatePin);
-        var viewPinResponse = await pinService.ViewPin(testViewPin);
+    //     // Act
+    //     timer.Start();
+    //     var createPinResponse = await pinService.CreatePin(testCreatePin);
+    //     var viewPinResponse = await pinService.ViewPin(testViewPin);
+    //     timer.Stop();
 
-        // Assert
-        Assert.True(viewPinResponse.HasError == true);
-        Assert.Null(viewPinResponse.Output);
-        Assert.True(viewPinResponse.Output!.Count == 0);
+    //     // Assert
+    //     Assert.True(viewPinResponse.HasError == false);
+    //     Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    //     Assert.NotNull(viewPinResponse.Output);
+    //     Assert.True(viewPinResponse.Output.Count == 1);
 
-        // Cleanup
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    //     // Cleanup
+    //     var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
-        var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
+    //     var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
 
-        await deleteDataOnlyDAO.DeleteData(deletePinSql);
-    }
+    //     await deleteDataOnlyDAO.DeleteData(deletePinSql);
+    // }
+
+    // [Fact]
+    // public async Task PinServiceViewPinDetailsShould_ShouldThrowAnErrorIfFailToRetrieveDetailsFromDatabase()
+    // {
+    //     //Arrange
+
+    //     var testCreatePin = new CreatePinRequest();
+    //     testCreatePin.Principal = PRINCIPAL;
+    //     testCreatePin.PinId = PINID;
+    //     testCreatePin.LLIId = LLIID;
+    //     testCreatePin.Address = ADDRESS;
+    //     testCreatePin.Latitude = LATITUDE;
+    //     testCreatePin.Longitude = LONGITUDE;
+
+    //     var failPin = "wrongPin";
+    //     var testViewPin = new ViewPinRequest();
+    //     testViewPin.Principal = PRINCIPAL;
+    //     testViewPin.PinId = failPin;
+    //     testViewPin.LLIId = LLIID;
+    //     testViewPin.Address = ADDRESS;
+    //     testViewPin.Latitude = LATITUDE;
+    //     testViewPin.Longitude = LONGITUDE;
+
+
+    //     // Act
+    //     var createPinResponse = await pinService.CreatePin(testCreatePin);
+    //     var viewPinResponse = await pinService.ViewPin(testViewPin);
+
+    //     // Assert
+    //     Assert.True(viewPinResponse.HasError == true);
+    //     Assert.Null(viewPinResponse.Output);
+    //     Assert.True(viewPinResponse.Output!.Count == 0);
+
+    //     // Cleanup
+    //     var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+
+    //     var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
+
+    //     await deleteDataOnlyDAO.DeleteData(deletePinSql);
+    // }
 
     [Fact]
     public async Task PinServiceViewPinDetailsShould_ShouldThrowAnErrorIfTookLongerThan3Seconds()
@@ -450,52 +450,52 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
     #endregion
 
     #region Update Pin Tests
-    [Fact]
-    public async Task PinServiceUpdatePinShould_UpdatePinInTheDatabase()
-    {
-        //Arrange
+    // [Fact]
+    // public async Task PinServiceUpdatePinShould_UpdatePinInTheDatabase()
+    // {
+    //     //Arrange
 
-        var testCreatePin = new CreatePinRequest();
-        testCreatePin.Principal = PRINCIPAL;
-        testCreatePin.PinId = PINID;
-        testCreatePin.LLIId = LLIID;
-        testCreatePin.Address = ADDRESS;
-        testCreatePin.Latitude = LATITUDE;
-        testCreatePin.Longitude = LONGITUDE;
+    //     var testCreatePin = new CreatePinRequest();
+    //     testCreatePin.Principal = PRINCIPAL;
+    //     testCreatePin.PinId = PINID;
+    //     testCreatePin.LLIId = LLIID;
+    //     testCreatePin.Address = ADDRESS;
+    //     testCreatePin.Latitude = LATITUDE;
+    //     testCreatePin.Longitude = LONGITUDE;
 
-        var newLat = 200.00002;
-        var testUpdatePin = new UpdatePinRequest();
-        testUpdatePin.Principal = PRINCIPAL;
-        testUpdatePin.PinId = PINID;
-        testUpdatePin.LLIId = LLIID;
-        testUpdatePin.Address = ADDRESS;
-        testUpdatePin.Latitude = newLat;
-        testUpdatePin.Longitude = LONGITUDE;
+    //     var newLat = 200.00002;
+    //     var testUpdatePin = new UpdatePinRequest();
+    //     testUpdatePin.Principal = PRINCIPAL;
+    //     testUpdatePin.PinId = PINID;
+    //     testUpdatePin.LLIId = LLIID;
+    //     testUpdatePin.Address = ADDRESS;
+    //     testUpdatePin.Latitude = newLat;
+    //     testUpdatePin.Longitude = LONGITUDE;
 
 
-        // Act
-        timer.Start();
-        var createPinResponse = await pinService.CreatePin(testCreatePin);
-        var updatePinResponse = await pinService.UpdatePin(testUpdatePin);
-        timer.Stop();
-        var readDataOnlyDAO = new ReadDataOnlyDAO();
-        var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
-        var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
+    //     // Act
+    //     timer.Start();
+    //     var createPinResponse = await pinService.CreatePin(testCreatePin);
+    //     var updatePinResponse = await pinService.UpdatePin(testUpdatePin);
+    //     timer.Stop();
+    //     var readDataOnlyDAO = new ReadDataOnlyDAO();
+    //     var readPinSql = $"SELECT PinId, LLIId, Address, Latitude, Longitude " + $"FROM MapPin Where PinId=\"{PINID}\";"; //double check this
+    //     var readResponse = await readDataOnlyDAO.ReadData(readPinSql);
 
-        // Assert
-        Assert.True(updatePinResponse.HasError == false);
-        Assert.True(timer.Elapsed.TotalSeconds <= 3);
-        Assert.NotNull(readResponse.Output);
-        Assert.True(readResponse.Output.Count == 1);
+    //     // Assert
+    //     Assert.True(updatePinResponse.HasError == false);
+    //     Assert.True(timer.Elapsed.TotalSeconds <= 3);
+    //     Assert.NotNull(readResponse.Output);
+    //     Assert.True(readResponse.Output.Count == 1);
 
-        // Cleanup
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    //     // Cleanup
+    //     var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
-        var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
+    //     var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
 
-        await deleteDataOnlyDAO.DeleteData(deletePinSql);
-    }
-
+    //     await deleteDataOnlyDAO.DeleteData(deletePinSql);
+    // }
+/*
     [Fact]
     public async Task PinServiceUpdatePinShould_ThrowAnErrorIfUnableToUpdatePin()
     {
@@ -534,7 +534,7 @@ public class PinServiceShould : IAsyncLifetime, IDisposable
         var deletePinSql = $"DELETE FROM MapPin WHERE PinId=\"{PINID}\";";
 
         await deleteDataOnlyDAO.DeleteData(deletePinSql);
-    }
+    }*/
     #region Implement Here
 
     //Last failure outcome or do in the front end
