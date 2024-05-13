@@ -412,7 +412,9 @@ export function loadLifetreePage(root, ajaxClient) {
             alert("Unauthorized User In View")
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
-            routeManager.setupHeaderLinks()
+            let timeAccessed = performance.now()
+            routeManager.setupHeaderLinks(routeManager.PAGES.lifetreePage, timeAccessed, jwtToken);
+
             //add main calls here
             await fetchConfig();
             showLifetree()
