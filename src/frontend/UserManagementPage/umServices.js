@@ -25,9 +25,7 @@ export function deleteUser(url, userHash, jwtToken) {
 
 export function viewPII(url, userHash, jwtToken) {
     // todo
-    console.log("View PII pre request")
     let request = ajaxClient.post(url + "/ViewPII", {userHash}, jwtToken)
-    console.log("View PII post request")
     return new Promise(function (resolve, reject) {
         request.then(function (response) {
             if (response.status != 200) {

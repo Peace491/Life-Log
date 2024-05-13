@@ -206,7 +206,6 @@ export function loadLifetreePage(root, ajaxClient) {
 
                     function openModal(modal) {
                         if (modal == null) {
-                            console.log("null")
                             return
                         }
                         modal.classList.add('active')
@@ -304,7 +303,6 @@ export function loadLifetreePage(root, ajaxClient) {
             location.reload()
             return false
         }
-        console.log(selectedDate)
 
         // Call getNote function to retrieve note data
         getNote(selectedDate).then(function (noteText) {
@@ -451,7 +449,6 @@ export function loadLifetreePage(root, ajaxClient) {
 
                 function openModal(modal) {
                     if (modal == null) {
-                        console.log("null")
                         return
                     }
                     modal.classList.add('active')

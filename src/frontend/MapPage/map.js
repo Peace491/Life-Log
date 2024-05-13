@@ -349,8 +349,8 @@ export function LoadMapPage(root, ajaxClient) {
                 setMapOnAll(currentMap);
                 showPins();
             }).catch(function(error) {
-                alert(error)
-                reject(error);
+                //alert(error)
+                //console.error(error)
             })
             //setMapOnCircle(circles)
             //setMapOnAll(currentMap)

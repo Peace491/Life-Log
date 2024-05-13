@@ -14,12 +14,15 @@ export function getLocationRecommendation(url, jwtToken) {
             return response.json()
         }).then(function (data) {
             alert('The Recommendation is successfully created.')
-            let cluster = data.output[0];
-            let center = data.output[1];
-            let radii = data.output[2];
-            //let output = data.Output;s
-            //location.reload()
-            resolve({cluster, center, radii});
+            if (data.output != null) {
+                let cluster = data.output[0];
+                let center = data.output[1];
+                let radii = data.output[2];
+                //let output = data.Output;s
+                //location.reload()
+                resolve({ cluster, center, radii });
+            }
+
         }).catch(function (error) {
             alert(error)
             reject(error)
@@ -50,7 +53,7 @@ export function viewLocationRecommendation(url, jwtToken) {
 }
 
 //update log
-export function updateLog(url, jwtToken){
+export function updateLog(url, jwtToken) {
     let geturl = url;
     let request = ajaxClient.get(geturl, jwtToken)
     return new Promise((resolve, reject) => {
