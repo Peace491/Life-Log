@@ -129,7 +129,6 @@ export function loadHomePage(root, ajaxClient) {
         if (isRecoverAccountRequest == true) {
             let email = usernameInput.value
             try {
-                console.log(email)
                 let response = await createAccountRecoveryRequest(email)
                 alert("Account recovery request successfully created. Our admin will promptly take a look at the request.")
             } catch (error) {
@@ -297,7 +296,7 @@ export function loadHomePage(root, ajaxClient) {
         motivationalQuoteServiceUrl = data.LifelogUrlConfig.HomePage.MotivationalQuoteWebService;
         accountRecoveryUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.RecoverUser
         } catch (error){
-            console.log(error)
+            
         }
     }
 

@@ -340,7 +340,7 @@ export function loadLLIPage(root, ajaxClient) {
                     label: 'Search',
                     values: searchQuery
                 }
-                filterLLI(searchOption, currentSearchBar)
+                lliDomManip.filterLLI(searchOption, currentSearchBar)
             }
         })
 
@@ -353,7 +353,7 @@ export function loadLLIPage(root, ajaxClient) {
                     label: 'Search',
                     values: searchQuery
                 }
-                filterLLI(searchOption, finishedSearchBar)
+                lliDomManip.filterLLI(searchOption, finishedSearchBar)
             }
         })
     }
@@ -403,8 +403,8 @@ export function loadLLIPage(root, ajaxClient) {
                             values: checkedValues
                         }
                     }
-
-                    filterLLI(currentFilterOption, currentFilter)
+                    
+                    lliDomManip.filterLLI(currentFilterOption, currentFilter)
 
                 });
             });
@@ -509,12 +509,14 @@ export function loadLLIPage(root, ajaxClient) {
 
     // close modal
     span.onclick = function() {
+        document.getElementById('modalText').innerText = "";
         modal.style.display = "none";
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
         if (event.target == modal) {
+            document.getElementById('modalText').innerText = "";
             modal.style.display = "none";
         }
     }

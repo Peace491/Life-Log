@@ -60,7 +60,7 @@ html, body, #root {
 body {
     display: flex;
     flex-direction: column;
-    background-image: url("Assets/lli-management-background.jpg");
+    background-image: url("../Assets/lli-management-background.jpg");
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
