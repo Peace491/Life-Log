@@ -146,7 +146,6 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
     })
 
     lliLink.addEventListener('click', function () {
-        console.log("reached lli link")
         loadPage(PAGES.lliManagementPage, null, currPage, timeVisited, jwtToken)
     })
 

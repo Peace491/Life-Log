@@ -317,8 +317,10 @@ export function loadAdminToolPage(root, ajaxClient) {
             window.name = routeManager.PAGES.adminToolPage
             await fetchConfig()
 
+            let timeAccessed = performance.now()
+
             setupTools()
-            routeManager.setupHeaderLinks()
+            routeManager.setupHeaderLinks(routeManager.PAGES.adminToolPage, timeAccessed, jwtToken);
         }
     }
 

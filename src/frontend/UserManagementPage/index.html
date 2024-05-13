@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Form</title>
-    <link rel="stylesheet" href="./UserFormPage/styles.css">
+    
 </head>
 
 <body>
+    <link rel="stylesheet" href="./UserManagementPage/styles.css">
     <header>
         <div class="logo-container">
             <img src="./Assets/logo.svg" alt="Lifelog Logo" class="logo" id="lli-view" />
@@ -47,7 +48,7 @@
 
     <main>
         <div id="upc-container">
-            <h2>User Privacy Control</h2>
+            <h2 class="title">User Privacy Control</h2>
             <button class="button" id="delete-user">Delete User</button>
             <button class="button" id="view-pii">View PII Data</button>
         </div>
@@ -56,7 +57,7 @@
         </div> -->
         <!-- Added form -->
         <form id="selectionForm" action="#" method="put">
-            <h1 class="form-title">Lifelog Reminder</h1>
+            <h1 class="form-title title">Lifelog Reminder</h1>
             <div>
                 <label for="content">Email Content:</label>
                 <select id="content" name="content">
