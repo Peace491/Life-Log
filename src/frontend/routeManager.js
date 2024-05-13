@@ -185,6 +185,7 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
             // Create an h2 element
             var h2Element = document.createElement("h2");
             h2Element.textContent = "Usage Analysis Dashboard";
+            h2Element.classList.add('header-link')
 
             // Append the h2 element to the div container
             divContainer.appendChild(h2Element);
@@ -201,6 +202,7 @@ export function setupHeaderLinks(currPage = null, timeVisited = null, jwtToken =
             
             var adminToolH2 = document.createElement('h2')
             adminToolH2.textContent = "Admin Tools"
+            adminToolH2.classList.add('header-link')
 
             adminToolContainer.appendChild(adminToolH2)
 
