@@ -40,7 +40,6 @@ app.Use((httpContext, next) =>
 
         httpContext.Response.StatusCode = 204;
 
-        Console.WriteLine(config.HostURL);
         httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, config.HostURL);
         httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";

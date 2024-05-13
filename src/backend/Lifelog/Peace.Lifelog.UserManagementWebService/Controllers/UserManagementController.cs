@@ -145,7 +145,6 @@ public sealed class UserManagementController : ControllerBase
     {
         try 
         {
-            Console.WriteLine("Viewing PII data for user: " + payload.userHash);
             var response = await lifelogUserManagementService.ViewPersonalIdentifiableInformation(payload.userHash);
 
             if(response.HasError)
