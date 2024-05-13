@@ -186,6 +186,7 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
+
     [HttpPost("updateRoleToNormal")]
     public async Task<IActionResult> UpdateUserRoleToNormal([FromBody] UpdateRoleToNormal payload)
     {
@@ -202,6 +203,32 @@ public sealed class UserManagementController : ControllerBase
             if(response.HasError)
             {
                 throw new Exception("Error updating user role");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+
+    [HttpPost("updateStatus")]
+    public async Task<IActionResult> UpdateUserStatusToEnabled([FromBody] UpdateStatus payload)
+    {
+        try 
+        {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+            // first principal is principal of user making the request, second uid is uid of user to update
+            var response = await lifelogUserManagementService.UpdateStatus(payload.Principal, payload.UserId, payload.Status);
+
+            if(response.HasError)
+            {
+                throw new Exception("Error updating user status");
             }
 
             return Ok(response);
