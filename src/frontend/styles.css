@@ -1,3 +1,11 @@
 .hidden {
     display: none;
 }
+
+.header-link:hover {
+    cursor: pointer;
+}
+
+#lli-view:hover {
+    cursor: pointer;
+}

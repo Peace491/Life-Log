@@ -57,12 +57,15 @@ export function loadHomePage(root, ajaxClient) {
 
     // NOT exposed to the global object ("Private" functions)
     function getOTPEmail(email) {
-        const getUrl = authenticationWebService + authenticateOTPEmailUrl + email;
+        const getUrl = authenticationWebService + authenticateOTPEmailUrl + `?userId=${email}`;
 
         let request = ajaxClient.get(getUrl)
 
         return new Promise((resolve, reject) => {
             request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error("Failed to send OTP Email")
+                }
                 return response.json();
             }).then(function (data) {
                 resolve(data);
@@ -136,6 +139,17 @@ export function loadHomePage(root, ajaxClient) {
             return 
         }
 
+        try {
+            var email = usernameInput.value;
+
+            var userHash = await getOTPEmail(email);
+        } catch (error) {
+            // Handle any errors that might occur
+            alert(error)
+            console.error(error);
+            return
+        }
+
         //Change form format 
         loginContainer.style = 'grid-template-rows: 1fr 1fr 2fr 2fr;'
 
@@ -180,10 +194,7 @@ export function loadHomePage(root, ajaxClient) {
         submitButton.removeEventListener('click', onSubmitRegistrationCredentials)
 
         // Make API queries
-        try {
-            var email = usernameInput.value;
-
-            var userHash = await getOTPEmail(email);
+        
 
             // Change event listener of button
             submitButton.addEventListener('click', async () => {
@@ -221,25 +232,53 @@ export function loadHomePage(root, ajaxClient) {
                 }
 
             });
-
-
-        } catch (error) {
-            // Handle any errors that might occur
-            alert(error)
-            console.error(error);
-        }
+        
     }
 
     async function setupRecoverAccount() {
+        let recoverAccountLink = document.getElementById('recover-account-link')
+
+
+        let accountFn
+
+        if (isRecoverAccountRequest == false) {
+            accountFn = switchToRecoverAccount
+        } else {
+            accountFn = switchToLogIn
+        }
+
+        recoverAccountLink.addEventListener('click', accountFn)
+
+    }
+
+    function switchToRecoverAccount() {
         let loginText = document.getElementById('login-text')
         let loginPrompt = document.getElementById('login-prompt')
 
+        loginText.innerText = "Recovery Account"
+        loginPrompt.innerText = "Enter your account information"
+        isRecoverAccountRequest = true
+
         let recoverAccountLink = document.getElementById('recover-account-link')
-        recoverAccountLink.addEventListener('click', function () {
-            loginText.innerText = "Recovery Account"
-            loginPrompt.innerText = "Enter your account information"
-            isRecoverAccountRequest = true
-        })
+        recoverAccountLink.textContent = "Log In"
+
+        recoverAccountLink.removeEventListener('click', switchToRecoverAccount)
+        setupRecoverAccount()
+    }
+
+    function switchToLogIn() {
+        let loginText = document.getElementById('login-text')
+        let loginPrompt = document.getElementById('login-prompt')
+
+        loginText.innerText = "Log In"
+        loginPrompt.innerText = "Enter your account information"
+        isRecoverAccountRequest = false
+
+        let recoverAccountLink = document.getElementById('recover-account-link')
+        recoverAccountLink.textContent = "Recover Account"
+
+        recoverAccountLink.removeEventListener('click', switchToLogIn)
+        setupRecoverAccount()
     }
 
     root.myApp = root.myApp || {};
@@ -297,6 +336,15 @@ export function loadHomePage(root, ajaxClient) {
             }
         }).catch(function (error) {
             console.error(error);
+
+            const quoteElement = document.querySelector('.quote h2');
+            //console.log("a");
+            const authorElement = document.querySelector('.quote-author h3');
+
+            quoteElement.textContent = "Life isn't fair"
+            authorElement.textContent = "- Todd Ebert"
+            
+
             // Handle any errors, e.g., display a default quote or show a message
         });
     }

@@ -14,11 +14,15 @@ LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
 builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
+builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<IMediaMementoRepo, MediaMementoRepo>();
 builder.Services.AddTransient<IMediaMementoService, MediaMementoService>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 builder.Services.AddTransient<IJWTService, JWTService>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<UserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<AppAuthService, AppAuthService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddControllers();

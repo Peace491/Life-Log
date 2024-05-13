@@ -31,7 +31,7 @@ public class LifelogAuthService : ILifelogAuthService
         var appAuthService = new AppAuthService();
 
         #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        AppPrincipal? principal = await appAuthService.AuthenticateUser(lifelogAuthenticationRequest);
+        AppPrincipal? principal = await appAuthService.AuthenticateUser(lifelogAuthenticationRequest)!;
         #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
         if (principal != null) 

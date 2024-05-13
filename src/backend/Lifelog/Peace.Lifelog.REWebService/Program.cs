@@ -11,11 +11,17 @@ LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
 
 /* Registration of objects for .NET's DI Container */ 
 builder.Services.AddTransient<IReadDataOnlyDAO, ReadDataOnlyDAO>();
+builder.Services.AddTransient<IUpdateDataOnlyDAO, UpdateDataOnlyDAO>();
+builder.Services.AddTransient<IDeleteDataOnlyDAO, DeleteDataOnlyDAO>();
 builder.Services.AddTransient<ICreateDataOnlyDAO, CreateDataOnlyDAO>();
+builder.Services.AddTransient<IDDLTransactionDAO, DDLTransactionDAO>();
 builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 builder.Services.AddTransient<IRecEngineRepo, RecEngineRepo>(); 
 builder.Services.AddTransient<IRecEngineService, RecEngineService>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<UserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<AppAuthService, AppAuthService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
