@@ -37,7 +37,7 @@ public class ArchivalService : IArchive
             var archivalRepo = new ArchiveRepo(new ReadDataOnlyDAO(), new DeleteDataOnlyDAO());
 
             response = await archivalRepo.SelectArchivableLogs(tableName);
-            Console.WriteLine(response.ErrorMessage);
+        
 
             if (response.HasError)
             {
@@ -98,7 +98,7 @@ public class ArchivalService : IArchive
             Console.WriteLine($"Error uploading file to S3: {ex.Message}");
             throw;
         }
-        return new Response();
+        return response;
     }
     public async Task<string> ComposeLogsToFileAsync(Response response)
     {
