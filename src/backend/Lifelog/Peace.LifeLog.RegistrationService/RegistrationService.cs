@@ -110,22 +110,22 @@ public class RegistrationService
 
     }
 
-    public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode)
+    public async Task<Response> RegisterNormalUser(string email, string DOB, string zipCode, string ip)
     {
-        var response = await RegisterUser(email, DOB, zipCode, "Normal");
+        var response = await RegisterUser(email, DOB, zipCode, "Normal", ip);
         return response;
 
     }
 
     public async Task<Response> RegisterAdminUser(string email, string DOB, string zipCode)
     {
-        var response = await RegisterUser(email, DOB, zipCode, "Admin");
+        var response = await RegisterUser(email, DOB, zipCode, "Admin", "");
         return response;
 
     }
 
 
-    public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole)
+    public async Task<Response> RegisterUser(string email, string DOB, string zipCode, string userRole, string ip)
     {
         var response = new Response();
         string userID = email;
@@ -149,7 +149,7 @@ public class RegistrationService
             response.HasError = true;
             response.ErrorMessage = createLifelogUserResponse.ErrorMessage;
 
-            await logger.CreateLog("Logs", "System", "Warning", "Data", "User registration failed: " + response.ErrorMessage);
+            await logger.CreateLog("Logs", "System", "Warning", "Data", ip + " registration failed: " + response.ErrorMessage);
 
             return response;
         }
@@ -172,7 +172,7 @@ public class RegistrationService
         }
 
         // Function to clear if first login is still zero after 2 mins
-        var _ = ClearFirstLogin(accountRequest, profileRequest);
+        _ = ClearFirstLogin(accountRequest, profileRequest);
 
         await logger.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful");
 

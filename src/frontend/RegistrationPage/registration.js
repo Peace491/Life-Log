@@ -2,6 +2,7 @@
 
 import * as routeManager from '../routeManager.js';
 import * as log from '../Log/log.js'
+import * as modal from '../shared/modal.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -144,7 +145,7 @@ export function loadRegistrationPage(root, ajaxClient) {
             })
         } catch (error) {
             console.error(error)
-            alert(error)
+            modal.showAlert(error)
         }
         
     }
