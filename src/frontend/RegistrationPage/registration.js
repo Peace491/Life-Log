@@ -16,12 +16,13 @@ export function loadRegistrationPage(root, ajaxClient) {
 
     let jwtToken
 
-    const registrationServiceUrl = 'http://localhost:8081';
-    const authenticationServiceUrl = 'http://localhost:8082/authentication';
+    let registrationServiceUrl = '';
+    let authenticationWebServiceUrl = "";
+    let authenticateOTPUrl = "";
 
     // NOT exposed to the global object ("Private" functions)
     function registerUser(userId, dob, zipCode) {
-        let postDataUrl = registrationServiceUrl + "/registration/registerNormalUser"
+        let postDataUrl = registrationServiceUrl
 
         let data = {
             userId: userId,
@@ -46,7 +47,7 @@ export function loadRegistrationPage(root, ajaxClient) {
     }
 
     function authenticateOTP(userHash, otp) {
-        const postUrl = authenticationServiceUrl + `/authenticateOTP`
+        const postUrl = authenticationWebServiceUrl + authenticateOTPUrl
 
         let data = {
             userHash: userHash,
@@ -148,6 +149,20 @@ export function loadRegistrationPage(root, ajaxClient) {
         
     }
 
+    // Fetch URL config
+    async function fetchConfig() {
+        try{
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        registrationServiceUrl = data.LifelogUrlConfig.UserManagement.RegistrationService;
+        authenticationWebServiceUrl = data.LifelogUrlConfig.HomePage.AuthenticationWebService;
+        authenticateOTPUrl = data.LifelogUrlConfig.HomePage.AuthenticationOTP;
+        } catch (error){
+            console.log(error)
+        }
+    }
+
     root.myApp = root.myApp || {};
 
     // Show or Hide private functions
@@ -155,10 +170,12 @@ export function loadRegistrationPage(root, ajaxClient) {
     //root.myApp.sendData = sendDataHandler;
 
     // Initialize the current view by attaching event handlers 
-    function init() {
+    async function init() {
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
+
+        await fetchConfig()
 
         if (jwtToken) {
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)

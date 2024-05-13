@@ -120,7 +120,7 @@ public sealed class MapsController : ControllerBase
             {
                 return StatusCode(400, "AppPrincipal is null.");
             }
- 
+
             CreatePinRequest createPinRequest = new();
             createPinRequest.Principal = payload.AppPrincipal;
             createPinRequest.PinId = payload.PinId;
@@ -338,83 +338,6 @@ public sealed class MapsController : ControllerBase
 
             /*need to check if this is what you want below*/
             _ = await _logger.CreateLog("Logs", payload.AppPrincipal.UserId, "INFO", "System", "Updated Pin successfully.");
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            _ = await _logger.CreateLog("Logs", "MapsController", "ERROR", "System", ex.Message);
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
-    [HttpPut("editPinLLI")]
-    public async Task<IActionResult> EditPinLLI([FromBody] PutEditPinLIIRequest payload)
-    {
-        try
-        {
-            if (Request.Headers == null)
-            {
-                return StatusCode(401);
-            }
-
-            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
-
-            if (jwtToken == null)
-            {
-                return StatusCode(401);
-            }
-
-            var userHash = jwtToken.Payload.UserHash;
-
-            if (userHash == null)
-            {
-                return StatusCode(401);
-            }
-
-            if (!jwtService.IsJwtValid(jwtToken))
-            {
-                return StatusCode(401);
-            }
-
-            if (payload.AppPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
-
-            if (payload.AppPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
-
-            // Testing
-            EditPinLIIRequest editPinLIIRequest = new();
-            editPinLIIRequest.Principal = payload.AppPrincipal;
-            editPinLIIRequest.PinId = payload.PinId;
-            editPinLIIRequest.LLIId = payload.LLIId;
-            editPinLIIRequest.Address = payload.Address;
-            editPinLIIRequest.Latitude = payload.Latitude;
-            editPinLIIRequest.Longitude = payload.Longitude;
-
-            // need to double check what is being passed in here
-            var response = await _pinService.EditPinLLI(editPinLIIRequest);
-
-            if (response == null)
-            {
-                return StatusCode(404, "Couldn't edit pin LLI.");
-            }
-
-            if (response.HasError)
-            {
-                return StatusCode(400, "An error occurred while processing your request.");
-            }
-
-            if (response.Output == null)
-            {
-                return StatusCode(404, "Couldn't edit pin LLI.");
-            }
-
-            /*need to check if this is what you want below*/
-            _ = await _logger.CreateLog("Logs", payload.AppPrincipal.UserId, "INFO", "System", "Edited Pin LLI successfully.");
             return Ok(response);
         }
         catch (Exception ex)

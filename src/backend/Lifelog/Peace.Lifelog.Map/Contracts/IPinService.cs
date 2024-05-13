@@ -14,9 +14,6 @@ public interface IPinService
     public Task<Response> ViewPin(
         ViewPinRequest viewPinRequest
     );
-    public Task<Response> EditPinLLI(
-        EditPinLIIRequest editPinLLIRequest
-    );
     public Task<Response> FetchPinStatus(string LLIId, string userHash);
     public Task<Response> GetAllPinFromUser(string userHash);
     public Task<Response> updateLog(
