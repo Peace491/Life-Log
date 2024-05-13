@@ -61,7 +61,7 @@ export function loadCalendarPage(root, ajaxClient) {
 
     let jwtToken = ""
 
-    const calendarServiceUrl = 'http://localhost:8087/calendarService';
+    let calendarServiceUrl = '';
 
 
     // NOT exposed to the global object ("Private" functions)
@@ -660,6 +660,17 @@ export function loadCalendarPage(root, ajaxClient) {
         })
     }
 
+    async function fetchConfig() {
+        try{
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        calendarServiceUrl = data.LifelogUrlConfig.Calendar.CalendarWebService
+        } catch (error){
+            console.error(error)
+        }
+      }
+
 
 
 
@@ -671,7 +682,7 @@ export function loadCalendarPage(root, ajaxClient) {
     //root.myApp.sendData = sendDataHandler;
 
     // Initialize the current view by attaching event handlers 
-    function init() {
+    async function init() {
 
         jwtToken = localStorage["token-local"]
 
@@ -679,6 +690,8 @@ export function loadCalendarPage(root, ajaxClient) {
             alert("Unauthorized User In View")
             routeManager.loadPage(routeManager.PAGES.homePage)
         } else {
+            await fetchConfig()
+
             var userHash = JSON.parse(jwtToken).Payload.UserHash
             log.logPageAccess(userHash, routeManager.PAGES.calendarPage, jwtToken)
 
