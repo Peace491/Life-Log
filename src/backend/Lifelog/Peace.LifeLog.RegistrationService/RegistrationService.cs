@@ -172,7 +172,7 @@ public class RegistrationService
         }
 
         // Function to clear if first login is still zero after 2 mins
-        ClearFirstLogin(accountRequest, profileRequest);
+        _ = ClearFirstLogin(accountRequest, profileRequest);
 
         await logger.CreateLog("Logs", userHash, "Info", "Persistent Data Store", "User registration successful");
 

@@ -419,30 +419,24 @@ public class LifelogUserManagementService : ILifelogUserManagementService
     public async Task<Response> CheckSuccessfulReg(LifelogAccountRequest acc, LifelogProfileRequest profile)
     {
         var response = new Response();
-
-        Console.WriteLine("Waiting for 3 minutes for the user to be created in the system");
         await Task.Delay(TimeSpan.FromMinutes(2.5));
-        Console.WriteLine("Checking if the user was created successfully");
 
-        Console.WriteLine(acc.UserHash?.Value);
         if (acc.UserHash?.Value != null)
         {
+            #pragma warning disable CS8604 // Possible null reference argument.
             response = await userManagementRepo.CheckSuccessfulReg(acc.UserHash?.Value);
+            #pragma warning restore CS8604 // Possible null reference argument.
         }
         
         if (response.Output != null)
         {
             foreach (List<Object> output in response.Output)
             {
-                Console.WriteLine("Output size: " + output.Count);
-                Console.WriteLine("Output val: " + output[0]);
                 foreach (bool outputItem in output)
                 {
-                    Console.WriteLine("Output: " + outputItem);
                     if (outputItem == false)
                     {
                         _ = DeleteLifelogUser(acc, profile);
-                        Console.WriteLine("User was not created successfully. Deleting user.");
                     }
                 }
             }
