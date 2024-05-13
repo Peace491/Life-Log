@@ -2,6 +2,8 @@ using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+LifelogConfig lifelogConfig = LifelogConfig.LoadConfiguration();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -40,7 +42,7 @@ app.Use((httpContext, next) =>
 
         httpContext.Response.StatusCode = 204;
     
-        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+        httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, lifelogConfig.HostURL);
         httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";
         httpContext.Response.Headers.AccessControlAllowCredentials = "true";
@@ -64,7 +66,7 @@ app.Use((httpContext, next) => {
         HttpMethods.Delete
     };
 
-    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, "http://localhost:3000");
+    httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, lifelogConfig.HostURL);
     httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
     httpContext.Response.Headers.AccessControlAllowHeaders = "*";
     httpContext.Response.Headers.AccessControlAllowCredentials = "true";
