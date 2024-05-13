@@ -26,32 +26,34 @@ public class LocationRecommendationService : ILocationRecommendationService
     }
 
     #region Get Recommendation
-    public async Task<Response> GetRecommendation(GetRecommendationRequest getRecommendationRequest)
+    public async Task<Response> GetRecommendation(string UserHash)
     {
         var response = new Response();
         response.HasError = false;
-        string userHash = getRecommendationRequest.UserHash;
-        response = this.locationRecommendationValidation.ValidateUser(response, getRecommendationRequest.Principal!, userHash);
+        string userHash = UserHash;
+        //string userHash = getRecommendationRequest.UserHash;
+        //string userHash = "i24PV/YIYoFeK73u3B4XqA9YIhpHfsH2M+LjNY+Wf3s=";
+        response = this.locationRecommendationValidation.ValidateUser(response, userHash); //response, getRecommendationRequest.Principal!, userHash
         if (response.HasError)
         {
-            response = LoggingError(response, getRecommendationRequest.Principal!, response.ErrorMessage!);
+            response = LoggingError(response, userHash, response.ErrorMessage!); //response, getRecommendationRequest.Principal!, userHash
             return response;
         }
-        if (IsUserAuthorizedForLocationRecommendation(getRecommendationRequest.Principal!))
+        //if (IsUserAuthorizedForLocationRecommendation()) //getRecommendationRequest.Principal!
+        //{
+        try
         {
-            try
-            {
-                var coordResponse = await this.locationRecommendationRepo.ReadAllUserPinInDB(userHash);
-                var clusterDataResponse = locationRecommendationCluster.ClusterRecommendation(coordResponse);
-                response.Output = clusterDataResponse.Output;
-            }
-            catch (Exception error)
-            {
-                string errorMessage = error.ToString();
-                response = LoggingError(response, getRecommendationRequest.Principal!, errorMessage);
-            }
+            var coordResponse = await this.locationRecommendationRepo.ReadAllUserPinInDB(userHash);
+            var clusterDataResponse = locationRecommendationCluster.ClusterRecommendation(coordResponse);
+            response.Output = clusterDataResponse.Output;
         }
-        response = LoggingSuccess(response, getRecommendationRequest.Principal!, response.ErrorMessage!);
+        catch (Exception error)
+        {
+            string errorMessage = error.ToString();
+            response = LoggingError(response, userHash, errorMessage); //response, getRecommendationRequest.Principal!, errorMessage
+        }
+        //}
+        response = LoggingSuccess(response, userHash, response.ErrorMessage!); //response, getRecommendationRequest.Principal!, errorMessage
         return response;
     }
     #endregion
@@ -91,26 +93,26 @@ public class LocationRecommendationService : ILocationRecommendationService
     }
 
     #region Helper Functions
-    private Response LoggingError(Response response, AppPrincipal principal, string errorMessage)
+    private Response LoggingError(Response response, string userHash, string errorMessage) //AppPrincipal principall
     {
         response.HasError = true;
         response.ErrorMessage = errorMessage;
-        var logResponse = this.logging.CreateLog("Logs", principal.UserId, "ERROR", "Business", errorMessage);
+        var logResponse = this.logging.CreateLog("Logs", userHash, "ERROR", "Business", errorMessage);
         return response;
     }
-    private Response LoggingSuccess(Response response, AppPrincipal principal, string errorMessage)
+    private Response LoggingSuccess(Response response, string userHash, string errorMessage)
     {
         response.HasError = false;
         response.ErrorMessage = errorMessage;
-        var logResponse = this.logging.CreateLog("Logs", principal.UserId, "Info", "Business", errorMessage);
+        var logResponse = this.logging.CreateLog("Logs", userHash, "Info", "Business", errorMessage);
         return response;
     }
 
-    private bool IsUserAuthorizedForLocationRecommendation(AppPrincipal appPrincipal)
+    /*private bool IsUserAuthorizedForLocationRecommendation(AppPrincipal appPrincipal)
     {
 
         return lifelogAuthService.IsAuthorized(appPrincipal, authorizedRoles);
-    }
+    }*/
 
 
     #endregion

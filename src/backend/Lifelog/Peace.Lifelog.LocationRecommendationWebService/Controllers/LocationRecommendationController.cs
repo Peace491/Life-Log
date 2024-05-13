@@ -28,8 +28,8 @@ public sealed class LocationRecommendationController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost("getLocationRecommendation")]
-    public async Task<IActionResult> GetLocationRecommendation(AppPrincipal appPrincipal)
+    [HttpGet("getLocationRecommendation")]
+    public async Task<IActionResult> GetLocationRecommendation()
     {
         try
         {
@@ -37,7 +37,6 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
-
             var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
 
             if (jwtToken == null)
@@ -56,15 +55,10 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
-            if (appPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
             GetRecommendationRequest getRecommendationPayload = new GetRecommendationRequest();
-            getRecommendationPayload.Principal = appPrincipal;
             getRecommendationPayload.UserHash = userHash;
             // need to double check what is being passed in here
-            var response = await _locationRecommendationService.GetRecommendation(getRecommendationPayload);
+            var response = await _locationRecommendationService.GetRecommendation(userHash); //getRecommendationPayload
 
             if (response == null)
             {
@@ -88,10 +82,11 @@ public sealed class LocationRecommendationController : ControllerBase
     }
 
     [HttpGet("viewLocationRecommendation")]
-    public async Task<IActionResult> ViewLocationRecommendation(AppPrincipal appPrincipal)
+    public async Task<IActionResult> ViewLocationRecommendation()
     {
         try
         {
+        
             if (Request.Headers == null)
             {
                 return StatusCode(401);
@@ -104,7 +99,7 @@ public sealed class LocationRecommendationController : ControllerBase
                 return StatusCode(401);
             }
 
-            var userHash = jwtToken.Payload.UserHash;
+            var userHash = jwtToken!.Payload.UserHash;
 
             if (userHash == null)
             {
@@ -115,17 +110,11 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
-
-            if (appPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
             ViewRecommendationRequest viewRecommendationPayload = new ViewRecommendationRequest();
-            viewRecommendationPayload.Principal = appPrincipal;
             viewRecommendationPayload.UserHash = userHash;
 
             // need to double check what is being passed in here
-            var response = await _locationRecommendationService.ViewRecommendation(viewRecommendationPayload);
+            var response = await _locationRecommendationService.ViewRecommendation(viewRecommendationPayload!);
 
             if (response == null)
             {
@@ -153,8 +142,8 @@ public sealed class LocationRecommendationController : ControllerBase
         }
     }
 
-    [HttpPut("updateLog")]
-    public async Task<IActionResult> UpdateLog([FromBody] PutUpdateLogRequest payload)
+    [HttpGet("updateLog")]
+    public async Task<IActionResult> UpdateLog()//[FromBody] PutUpdateLogRequest payload
     {
         try
         {
@@ -181,17 +170,7 @@ public sealed class LocationRecommendationController : ControllerBase
             {
                 return StatusCode(401);
             }
-
-            if (payload.AppPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
-
-            if (payload.AppPrincipal == null)
-            {
-                return StatusCode(400, "AppPrincipal is null.");
-            }
-            _ = await _logger.CreateLog("Logs", payload.AppPrincipal.UserId, "INFO", "System", "Update Log successfully.");
+            _ = await _logger.CreateLog("Logs", userHash, "INFO", "System", "Update Log successfully.");
             return StatusCode(200);
         }
         catch (Exception ex)
@@ -200,4 +179,6 @@ public sealed class LocationRecommendationController : ControllerBase
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
+
+    
 }

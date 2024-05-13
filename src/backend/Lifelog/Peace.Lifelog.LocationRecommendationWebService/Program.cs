@@ -22,6 +22,7 @@ builder.Services.AddTransient<ILocationRecommendationService, LocationRecommenda
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // Controllers are executed as a service within Kestral
 
@@ -29,6 +30,11 @@ builder.Services.AddControllers(); // Controllers are executed as a service with
 var app = builder.Build(); // Only part needed to execute Web API project
 
 /* Setup of Middleware Pipeline */
+if(app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 
 // Defining a custom middleware AND adding it to Kestral's request pipeline
