@@ -116,8 +116,8 @@ public sealed class UserManagementController : ControllerBase
 
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteUser(string userHash)
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser([FromBody] string userHash)
     {
         try
         {
