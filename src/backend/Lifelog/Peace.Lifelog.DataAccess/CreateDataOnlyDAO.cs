@@ -62,9 +62,9 @@ public class CreateDataOnlyDAO : ICreateDataOnlyDAO
 
             connection.Close();
 
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Create is successful");
+            // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Create is successful");
 
-            response.LogId = logTransactionResponse.LogId;
+            // response.LogId = logTransactionResponse.LogId;
 
             response.HasError = false;
 
