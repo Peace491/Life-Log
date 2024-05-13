@@ -3,7 +3,7 @@
 import * as routeManager from '../routeManager.js'
 
 export function deleteUser(url, userHash, jwtToken) {
-        let request = ajaxClient.del(url + `?userHash=${userHash}`, jwtToken)
+        let request = ajaxClient.post(url, userHash, jwtToken)
 
         return new Promise(function (resolve, reject) {
             request.then(function (response) {
