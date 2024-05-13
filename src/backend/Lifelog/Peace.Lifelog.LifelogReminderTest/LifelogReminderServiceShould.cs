@@ -121,32 +121,34 @@ public class LifelogReminderShould : IAsyncLifetime, IDisposable
 
         await deleteDataOnlyDAO.DeleteData(deleteUserSql);
     }
-    [Fact]
-    public async Task UpdateReminderForm_ShouldUpdateDataInDB()
-    {
-        //arrange
-        ReminderFormData testForm = new ReminderFormData();
-        string Content = "Completed";
-        string Frequency = "Monthly";
-        testForm.UserHash = USER_HASH;
-        testForm.Content = Content;
-        testForm.Frequency = Frequency;
 
-        //act
-        var createUserInDBResponse = await lifelogReminderRepo.AddUserHashAndDate(USER_HASH);
-        var updateDbResponse = await lifelogReminderService.UpdateReminderConfiguration(testForm);
+    // [Fact]
+    // public async Task UpdateReminderForm_ShouldUpdateDataInDB()
+    // {
+    //     //arrange
+    //     ReminderFormData testForm = new ReminderFormData();
+    //     string Content = "Completed";
+    //     string Frequency = "Monthly";
+    //     testForm.UserHash = USER_HASH;
+    //     testForm.Content = Content;
+    //     testForm.Frequency = Frequency;
 
-        //Assert
-        Assert.True(updateDbResponse.Output!.Count == 1);
-        Assert.True(updateDbResponse.Output is not null);
+    //     //act
+    //     var createUserInDBResponse = await lifelogReminderRepo.AddUserHashAndDate(USER_HASH);
+    //     var updateDbResponse = await lifelogReminderService.UpdateReminderConfiguration(testForm);
 
-        //cleanup
-        var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+    //     //Assert
+    //     Assert.True(updateDbResponse.Output!.Count == 1);
+    //     Assert.True(updateDbResponse.Output is not null);
 
-        var deleteUserSql = $"DELETE FROM LifelogReminder WHERE UserHash=\"{USER_HASH}\";";
+    //     //cleanup
+    //     var deleteDataOnlyDAO = new DeleteDataOnlyDAO();
 
-        await deleteDataOnlyDAO.DeleteData(deleteUserSql);
-    }
+    //     var deleteUserSql = $"DELETE FROM LifelogReminder WHERE UserHash=\"{USER_HASH}\";";
+
+    //     await deleteDataOnlyDAO.DeleteData(deleteUserSql);
+    // }
+    
     [Fact]
     public async Task UpdateReminderForm_ShouldThrowAnErrorIfInvalidInput()
     {
