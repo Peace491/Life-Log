@@ -172,12 +172,14 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
 
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
+        document.getElementById('modalText').innerText = "";
         modal.style.display = "none";
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
         if (event.target == modal) {
+            document.getElementById('modalText').innerText = "";
             modal.style.display = "none";
         }
     }
@@ -310,7 +312,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
                 log.log(principal.userId, "ERROR", "View", `Media failed to be uploaded for LLI ${lliid}`, jwtToken)
             }
         })
-        .catch((error) => Promise.reject(error), showAlert('Image upload failed'));
+        .catch((error) => Promise.reject(error), showAlert(''));
         }
     
         
@@ -333,7 +335,7 @@ export function createLLIComponents(lli, createLLI, getAllLLI, updateLLI, delete
                 log.log(principal.userId, "ERROR", "View", `Media failed to be deleted for LLI ${lliid}`, jwtToken)
             }
         })
-        .catch((error) => Promise.reject(error), showAlert('Image deletion failed'));
+        .catch((error) => Promise.reject(error), showAlert(''));
     }
 
     const imageBase64 = document.createElement('input');

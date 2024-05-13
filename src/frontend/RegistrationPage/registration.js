@@ -32,12 +32,10 @@ export function loadRegistrationPage(root, ajaxClient) {
         }
 
         let request = ajaxClient.post(postDataUrl, data)
-        console.log(request)
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
             }).then(function (data) {
-                console.log(data)
                 if (data.HasError == true) throw new Error("User Registration Failed")
                 resolve(data);
             }).catch(function (error) {
@@ -75,7 +73,6 @@ export function loadRegistrationPage(root, ajaxClient) {
     }
 
     async function onSubmitRegistrationCredentials(){
-        console.log("in reg credentials")
         // Get html elements
         let registrationFormContainer = document.getElementById('registration-form-container')
     
@@ -163,7 +160,6 @@ export function loadRegistrationPage(root, ajaxClient) {
         authenticationWebServiceUrl = data.LifelogUrlConfig.HomePage.AuthenticationWebService;
         authenticateOTPUrl = data.LifelogUrlConfig.HomePage.AuthenticationOTP;
         } catch (error){
-            console.log(error)
         }
     }
 
