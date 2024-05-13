@@ -103,7 +103,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", string.Empty);
@@ -207,7 +207,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
@@ -258,7 +258,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
@@ -308,7 +308,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
@@ -364,7 +364,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", string.Empty);
@@ -417,7 +417,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", "userdoesntexist");
@@ -464,7 +464,7 @@ public class LifelogUserManagementServiceShould
 
         // Creating User Profile based off User Account
         var mockDob = DateTime.Now.ToString("yyyy-MM-dd");
-        var mockZipCode = "92612";
+        var mockZipCode = "90704";
 
         var testLifelogAccountRequest = new LifelogAccountRequest();
         testLifelogAccountRequest.UserId = ("UserId", mockUserId);
