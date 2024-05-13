@@ -3,6 +3,7 @@ using System.Text.Json;
 using Peace.Lifelog.Security;
 using Peace.Lifelog.Logging;
 using back_end;
+using DomainModels;
 
 namespace Peace.Lifelog.LogWebService;
 
@@ -48,7 +49,14 @@ public sealed class LogController : ControllerBase
     {
         try
         {
-            var response = await logging.CreateLog(log.Table, log.UserHash, log.Level, log.Category, log.Message);
+            var ip = HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            var response = new Response();
+            if (log.Message!.Contains("failed to log in"))
+            {
+                response = await logging.CreateLog(log.Table, log.UserHash, log.Level, log.Category, ip + " failed to log in");
+            } else {
+                response = await logging.CreateLog(log.Table, log.UserHash, log.Level, log.Category, log.Message);
+            }
             return Ok(response);
         }
         catch (Exception error)
