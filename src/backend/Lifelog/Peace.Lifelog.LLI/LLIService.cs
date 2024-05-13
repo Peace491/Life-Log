@@ -1,5 +1,6 @@
 ﻿using DomainModels;
 using Peace.Lifelog.DataAccess;
+using Peace.Lifelog.Infrastructure;
 using System.Diagnostics;
 
 namespace Peace.Lifelog.LLI;
@@ -13,18 +14,13 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     private static int EARLIEST_DEADLINE_YEAR = 1960;
     private static int LATEST_DEADLINE_YEAR = 2100;
     private static int LOWEST_COST = 0;
-    private CreateDataOnlyDAO createDataOnlyDAO;
-    private ReadDataOnlyDAO readDataOnlyDAO;
-    private UpdateDataOnlyDAO updateDataOnlyDAO;
-    private DeleteDataOnlyDAO deleteDataOnlyDAO;
+    private static List<int> UAD_PERIOD = new List<int>() { 6, 12, 24 };
+    private ILLIRepo lliRepo;
     private Logging.Logging logging;
 
-    public LLIService(CreateDataOnlyDAO createDataOnlyDAO, ReadDataOnlyDAO readDataOnlyDAO, UpdateDataOnlyDAO updateDataOnlyDAO, DeleteDataOnlyDAO deleteDataOnlyDAO, Logging.Logging logging)
+    public LLIService(ILLIRepo lliRepo, Logging.Logging logging)
     {
-        this.createDataOnlyDAO = createDataOnlyDAO;
-        this.readDataOnlyDAO = readDataOnlyDAO;
-        this.updateDataOnlyDAO = updateDataOnlyDAO;
-        this.deleteDataOnlyDAO = deleteDataOnlyDAO;
+        this.lliRepo = lliRepo;
         this.logging = logging;
     }
 
@@ -162,50 +158,25 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         var timer = new Stopwatch();
         timer.Start();
-
-        var sql = "INSERT INTO LLI (UserHash, Title, Description, Status, Visibility, Deadline, Cost, RecurrenceStatus, RecurrenceFrequency, CreationDate, Category1, Category2, Category3, CompletionDate) VALUES ("
-        + $"\"{userHash}\", "
-        + $"\"{lli.Title}\", "
-        + $"\"{lli.Description}\", "
-        + $"\"{lli.Status}\", "
-        + $"\"{lli.Visibility}\", "
-        + $"\"{lli.Deadline}\", "
-        + $"{lli.Cost}, "
-        + $"\"{lli.Recurrence.Status}\", "
-        + $"\"{lli.Recurrence.Frequency}\", "
-        + $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\", "
-        + $"\"{lli.Category1}\", ";
-
-        if (lli.Category2 != null)
+        
+        LLIDB lliDB = new LLIDB() 
         {
-            sql += $"\"{lli.Category2}\", ";
-        }
-        else
-        {
-            sql += "null, ";
-        }
+            LLIID = lli.LLIID,
+            Title = lli.Title,
+            Description = lli.Description!,
+            Category1 = lli.Category1,
+            Category2 = lli.Category2,
+            Category3 = lli.Category3,
+            Status = lli.Status,
+            Visibility = lli.Visibility,
+            Deadline = lli.Deadline,
+            Cost = lli.Cost,
+            RecurrenceStatus = lli.Recurrence.Status,
+            RecurrenceFrequency = lli.Recurrence.Frequency,
+            CompletionDate = lli.CompletionDate
+        };
 
-        if (lli.Category3 != null)
-        {
-            sql += $"\"{lli.Category3}\", ";
-        }
-        else
-        {
-            sql += "null, ";
-        }
-
-        if (lli.CompletionDate != "")
-        {
-            sql += $"\"{DateTime.Today.ToString("yyyy-MM-dd")}\"";
-        }
-        else
-        {
-            sql += "null";
-        }
-
-        sql += ");";
-
-        createLLIResponse = await this.createDataOnlyDAO.CreateData(sql);
+        createLLIResponse = await lliRepo.CreateLLI(userHash ,lliDB);
 
         // Get LLI Id
         var lliid = "";
@@ -277,21 +248,14 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
         #region Update LLI According to recurrence status
 
-        var updateLLISql = "UPDATE LLI "
-        + "SET Status = 'Active', CompletionDate = NULL "
-        + $"WHERE (RecurrenceFrequency = 'Weekly' AND UserHash=\"{userHash}\" AND CompletionDate IS NOT NULL AND DATE_ADD(CompletionDate, INTERVAL 1 WEEK) <= CURDATE()) "
-        + $"OR (RecurrenceFrequency = 'Monthly' AND UserHash=\"{userHash}\" AND CompletionDate IS NOT NULL AND DATE_ADD(CompletionDate, INTERVAL 1 MONTH) <= CURDATE()) "
-        + $"OR (RecurrenceFrequency = 'Yearly' AND UserHash=\"{userHash}\" AND CompletionDate IS NOT NULL AND DATE_ADD(CompletionDate, INTERVAL 1 YEAR) <= CURDATE())";
-
-        var updateResponse = this.updateDataOnlyDAO.UpdateData(updateLLISql);
+        var updateResponse = await this.lliRepo.UpdateLLIRecurrenceStatus(userHash);
 
         #endregion
         #region Read LLI In DB
         var timer = new Stopwatch();
         timer.Start();
-        var readLLISql = $"SELECT * FROM LLI WHERE userHash = \"{userHash}\"";
 
-        readLLIResponse = await this.readDataOnlyDAO.ReadData(readLLISql, count: null);
+        readLLIResponse = await this.lliRepo.ReadAllLLI(userHash);
 
         if (readLLIResponse.Output == null)
         {
@@ -338,33 +302,71 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
 
     public async Task<Response> GetMostCommonLLICategory(int period)
     {
-        var sql = "SELECT "
-            + "Category1 AS Most_Common_Category "
-        + "FROM "
-            + "RecSummary "
-        + "GROUP BY "
-            + "Category1 "
-        + "ORDER BY "
-            + "COUNT(*) DESC";
-
-        var response = await readDataOnlyDAO.ReadData(sql, count: 1);
+        var response = await lliRepo.ReadMostCommonLLICategory();
 
         return response;
     }
 
-    public async Task<Response> GetMostExpensiveLLI(int period)
+    public async Task<Response> GetLLICount()
     {
-        var sql = "SELECT "
-            + "Title AS Title_With_Highest_Cost, "
-            + "Cost AS Highest_Cost "
-        + "FROM "
-            + "LLI "
-        + "WHERE "
-            + $"CreationDate >= DATE_SUB(NOW(), INTERVAL {period} MONTH) "
-        + "ORDER BY "
-            + "Cost DESC ";
+        var response = new Response();
+        response.HasError = false;
+        try
+        {
+            var output = new List<Object>();
 
-        var response = await readDataOnlyDAO.ReadData(sql, count: 1);
+            foreach (int period in UAD_PERIOD)
+            {
+                var readResponse = await lliRepo.ReadNumberOfLLI(period);
+
+                if (readResponse.Output != null)
+                {
+                    output.Add(readResponse.Output);
+                }
+            }
+
+            response.Output = output;
+
+        }
+        catch (Exception error)
+        {
+            response.HasError = true;
+            response.ErrorMessage = error.Message;
+            response.Output = null;
+            return response;
+        }
+
+        return response;
+    }
+
+    public async Task<Response> GetMostExpensiveLLI()
+    {
+        var response = new Response();
+        response.HasError = false;
+        try
+        {
+            var output = new List<Object>();
+
+            foreach (int period in UAD_PERIOD)
+            {
+                var readResponse = await lliRepo.ReadMostExpensiveLLI(period);
+
+                if (readResponse.Output != null)
+                {
+                    output.Add(readResponse.Output);
+                }
+            }
+
+            response.Output = output;
+
+        }
+        catch (Exception error)
+        {
+            response.HasError = true;
+            response.ErrorMessage = error.Message;
+            response.Output = null;
+            return response;
+        }
 
         return response;
     }
@@ -493,30 +495,24 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var timer = new Stopwatch();
         timer.Start();
 
-        if (lli.Status == LLIStatus.Completed)
+        LLIDB lliDB = new LLIDB() 
         {
-            lli.CompletionDate = DateTime.Today.ToString("yyyy-MM-dd");
-        }
+            LLIID = lli.LLIID,
+            Title = lli.Title!,
+            Description = lli.Description!,
+            Category1 = lli.Category1,
+            Category2 = lli.Category2,
+            Category3 = lli.Category3,
+            Status = lli.Status!,
+            Visibility = lli.Visibility!,
+            Deadline = lli.Deadline,
+            Cost = lli.Cost,
+            RecurrenceStatus = lli.Recurrence!.Status,
+            RecurrenceFrequency = lli.Recurrence.Frequency,
+            CompletionDate = lli.CompletionDate
+        };
 
-        string updateLLISql = "UPDATE LLI SET "
-        + (lli.Title != string.Empty && lli.Title != string.Empty ? $"Title = \"{lli.Title}\"," : "")
-        + (lli.Description != null && lli.Description != string.Empty ? $"Description = \"{lli.Description}\"," : "")
-        + (lli.Status != null && lli.Status != string.Empty ? $"Status = \"{lli.Status}\"," : "")
-        + (lli.Visibility != null && lli.Visibility != string.Empty ? $"Visibility = \"{lli.Visibility}\"," : "")
-        + (lli.Deadline != string.Empty && lli.Deadline != string.Empty ? $"Deadline = \"{lli.Deadline}\"," : "")
-        + (lli.Cost != null ? $"Cost = {lli.Cost}," : "")
-        + (lli.Recurrence!.Status != null && lli.Recurrence.Status != string.Empty ? $"RecurrenceStatus = \"{lli.Recurrence.Status}\"," : "")
-        + (lli.Recurrence.Frequency != null && lli.Recurrence.Frequency != string.Empty ? $"RecurrenceFrequency = \"{lli.Recurrence.Frequency}\"," : "")
-        + (lli.CompletionDate != null && lli.CompletionDate != string.Empty ? $"CompletionDate = \"{lli.CompletionDate}\"," : "")
-        + (lli.Category1 != null && lli.Category1 != string.Empty ? $"Category1 = \"{lli.Category1}\"," : "")
-        + (lli.Category2 != null && lli.Category2 != string.Empty ? $"Category2 = \"{lli.Category2}\"," : "")
-        + (lli.Category3 != null && lli.Category3 != string.Empty ? $"Category3 = \"{lli.Category3}\"," : "");
-
-        updateLLISql = updateLLISql.Remove(updateLLISql.Length - 1);
-
-        updateLLISql += $" WHERE LLIId = \"{lli.LLIID}\";";
-
-        updateLLIResponse = await this.updateDataOnlyDAO.UpdateData(updateLLISql);
+        updateLLIResponse = await lliRepo.UpdateLLI(userHash, lliDB);
 
         if (updateLLIResponse.HasError)
         {
@@ -574,10 +570,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
         var timer = new Stopwatch();
         timer.Start();
 
-        var sql = $"DELETE FROM LLI WHERE userHash = \"{userHash}\" AND LLIId = \"{lli.LLIID}\";";
-
-
-        var deleteResponse = await this.deleteDataOnlyDAO.DeleteData(sql);
+        var deleteResponse = await lliRepo.DeleteLLI(userHash, lli.LLIID);
         timer.Stop();
 
         if (deleteResponse.Output != null)
@@ -630,22 +623,7 @@ public class LLIService : ICreateLLI, IReadLLI, IUpdateLLI, IDeleteLLI
     {
         var response = new Response();
 
-        var completionDateCheckSql = "";
-
-        if (lli.LLIID != string.Empty)
-        {
-            completionDateCheckSql = "SELECT CompletionDate "
-            + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\" AND LLIId != {lli.LLIID}";
-        }
-        else
-        {
-            completionDateCheckSql = "SELECT CompletionDate "
-            + $"FROM LLI WHERE UserHash=\"{userHash}\" AND Title=\"{lli.Title}\"";
-        }
-
-
-        var completionDateCheckResponse = await this.readDataOnlyDAO.ReadData(completionDateCheckSql);
-
+        var completionDateCheckResponse = await lliRepo.ReadLLICompletionStatus(userHash, lli.Title, lli.LLIID);
 
         if (completionDateCheckResponse.Output != null)
         {

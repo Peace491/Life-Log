@@ -145,6 +145,43 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         return response;
     }
 
+    public async Task<Response> UpdateStatus(AppPrincipal principal, string userId, string status)
+    {
+        var response = new Response();
+
+        if (principal.Claims == null)
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Must provide principal";
+            return response;
+        }
+        var userRole = principal.Claims["Role"];
+        if (userRole != "Root" && userRole != "Admin")
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Unauthorized Request";
+            return response;
+        }
+
+        if (status != "Enabled" && status != "Disabled") 
+        {
+            response.HasError = true;
+            response.ErrorMessage = "Invalid Status";
+            return response;
+        }
+
+        response = await userManagementRepo.UpdateUserStatus(userId, status);
+
+        if (response.HasError == true)
+        {
+            response.ErrorMessage = "Failed to update user status";
+            return response;
+        }
+
+        response.HasError = false;
+        return response;
+    }
+
     #endregion
 
     #region Create LL User
@@ -427,7 +464,7 @@ public class LifelogUserManagementService : ILifelogUserManagementService
         Console.WriteLine(acc.UserHash?.Value);
         if (acc.UserHash?.Value != null)
         {
-            response = await userManagementRepo.CheckSuccessfulReg(acc.UserHash?.Value);
+            response = await userManagementRepo.CheckSuccessfulReg(acc.UserHash?.Value!);
         }
         
         if (response.Output != null)

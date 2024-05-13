@@ -415,6 +415,26 @@ public class UserManagmentRepo : IUserManagmentRepo
         return response;
     }
 
+    public async Task<Response> UpdateUserStatus(string userId, string status)
+    {
+        Response response = new Response();
+
+        try 
+        {
+            string sql = $"UPDATE LifelogAccount SET AccountStatus = \"{status}\" WHERE UserId = \"{userId}\"";
+            response = await updateDataOnlyDAO.UpdateData(sql);
+        }
+         catch (Exception ex)
+        {
+            response.HasError = true;
+            response.ErrorMessage = ex.Message;
+        }
+
+        return response;
+
+        
+    }
+
     #endregion
 
     #region Helper Methods

@@ -93,10 +93,10 @@ public class AppAuthService : IAuthenticator, IAuthorizor
         var logging = new Logging(logTarget);
 
         if (hasError) {
-            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Persistent Data Store", errorMessage);
+            var _ = logging.CreateLog("Logs", "System", "ERROR", "Persistent Data Store", errorMessage);
         }
         else {
-            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
+            var _ = logging.CreateLog("Logs", "System", "Info", "Persistent Data Store", $"{authRequest.UserId} successfully authenticates");
         }
         
         return appPrincipal!;
@@ -143,11 +143,11 @@ public class AppAuthService : IAuthenticator, IAuthorizor
 
         if (isAuthorize)
         {
-            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "Info", "Business", $"{currentPrincipal.UserId} successfully authorized");
+            var _ = logging.CreateLog("Logs", "System", "Info", "Business", $"{currentPrincipal.UserId} successfully authorized");
         }
         else 
         {
-            var _ = logging.CreateLog("Logs", "TxT3KzlpTG0ExziT6GhXfJDStrAssjrEZjbe14UBfvU=", "ERROR", "Business", $"{currentPrincipal.UserId} failed to authorized");
+            var _ = logging.CreateLog("Logs", "System", "ERROR", "Business", $"{currentPrincipal.UserId} failed to authorized");
         }
 
         return isAuthorize;

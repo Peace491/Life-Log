@@ -16,6 +16,9 @@ builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 
 builder.Services.AddTransient<ILifetreeService, LifetreeService>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<UserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<AppAuthService, AppAuthService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();

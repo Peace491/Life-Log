@@ -7,6 +7,7 @@ using Peace.Lifelog.Security;
 using Microsoft.AspNetCore.Mvc; // Namespace needed for using Controllers
 using System.Text.Json;
 using back_end;
+using Peace.Lifelog.Infrastructure;
 
 [ApiController]
 [Route("lli")]  // Defines the default parent URL path for all action methods to be the name of controller
@@ -16,6 +17,7 @@ public class LLIController : ControllerBase
     private ReadDataOnlyDAO readDataOnlyDAO;
     private UpdateDataOnlyDAO updateDataOnlyDAO;
     private DeleteDataOnlyDAO deleteDataOnlyDAO;
+    private LLIRepo lliRepo;
     private LogTarget logTarget;
     private Logging logging;
     private LLIService lliService;
@@ -28,7 +30,8 @@ public class LLIController : ControllerBase
         this.deleteDataOnlyDAO = new DeleteDataOnlyDAO();
         this.logTarget = new LogTarget(this.createDataOnlyDAO, this.readDataOnlyDAO);
         this.logging = new Logging(this.logTarget);
-        this.lliService = new LLIService(this.createDataOnlyDAO, this.readDataOnlyDAO, this.updateDataOnlyDAO, this.deleteDataOnlyDAO, this.logging);
+        this.lliRepo = new LLIRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO);
+        this.lliService = new LLIService(lliRepo, this.logging);
         this.jwtService = new JWTService();
 
     }
@@ -160,7 +163,7 @@ public class LLIController : ControllerBase
 
     [HttpGet]
     [Route("mostExpensiveLLI")]
-    public async Task<IActionResult> GetMostExpensiveLLI(int period)
+    public async Task<IActionResult> GetMostExpensiveLLI()
     {
         try
         {
@@ -172,7 +175,30 @@ public class LLIController : ControllerBase
 
             if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
 
-            var response = await lliService.GetMostExpensiveLLI(period);
+            var response = await lliService.GetMostExpensiveLLI();
+            return Ok(response);
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error);
+        }
+    }
+
+    [HttpGet]
+    [Route("lliCount")]
+    public async Task<IActionResult> GetLLICount()
+    {
+        try
+        {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            if (!IsUserAuthenticatedForUADApiPoints()) return StatusCode(401);
+
+            var response = await lliService.GetLLICount();
             return Ok(response);
         }
         catch (Exception error)

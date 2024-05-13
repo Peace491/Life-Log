@@ -12,5 +12,6 @@ public interface ILifelogUserManagementService : ICreateLifelogUser, IDeleteLife
     public Task<Response> GetAllNonRootUsers(AppPrincipal principal);
     public Task<Response> UpdateRoleToAdmin(AppPrincipal principal, string userId);
     public Task<Response> UpdateRoleToNormal(AppPrincipal principal, string userId);
+    public Task<Response> UpdateStatus(AppPrincipal principal, string userId, string status);
     public Task<Response> CheckSuccessfulReg(LifelogAccountRequest acc, LifelogProfileRequest profile);
 }

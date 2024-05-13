@@ -30,7 +30,7 @@ public class LifelogAuthService : ILifelogAuthService
 
         var appAuthService = new AppAuthService();
 
-        AppPrincipal? principal = await appAuthService.AuthenticateUser(lifelogAuthenticationRequest);
+        AppPrincipal? principal = await appAuthService.AuthenticateUser(lifelogAuthenticationRequest)!;
 
         if(principal != null) 
         {
