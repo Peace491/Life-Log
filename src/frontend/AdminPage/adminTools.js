@@ -18,6 +18,11 @@ export function loadAdminToolPage(root, ajaxClient) {
     // Urls
     let logWebServiceUrl = ""
     let recoverAccountUrl = ""
+    let getAllNormalUserUrl = ""
+    let getAllNonRootUserUrl = ""
+    let updateRoleToAdminUrl = ""
+    let updateRoleToNormalUrl = ""
+    let updateStatusUrl = ""
 
     async function recoverAccount(principal, userId) {
         let recoverRequest = {
@@ -58,6 +63,90 @@ export function loadAdminToolPage(root, ajaxClient) {
         })
     }
 
+    async function getAllUsers(url) {
+        let request = ajaxClient.get(url, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error("Failed to get user accounts")
+                }
+                return response.json()
+            }).then(function (response) {
+                resolve(response)
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
+    }
+
+    async function updateRoleToAdmin(userId) {
+        let body = {
+            principal: principal,
+            userId: userId
+        }
+
+        let request = ajaxClient.post(updateRoleToAdminUrl, body, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error("Failed to update role to admin")
+                }
+                return response.json()
+            }).then(function (response) {
+                resolve(response)
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
+    }
+
+    async function updateRoleToNormal(userId) {
+        let body = {
+            principal: principal,
+            userId: userId
+        }
+
+        let request = ajaxClient.post(updateRoleToNormalUrl, body, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error("Failed to update role to normal")
+                }
+                return response.json()
+            }).then(function (response) {
+                resolve(response)
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
+    }
+
+    async function updateStatus(userId, status) {
+        let body = {
+            principal: principal,
+            userId: userId,
+            status: status
+        }
+
+        let request = ajaxClient.post(updateStatusUrl, body, jwtToken)
+
+        return new Promise(function (resolve, reject) {
+            request.then(function (response) {
+                if (response.status != 200) {
+                    throw new Error("Failed to update user status")
+                }
+                return response.json()
+            }).then(function (response) {
+                resolve(response)
+            }).catch(function (error) {
+                reject(error)
+            })
+        })
+    }
+
     async function setupTools() {
         try {
             let response = await getRecoverAccountRequests()
@@ -68,10 +157,96 @@ export function loadAdminToolPage(root, ajaxClient) {
                 response.output.forEach(request => {
                     let requestDiv = document.createElement('div')
                     requestDiv.innerText = request[0]
-    
+
                     recoverAccountRequestsContainer.appendChild(requestDiv)
                 });
             }
+
+            let getAllUserResponse
+            if (principal.claims["Role"] == "Admin") {
+                getAllUserResponse = await getAllUsers(getAllNormalUserUrl)
+            } else if (principal.claims["Role"] == "Root") {
+                getAllUserResponse = await getAllUsers(getAllNonRootUserUrl)
+            }
+
+            let userAccountList = document.getElementById('user-account-list')
+
+            if (getAllUserResponse != null && getAllUserResponse.output != null) {
+                getAllUserResponse.output.forEach(user => {
+                    let requestDiv = document.createElement('div')
+                    requestDiv.innerText = user[0]
+
+                    userAccountList.appendChild(requestDiv)
+                })
+            }
+
+            // Create container div for admin operation
+            var containerDiv = document.createElement("div");
+            containerDiv.className = "make-user-admin-container";
+
+            // Create input element
+            var inputElement = document.createElement("input");
+            inputElement.type = "text";
+            inputElement.id = "admin-input";
+
+            containerDiv.appendChild(inputElement);
+
+            // Get reference to the main element
+            var accountContainer = document.getElementsByClassName('user-account-container')[0]
+
+            // Append the container div to the main element
+            accountContainer.appendChild(containerDiv);
+
+            // Add ban user button
+
+            var banUserButtonElement = document.createElement("button");
+            banUserButtonElement.textContent = "Ban User"
+            banUserButtonElement.id = "ban-user-button";
+
+            banUserButtonElement.addEventListener('click', async function () {
+                let input = document.getElementById('admin-input').value
+                let banUserResponse = await updateStatus(input, "Disabled")
+
+                if (banUserResponse.hasError == false) {
+                    alert("User successfully banned")
+                } else {
+                    alert("Failed to ban user")
+                }
+            })
+
+            containerDiv.appendChild(banUserButtonElement)
+
+
+            if (principal.claims["Role"] == "Root") {
+                setupMakeAdminInput(containerDiv)
+
+                let makeAdminInput = document.getElementById('make-admin-button')
+                makeAdminInput.addEventListener('click', async function () {
+                    let input = document.getElementById('admin-input').value
+                    let makeAdminResponse = await updateRoleToAdmin(input)
+
+                    if (makeAdminResponse.hasError == false) {
+                        alert("User successfully updated to admin")
+                    } else {
+                        alert("Failed to update user")
+                    }
+
+                })
+
+                let removeAdminInput = document.getElementById('remove-admin-button')
+                removeAdminInput.addEventListener('click', async function () {
+                    let input = document.getElementById('admin-input').value
+                    let removeAdminResponse = await updateRoleToNormal(input)
+
+                    if (removeAdminResponse.hasError == false) {
+                        alert("User successfully updated to normal")
+                    } else {
+                        alert("Failed to update user")
+                    }
+                })
+            }
+
+
 
         } catch (error) {
             alert(error)
@@ -94,12 +269,35 @@ export function loadAdminToolPage(root, ajaxClient) {
         })
     }
 
+    function setupMakeAdminInput(containerDiv) {
+
+
+        // Create button element
+        var createAdminButtonElement = document.createElement("button");
+        createAdminButtonElement.textContent = "Make User Admin"
+        createAdminButtonElement.id = "make-admin-button";
+
+        var removeAdminButtonElement = document.createElement("button");
+        removeAdminButtonElement.textContent = "Remove admin privileges from user"
+        removeAdminButtonElement.id = "remove-admin-button";
+
+        // Append input and button elements to the container div
+        containerDiv.appendChild(createAdminButtonElement);
+        containerDiv.appendChild(removeAdminButtonElement)
+
+    }
+
     async function fetchConfig() {
         const response = await fetch('../lifelog-config.url.json');
         const data = await response.json();
 
         logWebServiceUrl = data.LifelogUrlConfig.Log.LogWebService
         recoverAccountUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.RecoverUser
+        getAllNonRootUserUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.GetAllNonRootUser
+        getAllNormalUserUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.GetAllNormalUser
+        updateRoleToAdminUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.UpdateRoleToAdmin
+        updateRoleToNormalUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.UpdateRoleToNormal
+        updateStatusUrl = data.LifelogUrlConfig.UserManagement.UserManagementWebService + data.LifelogUrlConfig.UserManagement.UpdateStatus
     }
 
     async function init() {
@@ -119,8 +317,10 @@ export function loadAdminToolPage(root, ajaxClient) {
             window.name = routeManager.PAGES.adminToolPage
             await fetchConfig()
 
+            let timeAccessed = performance.now()
+
             setupTools()
-            routeManager.setupHeaderLinks()
+            routeManager.setupHeaderLinks(routeManager.PAGES.adminToolPage, timeAccessed, jwtToken);
         }
     }
 

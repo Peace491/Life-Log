@@ -16,9 +16,12 @@ public class UserFormServiceShould : IAsyncLifetime, IDisposable
     private static ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
     private static IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
     private static IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+    private static IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
     private static LogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
     private static Logging logging = new Logging(logTarget);
-    private static LifelogAuthService lifelogAuthService = new LifelogAuthService();
+    private static UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logging);
+    private static AppAuthService appAuthService = new AppAuthService();
+    private static LifelogAuthService lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
     private static IUserFormRepo userFormRepo = new UserFormRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO);
     private static IUserFormService userFormService = new UserFormService(userFormRepo, lifelogAuthService, logging);
 

@@ -190,7 +190,7 @@ public class RegistrationServiceShould
         const string USERWITHINVALIDZIPCODE = "EmailWithInvalidZipcode@gmail.com";
 
         // Act
-        var validZipCodeResponse = await registrationService.RegisterNormalUser(USERWITHINVALIDZIPCODE, DOB, invalidZipCode);
+        var validZipCodeResponse = await registrationService.RegisterNormalUser(USERWITHINVALIDZIPCODE, DOB, invalidZipCode, "");
 
         // Assert
         Assert.True(validZipCodeResponse.HasError == true);
@@ -270,7 +270,7 @@ public class RegistrationServiceShould
         testLifelogProfileRequest.ZipCode = ("ZipCode", ZIPCODE);
         
         // Act
-        var sucessfulRegistrationResponse = await registrationService.RegisterNormalUser(USEREMAIL, DOB, ZIPCODE);
+        var sucessfulRegistrationResponse = await registrationService.RegisterNormalUser(USEREMAIL, DOB, ZIPCODE, "");
         var readResponse = await readDataOnlyDAO.ReadData(readSQL);
 
         // Assert

@@ -27,7 +27,7 @@ public class LocationRecommendationRepo : ILocationRecommendationRepo
 
         try
         {
-            readResponse = await readDataOnlyDAO.ReadData(sql);
+            readResponse = await readDataOnlyDAO.ReadData(sql, null);
         }
         catch (Exception error)
         {
@@ -46,7 +46,7 @@ public class LocationRecommendationRepo : ILocationRecommendationRepo
 
         try
         {
-            readResponse = await readDataOnlyDAO.ReadData(sql);
+            readResponse = await readDataOnlyDAO.ReadData(sql, null);
         }
         catch (Exception error)
         {

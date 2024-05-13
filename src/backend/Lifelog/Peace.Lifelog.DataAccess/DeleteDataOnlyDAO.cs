@@ -64,9 +64,9 @@ public class DeleteDataOnlyDAO : IDeleteDataOnlyDAO
             
             response.HasError = false;
 
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Delete Successful");
+            // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Data Delete Successful");
 
-            response.LogId = logTransactionResponse.LogId;
+            // response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)

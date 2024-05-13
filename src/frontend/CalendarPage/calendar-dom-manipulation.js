@@ -1,32 +1,21 @@
-const months = [
-  "Janurary",
-  "Feburary",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
-]
 
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-
-// get current date
-const date = new Date()
-
-// get current month
-let currentMonth = date.getMonth()
-
-// get current year
-let currentYear = date.getFullYear()
-
-
-
-export function renderCalendar(showCalendarLLI) {
+export function renderCalendar(showCalendarLLI, date, currentMonth, currentYear) {
+  const months = [
+    "Janurary",
+    "Feburary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ]
+  
+  let days = ""
 
   const daysContainer = document.querySelector(".days"),
   nextBtn = document.querySelector(".next-btn"),
@@ -44,9 +33,6 @@ export function renderCalendar(showCalendarLLI) {
 
   month.innerHTML = `${months[currentMonth]} ${currentYear}`
 
-
-
-  let days = ""
 
   //prev days 
   for (let x = firstDay.getDay(); x > 0; x--) {
@@ -103,7 +89,7 @@ export function renderCalendar(showCalendarLLI) {
       currentYear++;
     }
   
-    renderCalendar();
+    renderCalendar(showCalendarLLI, date, currentMonth, currentYear);
     renderModals()
     window.PNRetrieval()
   
@@ -119,7 +105,7 @@ export function renderCalendar(showCalendarLLI) {
       currentYear--;
     }
   
-    renderCalendar();
+    renderCalendar(showCalendarLLI, date, currentMonth, currentYear);
     renderModals()
     window.PNRetrieval()
   
@@ -175,7 +161,6 @@ export function renderModals() {
 
   function openModal(modal) {
     if (modal == null) {
-      console.log("null")
       return
     }
     modal.classList.add('active')

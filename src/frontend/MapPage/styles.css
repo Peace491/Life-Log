@@ -88,9 +88,48 @@ header {
 }
 
 .header-contents-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: row;
     padding: 0 40px;
+    width: 90%;
+}
+
+.page-link-container, .user-management-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-link-container {
+    gap: 30px;
+    align-items: center;
+}
+
+.page-link-container {
+    width: 100%;
+}
+
+.page-link-container > * {
+    max-width: 120px;
+}
+
+.user-management-container {
+    gap: 10px;
+    justify-content: right;
+    align-items: center;
+    margin-left: auto;
+}
+
+.setting-container, .user-setting-container {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.setting-container>img, .user-setting-container>img {
+    display: flex;
+    height: 60%;
+    width: 60%;
 }
 
 .logout-container {
@@ -106,35 +145,6 @@ header {
 .logout-container > h2 {
     color: rgb(255, 98, 98);
     
-}
-
-.page-link-container, .user-management-container {
-    display: flex;
-    flex-direction: row;
-}
-
-.page-link-container {
-    gap: 10%;
-    align-items: center;
-}
-
-.user-management-container {
-    gap: 3%;
-    justify-content: right;
-    align-items: center;
-}
-
-.setting-container, .user-setting-container {
-    height: 90px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.setting-container>img, .user-setting-container>img {
-    display: flex;
-    height: 60%;
-    width: 60%;
 }
 
 main {

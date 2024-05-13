@@ -104,9 +104,9 @@ public class ReadDataOnlyDAO : IReadDataOnlyDAO
             
             response.HasError = false;
 
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Read Data is successful");
+            // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Read Data is successful");
 
-            response.LogId = logTransactionResponse.LogId;
+            // response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)

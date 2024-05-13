@@ -2,6 +2,7 @@
 
 import * as routeManager from '../routeManager.js';
 import * as log from '../Log/log.js'
+import * as modal from '../shared/modal.js'
 
 // Immediately Invoke Function Execution (IIFE or IFE)
 // Protects functions from being exposed to the global object
@@ -16,12 +17,13 @@ export function loadRegistrationPage(root, ajaxClient) {
 
     let jwtToken
 
-    const registrationServiceUrl = 'http://localhost:8081';
-    const authenticationServiceUrl = 'http://localhost:8082/authentication';
+    let registrationServiceUrl = '';
+    let authenticationWebServiceUrl = "";
+    let authenticateOTPUrl = "";
 
     // NOT exposed to the global object ("Private" functions)
     function registerUser(userId, dob, zipCode) {
-        let postDataUrl = registrationServiceUrl + "/registration/registerNormalUser"
+        let postDataUrl = registrationServiceUrl
 
         let data = {
             userId: userId,
@@ -30,12 +32,10 @@ export function loadRegistrationPage(root, ajaxClient) {
         }
 
         let request = ajaxClient.post(postDataUrl, data)
-        console.log(request)
         return new Promise((resolve, reject) => {
             request.then(function (response) {
                 return response.json();
             }).then(function (data) {
-                console.log(data)
                 if (data.HasError == true) throw new Error("User Registration Failed")
                 resolve(data);
             }).catch(function (error) {
@@ -46,7 +46,7 @@ export function loadRegistrationPage(root, ajaxClient) {
     }
 
     function authenticateOTP(userHash, otp) {
-        const postUrl = authenticationServiceUrl + `/authenticateOTP`
+        const postUrl = authenticationWebServiceUrl + authenticateOTPUrl
 
         let data = {
             userHash: userHash,
@@ -72,8 +72,7 @@ export function loadRegistrationPage(root, ajaxClient) {
         });
     }
 
-    function onSubmitRegistrationCredentials(){
-        console.log("in reg credentials")
+    async function onSubmitRegistrationCredentials(){
         // Get html elements
         let registrationFormContainer = document.getElementById('registration-form-container')
     
@@ -82,6 +81,29 @@ export function loadRegistrationPage(root, ajaxClient) {
         let usernameInput = document.getElementById('username-input')
         let dobInput = document.getElementById('dob-input')
         let submitCredentialButton = document.getElementById('submit-credential-button')
+
+        let userId = usernameInput.value
+        let dob = dobInput.value
+        let zipCode = zipcodeInput.value
+
+
+        try {
+            await registerUser(userId, dob, zipCode).then(function(data) {
+                let userHash = data.Output[0]
+    
+                submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
+    
+                submitCredentialButton.addEventListener('click', function() {
+                    authenticateOTP(userHash, otpInput.value)
+                });
+            })
+        } catch (error) {
+            console.error(error)
+            alert("Failed to register user")
+            return
+        }
+
+        submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
     
         // Change form format 
         registrationFormContainer.style = 'grid-template-rows: 1fr 1fr 4fr 2fr;'
@@ -123,29 +145,22 @@ export function loadRegistrationPage(root, ajaxClient) {
         zipcodeInput.setAttribute("readonly", "")
     
         submitCredentialButton.innerText = "Sign Up!"
-    
-        let userId = usernameInput.value
-        let dob = dobInput.value
-        let zipCode = zipcodeInput.value
 
-        submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
         
+        
+    }
 
-        try {
-            registerUser(userId, dob, zipCode).then(function(data) {
-                let userHash = data.Output[0]
-    
-                submitCredentialButton.removeEventListener('click', onSubmitRegistrationCredentials)
-    
-                submitCredentialButton.addEventListener('click', function() {
-                    authenticateOTP(userHash, otpInput.value)
-                });
-            })
-        } catch (error) {
-            console.error(error)
-            alert(error)
+    // Fetch URL config
+    async function fetchConfig() {
+        try{
+        // fetch all Url's
+        const response = await fetch('../lifelog-config.url.json');
+        const data = await response.json();
+        registrationServiceUrl = data.LifelogUrlConfig.UserManagement.RegistrationService;
+        authenticationWebServiceUrl = data.LifelogUrlConfig.HomePage.AuthenticationWebService;
+        authenticateOTPUrl = data.LifelogUrlConfig.HomePage.AuthenticationOTP;
+        } catch (error){
         }
-        
     }
 
     root.myApp = root.myApp || {};
@@ -155,16 +170,23 @@ export function loadRegistrationPage(root, ajaxClient) {
     //root.myApp.sendData = sendDataHandler;
 
     // Initialize the current view by attaching event handlers 
-    function init() {
+    async function init() {
         if (localStorage.length != 0) {
             jwtToken = localStorage["token-local"]
         }
+
+        await fetchConfig()
 
         if (jwtToken) {
             routeManager.loadPage(routeManager.PAGES.lliManagementPage)
         } else {
             let submitButton = document.getElementById("submit-credential-button")
             submitButton.addEventListener("click", onSubmitRegistrationCredentials)
+
+            let lifelogLogo = document.getElementById('lifelog-logo')
+            lifelogLogo.addEventListener('click', function() {
+                routeManager.loadPage(routeManager.PAGES.homePage)
+            })
         }
     }
 

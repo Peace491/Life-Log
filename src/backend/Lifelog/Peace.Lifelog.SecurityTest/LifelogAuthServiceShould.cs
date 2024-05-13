@@ -89,8 +89,16 @@ public class LifelogAuthServiceShould : IAsyncLifetime, IDisposable
     {
         //Arrange
         var timer = new Stopwatch();
-        var lifelogAuthService = new LifelogAuthService();
+        AppAuthService appAuthService = new AppAuthService();
+        ICreateDataOnlyDAO createDataOnlyDAO = new CreateDataOnlyDAO();
+        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
         IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+        IDeleteDataOnlyDAO deleteDataOnlyDAO = new DeleteDataOnlyDAO();
+        ILogTarget logTarget = new LogTarget(createDataOnlyDAO, readDataOnlyDAO);
+        ILogging logger = new Logging(logTarget);
+        UserManagmentRepo userManagementRepo = new UserManagmentRepo(createDataOnlyDAO, readDataOnlyDAO, updateDataOnlyDAO, deleteDataOnlyDAO, logger);
+        var lifelogAuthService = new LifelogAuthService(appAuthService, userManagementRepo);
+        
 
         // Generate OTP
         OTPService oTPService = new OTPService(updateDataOnlyDAO);

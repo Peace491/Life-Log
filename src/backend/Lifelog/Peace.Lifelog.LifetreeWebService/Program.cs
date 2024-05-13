@@ -16,6 +16,9 @@ builder.Services.AddTransient<ILogTarget, LogTarget>();
 builder.Services.AddTransient<ILogging, Logging>();
 
 builder.Services.AddTransient<ILifetreeService, LifetreeService>();
+builder.Services.AddTransient<IUserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<UserManagmentRepo, UserManagmentRepo>();
+builder.Services.AddTransient<AppAuthService, AppAuthService>();
 builder.Services.AddTransient<ILifelogAuthService, LifelogAuthService>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -56,7 +59,6 @@ app.Use((httpContext, next) =>
 
         httpContext.Response.StatusCode = 204;
 
-        Console.WriteLine(config.HostURL);
         httpContext.Response.Headers.Append(HeaderNames.AccessControlAllowOrigin, config.HostURL);
         httpContext.Response.Headers.AccessControlAllowMethods = string.Join(", ", allowedMethods);
         httpContext.Response.Headers.AccessControlAllowHeaders = "*";

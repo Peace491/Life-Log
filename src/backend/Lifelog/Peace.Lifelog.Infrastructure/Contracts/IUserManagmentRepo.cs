@@ -19,4 +19,7 @@ public interface IUserManagmentRepo
     public Task<Response> CreateRecSummaryForUser(string userHash);
     public Task<Response> DeletePersonalIdentifiableInformation(string userHash);
     public Task<Response> ViewPersonalIdentifiableInformation(string userHash);
+    public Task<Response> UpdateUserFirstLogin(string userHash);
+    public Task<Response> CheckSuccessfulReg(string userHash);
+    public Task<Response> UpdateUserStatus(string userId, string status);
 }

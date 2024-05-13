@@ -60,7 +60,7 @@ export function loadLLIPage(root, ajaxClient) {
     let MediaMementoDelete = "";
     let MediaMementoUploadFromCSV = "";
 
-    const webServiceUrl = 'http://localhost:8080/lli';
+    let webServiceUrl = '';
 
     // NOT exposed to the global object ("Private" functions)
     function createLLI(options) {
@@ -340,7 +340,7 @@ export function loadLLIPage(root, ajaxClient) {
                     label: 'Search',
                     values: searchQuery
                 }
-                filterLLI(searchOption, currentSearchBar)
+                lliDomManip.filterLLI(searchOption, currentSearchBar)
             }
         })
 
@@ -353,7 +353,7 @@ export function loadLLIPage(root, ajaxClient) {
                     label: 'Search',
                     values: searchQuery
                 }
-                filterLLI(searchOption, finishedSearchBar)
+                lliDomManip.filterLLI(searchOption, finishedSearchBar)
             }
         })
     }
@@ -403,8 +403,8 @@ export function loadLLIPage(root, ajaxClient) {
                             values: checkedValues
                         }
                     }
-
-                    filterLLI(currentFilterOption, currentFilter)
+                    
+                    lliDomManip.filterLLI(currentFilterOption, currentFilter)
 
                 });
             });
@@ -509,12 +509,14 @@ export function loadLLIPage(root, ajaxClient) {
 
     // close modal
     span.onclick = function() {
+        document.getElementById('modalText').innerText = "";
         modal.style.display = "none";
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
         if (event.target == modal) {
+            document.getElementById('modalText').innerText = "";
             modal.style.display = "none";
         }
     }
@@ -526,6 +528,7 @@ export function loadLLIPage(root, ajaxClient) {
         // fetch all Url's
         const response = await fetch('../lifelog-config.url.json');
         const data = await response.json();
+        webServiceUrl = data.LifelogUrlConfig.LLI.LLIWebService
         MediaMementoWebService = data.LifelogUrlConfig.MediaMemento.MediaMementoWebService;
         MediaMementoUpload = data.LifelogUrlConfig.MediaMemento.MediaMementoUpload;
         MediaMementoDelete = data.LifelogUrlConfig.MediaMemento.MediaMementoDelete;

@@ -116,8 +116,8 @@ public sealed class UserManagementController : ControllerBase
 
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteUser(string userHash)
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser([FromBody] string userHash)
     {
         try
         {
@@ -145,7 +145,6 @@ public sealed class UserManagementController : ControllerBase
     {
         try 
         {
-            Console.WriteLine("Viewing PII data for user: " + payload.userHash);
             var response = await lifelogUserManagementService.ViewPersonalIdentifiableInformation(payload.userHash);
 
             if(response.HasError)
@@ -160,12 +159,17 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
-    [HttpPost("UpdateRoleToAdmin")]
+
+    [HttpPost("updateRoleToAdmin")]
     public async Task<IActionResult> UpdateUserRoleToAdmin([FromBody] UpdateRoleToAdmin payload)
     {
         try 
         {
-            Console.WriteLine("Updating user role for user: " + payload.UserId);
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
             // first principal is principal of user making the request, second uid is uid of user to update
             var response = await lifelogUserManagementService.UpdateRoleToAdmin(payload.Principal, payload.UserId);
 
@@ -181,12 +185,17 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
-    [HttpPost("UpdateRoleToNormal")]
+
+    [HttpPost("updateRoleToNormal")]
     public async Task<IActionResult> UpdateUserRoleToNormal([FromBody] UpdateRoleToNormal payload)
     {
         try 
         {
-            Console.WriteLine("Updating user role for user: " + payload.UserId);
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
             // first principal is principal of user making the request, second uid is uid of user to update
             var response = await lifelogUserManagementService.UpdateRoleToNormal(payload.Principal, payload.UserId);
 
@@ -202,13 +211,51 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
-    [HttpPost("GetAllNonRootUsers")]
-    public async Task<IActionResult> GetAllNonRootUsers([FromBody] GetNonRootUsersRequest payload)
+
+    [HttpPost("updateStatus")]
+    public async Task<IActionResult> UpdateUserStatusToEnabled([FromBody] UpdateStatus payload)
     {
         try 
         {
-            Console.WriteLine("Getting all non-root users");
-            var response = await lifelogUserManagementService.GetAllNonRootUsers(payload.Principal);
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+            // first principal is principal of user making the request, second uid is uid of user to update
+            var response = await lifelogUserManagementService.UpdateStatus(payload.Principal, payload.UserId, payload.Status);
+
+            if(response.HasError)
+            {
+                throw new Exception("Error updating user status");
+            }
+
+            return Ok(response);
+        } 
+        catch(Exception error) 
+        {
+            return StatusCode(500, error.Message);
+        }
+    }
+
+    [HttpGet("getAllNonRootUsers")]
+    public async Task<IActionResult> GetAllNonRootUsers()
+    {
+        try 
+        {
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+            var userHash = jwtToken!.Payload.UserHash;
+            var role = jwtToken.Payload.Claims!["Role"];
+
+            var principal = new AppPrincipal { UserId = userHash!, Claims = new Dictionary<string, string>() { { "Role", role } } };
+
+            var response = await lifelogUserManagementService.GetAllNonRootUsers(principal);
 
             if(response.HasError)
             {
@@ -222,13 +269,25 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
-    [HttpPost("GetAllNormalUsers")]
-    public async Task<IActionResult> GetAllNormalUsers([FromBody] GetNormalUsersRequest payload)
+
+    [HttpGet("getAllNormalUsers")]
+    public async Task<IActionResult> GetAllNormalUsers()
     {
         try 
         {
-            Console.WriteLine("Getting all normal users");
-            var response = await lifelogUserManagementService.GetAllNormalUsers(payload.Principal);
+            var processTokenResponseStatus = ProcessJwtToken();
+            if (processTokenResponseStatus != 200)
+            {
+                return StatusCode(processTokenResponseStatus);
+            }
+
+            var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+            var userHash = jwtToken!.Payload.UserHash;
+            var role = jwtToken.Payload.Claims!["Role"];
+
+            var principal = new AppPrincipal { UserId = userHash!, Claims = new Dictionary<string, string>() { { "Role", role } } };
+
+            var response = await lifelogUserManagementService.GetAllNormalUsers(principal);
 
             if(response.HasError)
             {
@@ -242,5 +301,26 @@ public sealed class UserManagementController : ControllerBase
             return StatusCode(500, error.Message);
         }
     }
+
+    private int ProcessJwtToken()
+    {
+        var jwtToken = JsonSerializer.Deserialize<Jwt>(Request.Headers["Token"]!);
+
+        if (jwtToken == null)
+        {
+            return 401;
+        }
+
+        var statusCode = jwtService.ProcessToken(Request);
+
+        if (statusCode != 200)
+        {
+            return statusCode;
+        }
+
+        return 200;
+    }
 }
+
+
 

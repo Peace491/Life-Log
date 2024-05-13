@@ -64,9 +64,9 @@ public class UpdateDataOnlyDAO : IUpdateDataOnlyDAO
             
             response.HasError = false;
 
-            var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
+            // var logTransactionResponse = await logTransaction.CreateDataAccessTransactionLog("Info", "Update Data is successful");
 
-            response.LogId = logTransactionResponse.LogId;
+            // response.LogId = logTransactionResponse.LogId;
 
         } 
         catch (Exception error)

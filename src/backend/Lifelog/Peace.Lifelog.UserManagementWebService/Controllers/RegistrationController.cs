@@ -28,47 +28,61 @@ public class RegistrationController : ControllerBase
     [Route("registerNormalUser")]
     public async Task<IActionResult> RegisterNormalUser([FromBody] RegisterNormalUserRequest registerNormalUserRequest)
     {
-        var registrationService = new RegistrationService(lifelogUserManagementService, logger);
-        IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
-        IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
-        IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
-
-        var checkInputResponse = await registrationService.CheckInputValidation(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
-
-        var registerUserResponse = new Response();
-        var userHash = "";
-
-        if (checkInputResponse.HasError == false)
+        try
         {
-            registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
-        }
-        else {
-            Console.WriteLine("CheckInputResponse has error");
-            return BadRequest();
-        }
+            var registrationService = new RegistrationService(lifelogUserManagementService, logger);
+            IReadDataOnlyDAO readDataOnlyDAO = new ReadDataOnlyDAO();
+            IUpdateDataOnlyDAO updateDataOnlyDAO = new UpdateDataOnlyDAO();
+            IEmailService emailService = new EmailService(readDataOnlyDAO, new OTPService(updateDataOnlyDAO), updateDataOnlyDAO);
 
-        if (registerUserResponse.HasError == false)
-        {
-            if (registerUserResponse.Output is not null)
+            var checkInputResponse = await registrationService.CheckInputValidation(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode);
+
+            var registerUserResponse = new Response();
+            var userHash = "";
+        var ip = HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            if (checkInputResponse.HasError == false && ip != null)
             {
-                foreach (string output in registerUserResponse.Output)
-                {
-                    userHash = output;
-                }
+                registerUserResponse = await registrationService.RegisterNormalUser(registerNormalUserRequest.UserId, registerNormalUserRequest.DOB, registerNormalUserRequest.ZipCode, ip);
             }
-            var emailResponse = emailService.SendOTPEmail(userHash);
+            else
+            
+            {
+                return BadRequest();
+            }
 
+            if (registerUserResponse.HasError == false)
+            {
+                if (registerUserResponse.Output is not null)
+                {
+                    foreach (string output in registerUserResponse.Output)
+                    {
+                        userHash = output;
+                    }
+                }
+                var emailResponse = emailService.SendOTPEmail(userHash);
+
+            }
+
+            if (registerUserResponse.HasError == true)
+            {
+                throw new Exception(registerUserResponse.ErrorMessage);
+            }
+
+            return Ok(JsonSerializer.Serialize<Response>(registerUserResponse));
+        }
+        catch (Exception error)
+        {
+            return StatusCode(500, error.Message);
         }
 
-        return Ok(JsonSerializer.Serialize<Response>(registerUserResponse));
 
     }
 
-    [HttpPost]
-    [Route("postOTP")]
-    public IActionResult PostOTP([FromBody] PostOTPRequest postOTPRequest)
-    {
+    // [HttpPost]
+    // [Route("postOTP")]
+    // public IActionResult PostOTP([FromBody] PostOTPRequest postOTPRequest)
+    // {
 
-        return Ok();
-    }
+    //     return Ok();
+    // }
 }

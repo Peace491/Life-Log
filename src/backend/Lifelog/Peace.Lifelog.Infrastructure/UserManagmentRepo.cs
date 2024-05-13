@@ -367,6 +367,74 @@ public class UserManagmentRepo : IUserManagmentRepo
         return response;
     }
 
+    public async Task<Response> UpdateUserFirstLogin(string userHash)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userhash input
+            if(ContainsSQLInjection(userHash))
+            {
+                throw new Exception("SQL Injection detected in update user first login");
+            }
+
+            // substitute userhash in query
+            string updateQuery = $"UPDATE LifelogAuthentication SET FirstLogin = 1 WHERE UserHash = '{userHash}';";
+
+            // execute 
+            response = await updateDataOnlyDAO.UpdateData(updateQuery);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userHash, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> CheckSuccessfulReg(string userHash)
+    {
+        Response response = new Response();
+        try
+        {
+            // check for sql injection in userhash input
+            if(ContainsSQLInjection(userHash))
+            {
+                throw new Exception("SQL Injection detected in check successful reg");
+            }
+
+            // substitute userhash in query
+            string selectQuery = $"SELECT FirstLogin FROM LifelogAuthentication WHERE UserHash = '{userHash}';";
+
+            // execute 
+            response = await readDataOnlyDAO.ReadData(selectQuery, null);
+        }
+        catch (Exception ex)
+        {
+            _ = await logger.CreateLog("logs", userHash, "Server", "Error", ex.Message);
+        }
+        return response;
+    }
+
+    public async Task<Response> UpdateUserStatus(string userId, string status)
+    {
+        Response response = new Response();
+
+        try 
+        {
+            string sql = $"UPDATE LifelogAccount SET AccountStatus = \"{status}\" WHERE UserId = \"{userId}\"";
+            response = await updateDataOnlyDAO.UpdateData(sql);
+        }
+         catch (Exception ex)
+        {
+            response.HasError = true;
+            response.ErrorMessage = ex.Message;
+        }
+
+        return response;
+
+        
+    }
+
     #endregion
 
     #region Helper Methods
