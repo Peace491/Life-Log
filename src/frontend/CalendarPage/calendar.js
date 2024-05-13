@@ -139,6 +139,7 @@ export function loadCalendarPage(root, ajaxClient) {
         })
     }
 
+
     function updateLLI(options) {
         let updateLLIUrl = calendarServiceUrl + '/putLLI'
 
@@ -347,7 +348,6 @@ export function loadCalendarPage(root, ajaxClient) {
 
                     function openModal(modal) {
                         if (modal == null) {
-                            console.log("null")
                             return
                         }
                         modal.classList.add('active')
@@ -448,8 +448,6 @@ export function loadCalendarPage(root, ajaxClient) {
 
         // cannot look at multiple lli on same day; is selecting the first lli on the same day
         let getLLIID = document.getElementById(`insert-llievent-${llideadline.split("-")[2]}`).querySelector(".lli-btn.event");
-        console.log("id parent", `insert-llievent-${llideadline.split("-")[2]}`)
-        console.log(getLLIID.id)
         let lliid = getLLIID.id.split("-")[2]
 
 
@@ -533,9 +531,18 @@ export function loadCalendarPage(root, ajaxClient) {
 
 
         let categoryElement = document.getElementById("create-category-input")
-        let category1 = categoryElement.value
-        let category2 = categoryElement.value
-        let category3 = categoryElement.value
+
+        var selectedCategories = [];
+        for (var i = 0; i < categoryElement.options.length; i++) {
+            var option = categoryElement.options[i];
+            if (option.selected && selectedCategories.length < 3) {
+                selectedCategories.push(option.value);
+            }
+        }
+
+        let category1 = selectedCategories[0]
+        let category2 = selectedCategories[1]
+        let category3 = selectedCategories[2]
 
         let recurrenceElement = document.getElementById("create-recurrence-input")
         let recurrence = recurrenceElement.value
@@ -693,7 +700,16 @@ export function loadCalendarPage(root, ajaxClient) {
 
             })
 
-            calendarDomManipulation.renderCalendar(showCalendarLLI)
+            // get current date
+            const date = new Date()
+
+            // get current month
+            let currentMonth = date.getMonth()
+
+            // get current year
+            let currentYear = date.getFullYear()
+
+            calendarDomManipulation.renderCalendar(showCalendarLLI, date, currentMonth, currentYear)
             calendarDomManipulation.renderModals()
 
             let timeAccessed = performance.now()
